@@ -1,0 +1,19 @@
+{
+	"data": [
+		{
+			"id": "1",
+			"type": "users"
+		},
+		{
+			"id": "a",
+			"type": "users"
+		},
+		{
+			"id": "abc123",
+			"type": "users"
+		}
+	],
+	"jsonapi": {
+		"version": "1.0"
+	}
+}

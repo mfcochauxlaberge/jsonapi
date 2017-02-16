@@ -1,0 +1,9 @@
+{
+	"data": {
+		"id": "1",
+		"type": "users"
+	},
+	"jsonapi": {
+		"version": "1.0"
+	}
+}
