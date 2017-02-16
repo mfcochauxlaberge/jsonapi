@@ -46,6 +46,10 @@ It is recommended to use the json tag which sets the name of the field. Relation
 Author string `json:"author" api:"rel,users,articles"`
 ```
 
+## Documentation
+
+Check out the [incomplete documentation](https://godoc.org/github.com/kkaribu/jsonapi).
+
 ## Utilities
 
 Some structs and functions are provided to help build tools on top of this library.
