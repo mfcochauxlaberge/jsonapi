@@ -639,7 +639,7 @@ func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 	}
 
 	// ID
-	w.SetString("id", ske.ID)
+	w.SetID(ske.ID)
 
 	// Attributes
 	attrs := map[string]interface{}{}
