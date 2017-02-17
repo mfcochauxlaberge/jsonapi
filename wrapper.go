@@ -98,28 +98,28 @@ func Wrap(v interface{}) *Wrapper {
 }
 
 // IDAndType ...
-func (r *Wrapper) IDAndType() (string, string) {
-	return r.id, r.t
+func (w *Wrapper) IDAndType() (string, string) {
+	return w.id, w.t
 }
 
 // Attrs ...
-func (r *Wrapper) Attrs() []Attr {
-	return r.attrs
+func (w *Wrapper) Attrs() []Attr {
+	return w.attrs
 }
 
 // Rels ...
-func (r *Wrapper) Rels() map[string]Rel {
-	return r.rels
+func (w *Wrapper) Rels() map[string]Rel {
+	return w.rels
 }
 
 // // AttrPtrs ...
-// func (r *Wrapper) AttrPtrs(attrs []Attr) ([]string, []interface{}) {
+// func (w *Wrapper) AttrPtrs(attrs []Attr) ([]string, []interface{}) {
 // 	keys := []string{}
 // 	dsts := []interface{}{}
 //
 // 	for i := range attrs {
-// 		for j := range r.Attrs() {
-// 			if attrs[i].Name == r.Attrs()[j].Name {
+// 		for j := range w.Attrs() {
+// 			if attrs[i].Name == w.Attrs()[j].Name {
 // 				dest[attrs[i].Name] = &sql.NullString{}
 // 			}
 // 		}
@@ -129,282 +129,282 @@ func (r *Wrapper) Rels() map[string]Rel {
 // }
 //
 // // ApplyAttrPtrs ...
-// func (r *Wrapper) ApplyAttrPtrs(ptrs map[string]interface{}) {
+// func (w *Wrapper) ApplyAttrPtrs(ptrs map[string]interface{}) {
 // 	// TODO
 // }
 
 // New ...
-func (r *Wrapper) New() Resource {
-	newVal := reflect.New(r.val.Type())
+func (w *Wrapper) New() Resource {
+	newVal := reflect.New(w.val.Type())
 
 	return Wrap(newVal.Interface())
 }
 
 // Get ...
-func (r *Wrapper) Get(key string) interface{} {
-	return r.getAttr(key, "")
+func (w *Wrapper) Get(key string) interface{} {
+	return w.getAttr(key, "")
 }
 
 // GetID ...
-func (r *Wrapper) GetID() string {
-	return r.getAttr("", "string").(string)
+func (w *Wrapper) GetID() string {
+	return w.getAttr("", "string").(string)
 }
 
 // GetString ...
-func (r *Wrapper) GetString(key string) string {
-	return r.getAttr(key, "string").(string)
+func (w *Wrapper) GetString(key string) string {
+	return w.getAttr(key, "string").(string)
 }
 
 // GetStringPtr ...
-func (r *Wrapper) GetStringPtr(key string) *string {
-	return r.getAttr(key, "*string").(*string)
+func (w *Wrapper) GetStringPtr(key string) *string {
+	return w.getAttr(key, "*string").(*string)
 }
 
 // GetInt ...
-func (r *Wrapper) GetInt(key string) int {
-	return r.getAttr(key, "int").(int)
+func (w *Wrapper) GetInt(key string) int {
+	return w.getAttr(key, "int").(int)
 }
 
 // GetIntPtr ...
-func (r *Wrapper) GetIntPtr(key string) *int {
-	return r.getAttr(key, "*int").(*int)
+func (w *Wrapper) GetIntPtr(key string) *int {
+	return w.getAttr(key, "*int").(*int)
 }
 
 // GetInt8 ...
-func (r *Wrapper) GetInt8(key string) int8 {
-	return r.getAttr(key, "int8").(int8)
+func (w *Wrapper) GetInt8(key string) int8 {
+	return w.getAttr(key, "int8").(int8)
 }
 
 // GetInt8Ptr ...
-func (r *Wrapper) GetInt8Ptr(key string) *int8 {
-	return r.getAttr(key, "*int8").(*int8)
+func (w *Wrapper) GetInt8Ptr(key string) *int8 {
+	return w.getAttr(key, "*int8").(*int8)
 }
 
 // GetInt16 ...
-func (r *Wrapper) GetInt16(key string) int16 {
-	return r.getAttr(key, "int16").(int16)
+func (w *Wrapper) GetInt16(key string) int16 {
+	return w.getAttr(key, "int16").(int16)
 }
 
 // GetInt16Ptr ...
-func (r *Wrapper) GetInt16Ptr(key string) *int16 {
-	return r.getAttr(key, "int16").(*int16)
+func (w *Wrapper) GetInt16Ptr(key string) *int16 {
+	return w.getAttr(key, "int16").(*int16)
 }
 
 // GetInt32 ...
-func (r *Wrapper) GetInt32(key string) int32 {
-	return r.getAttr(key, "int32").(int32)
+func (w *Wrapper) GetInt32(key string) int32 {
+	return w.getAttr(key, "int32").(int32)
 }
 
 // GetInt32Ptr ...
-func (r *Wrapper) GetInt32Ptr(key string) *int32 {
-	return r.getAttr(key, "*int32").(*int32)
+func (w *Wrapper) GetInt32Ptr(key string) *int32 {
+	return w.getAttr(key, "*int32").(*int32)
 }
 
 // GetInt64 ...
-func (r *Wrapper) GetInt64(key string) int64 {
-	return r.getAttr(key, "int64").(int64)
+func (w *Wrapper) GetInt64(key string) int64 {
+	return w.getAttr(key, "int64").(int64)
 }
 
 // GetInt64Ptr ...
-func (r *Wrapper) GetInt64Ptr(key string) *int64 {
-	return r.getAttr(key, "*int64").(*int64)
+func (w *Wrapper) GetInt64Ptr(key string) *int64 {
+	return w.getAttr(key, "*int64").(*int64)
 }
 
 // GetUint ...
-func (r *Wrapper) GetUint(key string) uint {
-	return r.getAttr(key, "uint").(uint)
+func (w *Wrapper) GetUint(key string) uint {
+	return w.getAttr(key, "uint").(uint)
 }
 
 // GetUintPtr ...
-func (r *Wrapper) GetUintPtr(key string) *uint {
-	return r.getAttr(key, "*uint").(*uint)
+func (w *Wrapper) GetUintPtr(key string) *uint {
+	return w.getAttr(key, "*uint").(*uint)
 }
 
 // GetUint8 ...
-func (r *Wrapper) GetUint8(key string) uint8 {
-	return r.getAttr(key, "uint8").(uint8)
+func (w *Wrapper) GetUint8(key string) uint8 {
+	return w.getAttr(key, "uint8").(uint8)
 }
 
 // GetUint8Ptr ...
-func (r *Wrapper) GetUint8Ptr(key string) *uint8 {
-	return r.getAttr(key, "*uint8").(*uint8)
+func (w *Wrapper) GetUint8Ptr(key string) *uint8 {
+	return w.getAttr(key, "*uint8").(*uint8)
 }
 
 // GetUint16 ...
-func (r *Wrapper) GetUint16(key string) uint16 {
-	return r.getAttr(key, "uint16").(uint16)
+func (w *Wrapper) GetUint16(key string) uint16 {
+	return w.getAttr(key, "uint16").(uint16)
 }
 
 // GetUint16Ptr ...
-func (r *Wrapper) GetUint16Ptr(key string) *uint16 {
-	return r.getAttr(key, "*uint16").(*uint16)
+func (w *Wrapper) GetUint16Ptr(key string) *uint16 {
+	return w.getAttr(key, "*uint16").(*uint16)
 }
 
 // GetUint32 ...
-func (r *Wrapper) GetUint32(key string) uint32 {
-	return r.getAttr(key, "uint32").(uint32)
+func (w *Wrapper) GetUint32(key string) uint32 {
+	return w.getAttr(key, "uint32").(uint32)
 }
 
 // GetUint32Ptr ...
-func (r *Wrapper) GetUint32Ptr(key string) *uint32 {
-	return r.getAttr(key, "*uint32").(*uint32)
+func (w *Wrapper) GetUint32Ptr(key string) *uint32 {
+	return w.getAttr(key, "*uint32").(*uint32)
 }
 
 // GetBool ...
-func (r *Wrapper) GetBool(key string) bool {
-	return r.getAttr(key, "bool").(bool)
+func (w *Wrapper) GetBool(key string) bool {
+	return w.getAttr(key, "bool").(bool)
 }
 
 // GetBoolPtr ...
-func (r *Wrapper) GetBoolPtr(key string) *bool {
-	return r.getAttr(key, "*bool").(*bool)
+func (w *Wrapper) GetBoolPtr(key string) *bool {
+	return w.getAttr(key, "*bool").(*bool)
 }
 
 // GetTime ...
-func (r *Wrapper) GetTime(key string) time.Time {
-	return r.getAttr(key, "time.Time").(time.Time)
+func (w *Wrapper) GetTime(key string) time.Time {
+	return w.getAttr(key, "time.Time").(time.Time)
 }
 
 // GetTimePtr ...
-func (r *Wrapper) GetTimePtr(key string) *time.Time {
-	return r.getAttr(key, "*time.Time").(*time.Time)
+func (w *Wrapper) GetTimePtr(key string) *time.Time {
+	return w.getAttr(key, "*time.Time").(*time.Time)
 }
 
 // Set ...
-func (r *Wrapper) Set(key string, val interface{}) {
-	r.setAttr(key, val)
+func (w *Wrapper) Set(key string, val interface{}) {
+	w.setAttr(key, val)
 }
 
 // SetString ...
-func (r *Wrapper) SetString(key string, val string) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetString(key string, val string) {
+	w.setAttr(key, val)
 }
 
 // SetStringPtr ...
-func (r *Wrapper) SetStringPtr(key string, val *string) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetStringPtr(key string, val *string) {
+	w.setAttr(key, val)
 }
 
 // SetInt ...
-func (r *Wrapper) SetInt(key string, val int) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt(key string, val int) {
+	w.setAttr(key, val)
 }
 
 // SetIntPtr ...
-func (r *Wrapper) SetIntPtr(key string, val *int) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetIntPtr(key string, val *int) {
+	w.setAttr(key, val)
 }
 
 // SetInt8 ...
-func (r *Wrapper) SetInt8(key string, val int8) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt8(key string, val int8) {
+	w.setAttr(key, val)
 }
 
 // SetInt8Ptr ...
-func (r *Wrapper) SetInt8Ptr(key string, val *int8) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt8Ptr(key string, val *int8) {
+	w.setAttr(key, val)
 }
 
 // SetInt16 ...
-func (r *Wrapper) SetInt16(key string, val int16) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt16(key string, val int16) {
+	w.setAttr(key, val)
 }
 
 // SetInt16Ptr ...
-func (r *Wrapper) SetInt16Ptr(key string, val *int16) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt16Ptr(key string, val *int16) {
+	w.setAttr(key, val)
 }
 
 // SetInt32 ...
-func (r *Wrapper) SetInt32(key string, val int32) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt32(key string, val int32) {
+	w.setAttr(key, val)
 }
 
 // SetInt32Ptr ...
-func (r *Wrapper) SetInt32Ptr(key string, val *int32) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt32Ptr(key string, val *int32) {
+	w.setAttr(key, val)
 }
 
 // SetInt64 ...
-func (r *Wrapper) SetInt64(key string, val int64) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt64(key string, val int64) {
+	w.setAttr(key, val)
 }
 
 // SetInt64Ptr ...
-func (r *Wrapper) SetInt64Ptr(key string, val *int64) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetInt64Ptr(key string, val *int64) {
+	w.setAttr(key, val)
 }
 
 // SetUint ...
-func (r *Wrapper) SetUint(key string, val uint) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint(key string, val uint) {
+	w.setAttr(key, val)
 }
 
 // SetUintPtr ...
-func (r *Wrapper) SetUintPtr(key string, val *uint) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUintPtr(key string, val *uint) {
+	w.setAttr(key, val)
 }
 
 // SetUint8 ...
-func (r *Wrapper) SetUint8(key string, val uint8) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint8(key string, val uint8) {
+	w.setAttr(key, val)
 }
 
 // SetUint8Ptr ...
-func (r *Wrapper) SetUint8Ptr(key string, val *uint8) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint8Ptr(key string, val *uint8) {
+	w.setAttr(key, val)
 }
 
 // SetUint16 ...
-func (r *Wrapper) SetUint16(key string, val uint16) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint16(key string, val uint16) {
+	w.setAttr(key, val)
 }
 
 // SetUint16Ptr ...
-func (r *Wrapper) SetUint16Ptr(key string, val *uint16) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint16Ptr(key string, val *uint16) {
+	w.setAttr(key, val)
 }
 
 // SetUint32 ...
-func (r *Wrapper) SetUint32(key string, val uint32) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint32(key string, val uint32) {
+	w.setAttr(key, val)
 }
 
 // SetUint32Ptr ...
-func (r *Wrapper) SetUint32Ptr(key string, val *uint32) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetUint32Ptr(key string, val *uint32) {
+	w.setAttr(key, val)
 }
 
 // SetFloat64 ...
-func (r *Wrapper) SetFloat64(key string, val float64) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetFloat64(key string, val float64) {
+	w.setAttr(key, val)
 }
 
 // SetBool ...
-func (r *Wrapper) SetBool(key string, val bool) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetBool(key string, val bool) {
+	w.setAttr(key, val)
 }
 
 // SetBoolPtr ...
-func (r *Wrapper) SetBoolPtr(key string, val *bool) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetBoolPtr(key string, val *bool) {
+	w.setAttr(key, val)
 }
 
 // SetTime ...
-func (r *Wrapper) SetTime(key string, val time.Time) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetTime(key string, val time.Time) {
+	w.setAttr(key, val)
 }
 
 // SetTimePtr ...
-func (r *Wrapper) SetTimePtr(key string, val *time.Time) {
-	r.setAttr(key, val)
+func (w *Wrapper) SetTimePtr(key string, val *time.Time) {
+	w.setAttr(key, val)
 }
 
 // GetToOne ...
-func (r *Wrapper) GetToOne(key string) string {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) GetToOne(key string) string {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
@@ -427,10 +427,10 @@ func (r *Wrapper) GetToOne(key string) string {
 }
 
 // GetToMany ...
-func (r *Wrapper) GetToMany(key string) []string {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) GetToMany(key string) []string {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
@@ -453,10 +453,10 @@ func (r *Wrapper) GetToMany(key string) []string {
 }
 
 // SetToOne ...
-func (r *Wrapper) SetToOne(key string, rel string) {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) SetToOne(key string, rel string) {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
@@ -480,10 +480,10 @@ func (r *Wrapper) SetToOne(key string, rel string) {
 }
 
 // SetToMany ...
-func (r *Wrapper) SetToMany(key string, rels []string) {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) SetToMany(key string, rels []string) {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
@@ -507,32 +507,32 @@ func (r *Wrapper) SetToMany(key string, rels []string) {
 }
 
 // Validate ...
-func (r *Wrapper) Validate(keys []string) []error {
+func (w *Wrapper) Validate(keys []string) []error {
 	return nil
 }
 
 // MarshalJSON ...
-// func (r *Wrapper) MarshalJSON() ([]byte, error) {
+// func (w *Wrapper) MarshalJSON() ([]byte, error) {
 // 	return []byte{}, nil
 // }
 
 // MarshalJSONParams ...
-func (r *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
+func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
-	mapPl["id"] = r.id
-	mapPl["type"] = r.t
+	mapPl["id"] = w.id
+	mapPl["type"] = w.t
 
 	// Attributes
 	attrs := map[string]interface{}{}
-	for _, attr := range r.Attrs() {
-		if len(params.Fields[r.t]) == 0 {
-			attrs[attr.Name] = r.Get(attr.Name)
+	for _, attr := range w.Attrs() {
+		if len(params.Fields[w.t]) == 0 {
+			attrs[attr.Name] = w.Get(attr.Name)
 		} else {
-			for _, field := range params.Fields[r.t] {
+			for _, field := range params.Fields[w.t] {
 				if field == attr.Name {
-					attrs[attr.Name] = r.Get(attr.Name)
+					attrs[attr.Name] = w.Get(attr.Name)
 					break
 				}
 			}
@@ -542,12 +542,12 @@ func (r *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 
 	// Relationships
 	rels := map[string]*json.RawMessage{}
-	for _, rel := range r.Rels() {
+	for _, rel := range w.Rels() {
 		include := false
-		if len(params.Fields[r.t]) == 0 {
+		if len(params.Fields[w.t]) == 0 {
 			include = true
 		} else {
-			for _, field := range params.Fields[r.t] {
+			for _, field := range params.Fields[w.t] {
 				if field == rel.Name {
 					include = true
 					break
@@ -560,15 +560,15 @@ func (r *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 				var raw json.RawMessage
 
 				s := map[string]map[string]string{
-					"links": buildRelationshipLinks(r, "https://example.com", rel.Name),
+					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range params.RelData[r.t] {
+				for _, n := range params.RelData[w.t] {
 					if n == rel.Name {
-						id := r.GetToOne(rel.Name)
+						id := w.GetToOne(rel.Name)
 						if id != "" {
 							s["data"] = map[string]string{
-								"id":   r.GetToOne(rel.Name),
+								"id":   w.GetToOne(rel.Name),
 								"type": rel.Type,
 							}
 						} else {
@@ -586,14 +586,14 @@ func (r *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 				var raw json.RawMessage
 
 				s := map[string]interface{}{
-					"links": buildRelationshipLinks(r, "https://example.com", rel.Name),
+					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range params.RelData[r.t] {
+				for _, n := range params.RelData[w.t] {
 					if n == rel.Name {
 						data := []map[string]string{}
 
-						for _, id := range r.GetToMany(rel.Name) {
+						for _, id := range w.GetToMany(rel.Name) {
 							data = append(data, map[string]string{
 								"id":   id,
 								"type": rel.Type,
@@ -616,14 +616,14 @@ func (r *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 
 	// Links
 	mapPl["links"] = map[string]string{
-		"self": buildSelfLink(r, "https://example.com/"), // TODO
+		"self": buildSelfLink(w, "https://example.com/"), // TODO
 	}
 
 	return json.Marshal(mapPl)
 }
 
 // UnmarshalJSON ...
-func (r *Wrapper) UnmarshalJSON(payload []byte) error {
+func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 	var err error
 
 	// Resource
@@ -634,7 +634,7 @@ func (r *Wrapper) UnmarshalJSON(payload []byte) error {
 	}
 
 	// ID
-	r.SetString("id", ske.ID)
+	w.SetString("id", ske.ID)
 
 	// Attributes
 	attrs := map[string]interface{}{}
@@ -643,16 +643,16 @@ func (r *Wrapper) UnmarshalJSON(payload []byte) error {
 		return fmt.Errorf("jsonapi: the attributes could not be parsed: %s", err)
 	}
 
-	for _, attr := range r.Attrs() {
+	for _, attr := range w.Attrs() {
 		k := attr.Name
 		if v, ok := attrs[k]; ok {
 			switch nv := v.(type) {
 			case string:
-				r.SetString(k, nv)
+				w.SetString(k, nv)
 			case float64:
-				r.SetFloat64(k, nv)
+				w.SetFloat64(k, nv)
 			case bool:
-				r.SetBool(k, nv)
+				w.SetBool(k, nv)
 			default:
 				panic(fmt.Errorf("jsonapi: attribute of unsupported type encountered"))
 			}
@@ -661,7 +661,7 @@ func (r *Wrapper) UnmarshalJSON(payload []byte) error {
 
 	// Relationships
 	for n, skeRel := range ske.Relationships {
-		if rel, ok := r.Rels()[n]; ok {
+		if rel, ok := w.Rels()[n]; ok {
 			if len(skeRel.Data) != 0 {
 				if rel.ToOne {
 					data := identifierSkeleton{}
@@ -687,10 +687,10 @@ func (r *Wrapper) UnmarshalJSON(payload []byte) error {
 
 // Private methods
 
-func (r *Wrapper) getAttr(key string, t string) interface{} {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) getAttr(key string, t string) interface{} {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if t != field.Type().String() && t != "" {
@@ -708,10 +708,10 @@ func (r *Wrapper) getAttr(key string, t string) interface{} {
 	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
 }
 
-func (r *Wrapper) setAttr(key string, v interface{}) error {
-	for i := 0; i < r.val.NumField(); i++ {
-		field := r.val.Field(i)
-		sf := r.val.Type().Field(i)
+func (w *Wrapper) setAttr(key string, v interface{}) error {
+	for i := 0; i < w.val.NumField(); i++ {
+		field := w.val.Field(i)
+		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") {
 			if v == nil {
