@@ -273,6 +273,7 @@ func (w *Wrapper) GetTimePtr(key string) *time.Time {
 // SetID ...
 func (w *Wrapper) SetID(id string) {
 	w.id = id
+	w.val.FieldByName("ID").SetString(id)
 }
 
 // Set ...
