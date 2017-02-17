@@ -39,7 +39,7 @@ type Resource interface {
 	// GetTimePtr(key string) *time.Time
 
 	// Update
-	// SetID(id string)
+	SetID(id string)
 	Set(key string, val interface{})
 	// SetString(key string, val string)
 	// SetStringPtr(key string, val *string)

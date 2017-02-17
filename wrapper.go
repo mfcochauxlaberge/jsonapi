@@ -270,6 +270,11 @@ func (w *Wrapper) GetTimePtr(key string) *time.Time {
 	return w.getAttr(key, "*time.Time").(*time.Time)
 }
 
+// SetID ...
+func (w *Wrapper) SetID(id string) {
+	w.id = id
+}
+
 // Set ...
 func (w *Wrapper) Set(key string, val interface{}) {
 	w.setAttr(key, val)
