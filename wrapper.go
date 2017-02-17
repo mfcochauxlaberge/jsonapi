@@ -698,7 +698,7 @@ func (w *Wrapper) getAttr(key string, t string) interface{} {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
 
-		if key == sf.Tag.Get("json") {
+		if key == sf.Tag.Get("json") && sf.Tag.Get("api") == "attr" {
 			if t != field.Type().String() && t != "" {
 				panic(fmt.Sprintf("jsonapi: attribute %s is not of type %s", key, field.Type()))
 			}
