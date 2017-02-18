@@ -33,7 +33,7 @@ func TestResource(t *testing.T) {
 
 	res.SetToOne("author", "another-artist")
 	tchek.AreEqual(t, 5, "another-artist", p1.Author)
-	tchek.AreEqual(t, 6, "another-artist", res.GetString("author"))
+	tchek.AreEqual(t, 6, "another-artist", res.GetToOne("author"))
 }
 
 type painting struct {
