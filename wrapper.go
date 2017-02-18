@@ -112,6 +112,28 @@ func (w *Wrapper) Rels() map[string]Rel {
 	return w.rels
 }
 
+// Attr ...
+func (w *Wrapper) Attr(key string) Attr {
+	for _, attr := range w.attrs {
+		if attr.Name == key {
+			return attr
+		}
+	}
+
+	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
+}
+
+// Rel ...
+func (w *Wrapper) Rel(key string) Rel {
+	for _, rel := range w.rels {
+		if rel.Name == key {
+			return rel
+		}
+	}
+
+	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+}
+
 // // AttrPtrs ...
 // func (w *Wrapper) AttrPtrs(attrs []Attr) ([]string, []interface{}) {
 // 	keys := []string{}

@@ -6,6 +6,8 @@ type Resource interface {
 	IDAndType() (string, string)
 	Attrs() []Attr
 	Rels() map[string]Rel
+	Attr(key string) Attr
+	Rel(key string) Rel
 	// AttrPtrs(attrs []Attr) ([]string, []interface{})
 	// ApplyAttrPtrs(keys []string, vals []interface{})
 	New() Resource
