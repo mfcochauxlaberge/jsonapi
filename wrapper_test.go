@@ -11,9 +11,6 @@ import (
 func TestWrapper(t *testing.T) {
 	loc, _ := time.LoadLocation("")
 
-	r := &res{}
-	w := Wrap(r)
-
 	aStr := "a_string_ptr"
 	aInt := int(2)
 	aInt8 := int8(8)
@@ -27,40 +24,99 @@ func TestWrapper(t *testing.T) {
 	aBool := true
 	aTime := time.Date(2017, 1, 2, 3, 4, 5, 6, loc)
 
-	// Set the attributes after the wrapping
-	r.ID = "res123"
-	r.Str = "a_string"
-	r.StrPtr = &aStr
-	r.Int = 2
-	r.Int8 = 8
-	r.Int16 = 16
-	r.Int32 = 32
-	r.Int64 = 64
-	r.IntPtr = &aInt
-	r.Int8Ptr = &aInt8
-	r.Int16Ptr = &aInt16
-	r.Int32Ptr = &aInt32
-	r.Int64Ptr = &aInt64
-	r.Uint = 4
-	r.Uint8 = 8
-	r.Uint16 = 16
-	r.Uint32 = 32
-	r.Uint64 = 64
-	r.UintPtr = &aUint
-	r.Uint8Ptr = &aUint8
-	r.Uint16Ptr = &aUint16
-	r.Uint32Ptr = &aUint32
-	r.Bool = true
-	r.BoolPtr = &aBool
-	r.Time = time.Date(2017, 1, 2, 3, 4, 5, 6, loc)
-	r.TimePtr = &aTime
+	r := &res{
+		ID:        "res123",
+		Str:       "a_string",
+		StrPtr:    &aStr,
+		Int:       2,
+		Int8:      8,
+		Int16:     16,
+		Int32:     32,
+		Int64:     64,
+		IntPtr:    &aInt,
+		Int8Ptr:   &aInt8,
+		Int16Ptr:  &aInt16,
+		Int32Ptr:  &aInt32,
+		Int64Ptr:  &aInt64,
+		Uint:      4,
+		Uint8:     8,
+		Uint16:    16,
+		Uint32:    32,
+		Uint64:    64,
+		UintPtr:   &aUint,
+		Uint8Ptr:  &aUint8,
+		Uint16Ptr: &aUint16,
+		Uint32Ptr: &aUint32,
+		Bool:      true,
+		BoolPtr:   &aBool,
+		Time:      time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
+		TimePtr:   &aTime,
+	}
+
+	w := Wrap(r)
 
 	// ID and type
 	id, typ := w.IDAndType()
 	tchek.AreEqual(t, 0, r.ID, id)
 	tchek.AreEqual(t, 0, "res", typ)
 
+	// Attributes
 	v := reflect.ValueOf(r).Elem()
+	for i := 0; i < v.NumField(); i++ {
+		f := v.Field(i)
+		sf := v.Type().Field(i)
+		n := sf.Tag.Get("json")
+
+		if sf.Tag.Get("api") == "attr" {
+			tchek.AreEqual(t, 0, f.Interface(), w.Get(n))
+		}
+	}
+
+	aStr = "another_string_ptr"
+	aInt = int(123)
+	aInt8 = int8(88)
+	aInt16 = int16(1616)
+	aInt32 = int32(3232)
+	aInt64 = int64(6464)
+	aUint = uint(456)
+	aUint8 = uint8(88)
+	aUint16 = uint16(1616)
+	aUint32 = uint32(3232)
+	aBool = false
+	aTime = time.Date(2018, 2, 3, 4, 5, 6, 7, loc)
+
+	// Set the attributes after the wrapping
+	r.ID = "res456"
+	r.Str = "another_string"
+	r.StrPtr = &aStr
+	r.Int = 123
+	r.Int8 = 88
+	r.Int16 = 1616
+	r.Int32 = 3232
+	r.Int64 = 6464
+	r.IntPtr = &aInt
+	r.Int8Ptr = &aInt8
+	r.Int16Ptr = &aInt16
+	r.Int32Ptr = &aInt32
+	r.Int64Ptr = &aInt64
+	r.Uint = 456
+	r.Uint8 = 88
+	r.Uint16 = 1616
+	r.Uint32 = 3232
+	r.Uint64 = 6464
+	r.UintPtr = &aUint
+	r.Uint8Ptr = &aUint8
+	r.Uint16Ptr = &aUint16
+	r.Uint32Ptr = &aUint32
+	r.Bool = false
+	r.BoolPtr = &aBool
+	r.Time = time.Date(2018, 2, 3, 4, 5, 6, 7, loc)
+	r.TimePtr = &aTime
+
+	// ID and type
+	id, typ = w.IDAndType()
+	tchek.AreEqual(t, 0, r.ID, id)
+	tchek.AreEqual(t, 0, "res", typ)
 
 	// Attributes
 	for i := 0; i < v.NumField(); i++ {
