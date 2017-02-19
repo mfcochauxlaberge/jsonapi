@@ -69,7 +69,7 @@ func TestUnmarshalCollection(t *testing.T) {
 		content, err := ioutil.ReadFile("tests/" + test.payload + ".json")
 		tchek.UnintendedError(err)
 
-		r := Wrap(user{})
+		r := Wrap(&user{})
 		col := WrapCollection(r)
 
 		err = Unmarshal(content, col)
