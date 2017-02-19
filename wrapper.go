@@ -14,10 +14,8 @@ import (
 type Wrapper struct {
 	val reflect.Value // Actual value (with content)
 
-	// ID and type
-	id, t string
-
 	// Structure
+	typ   string
 	attrs []Attr
 	rels  map[string]Rel
 }
@@ -50,7 +48,7 @@ func Wrap(v interface{}) *Wrapper {
 	}
 
 	// ID and type
-	w.id, w.t = IDAndType(v)
+	_, w.typ = IDAndType(v)
 
 	// Attributes
 	w.attrs = []Attr{}
@@ -89,7 +87,7 @@ func Wrap(v interface{}) *Wrapper {
 				Type:        relTag[1],
 				ToOne:       toOne,
 				InverseName: invName,
-				InverseType: w.t,
+				InverseType: w.typ,
 			}
 		}
 	}
@@ -99,7 +97,7 @@ func Wrap(v interface{}) *Wrapper {
 
 // IDAndType ...
 func (w *Wrapper) IDAndType() (string, string) {
-	return w.id, w.t
+	return IDAndType(w.val.Interface())
 }
 
 // Attrs ...
@@ -294,7 +292,6 @@ func (w *Wrapper) GetTimePtr(key string) *time.Time {
 
 // SetID ...
 func (w *Wrapper) SetID(id string) {
-	w.id = id
 	w.val.FieldByName("ID").SetString(id)
 }
 
@@ -549,16 +546,15 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
-	mapPl["id"] = w.id
-	mapPl["type"] = w.t
+	mapPl["id"], mapPl["type"] = IDAndType(w.val.Interface())
 
 	// Attributes
 	attrs := map[string]interface{}{}
 	for _, attr := range w.Attrs() {
-		if len(url.Params.Fields[w.t]) == 0 {
+		if len(url.Params.Fields[w.typ]) == 0 {
 			attrs[attr.Name] = w.Get(attr.Name)
 		} else {
-			for _, field := range url.Params.Fields[w.t] {
+			for _, field := range url.Params.Fields[w.typ] {
 				if field == attr.Name {
 					attrs[attr.Name] = w.Get(attr.Name)
 					break
@@ -572,10 +568,10 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 	rels := map[string]*json.RawMessage{}
 	for _, rel := range w.Rels() {
 		include := false
-		if len(url.Params.Fields[w.t]) == 0 {
+		if len(url.Params.Fields[w.typ]) == 0 {
 			include = true
 		} else {
-			for _, field := range url.Params.Fields[w.t] {
+			for _, field := range url.Params.Fields[w.typ] {
 				if field == rel.Name {
 					include = true
 					break
@@ -591,7 +587,7 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range url.Params.RelData[w.t] {
+				for _, n := range url.Params.RelData[w.typ] {
 					if n == rel.Name {
 						id := w.GetToOne(rel.Name)
 						if id != "" {
@@ -617,7 +613,7 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range url.Params.RelData[w.t] {
+				for _, n := range url.Params.RelData[w.typ] {
 					if n == rel.Name {
 						data := []map[string]string{}
 
