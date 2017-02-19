@@ -16,7 +16,7 @@ func TestMarshal(t *testing.T) {
 
 	tests := []struct {
 		src           interface{}
-		params        *Params
+		url           *URL
 		meta          map[string]interface{}
 		jsonapi       map[string]interface{}
 		errorExpected bool
@@ -24,8 +24,8 @@ func TestMarshal(t *testing.T) {
 	}{
 		{
 			// 0
-			src:    users.Elem(0),
-			params: params[0],
+			src: users.Elem(0),
+			url: urls[0],
 			jsonapi: map[string]interface{}{
 				"version": "1.0",
 			},
@@ -33,8 +33,8 @@ func TestMarshal(t *testing.T) {
 			payload:       "payload-0",
 		}, {
 			// 1
-			src:    users,
-			params: params[1],
+			src: users,
+			url: urls[1],
 			meta: map[string]interface{}{
 				"b":            true,
 				"generated-at": time.Date(2017, 01, 02, 03, 04, 05, 0, loc),
@@ -86,7 +86,7 @@ func TestMarshal(t *testing.T) {
 
 	for n, test := range tests {
 		// Marshal
-		payload, err := Marshal(test.src, test.params, Extra{
+		payload, err := Marshal(test.src, test.url, Extra{
 			Meta: test.meta,
 			JSONAPI: map[string]interface{}{
 				"version": "1.0",

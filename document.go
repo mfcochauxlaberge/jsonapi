@@ -25,8 +25,8 @@ type Document struct {
 	// Errors
 	Errors []Error
 
-	// Params
-	Params *Params
+	// URL
+	URL *URL
 }
 
 // Include ...
@@ -40,9 +40,9 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	var data json.RawMessage
 	var err error
 	if d.Resource != nil {
-		data, err = d.Resource.MarshalJSONParams(d.Params)
+		data, err = d.Resource.Marshal(d.URL)
 	} else if d.Collection != nil {
-		data, err = d.Collection.MarshalJSONParams(d.Params)
+		data, err = d.Collection.Marshal(d.URL)
 	} else if (d.Identifier != Identifier{}) {
 		data, err = json.Marshal(d.Identifier)
 	} else if d.Identifiers != nil {

@@ -544,8 +544,8 @@ func (w *Wrapper) Validate(keys []string) []error {
 // 	return []byte{}, nil
 // }
 
-// MarshalJSONParams ...
-func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
+// Marshal ...
+func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
@@ -555,10 +555,10 @@ func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 	// Attributes
 	attrs := map[string]interface{}{}
 	for _, attr := range w.Attrs() {
-		if len(params.Fields[w.t]) == 0 {
+		if len(url.Params.Fields[w.t]) == 0 {
 			attrs[attr.Name] = w.Get(attr.Name)
 		} else {
-			for _, field := range params.Fields[w.t] {
+			for _, field := range url.Params.Fields[w.t] {
 				if field == attr.Name {
 					attrs[attr.Name] = w.Get(attr.Name)
 					break
@@ -572,10 +572,10 @@ func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 	rels := map[string]*json.RawMessage{}
 	for _, rel := range w.Rels() {
 		include := false
-		if len(params.Fields[w.t]) == 0 {
+		if len(url.Params.Fields[w.t]) == 0 {
 			include = true
 		} else {
-			for _, field := range params.Fields[w.t] {
+			for _, field := range url.Params.Fields[w.t] {
 				if field == rel.Name {
 					include = true
 					break
@@ -591,7 +591,7 @@ func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range params.RelData[w.t] {
+				for _, n := range url.Params.RelData[w.t] {
 					if n == rel.Name {
 						id := w.GetToOne(rel.Name)
 						if id != "" {
@@ -617,7 +617,7 @@ func (w *Wrapper) MarshalJSONParams(params *Params) ([]byte, error) {
 					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
 				}
 
-				for _, n := range params.RelData[w.t] {
+				for _, n := range url.Params.RelData[w.t] {
 					if n == rel.Name {
 						data := []map[string]string{}
 

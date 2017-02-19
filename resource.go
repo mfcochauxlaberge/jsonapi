@@ -80,6 +80,6 @@ type Resource interface {
 	Validate(keys []string) []error
 
 	// JSON
-	MarshalJSONParams(params *Params) ([]byte, error)
+	Marshal(url *URL) ([]byte, error)
 	UnmarshalJSON(payload []byte) error
 }

@@ -9,10 +9,10 @@ import (
 )
 
 // Marshal ...
-func Marshal(v interface{}, params *Params, extra Extra) ([]byte, error) {
+func Marshal(v interface{}, url *URL, extra Extra) ([]byte, error) {
 	// Document
 	doc := &Document{
-		Params:  params,
+		URL:     url,
 		Meta:    extra.Meta,
 		JSONAPI: extra.JSONAPI,
 	}

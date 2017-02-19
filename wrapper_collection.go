@@ -43,13 +43,13 @@ func (wc *WrapperCollection) Sample() Resource {
 	return wc.sample.New()
 }
 
-// MarshalJSONParams ...
-func (wc *WrapperCollection) MarshalJSONParams(params *Params) ([]byte, error) {
+// Marshal ...
+func (wc *WrapperCollection) Marshal(url *URL) ([]byte, error) {
 	var raws []*json.RawMessage
 
 	for _, r := range wc.col {
 		var raw json.RawMessage
-		raw, err := r.MarshalJSONParams(params)
+		raw, err := r.Marshal(url)
 		if err != nil {
 			return []byte{}, err
 		}

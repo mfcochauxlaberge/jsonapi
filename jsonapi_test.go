@@ -3,9 +3,9 @@ package jsonapi
 import "time"
 
 var (
-	users  Collection
-	books  Collection
-	params []*Params
+	users Collection
+	books Collection
+	urls  []*URL
 )
 
 func init() {
@@ -68,18 +68,22 @@ func init() {
 		}),
 	)
 
-	params = []*Params{
-		&Params{
-			RelData: map[string][]string{
-				"users": []string{"best-friend", "contacts"},
+	urls = []*URL{
+		&URL{
+			Params: &Params{
+				RelData: map[string][]string{
+					"users": []string{"best-friend", "contacts"},
+				},
 			},
 		},
-		&Params{
-			Fields: map[string][]string{
-				"users": []string{"name", "readings"},
-			},
-			RelData: map[string][]string{
-				"users": []string{"contacts", "readings"},
+		&URL{
+			Params: &Params{
+				Fields: map[string][]string{
+					"users": []string{"name", "readings"},
+				},
+				RelData: map[string][]string{
+					"users": []string{"contacts", "readings"},
+				},
 			},
 		},
 	}
