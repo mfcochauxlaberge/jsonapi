@@ -15,6 +15,13 @@ type Registry struct {
 	Types map[string]Type
 }
 
+// NewRegistry ...
+func NewRegistry() *Registry {
+	return &Registry{
+		Types: map[string]Type{},
+	}
+}
+
 // RegisterType checks and registers the provided value as a type.
 func (r *Registry) RegisterType(v interface{}) {
 	r.Lock()
