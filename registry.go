@@ -32,9 +32,14 @@ func (r *Registry) RegisterType(v interface{}) {
 		panic(err)
 	}
 
-	res := Wrap(v)
-
 	value := reflect.ValueOf(v)
+	if value.Kind() != reflect.Ptr {
+		value = reflect.New(value.Type())
+	}
+
+	res := Wrap(value.Interface())
+
+	value = value.Elem()
 
 	// Get ID field
 	idField, _ := value.Type().FieldByName("ID")
