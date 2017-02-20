@@ -2,6 +2,8 @@ package jsonapi
 
 // URL ...
 type URL struct {
+	Host string
+
 	// URL
 	URL           string   // /users/u1/articles?fields[users]=name,age
 	URLNormalized string   // /users/u1/articles?fields[users]=age,name

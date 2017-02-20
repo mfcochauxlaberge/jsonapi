@@ -2,8 +2,6 @@ package jsonapi
 
 // A Params object represents all the query parameters from the URL.
 type Params struct {
-	Host string
-
 	// Fields
 	Fields  map[string][]string
 	Attrs   map[string][]Attr

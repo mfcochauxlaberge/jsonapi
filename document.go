@@ -17,10 +17,8 @@ type Document struct {
 	Resources map[string]map[string]struct{}
 	Linkage   map[string]map[string]struct{}
 
-	// Extra
-	// Links   map[string]interface{}
-	Meta    map[string]interface{}
-	JSONAPI map[string]interface{}
+	// Options
+	Options *Options
 
 	// Errors
 	Errors []Error
@@ -40,9 +38,9 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	var data json.RawMessage
 	var err error
 	if d.Resource != nil {
-		data, err = d.Resource.Marshal(d.URL)
+		data, err = d.Resource.MarshalJSONOptions(d.Options)
 	} else if d.Collection != nil {
-		data, err = d.Collection.Marshal(d.URL)
+		data, err = d.Collection.MarshalJSONOptions(d.Options)
 	} else if (d.Identifier != Identifier{}) {
 		data, err = json.Marshal(d.Identifier)
 	} else if d.Identifiers != nil {
@@ -76,12 +74,12 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 		plMap["included"] = inclusions
 	}
 
-	if len(d.Meta) > 0 {
-		plMap["meta"] = d.Meta
+	if len(d.Options.Meta) > 0 {
+		plMap["meta"] = d.Options.Meta
 	}
 
-	if len(d.JSONAPI) > 0 {
-		plMap["jsonapi"] = d.JSONAPI
+	if len(d.Options.JSONAPI) > 0 {
+		plMap["jsonapi"] = d.Options.JSONAPI
 	}
 
 	return json.Marshal(plMap)

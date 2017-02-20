@@ -70,6 +70,7 @@ func init() {
 
 	urls = []*URL{
 		&URL{
+			Host: "https://example.com",
 			Params: &Params{
 				RelData: map[string][]string{
 					"users": []string{"best-friend", "contacts"},
@@ -77,6 +78,7 @@ func init() {
 			},
 		},
 		&URL{
+			Host: "https://example.com",
 			Params: &Params{
 				Fields: map[string][]string{
 					"users": []string{"name", "readings"},

@@ -9,12 +9,15 @@ import (
 )
 
 // Marshal ...
-func Marshal(v interface{}, url *URL, extra Extra) ([]byte, error) {
+func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
+	if opts == nil {
+		opts = NewOptions(url.Host, url.Params)
+	}
+
 	// Document
 	doc := &Document{
 		URL:     url,
-		Meta:    extra.Meta,
-		JSONAPI: extra.JSONAPI,
+		Options: opts,
 	}
 
 	if res, ok := v.(Resource); ok {

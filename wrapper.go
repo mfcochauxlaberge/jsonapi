@@ -537,8 +537,8 @@ func (w *Wrapper) Validate(keys []string) []error {
 // 	return []byte{}, nil
 // }
 
-// Marshal ...
-func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
+// MarshalJSONOptions ...
+func (w *Wrapper) MarshalJSONOptions(opts *Options) ([]byte, error) {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
@@ -547,10 +547,10 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 	// Attributes
 	attrs := map[string]interface{}{}
 	for _, attr := range w.Attrs() {
-		if len(url.Params.Fields[w.typ]) == 0 {
+		if len(opts.Fields[w.typ]) == 0 {
 			attrs[attr.Name] = w.Get(attr.Name)
 		} else {
-			for _, field := range url.Params.Fields[w.typ] {
+			for _, field := range opts.Fields[w.typ] {
 				if field == attr.Name {
 					attrs[attr.Name] = w.Get(attr.Name)
 					break
@@ -564,10 +564,10 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 	rels := map[string]*json.RawMessage{}
 	for _, rel := range w.Rels() {
 		include := false
-		if len(url.Params.Fields[w.typ]) == 0 {
+		if len(opts.Fields[w.typ]) == 0 {
 			include = true
 		} else {
-			for _, field := range url.Params.Fields[w.typ] {
+			for _, field := range opts.Fields[w.typ] {
 				if field == rel.Name {
 					include = true
 					break
@@ -580,10 +580,10 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 				var raw json.RawMessage
 
 				s := map[string]map[string]string{
-					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
+					"links": buildRelationshipLinks(w, opts.Host, rel.Name),
 				}
 
-				for _, n := range url.Params.RelData[w.typ] {
+				for _, n := range opts.RelData[w.typ] {
 					if n == rel.Name {
 						id := w.GetToOne(rel.Name)
 						if id != "" {
@@ -606,10 +606,10 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 				var raw json.RawMessage
 
 				s := map[string]interface{}{
-					"links": buildRelationshipLinks(w, "https://example.com", rel.Name),
+					"links": buildRelationshipLinks(w, opts.Host, rel.Name),
 				}
 
-				for _, n := range url.Params.RelData[w.typ] {
+				for _, n := range opts.RelData[w.typ] {
 					if n == rel.Name {
 						data := []map[string]string{}
 
@@ -636,7 +636,7 @@ func (w *Wrapper) Marshal(url *URL) ([]byte, error) {
 
 	// Links
 	mapPl["links"] = map[string]string{
-		"self": buildSelfLink(w, "https://example.com/"), // TODO
+		"self": buildSelfLink(w, opts.Host), // TODO
 	}
 
 	return json.Marshal(mapPl)

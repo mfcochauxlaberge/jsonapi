@@ -85,13 +85,18 @@ func TestMarshal(t *testing.T) {
 	}
 
 	for n, test := range tests {
+		if test.url == nil {
+			test.url = &URL{}
+		}
+
+		opts := NewOptions(test.url.Host, test.url.Params)
+		opts.Meta = test.meta
+		opts.JSONAPI = map[string]interface{}{
+			"version": "1.0",
+		}
+
 		// Marshal
-		payload, err := Marshal(test.src, test.url, Extra{
-			Meta: test.meta,
-			JSONAPI: map[string]interface{}{
-				"version": "1.0",
-			},
-		})
+		payload, err := Marshal(test.src, test.url, opts)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {
