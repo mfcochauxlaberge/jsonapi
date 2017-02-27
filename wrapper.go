@@ -674,6 +674,10 @@ func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 			case bool:
 				w.SetBool(k, nv)
 			default:
+				if nv == nil {
+					continue
+				}
+
 				panic(fmt.Errorf("jsonapi: attribute of type %T is not supported", nv))
 			}
 		}
