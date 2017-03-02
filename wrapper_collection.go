@@ -22,6 +22,11 @@ type WrapperCollection struct {
 	sample Resource
 }
 
+// Len ...
+func (wc *WrapperCollection) Len() int {
+	return len(wc.col)
+}
+
 // Elem ...
 func (wc *WrapperCollection) Elem(i int) Resource {
 	if len(wc.col) > i {
