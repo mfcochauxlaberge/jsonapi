@@ -115,7 +115,7 @@ func (r *Registry) RegisterType(v interface{}) {
 	}
 
 	if _, ok := r.Types[resType]; ok {
-		panic("karigo: type with same name already exists")
+		panic("jsonapi: type with same name already exists")
 	}
 
 	r.Types[resType] = Type{
@@ -135,12 +135,12 @@ func (r *Registry) Check() []error {
 	for t, typ := range r.Types {
 		for re, rel := range typ.Rels {
 			if _, ok := r.Types[rel.Type]; !ok {
-				errs = append(errs, fmt.Errorf("karigo: the target type of relationship %s of type %s does not exist", rel.Name, typ.Name))
+				errs = append(errs, fmt.Errorf("jsonapi: the target type of relationship %s of type %s does not exist", rel.Name, typ.Name))
 			}
 
 			if rel.InverseName != "" {
 				if invRel, ok := r.Types[rel.Type].Rels[rel.InverseName]; !ok {
-					errs = append(errs, fmt.Errorf("karigo: the inverse of relationship %s of type %s does not exist", rel.Name, typ.Name))
+					errs = append(errs, fmt.Errorf("jsonapi: the inverse of relationship %s of type %s does not exist", rel.Name, typ.Name))
 				} else {
 					rel.InverseToOne = invRel.ToOne
 					// rel.InverseToMany = invRel.ToMany
@@ -162,7 +162,7 @@ func (r *Registry) Resource(name string) Resource {
 		return t.Sample.New()
 	}
 
-	panic(fmt.Sprintf(`karigo: type "%s" not found`, name))
+	panic(fmt.Sprintf(`jsonapi: type "%s" not found`, name))
 }
 
 // Collection ...
@@ -173,5 +173,5 @@ func (r *Registry) Collection(name string) Collection {
 		return col
 	}
 
-	panic(fmt.Sprintf(`karigo: type "%s" not found`, name))
+	panic(fmt.Sprintf(`jsonapi: type "%s" not found`, name))
 }
