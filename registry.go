@@ -155,3 +155,23 @@ func (r *Registry) Check() []error {
 
 	return errs
 }
+
+// Resource ...
+func (r *Registry) Resource(name string) Resource {
+	if t, ok := r.Types[name]; ok {
+		return t.Sample.New()
+	}
+
+	panic(fmt.Sprintf(`karigo: type "%s" not found`, name))
+}
+
+// Collection ...
+func (r *Registry) Collection(name string) Collection {
+	if t, ok := r.Types[name]; ok {
+		r := t.Sample.New()
+		col := WrapCollection(r)
+		return col
+	}
+
+	panic(fmt.Sprintf(`karigo: type "%s" not found`, name))
+}
