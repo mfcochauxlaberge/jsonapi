@@ -21,7 +21,7 @@ The library is in **alpha** and its API is subject to change until v1 is release
 The simplest way to start using jsonapi is to use the Marshal and Unmarshal functions.
 
 ```
-func Marshal(v interface{}, url *URL, opts Options) ([]byte, error)
+func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error)
 func Unmarshal(payload []byte, v interface{}) error
 ```
 
