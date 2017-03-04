@@ -1,6 +1,8 @@
 package jsonapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Document ...
 type Document struct {
@@ -11,7 +13,7 @@ type Document struct {
 	Identifiers Identifiers
 
 	// Included
-	Included map[string]map[string]Resource
+	Included map[string]Resource
 
 	// References
 	Resources map[string]map[string]struct{}
@@ -28,8 +30,45 @@ type Document struct {
 }
 
 // Include ...
-func (d *Document) Include(v interface{}) error {
-	return nil
+func (d *Document) Include(res Resource) {
+	id, typ := res.IDAndType()
+	key := typ + " " + id
+
+	if len(d.Included) == 0 {
+		d.Included = map[string]Resource{}
+	}
+
+	// Check resource
+	if d.Resource != nil {
+		rid, rtype := d.Resource.IDAndType()
+		rkey := rid + " " + rtype
+
+		if rkey == key {
+			return
+		}
+	}
+
+	// Check Collection
+	if d.Collection != nil {
+		_, ctyp := d.Collection.Sample().IDAndType()
+		if ctyp == typ {
+			for i := 0; i < d.Collection.Len(); i++ {
+				rid, rtype := d.Collection.Elem(i).IDAndType()
+				rkey := rid + " " + rtype
+
+				if rkey == key {
+					return
+				}
+			}
+		}
+	}
+
+	// Check already included resources
+	if _, ok := d.Included[key]; ok {
+		return
+	}
+
+	d.Included[key] = res
 }
 
 // MarshalJSON ...
@@ -54,15 +93,14 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	}
 
 	// Included
-	inclusions := []string{}
-	for t := range d.Included {
-		for id := range d.Included[t] {
-			raw, err := json.Marshal(d.Included[t][id])
-			if err != nil {
-				return []byte{}, err
-			}
-			inclusions = append(inclusions, string(raw))
+	inclusions := []*json.RawMessage{}
+	for key := range d.Included {
+		raw, err := d.Included[key].MarshalJSONOptions(d.Options)
+		if err != nil {
+			return []byte{}, err
 		}
+		rawm := json.RawMessage(raw)
+		inclusions = append(inclusions, &rawm)
 	}
 
 	// Marshaling
