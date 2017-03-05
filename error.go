@@ -22,8 +22,8 @@ func (e Error) MarshalJSON() ([]byte, error) {
 	return json.Marshal(e)
 }
 
-// NewInternalError ...
-func NewInternalError() Error {
+// NewErrInternal ...
+func NewErrInternal() Error {
 	return Error{
 		Status: http.StatusInternalServerError,
 		Title:  "Internet Server Error",
@@ -31,8 +31,8 @@ func NewInternalError() Error {
 	}
 }
 
-// NewNotFoundError ...
-func NewNotFoundError() Error {
+// NewErrNotFound ...
+func NewErrNotFound() Error {
 	return Error{
 		Status: http.StatusNotFound,
 		Title:  "Not Found",
@@ -40,8 +40,8 @@ func NewNotFoundError() Error {
 	}
 }
 
-// NewBadRequestError ...
-func NewBadRequestError() Error {
+// NewErrBadRequest ...
+func NewErrBadRequest() Error {
 	return Error{
 		Status: http.StatusNotFound,
 		Title:  "Bad Request",
@@ -49,8 +49,8 @@ func NewBadRequestError() Error {
 	}
 }
 
-// NewUnauthorizedError ...
-func NewUnauthorizedError() Error {
+// NewErrUnauthorized ...
+func NewErrUnauthorized() Error {
 	return Error{
 		Status: http.StatusNotFound,
 		Title:  "Unauthorized",
@@ -58,8 +58,8 @@ func NewUnauthorizedError() Error {
 	}
 }
 
-// NewForbiddenError ...
-func NewForbiddenError() Error {
+// NewErrForbidden ...
+func NewErrForbidden() Error {
 	return Error{
 		Status: http.StatusNotFound,
 		Title:  "Forbidden",
