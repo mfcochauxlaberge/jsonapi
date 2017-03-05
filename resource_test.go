@@ -20,16 +20,16 @@ func TestResource(t *testing.T) {
 	res := Wrap(p1)
 
 	// Get
-	tchek.AreEqual(t, 0, p1.Title, res.GetString("title"))
+	tchek.AreEqual(t, 0, p1.Title, res.Get("title"))
 	tchek.AreEqual(t, 1, "some-artist", res.GetToOne("author"))
 
 	// Set
-	res.SetString("title", "New Title")
+	res.Set("title", "New Title")
 	tchek.AreEqual(t, 2, "New Title", p1.Title)
-	tchek.AreEqual(t, 3, "New Title", res.GetString("title"))
+	tchek.AreEqual(t, 3, "New Title", res.Get("title"))
 
 	p1.PaintedIn = time.Date(1932, 0, 0, 0, 0, 0, 0, loc)
-	tchek.AreEqual(t, 4, p1.PaintedIn, res.GetTime("painted-in"))
+	tchek.AreEqual(t, 4, p1.PaintedIn, res.Get("painted-in"))
 
 	res.SetToOne("author", "another-artist")
 	tchek.AreEqual(t, 5, "another-artist", p1.Author)

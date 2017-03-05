@@ -128,27 +128,6 @@ func (w *Wrapper) Rel(key string) Rel {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// // AttrPtrs ...
-// func (w *Wrapper) AttrPtrs(attrs []Attr) ([]string, []interface{}) {
-// 	keys := []string{}
-// 	dsts := []interface{}{}
-//
-// 	for i := range attrs {
-// 		for j := range w.Attrs() {
-// 			if attrs[i].Name == w.Attrs()[j].Name {
-// 				dest[attrs[i].Name] = &sql.NullString{}
-// 			}
-// 		}
-// 	}
-//
-// 	return dest
-// }
-//
-// // ApplyAttrPtrs ...
-// func (w *Wrapper) ApplyAttrPtrs(ptrs map[string]interface{}) {
-// 	// TODO
-// }
-
 // New ...
 func (w *Wrapper) New() Resource {
 	newVal := reflect.New(w.val.Type())
@@ -161,131 +140,6 @@ func (w *Wrapper) Get(key string) interface{} {
 	return w.getAttr(key, "")
 }
 
-// GetID ...
-func (w *Wrapper) GetID() string {
-	return w.getAttr("", "string").(string)
-}
-
-// GetString ...
-func (w *Wrapper) GetString(key string) string {
-	return w.getAttr(key, "string").(string)
-}
-
-// GetStringPtr ...
-func (w *Wrapper) GetStringPtr(key string) *string {
-	return w.getAttr(key, "*string").(*string)
-}
-
-// GetInt ...
-func (w *Wrapper) GetInt(key string) int {
-	return w.getAttr(key, "int").(int)
-}
-
-// GetIntPtr ...
-func (w *Wrapper) GetIntPtr(key string) *int {
-	return w.getAttr(key, "*int").(*int)
-}
-
-// GetInt8 ...
-func (w *Wrapper) GetInt8(key string) int8 {
-	return w.getAttr(key, "int8").(int8)
-}
-
-// GetInt8Ptr ...
-func (w *Wrapper) GetInt8Ptr(key string) *int8 {
-	return w.getAttr(key, "*int8").(*int8)
-}
-
-// GetInt16 ...
-func (w *Wrapper) GetInt16(key string) int16 {
-	return w.getAttr(key, "int16").(int16)
-}
-
-// GetInt16Ptr ...
-func (w *Wrapper) GetInt16Ptr(key string) *int16 {
-	return w.getAttr(key, "int16").(*int16)
-}
-
-// GetInt32 ...
-func (w *Wrapper) GetInt32(key string) int32 {
-	return w.getAttr(key, "int32").(int32)
-}
-
-// GetInt32Ptr ...
-func (w *Wrapper) GetInt32Ptr(key string) *int32 {
-	return w.getAttr(key, "*int32").(*int32)
-}
-
-// GetInt64 ...
-func (w *Wrapper) GetInt64(key string) int64 {
-	return w.getAttr(key, "int64").(int64)
-}
-
-// GetInt64Ptr ...
-func (w *Wrapper) GetInt64Ptr(key string) *int64 {
-	return w.getAttr(key, "*int64").(*int64)
-}
-
-// GetUint ...
-func (w *Wrapper) GetUint(key string) uint {
-	return w.getAttr(key, "uint").(uint)
-}
-
-// GetUintPtr ...
-func (w *Wrapper) GetUintPtr(key string) *uint {
-	return w.getAttr(key, "*uint").(*uint)
-}
-
-// GetUint8 ...
-func (w *Wrapper) GetUint8(key string) uint8 {
-	return w.getAttr(key, "uint8").(uint8)
-}
-
-// GetUint8Ptr ...
-func (w *Wrapper) GetUint8Ptr(key string) *uint8 {
-	return w.getAttr(key, "*uint8").(*uint8)
-}
-
-// GetUint16 ...
-func (w *Wrapper) GetUint16(key string) uint16 {
-	return w.getAttr(key, "uint16").(uint16)
-}
-
-// GetUint16Ptr ...
-func (w *Wrapper) GetUint16Ptr(key string) *uint16 {
-	return w.getAttr(key, "*uint16").(*uint16)
-}
-
-// GetUint32 ...
-func (w *Wrapper) GetUint32(key string) uint32 {
-	return w.getAttr(key, "uint32").(uint32)
-}
-
-// GetUint32Ptr ...
-func (w *Wrapper) GetUint32Ptr(key string) *uint32 {
-	return w.getAttr(key, "*uint32").(*uint32)
-}
-
-// GetBool ...
-func (w *Wrapper) GetBool(key string) bool {
-	return w.getAttr(key, "bool").(bool)
-}
-
-// GetBoolPtr ...
-func (w *Wrapper) GetBoolPtr(key string) *bool {
-	return w.getAttr(key, "*bool").(*bool)
-}
-
-// GetTime ...
-func (w *Wrapper) GetTime(key string) time.Time {
-	return w.getAttr(key, "time.Time").(time.Time)
-}
-
-// GetTimePtr ...
-func (w *Wrapper) GetTimePtr(key string) *time.Time {
-	return w.getAttr(key, "*time.Time").(*time.Time)
-}
-
 // SetID ...
 func (w *Wrapper) SetID(id string) {
 	w.val.FieldByName("ID").SetString(id)
@@ -293,131 +147,6 @@ func (w *Wrapper) SetID(id string) {
 
 // Set ...
 func (w *Wrapper) Set(key string, val interface{}) {
-	w.setAttr(key, val)
-}
-
-// SetString ...
-func (w *Wrapper) SetString(key string, val string) {
-	w.setAttr(key, val)
-}
-
-// SetStringPtr ...
-func (w *Wrapper) SetStringPtr(key string, val *string) {
-	w.setAttr(key, val)
-}
-
-// SetInt ...
-func (w *Wrapper) SetInt(key string, val int) {
-	w.setAttr(key, val)
-}
-
-// SetIntPtr ...
-func (w *Wrapper) SetIntPtr(key string, val *int) {
-	w.setAttr(key, val)
-}
-
-// SetInt8 ...
-func (w *Wrapper) SetInt8(key string, val int8) {
-	w.setAttr(key, val)
-}
-
-// SetInt8Ptr ...
-func (w *Wrapper) SetInt8Ptr(key string, val *int8) {
-	w.setAttr(key, val)
-}
-
-// SetInt16 ...
-func (w *Wrapper) SetInt16(key string, val int16) {
-	w.setAttr(key, val)
-}
-
-// SetInt16Ptr ...
-func (w *Wrapper) SetInt16Ptr(key string, val *int16) {
-	w.setAttr(key, val)
-}
-
-// SetInt32 ...
-func (w *Wrapper) SetInt32(key string, val int32) {
-	w.setAttr(key, val)
-}
-
-// SetInt32Ptr ...
-func (w *Wrapper) SetInt32Ptr(key string, val *int32) {
-	w.setAttr(key, val)
-}
-
-// SetInt64 ...
-func (w *Wrapper) SetInt64(key string, val int64) {
-	w.setAttr(key, val)
-}
-
-// SetInt64Ptr ...
-func (w *Wrapper) SetInt64Ptr(key string, val *int64) {
-	w.setAttr(key, val)
-}
-
-// SetUint ...
-func (w *Wrapper) SetUint(key string, val uint) {
-	w.setAttr(key, val)
-}
-
-// SetUintPtr ...
-func (w *Wrapper) SetUintPtr(key string, val *uint) {
-	w.setAttr(key, val)
-}
-
-// SetUint8 ...
-func (w *Wrapper) SetUint8(key string, val uint8) {
-	w.setAttr(key, val)
-}
-
-// SetUint8Ptr ...
-func (w *Wrapper) SetUint8Ptr(key string, val *uint8) {
-	w.setAttr(key, val)
-}
-
-// SetUint16 ...
-func (w *Wrapper) SetUint16(key string, val uint16) {
-	w.setAttr(key, val)
-}
-
-// SetUint16Ptr ...
-func (w *Wrapper) SetUint16Ptr(key string, val *uint16) {
-	w.setAttr(key, val)
-}
-
-// SetUint32 ...
-func (w *Wrapper) SetUint32(key string, val uint32) {
-	w.setAttr(key, val)
-}
-
-// SetUint32Ptr ...
-func (w *Wrapper) SetUint32Ptr(key string, val *uint32) {
-	w.setAttr(key, val)
-}
-
-// SetFloat64 ...
-func (w *Wrapper) SetFloat64(key string, val float64) {
-	w.setAttr(key, val)
-}
-
-// SetBool ...
-func (w *Wrapper) SetBool(key string, val bool) {
-	w.setAttr(key, val)
-}
-
-// SetBoolPtr ...
-func (w *Wrapper) SetBoolPtr(key string, val *bool) {
-	w.setAttr(key, val)
-}
-
-// SetTime ...
-func (w *Wrapper) SetTime(key string, val time.Time) {
-	w.setAttr(key, val)
-}
-
-// SetTimePtr ...
-func (w *Wrapper) SetTimePtr(key string, val *time.Time) {
 	w.setAttr(key, val)
 }
 
@@ -531,11 +260,6 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 func (w *Wrapper) Validate(keys []string) []error {
 	return nil
 }
-
-// MarshalJSON ...
-// func (w *Wrapper) MarshalJSON() ([]byte, error) {
-// 	return []byte{}, nil
-// }
 
 // MarshalJSONOptions ...
 func (w *Wrapper) MarshalJSONOptions(opts *Options) ([]byte, error) {
@@ -668,11 +392,11 @@ func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 		if v, ok := attrs[k]; ok {
 			switch nv := v.(type) {
 			case string:
-				w.SetString(k, nv)
+				w.Set(k, nv)
 			case float64:
-				w.SetFloat64(k, nv)
+				w.Set(k, nv)
 			case bool:
-				w.SetBool(k, nv)
+				w.Set(k, nv)
 			default:
 				if nv == nil {
 					continue
