@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -14,6 +15,11 @@ type Error struct {
 
 func (e Error) Error() string {
 	return fmt.Sprintf("%d %s: %s", e.Status, e.Title, e.Detail)
+}
+
+// MarshalJSON ...
+func (e Error) MarshalJSON() ([]byte, error) {
+	return json.Marshal(e)
 }
 
 // NewInternalError ...
