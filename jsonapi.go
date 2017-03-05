@@ -29,9 +29,7 @@ func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
 	} else if idents, ok := v.(Identifiers); ok {
 		doc.Identifiers = idents
 	} else if err, ok := v.(Error); ok {
-		doc.Errors = Errors{err}
-	} else if errs, ok := v.(Errors); ok {
-		doc.Errors = errs
+		doc.Errors = []Error{err}
 	} else {
 		panic(fmt.Errorf("jsonapi: cannot marshal unsupported type %s", reflect.ValueOf(v).Type().String()))
 	}

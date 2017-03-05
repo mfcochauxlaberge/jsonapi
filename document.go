@@ -1,8 +1,6 @@
 package jsonapi
 
-import (
-	"encoding/json"
-)
+import "encoding/json"
 
 // Document ...
 type Document struct {
@@ -75,8 +73,11 @@ func (d *Document) Include(res Resource) {
 func (d *Document) MarshalJSON() ([]byte, error) {
 	// Data
 	var data json.RawMessage
+	var errors json.RawMessage
 	var err error
-	if d.Resource != nil {
+	if d.Errors != nil {
+		errors, err = json.Marshal(d.Errors)
+	} else if d.Resource != nil {
 		data, err = d.Resource.MarshalJSONOptions(d.Options)
 	} else if d.Collection != nil {
 		data, err = d.Collection.MarshalJSONOptions(d.Options)
@@ -94,18 +95,26 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 
 	// Included
 	inclusions := []*json.RawMessage{}
-	for key := range d.Included {
-		raw, err := d.Included[key].MarshalJSONOptions(d.Options)
-		if err != nil {
-			return []byte{}, err
+	if len(data) > 0 {
+		for key := range d.Included {
+			raw, err := d.Included[key].MarshalJSONOptions(d.Options)
+			if err != nil {
+				return []byte{}, err
+			}
+			rawm := json.RawMessage(raw)
+			inclusions = append(inclusions, &rawm)
 		}
-		rawm := json.RawMessage(raw)
-		inclusions = append(inclusions, &rawm)
 	}
 
 	// Marshaling
-	plMap := map[string]interface{}{
-		"data": &data,
+	plMap := map[string]interface{}{}
+
+	if len(data) > 0 {
+		plMap["data"] = data
+	}
+
+	if len(errors) > 0 {
+		plMap["errors"] = errors
 	}
 
 	if len(inclusions) > 0 {
