@@ -3,7 +3,7 @@ package jsonapi
 import (
 	"testing"
 
-	"kkaribu/tchek"
+	"github.com/kkaribu/tchek"
 )
 
 func TestBuildSelfLink(t *testing.T) {
@@ -13,15 +13,15 @@ func TestBuildSelfLink(t *testing.T) {
 	}{
 		{
 			// 0
-			res:            Wrap(&user{ID: "1"}),
-			expectedString: "http://example.com/users/1",
+			res:            Wrap(&MockType1{ID: "1"}),
+			expectedString: "http://example.com/mocktypes1/1",
 		}, {
 			// 1
-			res:            Wrap(&book{ID: "abc-123"}),
-			expectedString: "http://example.com/books/abc-123",
+			res:            Wrap(&MockType1{ID: "abc-123"}),
+			expectedString: "http://example.com/mocktypes1/abc-123",
 		}, {
 			// 2
-			res:            Wrap(&user{ID: ""}),
+			res:            Wrap(&MockType1{ID: ""}),
 			expectedString: "",
 		},
 	}
