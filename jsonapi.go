@@ -11,7 +11,7 @@ import (
 // Marshal ...
 func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
 	if opts == nil {
-		opts = NewOptions(url.Host, url.Params)
+		opts = NewOptions("", url.Params)
 	}
 
 	// Document
