@@ -2,7 +2,7 @@ package jsonapi
 
 // Options ...
 type Options struct {
-	// Host building links
+	// Host for building links
 	Host string
 
 	// Fields to include in payload
