@@ -63,3 +63,16 @@ type MockType2 struct {
 	ToManyFromOne  []string `json:"to-many-from-one" api:"rel,mocktypes1,to-one-from-many"`
 	ToManyFromMany []string `json:"to-many-from-many" api:"rel,mocktypes1,to-many-from-many"`
 }
+
+// MockType3 ...
+type MockType3 struct {
+	ID string `json:"id" api:"mocktypes3"`
+
+	// Attributes
+	Attr1 string `json:"attr1" api:"attr"`
+	Attr2 int    `json:"attr2" api:"attr"`
+
+	// Relationships
+	Rel1 string   `json:"rel1" api:"rel,mocktypes1"`
+	Rel2 []string `json:"rel2" api:"rel,mocktypes1"`
+}
