@@ -44,18 +44,18 @@ type MockType2 struct {
 	ID string `json:"id" api:"mocktypes2"`
 
 	// Attributes
-	StrPtr    *string    `json:"str" api:"attr"`
-	IntPtr    *int       `json:"int" api:"attr"`
-	Int8Ptr   *int8      `json:"int8" api:"attr"`
-	Int16Ptr  *int16     `json:"int16" api:"attr"`
-	Int32Ptr  *int32     `json:"int32" api:"attr"`
-	Int64Ptr  *int64     `json:"int64" api:"attr"`
-	UintPtr   *uint      `json:"uint" api:"attr"`
-	Uint8Ptr  *uint8     `json:"uint8" api:"attr"`
-	Uint16Ptr *uint16    `json:"uint16" api:"attr"`
-	Uint32Ptr *uint32    `json:"uint32" api:"attr"`
-	BoolPtr   *bool      `json:"bool" api:"attr"`
-	TimePtr   *time.Time `json:"time" api:"attr"`
+	StrPtr    *string    `json:"strptr" api:"attr"`
+	IntPtr    *int       `json:"intptr" api:"attr"`
+	Int8Ptr   *int8      `json:"int8ptr" api:"attr"`
+	Int16Ptr  *int16     `json:"int16ptr" api:"attr"`
+	Int32Ptr  *int32     `json:"int32ptr" api:"attr"`
+	Int64Ptr  *int64     `json:"int64ptr" api:"attr"`
+	UintPtr   *uint      `json:"uintptr" api:"attr"`
+	Uint8Ptr  *uint8     `json:"uint8ptr" api:"attr"`
+	Uint16Ptr *uint16    `json:"uint16ptr" api:"attr"`
+	Uint32Ptr *uint32    `json:"uint32ptr" api:"attr"`
+	BoolPtr   *bool      `json:"boolptr" api:"attr"`
+	TimePtr   *time.Time `json:"timeptr" api:"attr"`
 
 	// Relationships
 	ToOneFromOne   string   `json:"to-one-from-one" api:"rel,mocktypes1,to-one-from-one"`
