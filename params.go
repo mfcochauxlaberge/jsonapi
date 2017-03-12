@@ -9,7 +9,6 @@ type Params struct {
 	RelData map[string][]string
 
 	// Filters
-	FromFilter  FromFilter
 	AttrFilters map[string]AttrFilter
 	RelFilters  map[string]RelFilter
 
@@ -22,14 +21,6 @@ type Params struct {
 
 	// Include
 	Include [][]Rel
-}
-
-// FromFilter ...
-type FromFilter struct {
-	Name        string
-	Type        string
-	InverseName string
-	ID          string
 }
 
 // AttrFilter ...

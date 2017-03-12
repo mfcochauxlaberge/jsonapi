@@ -10,8 +10,6 @@ import (
 
 // URL ...
 type URL struct {
-	Host string
-
 	// URL
 	URL           string   // /users/u1/articles?fields[users]=name,age
 	URLNormalized string   // /users/u1/articles?fields[users]=age,name
@@ -19,32 +17,105 @@ type URL struct {
 	Route         string   // /users/:id/articles
 
 	// Resource
-	ResType string
-	ResID   string
-	RelKind string
-	Rel     Rel
+	FromFilter FromFilter
+	ResType    string
+	ResID      string
+	RelKind    string
 
 	// Params
 	Params *Params
 }
 
+// FromFilter ...
+type FromFilter struct {
+	Type        string
+	ID          string
+	Name        string
+	InverseName string
+}
+
+// NormalizeURL ...
+func (u *URL) NormalizeURL() {
+	// Path
+	path := "/"
+	for _, p := range u.Path {
+		path += p + "/"
+	}
+	path = path[:len(path)-1]
+
+	// Params
+	params := ""
+
+	u.URLNormalized = path + params
+
+	// urlParams := []string{}
+
+	// for k := range fields {
+	// 	if len(fields[k]) == len(reg.Types[k].Fields) {
+	// 		delete(fields, k)
+	// 	}
+	// }
+	// urlParams = append(urlParams, stringifyParams(fields, "fields")...)
+	//
+	// filtersParams := map[string][]string{}
+	// for n, f := range params.RelFilters {
+	// 	filtersParams[n] = f.IDs
+	// }
+	// urlParams = append(urlParams, stringifyParams(filtersParams, "filters")...)
+	//
+	// urlParams = append(urlParams, stringifyParams(map[string][]string{
+	// 	"size":   []string{strconv.FormatUint(pagination["size"], 10)},
+	// 	"number": []string{strconv.FormatUint(pagination["number"], 10)},
+	// }, "page")...)
+	//
+	// if len(sorting) > 0 {
+	// 	sortParam := "sort="
+	// 	for i, v := range sorting {
+	// 		if i < len(sorting)-1 {
+	// 			v += ","
+	// 		}
+	// 		sortParam += v
+	// 	}
+	// 	urlParams = append(urlParams, sortParam)
+	// }
+	//
+	// if len(includes) > 0 {
+	// 	urlParams = append(urlParams, stringifyParams(map[string][]string{
+	// 		"include": includes,
+	// 	}, "")...)
+	// }
+	//
+	// sort.Strings(urlParams)
+	// normURL := path
+	// if len(urlParams) > 0 {
+	// 	normURL += "?"
+	// }
+	// for _, param := range urlParams {
+	// 	normURL += param + "&"
+	// }
+	// normURL = strings.TrimSuffix(normURL, "&")
+	// url.URL = u.String()
+	// url.URLNormalized = normURL
+}
+
 // ParseURL ...
 func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
-	url := &URL{}
+	url := &URL{
+		URL: u.Path,
+	}
 
 	// Path
 	path := strings.TrimRight(u.Path, "/")
+	path = strings.TrimLeft(path, "/")
 	tempPaths := strings.Split(path, "/")
 	paths := []string{}
 	invalid := false
 
-	for i, p := range tempPaths {
+	for _, p := range tempPaths {
 		if p != "" {
 			paths = append(paths, p)
 		} else {
-			if i != 0 && i != len(tempPaths)-1 {
-				invalid = true
-			}
+			invalid = true
 		}
 	}
 
@@ -53,21 +124,17 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	}
 
 	if invalid {
-		return nil, errors.New("url is invalid")
+		return nil, errors.New("path is invalid")
 	}
 
 	url.Path = paths
 
 	fromFilter := FromFilter{}
 
-	// Router
+	// Route
 	url.Route = deduceRoute(url.Path)
 
 	// Resource
-	const (
-		meta = "meta"
-	)
-
 	rel := Rel{}
 
 	if len(paths) >= 1 {
@@ -75,23 +142,27 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	}
 
 	if len(paths) >= 2 {
-		if paths[1] != meta {
+		if paths[1] != "meta" {
 			url.ResID = paths[1]
 		}
 	}
 
 	if len(paths) >= 3 {
+		fromFilter.Name = paths[2]
+		fromFilter.Type = paths[0]
+		fromFilter.ID = paths[1]
+
 		if paths[2] == "relationships" {
+			url.ResID = ""
 			url.RelKind = "self"
-		} else if paths[2] != meta {
+			fromFilter.Name = paths[3]
+		} else if paths[2] != "meta" {
+			url.ResID = ""
 			url.RelKind = "related"
 			if r, ok := reg.Types[paths[0]].Rels[paths[2]]; ok {
 				url.ResType = r.Type
 			}
 			rel.Name = paths[2]
-			fromFilter.Name = paths[2]
-			fromFilter.Type = paths[0]
-			fromFilter.ID = paths[1]
 		}
 	}
 
@@ -105,7 +176,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		url.ResType = paths[0]
 	}
 
-	rel = reg.Types[url.ResType].Rels[rel.Name]
+	// rel = reg.Types[url.ResType].Rels[rel.Name]
 
 	// RelFiter
 	if fromFilter.Type != "" {
@@ -113,51 +184,89 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		url.ResType = reg.Types[fromFilter.Type].Rels[fromFilter.Name].Type
 	}
 
+	params, err := parseParams(reg, url.ResType, u)
+	if err != nil {
+		return url, err
+	}
+	url.Params = params
+
+	url.FromFilter = fromFilter
+	// url.Rel = rel
+
+	url.NormalizeURL()
+
+	return url, nil
+}
+
+// parseParams ...
+func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 	// Query parameters
 	values := u.Query()
 
-	// ctx.Types = map[string]struct{}{ctx.URL.ResType: struct{}{}}
-
-	// attrs := map[string][]Attr{
-	// 	ctx.URL.ResType: []Attr{},
-	// }
-	fields := map[string][]string{
-		url.ResType: []string{},
+	params := &Params{
+		Fields:       map[string][]string{},
+		Attrs:        map[string][]Attr{},
+		Rels:         map[string][]Rel{},
+		RelData:      map[string][]string{},
+		AttrFilters:  map[string]AttrFilter{},
+		RelFilters:   map[string]RelFilter{},
+		SortingRules: []string{},
+		PageSize:     0,
+		PageNumber:   0,
+		Include:      [][]Rel{},
 	}
-	attrFilters := map[string]AttrFilter{}
-	relFilters := map[string]RelFilter{}
-	sorting := []string{}
-	pagination := map[string]uint64{
-		"size":   1000,
-		"number": 1,
-	}
-	includes := []string{}
 
 	// Inclusions
+	inclusions := []string{}
+	// Get all values
 	for _, vals := range values["include"] {
-		// Remove duplicates and uncessary includes
-		includes = strings.Split(vals, ",")
-		sort.Strings(includes)
-		for i := len(includes) - 1; i >= 0; i-- {
-			if i > 0 {
-				if strings.HasPrefix(includes[i], includes[i-1]) {
-					includes = append(includes[:i-1], includes[i:]...)
-				}
+		incs := strings.Split(vals, ",")
+		inclusions = append(inclusions, incs...)
+	}
+	sort.Strings(inclusions)
+
+	// Remove duplicates and uncessary includes
+	for i := len(inclusions) - 1; i >= 0; i-- {
+		if i > 0 {
+			if strings.HasPrefix(inclusions[i], inclusions[i-1]) {
+				inclusions = append(inclusions[:i-1], inclusions[i:]...)
 			}
 		}
+	}
 
-		for i, inc := range includes {
-			words := strings.Split(inc, ".")
+	// Check inclusions
+	for i := 0; i < len(inclusions); i++ {
+		words := strings.Split(inclusions[i], ".")
 
-			incRel := Rel{Type: url.ResType}
-			var ok bool
-			for _, word := range words {
-				if incRel, ok = reg.Types[incRel.Type].Rels[word]; ok {
-					fields[incRel.Type] = []string{}
-				} else {
-					includes = append(includes[:i], includes[i+1:]...)
-					break
-				}
+		incRel := Rel{Type: resType}
+		var ok bool
+		for _, word := range words {
+			if incRel, ok = reg.Types[incRel.Type].Rels[word]; ok {
+				params.Fields[incRel.Type] = []string{}
+			} else {
+				inclusions = append(inclusions[:i], inclusions[i+1:]...)
+				break
+			}
+		}
+	}
+
+	// Build params.Include
+	params.Include = make([][]Rel, len(inclusions))
+	for i := range inclusions {
+		words := strings.Split(inclusions[i], ".")
+
+		params.Include[i] = make([]Rel, len(words))
+
+		var incRel Rel
+		for w := range words {
+			if w == 0 {
+				incRel = reg.Types[resType].Rels[words[0]]
+			}
+
+			params.Include[i][w] = incRel
+
+			if w < len(words)-1 {
+				incRel = reg.Types[incRel.Type].Rels[words[w+1]]
 			}
 		}
 	}
@@ -175,13 +284,13 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 				}
 			}
 
-			if r, ok := reg.Types[url.ResType].Rels[field]; ok {
-				relFilters[field] = RelFilter{
+			if r, ok := reg.Types[resType].Rels[field]; ok {
+				params.RelFilters[field] = RelFilter{
 					Type:        r.Type,
 					InverseName: r.InverseName,
 					IDs:         targets,
 				}
-			} else if a, ok := reg.Types[url.ResType].Attrs[field]; ok {
+			} else if a, ok := reg.Types[resType].Attrs[field]; ok {
 				rules := []string{}
 
 				if kind(a.Type) == "string" {
@@ -201,7 +310,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 
 				}
 
-				attrFilters[field] = AttrFilter{
+				params.AttrFilters[field] = AttrFilter{
 					Type:    r.Type,
 					Rules:   rules,
 					Targets: targets,
@@ -218,36 +327,35 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 						if strings.HasPrefix(attr, "-") {
 							attr = attr[1:]
 						}
-						if _, ok := reg.Types[url.ResType].Attrs[attr]; ok {
-							sorting = append(sorting, v)
+						if _, ok := reg.Types[resType].Attrs[attr]; ok {
+							params.SortingRules = append(params.SortingRules, v)
 						}
 					}
 				}
 			}
 		} else if param == "page[size]" {
-
 			// Page size
 			if size, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
 				if size > 0 && size <= 100 {
-					pagination["size"] = size
+					params.PageSize = uint(size)
 				}
 			}
 		} else if param == "page[number]" {
 			// Page number
 			if number, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
 				if number > 0 && number <= 10000 {
-					pagination["number"] = number
+					params.PageNumber = uint(number)
 				}
 			}
 		} else if strings.HasPrefix(param, "fields[") {
 			// Fields
 			resName := param[7 : len(param)-1]
-			if _, ok := fields[resName]; ok {
+			if _, ok := params.Fields[resName]; ok {
 				for _, v := range strings.Split(vals[0], ",") {
 					if v != "" {
 						for _, f := range reg.Types[resName].Fields {
 							if f == v {
-								fields[resName] = append(fields[resName], v)
+								params.Fields[resName] = append(params.Fields[resName], v)
 							}
 						}
 					}
@@ -256,16 +364,15 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		}
 	}
 
-	attrs := map[string][]Attr{}
 	// rels := map[string][]Rel{} // TODO
-	for resName := range fields {
-		if len(fields[resName]) == 0 {
-			fields[resName] = reg.Types[resName].Fields
+	for resName := range params.Fields {
+		if len(params.Fields[resName]) == 0 {
+			params.Fields[resName] = reg.Types[resName].Fields
 		}
 
-		for _, field := range fields[resName] {
+		for _, field := range params.Fields[resName] {
 			if attr, ok := reg.Types[resName].Attrs[field]; ok {
-				attrs[resName] = append(attrs[resName], attr)
+				params.Attrs[resName] = append(params.Attrs[resName], attr)
 			} else if _, ok := reg.Types[resName].Rels[field]; ok {
 				// rels[resName] = append(rels[resName], rel) // TODO
 			}
@@ -273,94 +380,9 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	}
 
 	// Set all params
-	params := &Params{}
-	params.Fields = fields
-	params.Attrs = attrs
 	// params.Rels = rels // TODO
-	params.FromFilter = fromFilter
-	params.AttrFilters = attrFilters
-	params.RelFilters = relFilters
-	params.SortingRules = sorting
-	params.PageSize = uint(pagination["size"])
-	params.PageNumber = uint(pagination["number"])
-	params.Include = make([][]Rel, len(includes))
-	for i := range includes {
-		words := strings.Split(includes[i], ".")
 
-		params.Include[i] = make([]Rel, len(words))
-
-		var incRel Rel
-		for w := range words {
-			if w == 0 {
-				incRel = reg.Types[url.ResType].Rels[words[0]]
-			}
-
-			params.Include[i][w] = incRel
-
-			if w < len(words)-1 {
-				incRel = reg.Types[incRel.Type].Rels[words[w+1]]
-			}
-		}
-	}
-	url.Params = params
-	// ctx.IncludeRelIdentifiers = map[string]bool{}
-	// for f := range fields {
-	// 	ctx.Options.IncludeRelIdentifiers[f] = true
-	// }
-
-	// Normalize URL
-	urlParams := []string{}
-
-	for k := range fields {
-		if len(fields[k]) == len(reg.Types[k].Fields) {
-			delete(fields, k)
-		}
-	}
-	urlParams = append(urlParams, stringifyParams(fields, "fields")...)
-
-	filtersParams := map[string][]string{}
-	for n, f := range params.RelFilters {
-		filtersParams[n] = f.IDs
-	}
-	urlParams = append(urlParams, stringifyParams(filtersParams, "filters")...)
-
-	urlParams = append(urlParams, stringifyParams(map[string][]string{
-		"size":   []string{strconv.FormatUint(pagination["size"], 10)},
-		"number": []string{strconv.FormatUint(pagination["number"], 10)},
-	}, "page")...)
-
-	if len(sorting) > 0 {
-		sortParam := "sort="
-		for i, v := range sorting {
-			if i < len(sorting)-1 {
-				v += ","
-			}
-			sortParam += v
-		}
-		urlParams = append(urlParams, sortParam)
-	}
-
-	if len(includes) > 0 {
-		urlParams = append(urlParams, stringifyParams(map[string][]string{
-			"include": includes,
-		}, "")...)
-	}
-
-	sort.Strings(urlParams)
-	normURL := path
-	if len(urlParams) > 0 {
-		normURL += "?"
-	}
-	for _, param := range urlParams {
-		normURL += param + "&"
-	}
-	normURL = strings.TrimSuffix(normURL, "&")
-	url.URL = u.String()
-	url.URLNormalized = normURL
-
-	url.Rel = rel
-
-	return url, nil
+	return params, nil
 }
 
 func deduceRoute(path []string) string {
