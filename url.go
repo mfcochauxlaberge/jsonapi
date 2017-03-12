@@ -98,6 +98,16 @@ func (u *URL) NormalizeURL() {
 	// url.URLNormalized = normURL
 }
 
+// ParseRawURL ...
+func ParseRawURL(reg *Registry, rawurl string) (*URL, error) {
+	url, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+
+	return ParseURL(reg, url)
+}
+
 // ParseURL ...
 func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	url := &URL{
