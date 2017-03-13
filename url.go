@@ -214,7 +214,9 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 	values := u.Query()
 
 	params := &Params{
-		Fields:       map[string][]string{},
+		Fields: map[string][]string{
+			resType: []string{},
+		},
 		Attrs:        map[string][]Attr{},
 		Rels:         map[string][]Rel{},
 		RelData:      map[string][]string{},
