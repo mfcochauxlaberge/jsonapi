@@ -159,7 +159,7 @@ func TestParseParams(t *testing.T) {
 			// 0
 			url: `/`,
 			expectedParams: Params{
-				Fields:       map[string][]string{},
+				Fields:       map[string][]string{"": nil},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
@@ -175,7 +175,7 @@ func TestParseParams(t *testing.T) {
 			// 1
 			url: `?`,
 			expectedParams: Params{
-				Fields:       map[string][]string{},
+				Fields:       map[string][]string{"": nil},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
