@@ -376,7 +376,6 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 		}
 	}
 
-	// rels := map[string][]Rel{} // TODO
 	for resName := range params.Fields {
 		if len(params.Fields[resName]) == 0 {
 			params.Fields[resName] = reg.Types[resName].Fields
@@ -385,14 +384,11 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 		for _, field := range params.Fields[resName] {
 			if attr, ok := reg.Types[resName].Attrs[field]; ok {
 				params.Attrs[resName] = append(params.Attrs[resName], attr)
-			} else if _, ok := reg.Types[resName].Rels[field]; ok {
-				// rels[resName] = append(rels[resName], rel) // TODO
+			} else if rel, ok := reg.Types[resName].Rels[field]; ok {
+				params.Rels[resName] = append(params.Rels[resName], rel)
 			}
 		}
 	}
-
-	// Set all params
-	// params.Rels = rels // TODO
 
 	return params, nil
 }
