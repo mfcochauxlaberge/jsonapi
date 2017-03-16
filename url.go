@@ -332,15 +332,17 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 			}
 		} else if param == "sort" {
 			// Sorting
-			if vals[0] != "" {
-				for _, v := range strings.Split(vals[0], ",") {
-					if v != "" {
-						attr := v
-						if strings.HasPrefix(attr, "-") {
-							attr = attr[1:]
-						}
-						if _, ok := reg.Types[resType].Attrs[attr]; ok {
-							params.SortingRules = append(params.SortingRules, v)
+			for _, val := range vals {
+				if val != "" {
+					for _, v := range strings.Split(val, ",") {
+						if v != "" {
+							attr := v
+							if strings.HasPrefix(attr, "-") {
+								attr = attr[1:]
+							}
+							if _, ok := reg.Types[resType].Attrs[attr]; ok {
+								params.SortingRules = append(params.SortingRules, v)
+							}
 						}
 					}
 				}
