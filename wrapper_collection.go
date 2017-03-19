@@ -60,6 +60,10 @@ func (wc *WrapperCollection) Sample() Resource {
 func (wc *WrapperCollection) MarshalJSONOptions(opts *Options) ([]byte, error) {
 	var raws []*json.RawMessage
 
+	if wc.Len() == 0 {
+		return []byte("[]"), nil
+	}
+
 	for _, r := range wc.col {
 		var raw json.RawMessage
 		raw, err := r.MarshalJSONOptions(opts)
