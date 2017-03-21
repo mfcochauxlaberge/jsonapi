@@ -1,0 +1,17 @@
+{
+	"data": {
+		"attributes": {
+			"strptr": "str",
+			"uintptr": 42
+		},
+		"id": "mt1-2",
+		"links": {
+			"self": "https://example.org/mocktypes2/mt1-2"
+		},
+		"relationships": {},
+		"type": "mocktypes2"
+	},
+	"jsonapi": {
+		"version": "1.0"
+	}
+}

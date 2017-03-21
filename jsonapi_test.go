@@ -3,118 +3,89 @@ package jsonapi
 import "time"
 
 var (
-	users Collection
-	books Collection
-	urls  []*URL
+	mocktypes1 Collection
+	mocktypes2 Collection
+	mocktypes3 Collection
+	// urls  []*URL
 )
 
 func init() {
 	loc, _ := time.LoadLocation("")
 
 	// Resources
-	users = &WrapperCollection{}
-	users.Add(
-		Wrap(&user{
-			ID:           "1",
-			Name:         "Bob",
-			Age:          36,
-			CreatedAt:    time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
-			BestFriend:   "2",
-			Contacts:     []string{"2", "3"},
-			FavoriteBook: "",
-			Readings:     []string{},
+	mocktypes1 = &WrapperCollection{}
+	mocktypes1.Add(
+		Wrap(&MockType1{
+			ID: "mt1-1",
+			// Use default (zero) value for each attribute
 		}),
 	)
-	users.Add(
-		Wrap(&user{
-			ID:           "2",
-			Name:         "Noam Chomsky",
-			Age:          100,
-			CreatedAt:    time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
-			BestFriend:   "1",
-			Contacts:     []string{"3"},
-			FavoriteBook: "1",
-			Readings:     []string{"1", "2"},
-		}),
-	)
-	users.Add(
-		Wrap(&user{
-			ID:           "3",
-			Name:         "The Dude",
-			Age:          45,
-			CreatedAt:    time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
-			BestFriend:   "",
-			Contacts:     []string{"1", "2"},
-			FavoriteBook: "1",
-			Readings:     []string{"1", "2"},
+	mocktypes1.Add(
+		Wrap(&MockType1{
+			ID:     "mt1-2",
+			Str:    "",
+			Int:    -42,
+			Int8:   80,
+			Int16:  160,
+			Int32:  320,
+			Int64:  6464640000,
+			Uint:   42,
+			Uint8:  8,
+			Uint16: 1600,
+			Uint32: 32000,
+			Bool:   false,
+			Time:   time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
 		}),
 	)
 
-	books = &WrapperCollection{}
-	books.Add(
-		Wrap(&book{
-			ID:        "1",
-			Title:     "Understanding Power",
-			CreatedAt: time.Now(),
-			Author:    "3",
+	mocktypes2 = &WrapperCollection{}
+	mocktypes2.Add(
+		Wrap(&MockType2{
+			ID: "mt2-1",
+			// Use nil values
 		}),
 	)
-	books.Add(
-		Wrap(&book{
-			ID:        "2",
-			Title:     "The Title of a Book",
-			CreatedAt: time.Now(),
-			Author:    "1",
+	strPtr := "str"
+	intPtr := int(-42)
+	int8Ptr := int8(80)
+	int16Ptr := int16(160)
+	int32Ptr := int32(320)
+	int64Ptr := int64(6464640000)
+	uintPtr := uint(42)
+	uint8Ptr := uint8(8)
+	uint16Ptr := uint16(1600)
+	uint32Ptr := uint32(32000)
+	boolPtr := false
+	timePtr := time.Date(2017, 1, 2, 3, 4, 5, 6, loc)
+	mocktypes2.Add(
+		Wrap(&MockType2{
+			ID:        "mt1-2",
+			StrPtr:    &strPtr,
+			IntPtr:    &intPtr,
+			Int8Ptr:   &int8Ptr,
+			Int16Ptr:  &int16Ptr,
+			Int32Ptr:  &int32Ptr,
+			Int64Ptr:  &int64Ptr,
+			UintPtr:   &uintPtr,
+			Uint8Ptr:  &uint8Ptr,
+			Uint16Ptr: &uint16Ptr,
+			Uint32Ptr: &uint32Ptr,
+			BoolPtr:   &boolPtr,
+			TimePtr:   &timePtr,
 		}),
 	)
 
-	urls = []*URL{
-		&URL{
-			Host: "https://example.com",
-			Params: &Params{
-				RelData: map[string][]string{
-					"users": []string{"best-friend", "contacts"},
-				},
-			},
-		},
-		&URL{
-			Host: "https://example.com",
-			Params: &Params{
-				Fields: map[string][]string{
-					"users": []string{"name", "readings"},
-				},
-				RelData: map[string][]string{
-					"users": []string{"contacts", "readings"},
-				},
-			},
-		},
-	}
-}
-
-// User
-type user struct {
-	ID string `json:"id" api:"users"`
-
-	// Attributes
-	Name      string    `json:"name" api:"attr"`
-	Age       uint8     `json:"age" api:"attr"`
-	CreatedAt time.Time `json:"created-at" api:"attr"`
-
-	// Relationships
-	BestFriend   string   `json:"best-friend" api:"rel,users"`
-	Contacts     []string `json:"contacts" api:"rel,users"`
-	FavoriteBook string   `json:"favorite-book" api:"rel,books"`
-	Readings     []string `json:"readings" api:"rel,books"`
-}
-
-// Book
-type book struct {
-	ID string `json:"id" api:"books"`
-
-	// Attributes
-	Title     string    `json:"title" api:"attr"`
-	CreatedAt time.Time `json:"written-at" api:"attr"`
-
-	// Relationships
-	Author string `json:"author" api:"rel,users"`
+	mocktypes3 = &WrapperCollection{}
+	mocktypes3.Add(
+		Wrap(&MockType3{
+			ID: "mt3-1",
+		}),
+	)
+	mocktypes3.Add(
+		Wrap(&MockType3{
+			ID:    "mt3-1",
+			Attr1: "str",
+			Attr2: 32,
+		}),
+	)
 }

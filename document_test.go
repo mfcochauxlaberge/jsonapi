@@ -3,7 +3,7 @@ package jsonapi
 import (
 	"testing"
 
-	"kkaribu/tchek"
+	"github.com/kkaribu/tchek"
 )
 
 // TestDocument ...

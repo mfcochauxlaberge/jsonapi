@@ -1,0 +1,70 @@
+{
+	"data": {
+		"attributes": {
+			"bool": false,
+			"int": 0,
+			"int16": 0,
+			"int32": 0,
+			"int64": 0,
+			"int8": 0,
+			"str": "",
+			"time": "0001-01-01T00:00:00Z",
+			"uint": 0,
+			"uint16": 0,
+			"uint32": 0,
+			"uint8": 0
+		},
+		"id": "mt1-1",
+		"links": {
+			"self": "/mocktypes1/mt1-1"
+		},
+		"relationships": {
+			"to-many": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-many",
+					"self": "/mocktypes1/mt1-1/relationships/to-many"
+				}
+			},
+			"to-many-from-many": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-many-from-many",
+					"self": "/mocktypes1/mt1-1/relationships/to-many-from-many"
+				}
+			},
+			"to-many-from-one": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-many-from-one",
+					"self": "/mocktypes1/mt1-1/relationships/to-many-from-one"
+				}
+			},
+			"to-one": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-one",
+					"self": "/mocktypes1/mt1-1/relationships/to-one"
+				}
+			},
+			"to-one-from-many": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-one-from-many",
+					"self": "/mocktypes1/mt1-1/relationships/to-one-from-many"
+				}
+			},
+			"to-one-from-one": {
+				"links": {
+					"related": "/mocktypes1/mt1-1/to-one-from-one",
+					"self": "/mocktypes1/mt1-1/relationships/to-one-from-one"
+				}
+			}
+		},
+		"type": "mocktypes1"
+	},
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"meta": {
+		"num": 42,
+		"str": "a string",
+		"tf": true,
+		"timestamp": "2017-01-02T03:04:05.000000006Z"
+	}
+}
