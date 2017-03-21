@@ -38,31 +38,36 @@ func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
 }
 
 // Unmarshal ...
-func Unmarshal(payload []byte, v interface{}) error {
+func Unmarshal(payload []byte, v interface{}) (*Document, error) {
+	doc := &Document{}
 	ske := &documentSkeleton{}
 
 	// Unmarshal
 	err := json.Unmarshal(payload, ske)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	var res Resource
-	var col Collection
-	var ok bool
-	if res, ok = v.(Resource); ok {
-		err = json.Unmarshal(ske.Data, &res)
+	// Resource or collection
+	if _, ok := v.(Resource); ok {
+		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
-			return err
+			return nil, err
 		}
-	} else if col, ok = v.(Collection); ok {
-		err = json.Unmarshal(ske.Data, &col)
+	} else if _, ok := v.(Collection); ok {
+		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
-			return err
+			return nil, err
 		}
 	}
 
-	return nil
+	// Options
+	doc.Options = &Options{
+		Meta:    ske.Meta,
+		JSONAPI: ske.JSONAPI,
+	}
+
+	return doc, nil
 }
 
 // CheckType ...
