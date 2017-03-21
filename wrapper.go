@@ -510,7 +510,35 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 					return err
 				}
 				field.SetInt(i)
-			case "*int", "*int8", "*int16", "*int32", "*int64":
+			case "*int":
+				i, err := strconv.ParseInt(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := int(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*int8":
+				i, err := strconv.ParseInt(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := int8(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*int16":
+				i, err := strconv.ParseInt(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := int16(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*int32":
+				i, err := strconv.ParseInt(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := int32(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*int64":
 				i, err := strconv.ParseInt(str, 10, 64)
 				if err != nil {
 					return err
@@ -522,12 +550,34 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 					return err
 				}
 				field.SetUint(i)
-			case "*uint", "*uint8", "*uint16", "*uint32":
+			case "*uint":
 				i, err := strconv.ParseUint(str, 10, 64)
 				if err != nil {
 					return err
 				}
-				field.Set(reflect.ValueOf(&i))
+				ni := uint(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*uint8":
+				i, err := strconv.ParseUint(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := uint8(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*uint16":
+				i, err := strconv.ParseUint(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := uint16(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*uint32":
+				i, err := strconv.ParseUint(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := uint32(i)
+				field.Set(reflect.ValueOf(&ni))
 			case "bool":
 				if str == "true" {
 					field.SetBool(true)
