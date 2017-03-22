@@ -27,14 +27,17 @@ func (r *Registry) RegisterType(v interface{}) {
 	r.Lock()
 	defer r.Unlock()
 
-	err := CheckType(v)
-	if err != nil {
-		panic(err)
-	}
-
 	value := reflect.ValueOf(v)
 	if value.Kind() != reflect.Ptr {
-		value = reflect.New(value.Type())
+		panic("jsonapi: RegisterType requires a pointer to a struct")
+	}
+	if value.Elem().Kind() != reflect.Struct {
+		panic("jsonapi: RegisterType requires a pointer to a struct")
+	}
+
+	err := CheckType(value.Elem().Interface())
+	if err != nil {
+		panic(err)
 	}
 
 	res := Wrap(value.Interface())

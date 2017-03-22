@@ -6,8 +6,8 @@ import "time"
 func NewMockRegistry() *Registry {
 	reg := NewRegistry()
 
-	reg.RegisterType(MockType1{})
-	reg.RegisterType(MockType2{})
+	reg.RegisterType(&MockType1{})
+	reg.RegisterType(&MockType2{})
 
 	return reg
 }
