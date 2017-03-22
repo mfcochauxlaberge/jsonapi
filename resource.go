@@ -5,7 +5,7 @@ type Resource interface {
 	// Structure
 	IDAndType() (string, string)
 	Attrs() []Attr
-	Rels() map[string]Rel
+	Rels() []Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
 	New() Resource

@@ -17,7 +17,7 @@ type Wrapper struct {
 	// Structure
 	typ   string
 	attrs []Attr
-	rels  map[string]Rel
+	rels  []Rel
 }
 
 // Wrap ...
@@ -62,7 +62,7 @@ func Wrap(v interface{}) *Wrapper {
 	}
 
 	// Relationships
-	w.rels = map[string]Rel{}
+	w.rels = []Rel{}
 	for i := 0; i < w.val.NumField(); i++ {
 		fs := w.val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
@@ -78,13 +78,13 @@ func Wrap(v interface{}) *Wrapper {
 		}
 
 		if relTag[0] == "rel" {
-			w.rels[jsonTag] = Rel{
+			w.rels = append(w.rels, Rel{
 				Name:        jsonTag,
 				Type:        relTag[1],
 				ToOne:       toOne,
 				InverseName: invName,
 				InverseType: w.typ,
-			}
+			})
 		}
 	}
 
@@ -102,7 +102,7 @@ func (w *Wrapper) Attrs() []Attr {
 }
 
 // Rels ...
-func (w *Wrapper) Rels() map[string]Rel {
+func (w *Wrapper) Rels() []Rel {
 	return w.rels
 }
 
@@ -409,21 +409,23 @@ func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 
 	// Relationships
 	for n, skeRel := range ske.Relationships {
-		if rel, ok := w.Rels()[n]; ok {
-			if len(skeRel.Data) != 0 {
-				if rel.ToOne {
-					data := identifierSkeleton{}
+		for _, rel := range w.Rels() {
+			if rel.Name == n {
+				if len(skeRel.Data) != 0 {
+					if rel.ToOne {
+						data := identifierSkeleton{}
 
-					err := json.Unmarshal(skeRel.Data, &data)
-					if err != nil {
-						return nil
-					}
-				} else {
-					data := []identifierSkeleton{}
+						err := json.Unmarshal(skeRel.Data, &data)
+						if err != nil {
+							return nil
+						}
+					} else {
+						data := []identifierSkeleton{}
 
-					err := json.Unmarshal(skeRel.Data, &data)
-					if err != nil {
-						return nil
+						err := json.Unmarshal(skeRel.Data, &data)
+						if err != nil {
+							return nil
+						}
 					}
 				}
 			}
