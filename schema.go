@@ -8,7 +8,7 @@ type Type struct {
 	Fields      []string
 	Attrs       map[string]Attr
 	Rels        map[string]Rel
-	Sample      Resource
+	Default     Resource
 	SampleSlice []Resource
 }
 
