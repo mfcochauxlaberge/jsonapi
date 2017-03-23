@@ -261,6 +261,27 @@ func (w *Wrapper) Validate(keys []string) []error {
 	return nil
 }
 
+// Copy ...
+func (w *Wrapper) Copy() Resource {
+	nw := Wrap(reflect.New(w.val.Type()).Interface())
+
+	// Attributes
+	for _, attr := range w.Attrs() {
+		nw.Set(attr.Name, w.Get(attr.Name))
+	}
+
+	// Relationships
+	for _, rel := range w.Rels() {
+		if rel.ToOne {
+			nw.SetToOne(rel.Name, w.GetToOne(rel.Name))
+		} else {
+			nw.SetToMany(rel.Name, w.GetToMany(rel.Name))
+		}
+	}
+
+	return nw
+}
+
 // MarshalJSONOptions ...
 func (w *Wrapper) MarshalJSONOptions(opts *Options) ([]byte, error) {
 	mapPl := map[string]interface{}{}

@@ -28,6 +28,9 @@ type Resource interface {
 	// Validate
 	Validate(keys []string) []error
 
+	// Copy
+	Copy() Resource
+
 	// JSON
 	MarshalJSONOptions(opts *Options) ([]byte, error)
 	UnmarshalJSON(payload []byte) error

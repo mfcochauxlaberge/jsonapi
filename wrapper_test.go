@@ -31,8 +31,8 @@ func TestWrapper(t *testing.T) {
 
 	// ID and type
 	id, typ := wrap1.IDAndType()
-	tchek.AreEqual(t, 0, res1.ID, id)
-	tchek.AreEqual(t, 0, "res", typ)
+	tchek.AreEqual(t, -1, res1.ID, id)
+	tchek.AreEqual(t, -1, "mocktypes1", typ)
 
 	// Attributes
 	v1 := reflect.ValueOf(res1).Elem()
@@ -42,7 +42,7 @@ func TestWrapper(t *testing.T) {
 		n := sf.Tag.Get("json")
 
 		if sf.Tag.Get("api") == "attr" {
-			tchek.AreEqual(t, 0, f.Interface(), wrap1.Get(n))
+			tchek.AreEqual(t, -1, f.Interface(), wrap1.Get(n))
 		}
 	}
 
@@ -76,12 +76,12 @@ func TestWrapper(t *testing.T) {
 		TimePtr:   &aTime,
 	}
 
-	wrap2 := Wrap(res1)
+	wrap2 := Wrap(res2)
 
 	// ID and type
 	id, typ = wrap2.IDAndType()
-	tchek.AreEqual(t, 0, res2.ID, id)
-	tchek.AreEqual(t, 0, "res", typ)
+	tchek.AreEqual(t, -1, res2.ID, id)
+	tchek.AreEqual(t, -1, "mocktypes2", typ)
 
 	// Attributes
 	v2 := reflect.ValueOf(res2).Elem()
@@ -91,7 +91,25 @@ func TestWrapper(t *testing.T) {
 		n := sf.Tag.Get("json")
 
 		if sf.Tag.Get("api") == "attr" {
-			tchek.AreEqual(t, 0, f.Interface(), wrap2.Get(n))
+			tchek.AreEqual(t, 2, f.Interface(), wrap2.Get(n))
 		}
+	}
+
+	// Copy
+	wrap3 := wrap1.Copy()
+
+	for _, attr := range wrap1.Attrs() {
+		tchek.AreEqual(t, -1, wrap1.Get(attr.Name), wrap3.Get(attr.Name))
+
+		if attr.Type == "bool" {
+			wrap3.Set(attr.Name, !wrap1.Get(attr.Name).(bool))
+		} else if attr.Type == "*bool" {
+			wrap3.Set(attr.Name, !*(wrap1.Get(attr.Name).(*bool)))
+		} else if attr.Type == "time.Time" || attr.Type == "*time.Time" {
+			wrap3.Set(attr.Name, time.Now())
+		} else {
+			wrap3.Set(attr.Name, "0")
+		}
+		tchek.AreNotEqual(t, -1, wrap1.Get(attr.Name), wrap3.Get(attr.Name))
 	}
 }
