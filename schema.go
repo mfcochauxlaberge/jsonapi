@@ -4,12 +4,11 @@ import "database/sql"
 
 // Type ...
 type Type struct {
-	Name        string
-	Fields      []string
-	Attrs       map[string]Attr
-	Rels        map[string]Rel
-	Default     Resource
-	SampleSlice []Resource
+	Name    string
+	Fields  []string
+	Attrs   map[string]Attr
+	Rels    map[string]Rel
+	Default Resource
 }
 
 // Attr ...
