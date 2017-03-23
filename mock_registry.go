@@ -9,6 +9,11 @@ func NewMockRegistry() *Registry {
 	reg.RegisterType(&MockType1{})
 	reg.RegisterType(&MockType2{})
 
+	errs := reg.Check()
+	if len(errs) > 0 {
+		panic(errs[0])
+	}
+
 	return reg
 }
 
