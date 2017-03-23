@@ -240,8 +240,8 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 				break
 			}
 
-			if field.Type().String() != "string" {
-				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to one'", key))
+			if field.Type().String() != "[]string" {
+				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to many'", key))
 			}
 
 			field.Set(reflect.ValueOf(rels))
