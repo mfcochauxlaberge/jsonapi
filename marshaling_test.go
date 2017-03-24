@@ -181,3 +181,47 @@ func TestMarshalCollection(t *testing.T) {
 		}
 	}
 }
+
+func TestMarshalErrors(t *testing.T) {
+	// reg := NewMockRegistry()
+
+	tests := []struct {
+		errors        []Error
+		errorExpected bool
+		payloadFile   string
+	}{
+		{
+			// 0
+			errors: []Error{
+				NewErrInvalidField("Name cannot be empty."),
+				NewErrInvalidField("Age cannot be negative."),
+			},
+			errorExpected: false,
+			payloadFile:   "errors-1",
+		},
+	}
+
+	for n, test := range tests {
+		// Marshal
+		payload, err := Marshal(test.errors, nil, nil)
+		tchek.ErrorExpected(t, n, test.errorExpected, err)
+
+		if !test.errorExpected {
+			var out bytes.Buffer
+
+			// Format the payload
+			json.Indent(&out, payload, "", "\t")
+			output := out.String()
+
+			// Retrieve the expected result from file
+			content, err := ioutil.ReadFile("tests/" + test.payloadFile + ".json")
+			tchek.UnintendedError(err)
+			out.Reset()
+			json.Indent(&out, content, "", "\t")
+			// Trim because otherwise there is an extra line at the end
+			expectedOutput := strings.TrimSpace(out.String())
+
+			tchek.AreEqual(t, n, expectedOutput, output)
+		}
+	}
+}
