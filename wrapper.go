@@ -257,7 +257,7 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 }
 
 // Validate ...
-func (w *Wrapper) Validate(keys []string) []error {
+func (w *Wrapper) Validate() []error {
 	return nil
 }
 

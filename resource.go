@@ -26,7 +26,7 @@ type Resource interface {
 	SetToMany(key string, rels []string)
 
 	// Validate
-	Validate(keys []string) []error
+	Validate() []error
 
 	// Copy
 	Copy() Resource
