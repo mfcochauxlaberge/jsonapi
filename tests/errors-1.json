@@ -1,12 +1,12 @@
 {
 	"errors": [
 		{
-			"status": 404,
+			"status": 400,
 			"title": "Invalid Attribute",
 			"detail": "Name cannot be empty."
 		},
 		{
-			"status": 404,
+			"status": 400,
 			"title": "Invalid Attribute",
 			"detail": "Age cannot be negative."
 		}
