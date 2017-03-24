@@ -10,6 +10,12 @@ import (
 
 // Marshal ...
 func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
+	if url == nil {
+		url = &URL{
+			Params: &Params{},
+		}
+	}
+
 	if opts == nil {
 		opts = NewOptions("", url.Params)
 	}
