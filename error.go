@@ -37,7 +37,7 @@ func NewErrNotFound() Error {
 // NewErrBadRequest ...
 func NewErrBadRequest(detail string) Error {
 	return Error{
-		Status: http.StatusNotFound,
+		Status: http.StatusBadRequest,
 		Title:  "Bad Request",
 		Detail: "One or more attributes are invalid.",
 	}
@@ -46,7 +46,7 @@ func NewErrBadRequest(detail string) Error {
 // NewErrInvalidField ...
 func NewErrInvalidField(detail string) Error {
 	return Error{
-		Status: http.StatusNotFound,
+		Status: http.StatusBadRequest,
 		Title:  "Invalid Attribute",
 		Detail: detail,
 	}
@@ -55,7 +55,7 @@ func NewErrInvalidField(detail string) Error {
 // NewErrUnauthorized ...
 func NewErrUnauthorized() Error {
 	return Error{
-		Status: http.StatusNotFound,
+		Status: http.StatusUnauthorized,
 		Title:  "Unauthorized",
 		Detail: "Identification is required to perform this request.",
 	}
@@ -64,7 +64,7 @@ func NewErrUnauthorized() Error {
 // NewErrForbidden ...
 func NewErrForbidden() Error {
 	return Error{
-		Status: http.StatusNotFound,
+		Status: http.StatusForbidden,
 		Title:  "Forbidden",
 		Detail: "Permission is required to perform this request.",
 	}
