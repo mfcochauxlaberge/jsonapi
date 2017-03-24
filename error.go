@@ -34,6 +34,15 @@ func NewErrNotFound() Error {
 	}
 }
 
+// NewErrBadRequest ...
+func NewErrBadRequest(detail string) Error {
+	return Error{
+		Status: http.StatusNotFound,
+		Title:  "Bad Request",
+		Detail: "One or more attributes are invalid.",
+	}
+}
+
 // NewErrInvalidField ...
 func NewErrInvalidField(detail string) Error {
 	return Error{
