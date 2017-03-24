@@ -35,7 +35,7 @@ func NewErrNotFound() Error {
 }
 
 // NewErrBadRequest ...
-func NewErrBadRequest(detail string) Error {
+func NewErrBadRequest() Error {
 	return Error{
 		Status: http.StatusBadRequest,
 		Title:  "Bad Request",
