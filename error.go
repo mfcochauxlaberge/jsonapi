@@ -1,8 +1,10 @@
 package jsonapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 )
 
 // Error represents an error object from the JSON API specification.
@@ -14,6 +16,15 @@ type Error struct {
 
 func (e Error) Error() string {
 	return fmt.Sprintf("%d %s: %s", e.Status, e.Title, e.Detail)
+}
+
+// MarshalJSON ...
+func (e Error) MarshalJSON() ([]byte, error) {
+	return json.Marshal(map[string]string{
+		"status": strconv.FormatInt(int64(e.Status), 10),
+		"title":  e.Title,
+		"detail": e.Detail,
+	})
 }
 
 // NewErrInternal ...
