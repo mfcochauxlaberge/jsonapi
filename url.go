@@ -21,6 +21,7 @@ type URL struct {
 	ResType    string
 	ResID      string
 	RelKind    string
+	Rel        Rel
 
 	// Params
 	Params *Params
@@ -186,7 +187,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		url.ResType = paths[0]
 	}
 
-	// rel = reg.Types[url.ResType].Rels[rel.Name]
+	rel = reg.Types[url.ResType].Rels[rel.Name]
 
 	// RelFiter
 	if fromFilter.Type != "" {
@@ -201,7 +202,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	url.Params = params
 
 	url.FromFilter = fromFilter
-	// url.Rel = rel
+	url.Rel = rel
 
 	url.NormalizeURL()
 
