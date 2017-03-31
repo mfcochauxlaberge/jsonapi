@@ -187,7 +187,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		url.ResType = paths[0]
 	}
 
-	rel = reg.Types[url.ResType].Rels[rel.Name]
+	rel = reg.Types[paths[0]].Rels[rel.Name]
 
 	// RelFiter
 	if fromFilter.Type != "" {
