@@ -352,14 +352,14 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 			// Page size
 			if size, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
 				if size > 0 && size <= 100 {
-					params.PageSize = uint(size)
+					params.PageSize = int(size)
 				}
 			}
 		} else if param == "page[number]" {
 			// Page number
 			if number, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
 				if number > 0 && number <= 10000 {
-					params.PageNumber = uint(number)
+					params.PageNumber = int(number)
 				}
 			}
 		} else if strings.HasPrefix(param, "fields[") {

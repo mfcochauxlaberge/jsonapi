@@ -16,8 +16,8 @@ type Params struct {
 	SortingRules []string
 
 	// Pagination
-	PageSize   uint
-	PageNumber uint
+	PageSize   int
+	PageNumber int
 
 	// Include
 	Include [][]Rel
