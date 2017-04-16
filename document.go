@@ -15,7 +15,7 @@ type Document struct {
 
 	// References
 	Resources map[string]map[string]struct{}
-	Linkage   map[string]map[string]struct{}
+	Links     map[string]Link
 
 	// Options
 	Options *Options

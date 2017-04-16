@@ -31,8 +31,3 @@ type linksSkeleton struct {
 	Self    json.RawMessage
 	Related json.RawMessage
 }
-
-type linkSkeleton struct {
-	HRef string
-	Meta map[string]interface{}
-}
