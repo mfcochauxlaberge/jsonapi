@@ -1,6 +1,8 @@
 package jsonapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Document ...
 type Document struct {
@@ -25,6 +27,16 @@ type Document struct {
 
 	// URL
 	URL *URL
+}
+
+// NewDocument ...
+func NewDocument() *Document {
+	return &Document{
+		Included:  map[string]Resource{},
+		Resources: map[string]map[string]struct{}{},
+		Links:     map[string]Link{},
+		Options:   NewOptions("", nil),
+	}
 }
 
 // Include ...
