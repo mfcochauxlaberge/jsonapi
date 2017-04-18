@@ -125,6 +125,10 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 		plMap["data"] = data
 	}
 
+	if len(d.Links) > 0 {
+		plMap["links"] = d.Links
+	}
+
 	if len(errors) > 0 {
 		plMap["errors"] = errors
 	}
