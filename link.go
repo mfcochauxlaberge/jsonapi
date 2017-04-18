@@ -1,6 +1,8 @@
 package jsonapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+)
 
 // Link ...
 type Link struct {
@@ -14,5 +16,5 @@ func (l Link) MarshalJSON() ([]byte, error) {
 		return json.Marshal(l)
 	}
 
-	return []byte(l.HRef), nil
+	return json.Marshal(l.HRef)
 }
