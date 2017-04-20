@@ -45,58 +45,63 @@ func (u *URL) NormalizeURL() {
 	path = path[:len(path)-1]
 
 	// Params
-	params := ""
+	urlParams := []string{}
+
+	// Fields
+	for n := range u.Params.Fields {
+		sort.Strings(u.Params.Fields[n])
+
+		param := "fields[" + n + "]="
+		for _, f := range u.Params.Fields[n] {
+			param += f + ","
+		}
+		param = param[:len(param)-1]
+
+		urlParams = append(urlParams, param)
+	}
+
+	// Filters
+	for n := range u.Params.RelFilters {
+		sort.Strings(u.Params.RelFilters[n].IDs)
+
+		param := "filter[" + n + "]="
+		for _, id := range u.Params.RelFilters[n].IDs {
+			param += id + ","
+		}
+		param = param[:len(param)-1]
+
+		urlParams = append(urlParams, param)
+	}
+
+	// TODO attribute filters
+
+	// Pagination
+	if u.Params.PageNumber != 0 {
+		if u.Params.PageNumber != 1 {
+			urlParams = append(urlParams, "page[number]="+strconv.FormatInt(int64(u.Params.PageNumber), 10))
+		}
+
+		urlParams = append(urlParams, "page[size]="+strconv.FormatInt(int64(u.Params.PageSize), 10))
+	}
+
+	// Sorting
+	if len(u.Params.SortingRules) > 0 {
+		param := "sort="
+		for _, attr := range u.Params.SortingRules {
+			param += attr + ","
+		}
+		param = param[:len(param)-1]
+
+		urlParams = append(urlParams, param)
+	}
+
+	params := "?"
+	for _, param := range urlParams {
+		params += param + "&"
+	}
+	params = params[:len(params)-1]
 
 	u.URLNormalized = path + params
-
-	// urlParams := []string{}
-
-	// for k := range fields {
-	// 	if len(fields[k]) == len(reg.Types[k].Fields) {
-	// 		delete(fields, k)
-	// 	}
-	// }
-	// urlParams = append(urlParams, stringifyParams(fields, "fields")...)
-	//
-	// filtersParams := map[string][]string{}
-	// for n, f := range params.RelFilters {
-	// 	filtersParams[n] = f.IDs
-	// }
-	// urlParams = append(urlParams, stringifyParams(filtersParams, "filters")...)
-	//
-	// urlParams = append(urlParams, stringifyParams(map[string][]string{
-	// 	"size":   []string{strconv.FormatUint(pagination["size"], 10)},
-	// 	"number": []string{strconv.FormatUint(pagination["number"], 10)},
-	// }, "page")...)
-	//
-	// if len(sorting) > 0 {
-	// 	sortParam := "sort="
-	// 	for i, v := range sorting {
-	// 		if i < len(sorting)-1 {
-	// 			v += ","
-	// 		}
-	// 		sortParam += v
-	// 	}
-	// 	urlParams = append(urlParams, sortParam)
-	// }
-	//
-	// if len(includes) > 0 {
-	// 	urlParams = append(urlParams, stringifyParams(map[string][]string{
-	// 		"include": includes,
-	// 	}, "")...)
-	// }
-	//
-	// sort.Strings(urlParams)
-	// normURL := path
-	// if len(urlParams) > 0 {
-	// 	normURL += "?"
-	// }
-	// for _, param := range urlParams {
-	// 	normURL += param + "&"
-	// }
-	// normURL = strings.TrimSuffix(normURL, "&")
-	// url.URL = u.String()
-	// url.URLNormalized = normURL
 }
 
 // ParseRawURL ...
