@@ -36,7 +36,7 @@ type FromFilter struct {
 }
 
 // NormalizeURL ...
-func (u *URL) NormalizeURL() {
+func (u *URL) NormalizeURL() string {
 	// Path
 	path := "/"
 	for _, p := range u.Path {
@@ -102,6 +102,8 @@ func (u *URL) NormalizeURL() {
 	params = params[:len(params)-1]
 
 	u.URLNormalized = path + params
+
+	return u.URLNormalized
 }
 
 // ParseRawURL ...
