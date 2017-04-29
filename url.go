@@ -22,6 +22,7 @@ type URL struct {
 	ResID      string
 	RelKind    string
 	Rel        Rel
+	IsCol      bool
 
 	// Params
 	Params *Params
@@ -157,11 +158,13 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 
 	if len(paths) >= 1 {
 		url.ResType = paths[0]
+		url.IsCol = true
 	}
 
 	if len(paths) >= 2 {
 		if paths[1] != "meta" {
 			url.ResID = paths[1]
+			url.IsCol = false
 		}
 	}
 
@@ -173,12 +176,12 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		if paths[2] == "relationships" {
 			url.ResID = ""
 			url.RelKind = "self"
-			fromFilter.Name = paths[3]
 		} else if paths[2] != "meta" {
 			url.ResID = ""
 			url.RelKind = "related"
 			if r, ok := reg.Types[paths[0]].Rels[paths[2]]; ok {
 				url.ResType = r.Type
+				url.IsCol = !r.ToOne
 			}
 			rel.Name = paths[2]
 		}
@@ -187,6 +190,11 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	if len(paths) >= 4 {
 		if url.RelKind == "self" {
 			rel.Name = paths[3]
+			fromFilter.Name = paths[3]
+			if r, ok := reg.Types[paths[0]].Rels[paths[3]]; ok {
+				url.ResType = r.Type
+				url.IsCol = !r.ToOne
+			}
 		}
 	}
 
