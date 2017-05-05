@@ -67,6 +67,8 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 		if err != nil {
 			return nil, err
 		}
+	} else {
+		panic("v in Unmarshal doest not implement Resource or Collection")
 	}
 
 	// Options
