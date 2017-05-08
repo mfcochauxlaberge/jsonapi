@@ -36,6 +36,7 @@ func NewDocument() *Document {
 		Resources: map[string]map[string]struct{}{},
 		Links:     map[string]Link{},
 		Options:   NewOptions("", nil),
+		URL:       NewURL(),
 	}
 }
 
