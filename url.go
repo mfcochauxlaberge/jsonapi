@@ -28,6 +28,13 @@ type URL struct {
 	Params *Params
 }
 
+func NewURL() *URL {
+	return &URL{
+		Path:   []string{},
+		Params: NewParams(),
+	}
+}
+
 // FromFilter ...
 type FromFilter struct {
 	Type        string
