@@ -42,6 +42,7 @@ func TestParseURL(t *testing.T) {
 				ResType:    "mocktypes1",
 				ResID:      "",
 				RelKind:    "",
+				IsCol:      true,
 			},
 			expectedError: false,
 		}, {
@@ -59,6 +60,7 @@ func TestParseURL(t *testing.T) {
 				ResType:    "mocktypes1",
 				ResID:      "",
 				RelKind:    "",
+				IsCol:      true,
 			},
 			expectedError: false,
 		}, {
@@ -76,6 +78,7 @@ func TestParseURL(t *testing.T) {
 				ResType:    "mocktypes1",
 				ResID:      "mc1-1",
 				RelKind:    "",
+				IsCol:      false,
 			},
 			expectedError: false,
 		}, {
@@ -105,6 +108,7 @@ func TestParseURL(t *testing.T) {
 					InverseType:  "mocktypes1",
 					InverseToOne: false,
 				},
+				IsCol: false,
 			},
 			expectedError: false,
 		}, {
@@ -135,6 +139,7 @@ func TestParseURL(t *testing.T) {
 					InverseType:  "mocktypes1",
 					InverseToOne: true,
 				},
+				IsCol: true,
 			},
 			expectedError: false,
 		}, {
@@ -165,6 +170,7 @@ func TestParseURL(t *testing.T) {
 					InverseType:  "mocktypes1",
 					InverseToOne: true,
 				},
+				IsCol: true,
 			},
 			expectedError: false,
 		},
