@@ -23,6 +23,19 @@ type Params struct {
 	Include [][]Rel
 }
 
+func NewParams() *Params {
+	return &Params{
+		Fields:       map[string][]string{},
+		Attrs:        map[string][]Attr{},
+		Rels:         map[string][]Rel{},
+		RelData:      map[string][]string{},
+		AttrFilters:  map[string]AttrFilter{},
+		RelFilters:   map[string]RelFilter{},
+		SortingRules: []string{},
+		Include:      [][]Rel{},
+	}
+}
+
 // AttrFilter ...
 type AttrFilter struct {
 	Type    string
