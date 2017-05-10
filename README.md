@@ -1,4 +1,4 @@
-# jsonapi
+    # jsonapi
 
 jsonapi is a complete library to marshal and unmarshal JSON API payloads.
 
@@ -40,7 +40,28 @@ type User struct {
 }
 ```
 
-It is recommended to use the json tag which sets the name of the field. Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a []slice. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In this case, our Article struct would have an author relationship of type users:
+It is recommended to use the json tag which sets the name of the field.
+
+## Attributes
+
+Attributes can be of the following types:
+
+```
+string
+int, int8, int16, int32, int64
+uint, uint8, uint16, uint32
+bool
+time.Time
+*string
+*int, *int8, *int16, *int32, *int64
+*uint, *uint8, *uint16, *uint32
+*bool
+*time.Time
+```
+
+## Relationships
+
+Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a slice of strings. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In the following example, our Article struct defines a relationship named author of type users:
 
 ```
 Author string `json:"author" api:"rel,users,articles"`
