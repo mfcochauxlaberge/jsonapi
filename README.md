@@ -1,4 +1,4 @@
-    # jsonapi
+# jsonapi
 
 jsonapi is a complete library to marshal and unmarshal JSON API payloads.
 
