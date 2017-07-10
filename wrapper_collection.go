@@ -10,7 +10,10 @@ func WrapCollection(r Resource) *WrapperCollection {
 	// 	r := Wrap(v)
 	// }
 
+	_, typ := r.IDAndType()
+
 	return &WrapperCollection{
+		typ:    typ,
 		col:    []*Wrapper{},
 		sample: r,
 	}
@@ -18,8 +21,14 @@ func WrapCollection(r Resource) *WrapperCollection {
 
 // WrapperCollection ...
 type WrapperCollection struct {
+	typ    string
 	col    []*Wrapper
 	sample Resource
+}
+
+// Type ....
+func (wc *WrapperCollection) Type() string {
+	return wc.typ
 }
 
 // Len ...
