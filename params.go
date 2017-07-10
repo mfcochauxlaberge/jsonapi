@@ -23,6 +23,7 @@ type Params struct {
 	Include [][]Rel
 }
 
+// NewParams ...
 func NewParams() *Params {
 	return &Params{
 		Fields:       map[string][]string{},
