@@ -13,7 +13,7 @@ func init() {
 	loc, _ := time.LoadLocation("")
 
 	// Resources
-	mocktypes1 = &WrapperCollection{}
+	mocktypes1 = WrapCollection(Wrap(&MockType1{}))
 	mocktypes1.Add(
 		Wrap(&MockType1{
 			ID: "mt1-1",
@@ -38,7 +38,7 @@ func init() {
 		}),
 	)
 
-	mocktypes2 = &WrapperCollection{}
+	mocktypes2 = WrapCollection(Wrap(&MockType2{}))
 	mocktypes2.Add(
 		Wrap(&MockType2{
 			ID: "mt2-1",
@@ -75,7 +75,7 @@ func init() {
 		}),
 	)
 
-	mocktypes3 = &WrapperCollection{}
+	mocktypes3 = WrapCollection(Wrap(&MockType3{}))
 	mocktypes3.Add(
 		Wrap(&MockType3{
 			ID: "mt3-1",
