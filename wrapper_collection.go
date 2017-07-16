@@ -65,26 +65,6 @@ func (wc *WrapperCollection) Sample() Resource {
 	return wc.sample.New()
 }
 
-// MarshalJSONOptions ...
-func (wc *WrapperCollection) MarshalJSONOptions(opts *Options) ([]byte, error) {
-	var raws []*json.RawMessage
-
-	if wc.Len() == 0 {
-		return []byte("[]"), nil
-	}
-
-	for _, r := range wc.col {
-		var raw json.RawMessage
-		raw, err := r.MarshalJSONOptions(opts)
-		if err != nil {
-			return []byte{}, err
-		}
-		raws = append(raws, &raw)
-	}
-
-	return json.Marshal(raws)
-}
-
 // UnmarshalJSON ...
 func (wc *WrapperCollection) UnmarshalJSON(payload []byte) error {
 	var raws []json.RawMessage

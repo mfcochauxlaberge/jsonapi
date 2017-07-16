@@ -23,11 +23,11 @@ func TestUnmarshalResource(t *testing.T) {
 		"version": "1.0",
 	}
 
-	opts1 := NewOptions("", url1.Params)
-	opts1.Meta = meta1
-	opts1.JSONAPI = jsonapi1
+	doc1 := NewDocument()
+	doc1.Meta = meta1
+	doc1.JSONAPI = jsonapi1
 
-	pl1, err := Marshal(res1, url1, opts1)
+	pl1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
 	// buf := &bytes.Buffer{}
@@ -37,12 +37,12 @@ func TestUnmarshalResource(t *testing.T) {
 
 	dst1 := Wrap(&MockType1{})
 
-	doc1, err := Unmarshal(pl1, dst1)
+	doc2, err := Unmarshal(pl1, nil)
 	tchek.UnintendedError(err)
 
 	tchek.HaveEqualAttributes(t, -1, res1, dst1)
-	tchek.AreEqual(t, -1, meta1, doc1.Options.Meta)
-	tchek.AreEqual(t, -1, jsonapi1, doc1.Options.JSONAPI)
+	tchek.AreEqual(t, -1, meta1, doc2.Meta)
+	tchek.AreEqual(t, -1, jsonapi1, doc2.JSONAPI)
 }
 
 // func TestUnmarshalCollection(t *testing.T) {

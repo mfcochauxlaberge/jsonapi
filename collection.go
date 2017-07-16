@@ -9,6 +9,5 @@ type Collection interface {
 	Sample() Resource
 
 	// JSON
-	MarshalJSONOptions(opts *Options) ([]byte, error)
 	UnmarshalJSON(payload []byte) error
 }

@@ -62,19 +62,23 @@ func TestMarshalResource(t *testing.T) {
 	}
 
 	for n, test := range tests {
+		doc := NewDocument()
+
+		doc.Resource = test.data
+
 		id, resType := test.data.IDAndType()
 		rawurl := fmt.Sprintf("/%s/%s%s", resType, id, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)
+		url.Host = test.host
 
-		// Options
-		opts := NewOptions(test.host, url.Params)
-		opts.Meta = test.meta
-		opts.JSONAPI = test.jsonapi
+		doc.URL = url
+		doc.Meta = test.meta
+		doc.JSONAPI = test.jsonapi
 
 		// Marshal
-		payload, err := Marshal(test.data, url, opts)
+		payload, err := Marshal(doc, url)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {
@@ -147,19 +151,23 @@ func TestMarshalCollection(t *testing.T) {
 	}
 
 	for n, test := range tests {
+		doc := NewDocument()
+
+		doc.Collection = test.data
+
 		_, resType := test.data.Sample().IDAndType()
 		rawurl := fmt.Sprintf("/%s%s", resType, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)
+		url.Host = test.host
 
-		// Options
-		opts := NewOptions(test.host, url.Params)
-		opts.Meta = test.meta
-		opts.JSONAPI = test.jsonapi
+		doc.URL = url
+		doc.Meta = test.meta
+		doc.JSONAPI = test.jsonapi
 
 		// Marshal
-		payload, err := Marshal(test.data, url, opts)
+		payload, err := Marshal(doc, url)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {
@@ -203,7 +211,7 @@ func TestMarshalErrors(t *testing.T) {
 
 	for n, test := range tests {
 		// Marshal
-		payload, err := Marshal(test.errors, nil, nil)
+		payload, err := Marshal(test.errors, nil)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {

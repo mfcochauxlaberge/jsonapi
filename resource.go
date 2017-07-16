@@ -32,6 +32,5 @@ type Resource interface {
 	Copy() Resource
 
 	// JSON
-	MarshalJSONOptions(opts *Options) ([]byte, error)
 	UnmarshalJSON(payload []byte) error
 }

@@ -19,8 +19,12 @@ type Document struct {
 	Resources map[string]map[string]struct{}
 	Links     map[string]Link
 
-	// Options
-	Options *Options
+	// Relationships where data has to be included in payload
+	RelData map[string][]string
+
+	// Top-level members
+	Meta    map[string]interface{}
+	JSONAPI map[string]interface{}
 
 	// Errors
 	Errors []Error
@@ -35,7 +39,7 @@ func NewDocument() *Document {
 		Included:  map[string]Resource{},
 		Resources: map[string]map[string]struct{}{},
 		Links:     map[string]Link{},
-		Options:   NewOptions("", nil),
+		RelData:   map[string][]string{},
 		URL:       NewURL(),
 	}
 }
@@ -91,9 +95,10 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	if d.Errors != nil {
 		errors, err = json.Marshal(d.Errors)
 	} else if d.Resource != nil {
-		data, err = d.Resource.MarshalJSONOptions(d.Options)
+		_, typ := d.Resource.IDAndType()
+		data, err = marshalResource(d.Resource, d.URL.Host, d.URL.Params.Fields[typ], d.RelData)
 	} else if d.Collection != nil {
-		data, err = d.Collection.MarshalJSONOptions(d.Options)
+		data, err = marshalCollection(d.Collection, d.URL.Host, d.URL.Params.Fields[d.Collection.Type()], d.RelData)
 	} else if (d.Identifier != Identifier{}) {
 		data, err = json.Marshal(d.Identifier)
 	} else if d.Identifiers != nil {
@@ -110,7 +115,8 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	inclusions := []*json.RawMessage{}
 	if len(data) > 0 {
 		for key := range d.Included {
-			raw, err := d.Included[key].MarshalJSONOptions(d.Options)
+			_, typ := d.Included[key].IDAndType()
+			raw, err := marshalResource(d.Included[key], d.URL.Host, d.URL.Params.Fields[typ], d.RelData)
 			if err != nil {
 				return []byte{}, err
 			}
@@ -138,12 +144,12 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 		plMap["included"] = inclusions
 	}
 
-	if len(d.Options.Meta) > 0 {
-		plMap["meta"] = d.Options.Meta
+	if len(d.Meta) > 0 {
+		plMap["meta"] = d.Meta
 	}
 
-	if len(d.Options.JSONAPI) > 0 {
-		plMap["jsonapi"] = d.Options.JSONAPI
+	if len(d.JSONAPI) > 0 {
+		plMap["jsonapi"] = d.JSONAPI
 	}
 
 	return json.Marshal(plMap)

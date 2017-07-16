@@ -9,24 +9,23 @@ import (
 )
 
 // Marshal ...
-func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error) {
+func Marshal(v interface{}, url *URL) ([]byte, error) {
 	if url == nil {
 		url = &URL{
 			Params: &Params{},
 		}
 	}
 
-	if opts == nil {
-		opts = NewOptions("", url.Params)
-	}
-
 	// Document
 	doc := &Document{
-		URL:     url,
-		Options: opts,
+		URL: url,
 	}
 
-	if res, ok := v.(Resource); ok {
+	if d, ok := v.(Document); ok {
+		doc = &d
+	} else if d, ok := v.(*Document); ok {
+		doc = d
+	} else if res, ok := v.(Resource); ok {
 		doc.Resource = res
 	} else if col, ok := v.(Collection); ok {
 		doc.Collection = col
@@ -57,25 +56,25 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 	}
 
 	// Resource or collection
-	if _, ok := v.(Resource); ok {
+	if v == nil {
+	} else if res, ok := v.(Resource); ok {
 		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
 			return nil, err
 		}
-	} else if _, ok := v.(Collection); ok {
+		doc.Resource = res
+	} else if col, ok := v.(Collection); ok {
 		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
 			return nil, err
 		}
+		doc.Collection = col
 	} else {
 		panic("v in Unmarshal doest not implement Resource or Collection")
 	}
 
-	// Options
-	doc.Options = &Options{
-		Meta:    ske.Meta,
-		JSONAPI: ske.JSONAPI,
-	}
+	doc.Meta = ske.Meta
+	doc.JSONAPI = ske.JSONAPI
 
 	return doc, nil
 }
