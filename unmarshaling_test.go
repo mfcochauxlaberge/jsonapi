@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"encoding/json"
 	"testing"
 
 	"github.com/kkaribu/tchek"
@@ -24,10 +25,11 @@ func TestUnmarshalResource(t *testing.T) {
 	}
 
 	doc1 := NewDocument()
+	doc1.URL = url1
 	doc1.Meta = meta1
 	doc1.JSONAPI = jsonapi1
 
-	pl1, err := Marshal(doc1, url1)
+	pl1, err := json.Marshal(doc1)
 	tchek.UnintendedError(err)
 
 	// buf := &bytes.Buffer{}

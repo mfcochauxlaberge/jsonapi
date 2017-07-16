@@ -8,42 +8,6 @@ import (
 	"strings"
 )
 
-// Marshal ...
-func Marshal(v interface{}, url *URL) ([]byte, error) {
-	if url == nil {
-		url = &URL{
-			Params: &Params{},
-		}
-	}
-
-	// Document
-	doc := &Document{
-		URL: url,
-	}
-
-	if d, ok := v.(Document); ok {
-		doc = &d
-	} else if d, ok := v.(*Document); ok {
-		doc = d
-	} else if res, ok := v.(Resource); ok {
-		doc.Resource = res
-	} else if col, ok := v.(Collection); ok {
-		doc.Collection = col
-	} else if ident, ok := v.(Identifier); ok {
-		doc.Identifier = ident
-	} else if idents, ok := v.(Identifiers); ok {
-		doc.Identifiers = idents
-	} else if err, ok := v.(Error); ok {
-		doc.Errors = []Error{err}
-	} else if errs, ok := v.([]Error); ok {
-		doc.Errors = errs
-	} else {
-		panic(fmt.Errorf("jsonapi: cannot marshal unsupported type %s", reflect.ValueOf(v).Type().String()))
-	}
-
-	return json.Marshal(doc)
-}
-
 // Unmarshal ...
 func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 	doc := &Document{}
