@@ -38,6 +38,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:       []string{"mocktypes1"},
 				Route:      "/mocktypes1",
+				Type:       "col",
 				FromFilter: FromFilter{},
 				ResType:    "mocktypes1",
 				ResID:      "",
@@ -56,6 +57,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:       []string{"mocktypes1"},
 				Route:      "/mocktypes1",
+				Type:       "col",
 				FromFilter: FromFilter{},
 				ResType:    "mocktypes1",
 				ResID:      "",
@@ -74,6 +76,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:       []string{"mocktypes1", "mc1-1"},
 				Route:      "/mocktypes1/:id",
+				Type:       "res",
 				FromFilter: FromFilter{},
 				ResType:    "mocktypes1",
 				ResID:      "mc1-1",
@@ -92,6 +95,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:  []string{"mocktypes1", "mc1-1", "to-one"},
 				Route: "/mocktypes1/:id/to-one",
+				Type:  "related",
 				FromFilter: FromFilter{
 					Type: "mocktypes1",
 					ID:   "mc1-1",
@@ -122,6 +126,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:  []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route: "/mocktypes1/:id/relationships/to-many-from-one",
+				Type:  "self",
 				FromFilter: FromFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -153,6 +158,7 @@ func TestParseURL(t *testing.T) {
 				`,
 				Path:  []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route: "/mocktypes1/:id/relationships/to-many-from-one",
+				Type:  "self",
 				FromFilter: FromFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",

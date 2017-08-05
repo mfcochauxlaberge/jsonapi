@@ -17,6 +17,7 @@ type URL struct {
 	URLNormalized string   // /users/u1/articles?fields[users]=age,name
 	Path          []string // [users, u1, articles]
 	Route         string   // /users/:id/articles
+	Type          string   // col, res, related, self, meta
 
 	// Resource
 	FromFilter FromFilter
@@ -168,12 +169,16 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	if len(paths) >= 1 {
 		url.ResType = paths[0]
 		url.IsCol = true
+		url.Type = "col"
 	}
 
 	if len(paths) >= 2 {
 		if paths[1] != "meta" {
 			url.ResID = paths[1]
 			url.IsCol = false
+			url.Type = "res"
+		} else {
+			url.Type = "meta"
 		}
 	}
 
@@ -185,14 +190,18 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		if paths[2] == "relationships" {
 			url.ResID = ""
 			url.RelKind = "self"
+			url.Type = "self"
 		} else if paths[2] != "meta" {
 			url.ResID = ""
 			url.RelKind = "related"
+			url.Type = "related"
 			if r, ok := reg.Types[paths[0]].Rels[paths[2]]; ok {
 				url.ResType = r.Type
 				url.IsCol = !r.ToOne
 			}
 			rel.Name = paths[2]
+		} else {
+			url.Type = "meta"
 		}
 	}
 
