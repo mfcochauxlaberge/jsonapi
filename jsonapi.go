@@ -33,6 +33,18 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 			return nil, err
 		}
 		doc.Collection = col
+	} else if id, ok := v.(Identifier); ok {
+		err = json.Unmarshal(ske.Data, v)
+		if err != nil {
+			return nil, err
+		}
+		doc.Identifier = id
+	} else if ids, ok := v.(Identifiers); ok {
+		err = json.Unmarshal(ske.Data, v)
+		if err != nil {
+			return nil, err
+		}
+		doc.Identifiers = ids
 	} else {
 		panic("v in Unmarshal doest not implement Resource or Collection")
 	}
