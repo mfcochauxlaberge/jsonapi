@@ -7,10 +7,7 @@ import (
 // Document ...
 type Document struct {
 	// Data
-	Resource    Resource
-	Collection  Collection
-	Identifier  Identifier
-	Identifiers Identifiers
+	Data interface{}
 
 	// Included
 	Included map[string]Resource
@@ -53,22 +50,20 @@ func (d *Document) Include(res Resource) {
 		d.Included = map[string]Resource{}
 	}
 
-	// Check resource
-	if d.Resource != nil {
-		rid, rtype := d.Resource.IDAndType()
+	if dres, ok := d.Data.(Resource); ok {
+		// Check resource
+		rid, rtype := dres.IDAndType()
 		rkey := rid + " " + rtype
 
 		if rkey == key {
 			return
 		}
-	}
-
-	// Check Collection
-	if d.Collection != nil {
-		_, ctyp := d.Collection.Sample().IDAndType()
+	} else if col, ok := d.Data.(Collection); ok {
+		// Check Collection
+		_, ctyp := col.Sample().IDAndType()
 		if ctyp == typ {
-			for i := 0; i < d.Collection.Len(); i++ {
-				rid, rtype := d.Collection.Elem(i).IDAndType()
+			for i := 0; i < col.Len(); i++ {
+				rid, rtype := col.Elem(i).IDAndType()
 				rkey := rid + " " + rtype
 
 				if rkey == key {
@@ -94,15 +89,15 @@ func (d *Document) MarshalJSON() ([]byte, error) {
 	var err error
 	if d.Errors != nil {
 		errors, err = json.Marshal(d.Errors)
-	} else if d.Resource != nil {
-		_, typ := d.Resource.IDAndType()
-		data, err = marshalResource(d.Resource, d.URL.Host, d.URL.Params.Fields[typ], d.RelData)
-	} else if d.Collection != nil {
-		data, err = marshalCollection(d.Collection, d.URL.Host, d.URL.Params.Fields[d.Collection.Type()], d.RelData)
-	} else if (d.Identifier != Identifier{}) {
-		data, err = json.Marshal(d.Identifier)
-	} else if d.Identifiers != nil {
-		data, err = json.Marshal(d.Identifiers)
+	} else if res, ok := d.Data.(Resource); ok {
+		_, typ := res.IDAndType()
+		data, err = marshalResource(res, d.URL.Host, d.URL.Params.Fields[typ], d.RelData)
+	} else if col, ok := d.Data.(Collection); ok {
+		data, err = marshalCollection(col, d.URL.Host, d.URL.Params.Fields[col.Type()], d.RelData)
+	} else if id, ok := d.Data.(Identifier); ok {
+		data, err = json.Marshal(id)
+	} else if ids, ok := d.Data.(Identifiers); ok {
+		data, err = json.Marshal(ids)
 	} else {
 		data = []byte("null")
 	}

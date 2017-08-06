@@ -26,25 +26,25 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 		if err != nil {
 			return nil, err
 		}
-		doc.Resource = res
+		doc.Data = res
 	} else if col, ok := v.(Collection); ok {
 		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
 			return nil, err
 		}
-		doc.Collection = col
+		doc.Data = col
 	} else if id, ok := v.(Identifier); ok {
 		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
 			return nil, err
 		}
-		doc.Identifier = id
+		doc.Data = id
 	} else if ids, ok := v.(Identifiers); ok {
 		err = json.Unmarshal(ske.Data, v)
 		if err != nil {
 			return nil, err
 		}
-		doc.Identifiers = ids
+		doc.Data = ids
 	} else {
 		panic("v in Unmarshal doest not implement Resource or Collection")
 	}

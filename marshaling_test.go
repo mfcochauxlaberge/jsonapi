@@ -64,7 +64,7 @@ func TestMarshalResource(t *testing.T) {
 	for n, test := range tests {
 		doc := NewDocument()
 
-		doc.Resource = test.data
+		doc.Data = test.data
 
 		id, resType := test.data.IDAndType()
 		rawurl := fmt.Sprintf("/%s/%s%s", resType, id, test.params)
@@ -153,7 +153,7 @@ func TestMarshalCollection(t *testing.T) {
 	for n, test := range tests {
 		doc := NewDocument()
 
-		doc.Collection = test.data
+		doc.Data = test.data
 
 		_, resType := test.data.Sample().IDAndType()
 		rawurl := fmt.Sprintf("/%s%s", resType, test.params)
