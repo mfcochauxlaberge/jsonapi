@@ -16,8 +16,7 @@ type Document struct {
 	RelData map[string][]string
 
 	// Top-level members
-	Meta    map[string]interface{}
-	JSONAPI map[string]interface{}
+	Meta map[string]interface{}
 
 	// Errors
 	Errors []Error

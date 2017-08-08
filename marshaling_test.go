@@ -21,7 +21,6 @@ func TestMarshalResource(t *testing.T) {
 		host          string
 		params        string
 		meta          map[string]interface{}
-		jsonapi       map[string]interface{}
 		errorExpected bool
 		payloadFile   string
 	}{
@@ -34,28 +33,19 @@ func TestMarshalResource(t *testing.T) {
 				"tf":        true,
 				"str":       "a string",
 			},
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
 			errorExpected: false,
 			payloadFile:   "resource-1",
 		}, {
 			// 1
-			data: mocktypes2.Elem(1),
-			host: "https://example.org",
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
+			data:          mocktypes2.Elem(1),
+			host:          "https://example.org",
 			errorExpected: false,
 			payloadFile:   "resource-2",
 		}, {
 			// 2
-			data:   mocktypes2.Elem(1),
-			host:   "https://example.org",
-			params: "?fields[mocktypes2]=strptr,uintptr,int",
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
+			data:          mocktypes2.Elem(1),
+			host:          "https://example.org",
+			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
 			payloadFile:   "resource-3",
 		},
@@ -74,7 +64,6 @@ func TestMarshalResource(t *testing.T) {
 		url.Host = test.host
 
 		doc.Meta = test.meta
-		doc.JSONAPI = test.jsonapi
 
 		// Marshal
 		payload, err := Marshal(doc, url)
@@ -122,28 +111,19 @@ func TestMarshalCollection(t *testing.T) {
 				"tf":        false,
 				"str":       "//\n\téç.\\",
 			},
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
 			errorExpected: false,
 			payloadFile:   "collection-1",
 		}, {
 			// 1
-			data:   mocktypes2,
-			host:   "https://example.org",
-			params: "?fields[mocktypes2]=uintptr,boolptr,timeptr",
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
+			data:          mocktypes2,
+			host:          "https://example.org",
+			params:        "?fields[mocktypes2]=uintptr,boolptr,timeptr",
 			errorExpected: false,
 			payloadFile:   "collection-2",
 		}, {
 			// 2
-			data: WrapCollection(Wrap(&MockType1{})),
-			host: "https://example.org",
-			jsonapi: map[string]interface{}{
-				"version": "1.0",
-			},
+			data:          WrapCollection(Wrap(&MockType1{})),
+			host:          "https://example.org",
 			errorExpected: false,
 			payloadFile:   "collection-3",
 		},
@@ -162,7 +142,6 @@ func TestMarshalCollection(t *testing.T) {
 		url.Host = test.host
 
 		doc.Meta = test.meta
-		doc.JSONAPI = test.jsonapi
 
 		// Marshal
 		payload, err := Marshal(doc, url)

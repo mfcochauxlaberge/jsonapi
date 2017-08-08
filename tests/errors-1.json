@@ -10,5 +10,8 @@
 			"status": "400",
 			"title": "Invalid Attribute"
 		}
-	]
+	],
+	"jsonapi": {
+		"version": "1.0"
+	}
 }

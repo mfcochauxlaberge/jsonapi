@@ -61,6 +61,10 @@
 	"jsonapi": {
 		"version": "1.0"
 	},
+	"links": {
+		"given-url": "/mocktypes1/mt1-1",
+		"interpreted-url": "/mocktypes1/mt1-1?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8"
+	},
 	"meta": {
 		"num": 42,
 		"str": "a string",

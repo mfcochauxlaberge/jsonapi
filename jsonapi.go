@@ -62,23 +62,23 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 		plMap["errors"] = errors
 	} else if len(data) > 0 {
 		plMap["data"] = data
-	}
 
-	if len(doc.Links) > 0 {
-		plMap["links"] = doc.Links
-	}
-
-	if len(inclusions) > 0 {
-		plMap["included"] = inclusions
+		if len(inclusions) > 0 {
+			plMap["included"] = inclusions
+		}
 	}
 
 	if len(doc.Meta) > 0 {
 		plMap["meta"] = doc.Meta
 	}
 
-	if len(doc.JSONAPI) > 0 {
-		plMap["jsonapi"] = doc.JSONAPI
+	if url != nil {
+		plMap["links"] = map[string]string{
+			"given-url":       url.URL,
+			"interpreted-url": url.URLNormalized,
+		}
 	}
+	plMap["jsonapi"] = map[string]string{"version": "1.0"}
 
 	return json.Marshal(plMap)
 }
@@ -125,7 +125,7 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 	}
 
 	doc.Meta = ske.Meta
-	doc.JSONAPI = ske.JSONAPI
+	// doc.JSONAPI = ske.JSONAPI
 
 	return doc, nil
 }

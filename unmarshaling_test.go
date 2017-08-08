@@ -19,13 +19,8 @@ func TestUnmarshalResource(t *testing.T) {
 		"b":   true,
 	}
 
-	jsonapi1 := map[string]interface{}{
-		"version": "1.0",
-	}
-
 	doc1 := NewDocument()
 	doc1.Meta = meta1
-	doc1.JSONAPI = jsonapi1
 
 	pl1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
@@ -42,7 +37,6 @@ func TestUnmarshalResource(t *testing.T) {
 
 	tchek.HaveEqualAttributes(t, -1, res1, dst1)
 	tchek.AreEqual(t, -1, meta1, doc2.Meta)
-	tchek.AreEqual(t, -1, jsonapi1, doc2.JSONAPI)
 }
 
 // func TestUnmarshalCollection(t *testing.T) {
