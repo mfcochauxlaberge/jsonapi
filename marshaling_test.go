@@ -73,12 +73,11 @@ func TestMarshalResource(t *testing.T) {
 		tchek.UnintendedError(err)
 		url.Host = test.host
 
-		doc.URL = url
 		doc.Meta = test.meta
 		doc.JSONAPI = test.jsonapi
 
 		// Marshal
-		payload, err := json.Marshal(doc)
+		payload, err := Marshal(doc, url)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {
@@ -162,12 +161,11 @@ func TestMarshalCollection(t *testing.T) {
 		tchek.UnintendedError(err)
 		url.Host = test.host
 
-		doc.URL = url
 		doc.Meta = test.meta
 		doc.JSONAPI = test.jsonapi
 
 		// Marshal
-		payload, err := json.Marshal(doc)
+		payload, err := Marshal(doc, url)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {
@@ -211,10 +209,9 @@ func TestMarshalErrors(t *testing.T) {
 
 	for n, test := range tests {
 		doc := NewDocument()
-		doc.Errors = test.errors
-
+		doc.Data = test.errors
 		// Marshal
-		payload, err := json.Marshal(doc)
+		payload, err := Marshal(doc, nil)
 		tchek.ErrorExpected(t, n, test.errorExpected, err)
 
 		if !test.errorExpected {

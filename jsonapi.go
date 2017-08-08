@@ -8,6 +8,81 @@ import (
 	"strings"
 )
 
+func Marshal(doc *Document, url *URL) ([]byte, error) {
+	// Data
+	var data json.RawMessage
+	var errors json.RawMessage
+	var err error
+
+	if res, ok := doc.Data.(Resource); ok {
+		// Resource
+		_, typ := res.IDAndType()
+		data, err = marshalResource(res, url.Host, url.Params.Fields[typ], doc.RelData)
+	} else if col, ok := doc.Data.(Collection); ok {
+		// Collection
+		data, err = marshalCollection(col, url.Host, url.Params.Fields[col.Type()], doc.RelData)
+	} else if id, ok := doc.Data.(Identifier); ok {
+		// Identifer
+		data, err = json.Marshal(id)
+	} else if ids, ok := doc.Data.(Identifiers); ok {
+		// Identifiers
+		data, err = json.Marshal(ids)
+	} else if e, ok := doc.Data.(Error); ok {
+		// Error
+		errors, err = json.Marshal([]Error{e})
+	} else if es, ok := doc.Data.([]Error); ok {
+		// Errors
+		errors, err = json.Marshal(es)
+	} else {
+		data = []byte("null")
+	}
+
+	if err != nil {
+		return []byte{}, err
+	}
+
+	// Included
+	inclusions := []*json.RawMessage{}
+	if len(data) > 0 {
+		for key := range doc.Included {
+			_, typ := doc.Included[key].IDAndType()
+			raw, err := marshalResource(doc.Included[key], url.Host, url.Params.Fields[typ], doc.RelData)
+			if err != nil {
+				return []byte{}, err
+			}
+			rawm := json.RawMessage(raw)
+			inclusions = append(inclusions, &rawm)
+		}
+	}
+
+	// Marshaling
+	plMap := map[string]interface{}{}
+
+	if len(errors) > 0 {
+		plMap["errors"] = errors
+	} else if len(data) > 0 {
+		plMap["data"] = data
+	}
+
+	if len(doc.Links) > 0 {
+		plMap["links"] = doc.Links
+	}
+
+	if len(inclusions) > 0 {
+		plMap["included"] = inclusions
+	}
+
+	if len(doc.Meta) > 0 {
+		plMap["meta"] = doc.Meta
+	}
+
+	if len(doc.JSONAPI) > 0 {
+		plMap["jsonapi"] = doc.JSONAPI
+	}
+
+	return json.Marshal(plMap)
+}
+
 // Unmarshal ...
 func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 	doc := &Document{}
