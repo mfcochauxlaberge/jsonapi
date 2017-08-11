@@ -8,6 +8,7 @@ func NewMockRegistry() *Registry {
 
 	reg.RegisterType(&MockType1{})
 	reg.RegisterType(&MockType2{})
+	reg.RegisterType(&MockType3{})
 
 	errs := reg.Check()
 	if len(errs) > 0 {
