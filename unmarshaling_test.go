@@ -10,7 +10,7 @@ func TestUnmarshalResource(t *testing.T) {
 	reg := NewMockRegistry()
 
 	res1 := Wrap(&MockType1{})
-	url1, err := ParseRawURL(reg, "/mocktypes/mt1")
+	url1, err := ParseRawURL(reg, "/mocktypes1/mt1")
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -20,9 +20,10 @@ func TestUnmarshalResource(t *testing.T) {
 	}
 
 	doc1 := NewDocument()
+	doc1.Data = res1
 	doc1.Meta = meta1
 
-	pl1, err := Marshal(doc1, url1)
+	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
 	// buf := &bytes.Buffer{}
@@ -32,11 +33,11 @@ func TestUnmarshalResource(t *testing.T) {
 
 	dst1 := Wrap(&MockType1{})
 
-	doc2, err := Unmarshal(pl1, nil)
+	pl1, err := Unmarshal(body1, url1, reg)
 	tchek.UnintendedError(err)
 
 	tchek.HaveEqualAttributes(t, -1, res1, dst1)
-	tchek.AreEqual(t, -1, meta1, doc2.Meta)
+	tchek.AreEqual(t, -1, meta1, pl1.Meta)
 }
 
 // func TestUnmarshalCollection(t *testing.T) {

@@ -84,9 +84,9 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 }
 
 // Unmarshal ...
-func Unmarshal(payload []byte, v interface{}) (*Document, error) {
-	doc := &Document{}
-	ske := &documentSkeleton{}
+func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
+	pl := &Payload{}
+	ske := &payloadSkeleton{}
 
 	// Unmarshal
 	err := json.Unmarshal(payload, ske)
@@ -94,40 +94,57 @@ func Unmarshal(payload []byte, v interface{}) (*Document, error) {
 		return nil, err
 	}
 
-	// Resource or collection
-	if v == nil {
-	} else if res, ok := v.(Resource); ok {
-		err = json.Unmarshal(ske.Data, v)
+	// Data
+	if url.Type == "res" {
+		res := reg.Resource(url.ResType)
+		err = json.Unmarshal(ske.Data, res)
 		if err != nil {
 			return nil, err
 		}
-		doc.Data = res
-	} else if col, ok := v.(Collection); ok {
-		err = json.Unmarshal(ske.Data, v)
-		if err != nil {
-			return nil, err
+	} else if url.Type == "self" {
+		if !url.IsCol {
+			inc := Identifier{}
+			err = json.Unmarshal(ske.Data, inc)
+			if err != nil {
+				return nil, err
+			}
+			pl.Data = inc
+		} else {
+			incs := Identifiers{}
+			err = json.Unmarshal(ske.Data, incs)
+			if err != nil {
+				return nil, err
+			}
+			pl.Data = incs
 		}
-		doc.Data = col
-	} else if id, ok := v.(Identifier); ok {
-		err = json.Unmarshal(ske.Data, v)
-		if err != nil {
-			return nil, err
-		}
-		doc.Data = id
-	} else if ids, ok := v.(Identifiers); ok {
-		err = json.Unmarshal(ske.Data, v)
-		if err != nil {
-			return nil, err
-		}
-		doc.Data = ids
-	} else {
-		panic("v in Unmarshal doest not implement Resource or Collection")
 	}
 
-	doc.Meta = ske.Meta
-	// doc.JSONAPI = ske.JSONAPI
+	// Included
+	if len(ske.Included) > 0 {
+		inc := Identifier{}
+		incs := []Identifier{}
+		for _, rawInc := range ske.Included {
+			err = json.Unmarshal(rawInc, inc)
+			if err != nil {
+				return nil, err
+			}
+			incs = append(incs, inc)
+		}
 
-	return doc, nil
+		for i, inc2 := range incs {
+			res2 := reg.Resource(inc2.Type)
+			err = json.Unmarshal(ske.Included[i], res2)
+			if err != nil {
+				return nil, err
+			}
+			pl.Included[inc2.Type+" "+inc2.ID] = res2
+		}
+	}
+
+	// Meta
+	pl.Meta = ske.Meta
+
+	return pl, nil
 }
 
 // CheckType ...

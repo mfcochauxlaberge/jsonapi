@@ -2,13 +2,10 @@ package jsonapi
 
 import "encoding/json"
 
-type documentSkeleton struct {
-	Data     json.RawMessage            `json:"data"`
-	Included []json.RawMessage          `json:"included"`
-	Links    map[string]json.RawMessage `json:"links"`
-	Meta     map[string]interface{}     `json:"meta"`
-	JSONAPI  map[string]interface{}     `json:"jsonapi"`
-	Errors   []json.RawMessage          `json:"errors"`
+type payloadSkeleton struct {
+	Data     json.RawMessage        `json:"data"`
+	Included []json.RawMessage      `json:"included"`
+	Meta     map[string]interface{} `json:"meta"`
 }
 
 type resourceSkeleton struct {
