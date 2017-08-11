@@ -9,8 +9,15 @@ import (
 func TestUnmarshalResource(t *testing.T) {
 	reg := NewMockRegistry()
 
-	res1 := Wrap(&MockType1{})
-	url1, err := ParseRawURL(reg, "/mocktypes1/mt1")
+	res1 := Wrap(&MockType3{
+		ID:    "mt1",
+		Attr1: "a string",
+		Attr2: 1,
+		Rel1:  "mt2",
+		Rel2:  []string{"mt3", "mt4"},
+	})
+
+	url1, err := ParseRawURL(reg, "/mocktypes3/mt1")
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -26,15 +33,10 @@ func TestUnmarshalResource(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
-	// buf := &bytes.Buffer{}
-	// _ = json.Indent(buf, pl1, "", "\t")
-	// pl1 = buf.Bytes()
-	// fmt.Printf("PAYLOAD:\n%s\n", pl1)
-
-	dst1 := Wrap(&MockType1{})
-
 	pl1, err := Unmarshal(body1, url1, reg)
 	tchek.UnintendedError(err)
+
+	dst1 := pl1.Data.(Resource)
 
 	tchek.HaveEqualAttributes(t, -1, res1, dst1)
 	tchek.AreEqual(t, -1, meta1, pl1.Meta)
