@@ -101,6 +101,7 @@ func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
 		if err != nil {
 			return nil, err
 		}
+		pl.Data = res
 	} else if url.Type == "self" {
 		if !url.IsCol {
 			inc := Identifier{}
