@@ -105,14 +105,14 @@ func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
 	} else if url.Type == "self" {
 		if !url.IsCol {
 			inc := Identifier{}
-			err = json.Unmarshal(ske.Data, inc)
+			err = json.Unmarshal(ske.Data, &inc)
 			if err != nil {
 				return nil, err
 			}
 			pl.Data = inc
 		} else {
 			incs := Identifiers{}
-			err = json.Unmarshal(ske.Data, incs)
+			err = json.Unmarshal(ske.Data, &incs)
 			if err != nil {
 				return nil, err
 			}
@@ -125,7 +125,7 @@ func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
 		inc := Identifier{}
 		incs := []Identifier{}
 		for _, rawInc := range ske.Included {
-			err = json.Unmarshal(rawInc, inc)
+			err = json.Unmarshal(rawInc, &inc)
 			if err != nil {
 				return nil, err
 			}
