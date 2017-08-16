@@ -29,6 +29,7 @@ func NewDocument() *Document {
 		Resources: map[string]map[string]struct{}{},
 		Links:     map[string]Link{},
 		RelData:   map[string][]string{},
+		Meta:      map[string]interface{}{},
 	}
 }
 
