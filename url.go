@@ -14,10 +14,10 @@ type URL struct {
 	Host   string
 
 	// URL
-	PathNormalized string   // /users/u1/articles?fields[users]=age,name
-	PathSlice      []string // [users, u1, articles]
-	Route          string   // /users/:id/articles
-	Type           string   // col, res, related, self, meta
+	Path      string   // /users/u1/articles?fields[users]=age,name
+	PathSlice []string // [users, u1, articles]
+	Route     string   // /users/:id/articles
+	Type      string   // col, res, related, self, meta
 
 	// Resource
 	FromFilter FromFilter
@@ -112,9 +112,9 @@ func (u *URL) NormalizeURL() string {
 	}
 	params = params[:len(params)-1]
 
-	u.PathNormalized = path + params
+	u.Path = path + params
 
-	return u.PathNormalized
+	return u.Path
 }
 
 // ParseRawURL ...
