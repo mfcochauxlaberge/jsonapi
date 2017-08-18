@@ -57,11 +57,10 @@ func TestMarshalResource(t *testing.T) {
 		doc.Data = test.data
 
 		id, resType := test.data.IDAndType()
-		rawurl := fmt.Sprintf("/%s/%s%s", resType, id, test.params)
+		rawurl := fmt.Sprintf("%s/%s/%s%s", test.host, resType, id, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)
-		url.Host = test.host
 
 		doc.Meta = test.meta
 
@@ -116,14 +115,14 @@ func TestMarshalCollection(t *testing.T) {
 		}, {
 			// 1
 			data:          mocktypes2,
-			host:          "https://example.org",
+			host:          "example.org",
 			params:        "?fields[mocktypes2]=uintptr,boolptr,timeptr",
 			errorExpected: false,
 			payloadFile:   "collection-2",
 		}, {
 			// 2
 			data:          WrapCollection(Wrap(&MockType1{})),
-			host:          "https://example.org",
+			host:          "example.org",
 			errorExpected: false,
 			payloadFile:   "collection-3",
 		},
@@ -135,7 +134,7 @@ func TestMarshalCollection(t *testing.T) {
 		doc.Data = test.data
 
 		_, resType := test.data.Sample().IDAndType()
-		rawurl := fmt.Sprintf("/%s%s", resType, test.params)
+		rawurl := fmt.Sprintf("https://%s/%s%s", test.host, resType, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)

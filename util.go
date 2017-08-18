@@ -3,7 +3,7 @@ package jsonapi
 import "encoding/json"
 
 // marshalResource ...
-func marshalResource(r Resource, host string, fields []string, relData map[string][]string) ([]byte, error) {
+func marshalResource(r Resource, scheme, host string, fields []string, relData map[string][]string) ([]byte, error) {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
@@ -45,7 +45,7 @@ func marshalResource(r Resource, host string, fields []string, relData map[strin
 				var raw json.RawMessage
 
 				s := map[string]map[string]string{
-					"links": buildRelationshipLinks(r, host, rel.Name),
+					"links": buildRelationshipLinks(r, scheme, host, rel.Name),
 				}
 
 				for n, _ := range relData {
@@ -71,7 +71,7 @@ func marshalResource(r Resource, host string, fields []string, relData map[strin
 				var raw json.RawMessage
 
 				s := map[string]interface{}{
-					"links": buildRelationshipLinks(r, host, rel.Name),
+					"links": buildRelationshipLinks(r, scheme, host, rel.Name),
 				}
 
 				for n, _ := range relData {
@@ -101,14 +101,14 @@ func marshalResource(r Resource, host string, fields []string, relData map[strin
 
 	// Links
 	mapPl["links"] = map[string]string{
-		"self": buildSelfLink(r, host), // TODO
+		"self": buildSelfLink(r, scheme, host), // TODO
 	}
 
 	return json.Marshal(mapPl)
 }
 
 // marshalCollection ...
-func marshalCollection(c Collection, host string, fields []string, relData map[string][]string) ([]byte, error) {
+func marshalCollection(c Collection, scheme, host string, fields []string, relData map[string][]string) ([]byte, error) {
 	var raws []*json.RawMessage
 
 	if c.Len() == 0 {
@@ -118,7 +118,7 @@ func marshalCollection(c Collection, host string, fields []string, relData map[s
 	for i := 0; i < c.Len(); i++ {
 		r := c.Elem(i)
 		var raw json.RawMessage
-		raw, err := marshalResource(r, host, fields, relData)
+		raw, err := marshalResource(r, scheme, host, fields, relData)
 		if err != nil {
 			return []byte{}, err
 		}
