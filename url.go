@@ -14,7 +14,6 @@ type URL struct {
 	Host   string
 
 	// URL
-	Path           string   // /users/u1/articles?fields[users]=name,age
 	PathNormalized string   // /users/u1/articles?fields[users]=age,name
 	PathSlice      []string // [users, u1, articles]
 	Route          string   // /users/:id/articles
@@ -133,7 +132,6 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	url := &URL{
 		Scheme: u.Scheme,
 		Host:   u.Host,
-		Path:   u.Path,
 	}
 
 	// Path

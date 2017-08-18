@@ -31,7 +31,6 @@
 		"version": "1.0"
 	},
 	"links": {
-		"given-url": "/mocktypes2",
 		"interpreted-url": "/mocktypes2?fields[mocktypes2]=boolptr,timeptr,uintptr"
 	}
 }

@@ -31,7 +31,6 @@ func TestParseURL(t *testing.T) {
 			// 2
 			url: `mocktypes1`,
 			expectedURL: URL{
-				Path: "mocktypes1",
 				PathNormalized: `
 					/mocktypes1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
@@ -52,7 +51,6 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "api.example.com",
-				Path:   "/mocktypes1",
 				PathNormalized: `
 					/mocktypes1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
@@ -73,7 +71,6 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				Path:   "/mocktypes1/mc1-1",
 				PathNormalized: `
 					/mocktypes1/mc1-1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
@@ -94,7 +91,6 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				Path:   "/mocktypes1/mc1-1/to-one",
 				PathNormalized: `
 					/mocktypes1/mc1-1/to-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr
@@ -127,7 +123,6 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				Path:   "/mocktypes1/mc1-1/relationships/to-many-from-one",
 				PathNormalized: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr
@@ -159,7 +154,6 @@ func TestParseURL(t *testing.T) {
 			// 7
 			url: `/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Path: "/mocktypes1/mc1-1/relationships/to-many-from-one",
 				PathNormalized: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr

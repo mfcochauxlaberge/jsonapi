@@ -74,7 +74,6 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"given-url":       url.Path,
 			"interpreted-url": url.PathNormalized,
 		}
 	}
