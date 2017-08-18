@@ -31,12 +31,12 @@ func TestParseURL(t *testing.T) {
 			// 2
 			url: `mocktypes1`,
 			expectedURL: URL{
-				URL: "mocktypes1",
-				URLNormalized: `
+				Path: "mocktypes1",
+				PathNormalized: `
 					/mocktypes1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
 				`,
-				Path:       []string{"mocktypes1"},
+				PathSlice:  []string{"mocktypes1"},
 				Route:      "/mocktypes1",
 				Type:       "col",
 				FromFilter: FromFilter{},
@@ -52,12 +52,12 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "api.example.com",
-				URL:    "/mocktypes1",
-				URLNormalized: `
+				Path:   "/mocktypes1",
+				PathNormalized: `
 					/mocktypes1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
 				`,
-				Path:       []string{"mocktypes1"},
+				PathSlice:  []string{"mocktypes1"},
 				Route:      "/mocktypes1",
 				Type:       "col",
 				FromFilter: FromFilter{},
@@ -73,12 +73,12 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				URL:    "/mocktypes1/mc1-1",
-				URLNormalized: `
+				Path:   "/mocktypes1/mc1-1",
+				PathNormalized: `
 					/mocktypes1/mc1-1
 					?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,to-many-from-many,to-many-from-one,to-one,to-one-from-many,to-one-from-one,uint,uint16,uint32,uint8
 				`,
-				Path:       []string{"mocktypes1", "mc1-1"},
+				PathSlice:  []string{"mocktypes1", "mc1-1"},
 				Route:      "/mocktypes1/:id",
 				Type:       "res",
 				FromFilter: FromFilter{},
@@ -94,14 +94,14 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				URL:    "/mocktypes1/mc1-1/to-one",
-				URLNormalized: `
+				Path:   "/mocktypes1/mc1-1/to-one",
+				PathNormalized: `
 					/mocktypes1/mc1-1/to-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr
 				`,
-				Path:  []string{"mocktypes1", "mc1-1", "to-one"},
-				Route: "/mocktypes1/:id/to-one",
-				Type:  "related",
+				PathSlice: []string{"mocktypes1", "mc1-1", "to-one"},
+				Route:     "/mocktypes1/:id/to-one",
+				Type:      "related",
 				FromFilter: FromFilter{
 					Type: "mocktypes1",
 					ID:   "mc1-1",
@@ -127,14 +127,14 @@ func TestParseURL(t *testing.T) {
 			expectedURL: URL{
 				Scheme: "https",
 				Host:   "example.com",
-				URL:    "/mocktypes1/mc1-1/relationships/to-many-from-one",
-				URLNormalized: `
+				Path:   "/mocktypes1/mc1-1/relationships/to-many-from-one",
+				PathNormalized: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr
 				`,
-				Path:  []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
-				Route: "/mocktypes1/:id/relationships/to-many-from-one",
-				Type:  "self",
+				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
+				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Type:      "self",
 				FromFilter: FromFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -159,14 +159,14 @@ func TestParseURL(t *testing.T) {
 			// 7
 			url: `/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				URL: "/mocktypes1/mc1-1/relationships/to-many-from-one",
-				URLNormalized: `
+				Path: "/mocktypes1/mc1-1/relationships/to-many-from-one",
+				PathNormalized: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr
 				`,
-				Path:  []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
-				Route: "/mocktypes1/:id/relationships/to-many-from-one",
-				Type:  "self",
+				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
+				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Type:      "self",
 				FromFilter: FromFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -195,7 +195,7 @@ func TestParseURL(t *testing.T) {
 		url, err := ParseURL(reg, u)
 		tchek.ErrorExpected(t, n, test.expectedError, err)
 
-		test.expectedURL.URLNormalized = tchek.MakeOneLineNoSpaces(test.expectedURL.URLNormalized)
+		test.expectedURL.PathNormalized = tchek.MakeOneLineNoSpaces(test.expectedURL.PathNormalized)
 
 		if !test.expectedError {
 			url.Params = nil

@@ -74,8 +74,8 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"given-url":       url.URL,
-			"interpreted-url": url.URLNormalized,
+			"given-url":       url.Path,
+			"interpreted-url": url.PathNormalized,
 		}
 	}
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
