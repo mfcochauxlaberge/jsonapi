@@ -10,7 +10,8 @@ import (
 
 // URL ...
 type URL struct {
-	Host string
+	Scheme string
+	Host   string
 
 	// URL
 	URL           string   // /users/u1/articles?fields[users]=name,age
@@ -130,7 +131,9 @@ func ParseRawURL(reg *Registry, rawurl string) (*URL, error) {
 // ParseURL ...
 func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	url := &URL{
-		URL: u.Path,
+		Scheme: u.Scheme,
+		Host:   u.Host,
+		URL:    u.Path,
 	}
 
 	// Path
