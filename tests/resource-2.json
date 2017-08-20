@@ -50,6 +50,6 @@
 		"version": "1.0"
 	},
 	"links": {
-		"interpreted-url": "/mocktypes2/mt1-2?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr"
+		"self": "https://example.org/mocktypes2/mt1-2?fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,to-one-from-one,uint16ptr,uint32ptr,uint8ptr,uintptr"
 	}
 }

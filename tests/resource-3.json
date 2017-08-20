@@ -15,6 +15,6 @@
 		"version": "1.0"
 	},
 	"links": {
-		"interpreted-url": "/mocktypes2/mt1-2?fields[mocktypes2]=strptr,uintptr"
+		"self": "https://example.org/mocktypes2/mt1-2?fields[mocktypes2]=strptr,uintptr"
 	}
 }
