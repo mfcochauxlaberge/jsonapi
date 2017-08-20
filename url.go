@@ -46,8 +46,8 @@ type FromFilter struct {
 	InverseName string
 }
 
-// NormalizeURL ...
-func (u *URL) NormalizeURL() string {
+// NormalizePath ...
+func (u *URL) NormalizePath() string {
 	// Path
 	path := "/"
 	for _, p := range u.PathSlice {
@@ -238,7 +238,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	url.FromFilter = fromFilter
 	url.Rel = rel
 
-	url.NormalizeURL()
+	url.NormalizePath()
 
 	return url, nil
 }
