@@ -117,6 +117,16 @@ func (u *URL) NormalizePath() string {
 	return u.Path
 }
 
+func (u *URL) FullURL() string {
+	url := u.NormalizePath()
+
+	if u.Scheme != "" && u.Host != "" {
+		url = u.Scheme + "://" + u.Host + url
+	}
+
+	return url
+}
+
 // ParseRawURL ...
 func ParseRawURL(reg *Registry, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
