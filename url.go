@@ -87,12 +87,11 @@ func (u *URL) NormalizePath() string {
 	// TODO attribute filters
 
 	// Pagination
+	if u.Params.PageSize != 0 {
+		urlParams = append(urlParams, "page[size]="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
+	}
 	if u.Params.PageNumber != 0 {
-		if u.Params.PageNumber != 1 {
-			urlParams = append(urlParams, "page[number]="+strconv.FormatInt(int64(u.Params.PageNumber), 10))
-		}
-
-		urlParams = append(urlParams, "page[size]="+strconv.FormatInt(int64(u.Params.PageSize), 10))
+		urlParams = append(urlParams, "page[number]="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
 	// Sorting
