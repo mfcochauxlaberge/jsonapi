@@ -407,7 +407,7 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 				if number > 0 && number <= 10000 {
 					params.PageNumber = uint32(number)
 				} else {
-					params.PageSize = 1
+					params.PageNumber = 1
 				}
 			}
 		} else if strings.HasPrefix(param, "fields[") {
