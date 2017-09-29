@@ -394,7 +394,7 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 		} else if param == "page[size]" {
 			// Page size
 			if size, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
-				if size > 0 && size <= 65535 {
+				if size > 0 && size <= 10000 {
 					params.PageSize = uint16(size)
 				} else {
 					params.PageSize = 10
@@ -403,7 +403,7 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 		} else if param == "page[number]" {
 			// Page number
 			if number, err := strconv.ParseUint(vals[0], 10, 64); err == nil {
-				if number > 0 && number <= 4294967295 {
+				if number > 0 && number <= 10000000 {
 					params.PageNumber = uint32(number)
 				} else {
 					params.PageNumber = 1
