@@ -181,6 +181,37 @@ func TestParseURL(t *testing.T) {
 				IsCol: true,
 			},
 			expectedError: false,
+		}, {
+			// 8
+			url: `/mocktypes1/mc1-1/relationships/to-many-from-one?fields[mocktypes2]=boolptr%2Cint8ptr`,
+			expectedURL: URL{
+				Path: `
+					/mocktypes1/mc1-1/relationships/to-many-from-one
+					?fields%5Bmocktypes2%5D=boolptr%2Cint8ptr
+				`,
+				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
+				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Type:      "self",
+				FromFilter: FromFilter{
+					Type:        "mocktypes1",
+					ID:          "mc1-1",
+					Name:        "to-many-from-one",
+					InverseName: "to-one-from-many",
+				},
+				ResType: "mocktypes2",
+				ResID:   "",
+				RelKind: "self",
+				Rel: Rel{
+					Name:         "to-many-from-one",
+					Type:         "mocktypes2",
+					ToOne:        false,
+					InverseName:  "to-one-from-many",
+					InverseType:  "mocktypes1",
+					InverseToOne: true,
+				},
+				IsCol: true,
+			},
+			expectedError: false,
 		},
 	}
 
@@ -252,6 +283,51 @@ func TestParseParams(t *testing.T) {
 					to-many-from-one.to-one-from-many.to-one.to-many-from-many,
 					to-one-from-one.to-many-from-many
 				&sort=to-many,str,,-bool
+				&page[number]=3
+				&sort=uint8
+				&include=
+					to-many-from-one,
+					to-many-from-many
+				&page[size]=50
+			`,
+			resType: "mocktypes1",
+			expectedParams: Params{
+				Fields: map[string][]string{
+					"mocktypes1": reg.Types["mocktypes1"].Fields,
+					"mocktypes2": reg.Types["mocktypes2"].Fields,
+				},
+				Attrs:        map[string][]Attr{},
+				Rels:         map[string][]Rel{},
+				RelData:      map[string][]string{},
+				AttrFilters:  map[string]AttrFilter{},
+				RelFilters:   map[string]RelFilter{},
+				SortingRules: []string{"str", "-bool", "uint8"},
+				PageSize:     50,
+				PageNumber:   3,
+				Include: [][]Rel{
+					[]Rel{
+						reg.Types["mocktypes1"].Rels["to-many-from-many"],
+					},
+					[]Rel{
+						reg.Types["mocktypes1"].Rels["to-many-from-one"],
+						reg.Types["mocktypes2"].Rels["to-one-from-many"],
+						reg.Types["mocktypes1"].Rels["to-one"],
+						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+					},
+					[]Rel{
+						reg.Types["mocktypes1"].Rels["to-one-from-one"],
+						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+					},
+				},
+			},
+			expectedError: false,
+		}, {
+			// 3
+			url: `
+				?include=
+					to-many-from-one.to-one-from-many.to-one.to-many-from-many%2C
+					to-one-from-one.to-many-from-many
+				&sort=to-many%2Cstr,%2C%2C-bool
 				&page[number]=3
 				&sort=uint8
 				&include=
