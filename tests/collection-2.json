@@ -31,6 +31,6 @@
 		"version": "1.0"
 	},
 	"links": {
-		"self": "https://example.org/mocktypes2?fields[mocktypes2]=boolptr,timeptr,uintptr"
+		"self": "https://example.org/mocktypes2?fields%5Bmocktypes2%5D=boolptr%2Ctimeptr%2Cuintptr"
 	}
 }

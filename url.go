@@ -62,11 +62,11 @@ func (u *URL) NormalizePath() string {
 	for n := range u.Params.Fields {
 		sort.Strings(u.Params.Fields[n])
 
-		param := "fields[" + n + "]="
+		param := "fields%5B" + n + "%5D="
 		for _, f := range u.Params.Fields[n] {
-			param += f + ","
+			param += f + "%2C"
 		}
-		param = param[:len(param)-1]
+		param = param[:len(param)-3]
 
 		urlParams = append(urlParams, param)
 	}
@@ -75,11 +75,11 @@ func (u *URL) NormalizePath() string {
 	for n := range u.Params.RelFilters {
 		sort.Strings(u.Params.RelFilters[n].IDs)
 
-		param := "filter[" + n + "]="
+		param := "filter%5B" + n + "%5D="
 		for _, id := range u.Params.RelFilters[n].IDs {
-			param += id + ","
+			param += id + "%2C"
 		}
-		param = param[:len(param)-1]
+		param = param[:len(param)-3]
 
 		urlParams = append(urlParams, param)
 	}
@@ -88,10 +88,10 @@ func (u *URL) NormalizePath() string {
 
 	// Pagination
 	if u.Params.PageSize != 0 {
-		urlParams = append(urlParams, "page[size]="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
+		urlParams = append(urlParams, "page%5Bsize%5D="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
 	}
 	if u.Params.PageNumber != 0 {
-		urlParams = append(urlParams, "page[number]="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
+		urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
 	// Sorting
@@ -501,13 +501,13 @@ func stringifyParams(params map[string][]string, wrapper string) []string {
 	strParams := []string{}
 	for key, vals := range params {
 		if wrapper != "" {
-			key = wrapper + "[" + key + "]"
+			key = wrapper + "%5B" + key + "%5D"
 		}
 		param := key + "="
 		sort.Strings(vals)
 		for i, v := range vals {
 			if i < len(vals)-1 {
-				v += ","
+				v += "%2C"
 			}
 			param += v
 		}
