@@ -123,7 +123,7 @@
 		"version": "1.0"
 	},
 	"links": {
-		"self": "/mocktypes1?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8"
+		"self": "/mocktypes1?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8\u0026page%5Bsize%5D=10\u0026page%5Bnumber%5D=1"
 	},
 	"meta": {
 		"num": -32820,

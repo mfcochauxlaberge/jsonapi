@@ -34,6 +34,8 @@ func TestParseURL(t *testing.T) {
 				Path: `
 					/mocktypes1
 					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
+					&page%5Bsize%5D=10
+					&page%5Bnumber%5D=1
 				`,
 				PathSlice:  []string{"mocktypes1"},
 				Route:      "/mocktypes1",
@@ -54,6 +56,8 @@ func TestParseURL(t *testing.T) {
 				Path: `
 					/mocktypes1
 					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
+					&page%5Bsize%5D=10
+					&page%5Bnumber%5D=1
 				`,
 				PathSlice:  []string{"mocktypes1"},
 				Route:      "/mocktypes1",
@@ -126,6 +130,8 @@ func TestParseURL(t *testing.T) {
 				Path: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields%5Bmocktypes2%5D=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cto-many-from-many%2Cto-many-from-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr
+					&page%5Bsize%5D=10
+					&page%5Bnumber%5D=1
 				`,
 				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -157,6 +163,8 @@ func TestParseURL(t *testing.T) {
 				Path: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields%5Bmocktypes2%5D=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cto-many-from-many%2Cto-many-from-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr
+					&page%5Bsize%5D=10
+					&page%5Bnumber%5D=1
 				`,
 				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -188,6 +196,8 @@ func TestParseURL(t *testing.T) {
 				Path: `
 					/mocktypes1/mc1-1/relationships/to-many-from-one
 					?fields%5Bmocktypes2%5D=boolptr%2Cint8ptr
+					&page%5Bsize%5D=10
+					&page%5Bnumber%5D=1
 				`,
 				PathSlice: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -255,8 +265,8 @@ func TestParseParams(t *testing.T) {
 				AttrFilters:  map[string]AttrFilter{},
 				RelFilters:   map[string]RelFilter{},
 				SortingRules: []string{},
-				PageSize:     0,
-				PageNumber:   0,
+				PageSize:     10,
+				PageNumber:   1,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -271,8 +281,8 @@ func TestParseParams(t *testing.T) {
 				AttrFilters:  map[string]AttrFilter{},
 				RelFilters:   map[string]RelFilter{},
 				SortingRules: []string{},
-				PageSize:     0,
-				PageNumber:   0,
+				PageSize:     10,
+				PageNumber:   1,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,

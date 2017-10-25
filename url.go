@@ -87,10 +87,15 @@ func (u *URL) NormalizePath() string {
 	// TODO attribute filters
 
 	// Pagination
-	if u.Params.PageSize != 0 {
+	if u.IsCol {
+		if u.Params.PageSize == 0 {
+			u.Params.PageSize = 10
+		}
 		urlParams = append(urlParams, "page%5Bsize%5D="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
-	}
-	if u.Params.PageNumber != 0 {
+
+		if u.Params.PageNumber == 0 {
+			u.Params.PageNumber = 1
+		}
 		urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
@@ -267,8 +272,8 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 		AttrFilters:  map[string]AttrFilter{},
 		RelFilters:   map[string]RelFilter{},
 		SortingRules: []string{},
-		PageSize:     0,
-		PageNumber:   0,
+		PageSize:     10,
+		PageNumber:   1,
 		Include:      [][]Rel{},
 	}
 
