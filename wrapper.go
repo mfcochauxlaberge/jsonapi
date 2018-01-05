@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -411,6 +412,8 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 				str = nv.Format(time.RFC3339Nano)
 			case float32, float64:
 				str = fmt.Sprintf("")
+			case sql.NullString:
+				str = nv.String
 			default:
 				panic(fmt.Errorf("jsonapi: value is of unsupported type"))
 			}
