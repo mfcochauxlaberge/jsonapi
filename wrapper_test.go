@@ -34,7 +34,7 @@ func TestWrapper(t *testing.T) {
 	tchek.AreEqual(t, -1, res1.ID, id)
 	tchek.AreEqual(t, -1, "mocktypes1", typ)
 
-	// Attributes
+	// Get attributes
 	v1 := reflect.ValueOf(res1).Elem()
 	for i := 0; i < v1.NumField(); i++ {
 		f := v1.Field(i)
@@ -45,6 +45,12 @@ func TestWrapper(t *testing.T) {
 			tchek.AreEqual(t, -1, f.Interface(), wrap1.Get(n))
 		}
 	}
+
+	// Set attributes
+	wrap1.Set("str", "another_string")
+	tchek.AreEqual(t, -1, "another_string", wrap1.Get("str"))
+	wrap1.Set("int", 3)
+	tchek.AreEqual(t, -1, 3, wrap1.Get("int"))
 
 	aStr := "another_string_ptr"
 	aInt := int(123)
@@ -83,7 +89,7 @@ func TestWrapper(t *testing.T) {
 	tchek.AreEqual(t, -1, res2.ID, id)
 	tchek.AreEqual(t, -1, "mocktypes2", typ)
 
-	// Attributes
+	// Get attributes
 	v2 := reflect.ValueOf(res2).Elem()
 	for i := 0; i < v2.NumField(); i++ {
 		f := v2.Field(i)
@@ -94,6 +100,14 @@ func TestWrapper(t *testing.T) {
 			tchek.AreEqual(t, 2, f.Interface(), wrap2.Get(n))
 		}
 	}
+
+	// Set attributes
+	var anotherString = "anotherString"
+	wrap2.Set("strptr", &anotherString)
+	tchek.AreEqual(t, -1, &anotherString, wrap2.Get("strptr"))
+	var newInt = 3
+	wrap2.Set("intptr", &newInt)
+	tchek.AreEqual(t, -1, &newInt, wrap2.Get("intptr"))
 
 	// Copy
 	wrap3 := wrap1.Copy()
