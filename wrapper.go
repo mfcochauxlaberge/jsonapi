@@ -417,7 +417,6 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 			default:
 				panic(fmt.Errorf("jsonapi: value is of unsupported type"))
 			}
-			str = fmt.Sprintf("%v", val.Interface())
 
 			// Convert from string
 			switch field.Type().String() {
