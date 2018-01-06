@@ -364,6 +364,10 @@ func (w *Wrapper) getAttr(key string, t string) interface{} {
 				panic(fmt.Sprintf("jsonapi: attribute %s is not of type %s", key, field.Type()))
 			}
 
+			if strings.HasPrefix(field.Type().String(), "*") && field.IsNil() {
+				return nil
+			}
+
 			return field.Interface()
 		}
 	}
@@ -383,6 +387,7 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 		if key == sf.Tag.Get("json") {
 			if v == nil {
 				field.Set(reflect.New(field.Type()).Elem())
+				return nil
 			}
 
 			val := reflect.ValueOf(v)

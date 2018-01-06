@@ -108,6 +108,19 @@ func TestWrapper(t *testing.T) {
 	var newInt = 3
 	wrap2.Set("intptr", &newInt)
 	tchek.AreEqual(t, -1, &newInt, wrap2.Get("intptr"))
+	wrap2.Set("uintptr", nil)
+	if wrap2.Get("uintptr") != nil {
+		// We first do a != nil check because that's what we are really
+		// checking and reflect.DeepEqual doesn't work exactly work the same
+		// way. If the nil check fails, then the next line will fail too.
+		tchek.AreEqual(t, 13, nil, wrap2.Get("uintptr"))
+	}
+	if res2.UintPtr != nil {
+		// We first do a != nil check because that's what we are really
+		// checking and reflect.DeepEqual doesn't work exactly work the same
+		// way. If the nil check fails, then the next line will fail too.
+		tchek.AreEqual(t, 13, nil, res2.UintPtr)
+	}
 
 	// Copy
 	wrap3 := wrap1.Copy()
