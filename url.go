@@ -15,7 +15,7 @@ type URL struct {
 
 	// URL
 	Path      string   // /users/u1/articles?fields[users]=age,name
-	PathSlice []string // [users, u1, articles]
+	Fragments []string // [users, u1, articles]
 	Route     string   // /users/:id/articles
 	Type      string   // col, res, related, self, meta
 
@@ -33,7 +33,7 @@ type URL struct {
 
 func NewURL() *URL {
 	return &URL{
-		PathSlice: []string{},
+		Fragments: []string{},
 		Params:    NewParams(),
 	}
 }
@@ -50,7 +50,7 @@ type FromFilter struct {
 func (u *URL) NormalizePath() string {
 	// Path
 	path := "/"
-	for _, p := range u.PathSlice {
+	for _, p := range u.Fragments {
 		path += p + "/"
 	}
 	path = path[:len(path)-1]
@@ -171,12 +171,12 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 		return nil, errors.New("path is invalid")
 	}
 
-	url.PathSlice = paths
+	url.Fragments = paths
 
 	fromFilter := FromFilter{}
 
 	// Route
-	url.Route = deduceRoute(url.PathSlice)
+	url.Route = deduceRoute(url.Fragments)
 
 	// Resource
 	rel := Rel{}
