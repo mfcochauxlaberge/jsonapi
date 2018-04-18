@@ -37,14 +37,14 @@ func TestParseURL(t *testing.T) {
 					&page%5Bsize%5D=10
 					&page%5Bnumber%5D=1
 				`,
-				Fragments:  []string{"mocktypes1"},
-				Route:      "/mocktypes1",
-				Type:       "col",
-				FromFilter: FromFilter{},
-				ResType:    "mocktypes1",
-				ResID:      "",
-				RelKind:    "",
-				IsCol:      true,
+				Fragments:       []string{"mocktypes1"},
+				Route:           "/mocktypes1",
+				Type:            "col",
+				BelongsToFilter: BelongsToFilter{},
+				ResType:         "mocktypes1",
+				ResID:           "",
+				RelKind:         "",
+				IsCol:           true,
 			},
 			expectedError: false,
 		}, {
@@ -59,14 +59,14 @@ func TestParseURL(t *testing.T) {
 					&page%5Bsize%5D=10
 					&page%5Bnumber%5D=1
 				`,
-				Fragments:  []string{"mocktypes1"},
-				Route:      "/mocktypes1",
-				Type:       "col",
-				FromFilter: FromFilter{},
-				ResType:    "mocktypes1",
-				ResID:      "",
-				RelKind:    "",
-				IsCol:      true,
+				Fragments:       []string{"mocktypes1"},
+				Route:           "/mocktypes1",
+				Type:            "col",
+				BelongsToFilter: BelongsToFilter{},
+				ResType:         "mocktypes1",
+				ResID:           "",
+				RelKind:         "",
+				IsCol:           true,
 			},
 			expectedError: false,
 		}, {
@@ -79,14 +79,14 @@ func TestParseURL(t *testing.T) {
 					/mocktypes1/mc1-1
 					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
 				`,
-				Fragments:  []string{"mocktypes1", "mc1-1"},
-				Route:      "/mocktypes1/:id",
-				Type:       "res",
-				FromFilter: FromFilter{},
-				ResType:    "mocktypes1",
-				ResID:      "mc1-1",
-				RelKind:    "",
-				IsCol:      false,
+				Fragments:       []string{"mocktypes1", "mc1-1"},
+				Route:           "/mocktypes1/:id",
+				Type:            "res",
+				BelongsToFilter: BelongsToFilter{},
+				ResType:         "mocktypes1",
+				ResID:           "mc1-1",
+				RelKind:         "",
+				IsCol:           false,
 			},
 			expectedError: false,
 		}, {
@@ -102,7 +102,7 @@ func TestParseURL(t *testing.T) {
 				Fragments: []string{"mocktypes1", "mc1-1", "to-one"},
 				Route:     "/mocktypes1/:id/to-one",
 				Type:      "related",
-				FromFilter: FromFilter{
+				BelongsToFilter: BelongsToFilter{
 					Type: "mocktypes1",
 					ID:   "mc1-1",
 					Name: "to-one",
@@ -136,7 +136,7 @@ func TestParseURL(t *testing.T) {
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
 				Type:      "self",
-				FromFilter: FromFilter{
+				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
 					Name:        "to-many-from-one",
@@ -169,7 +169,7 @@ func TestParseURL(t *testing.T) {
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
 				Type:      "self",
-				FromFilter: FromFilter{
+				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
 					Name:        "to-many-from-one",
@@ -202,7 +202,7 @@ func TestParseURL(t *testing.T) {
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
 				Type:      "self",
-				FromFilter: FromFilter{
+				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
 					Name:        "to-many-from-one",

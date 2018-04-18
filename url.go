@@ -20,12 +20,12 @@ type URL struct {
 	Type      string   // col, res, related, self, meta
 
 	// Resource
-	FromFilter FromFilter
-	ResType    string
-	ResID      string
-	RelKind    string
-	Rel        Rel
-	IsCol      bool
+	BelongsToFilter BelongsToFilter
+	ResType         string
+	ResID           string
+	RelKind         string
+	Rel             Rel
+	IsCol           bool
 
 	// Params
 	Params *Params
@@ -38,8 +38,8 @@ func NewURL() *URL {
 	}
 }
 
-// FromFilter ...
-type FromFilter struct {
+// BelongsToFilter ...
+type BelongsToFilter struct {
 	Type        string
 	ID          string
 	Name        string
@@ -173,7 +173,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 
 	url.Fragments = paths
 
-	fromFilter := FromFilter{}
+	fromFilter := BelongsToFilter{}
 
 	// Route
 	url.Route = deduceRoute(url.Fragments)
@@ -249,7 +249,7 @@ func ParseURL(reg *Registry, u *url.URL) (*URL, error) {
 	}
 	url.Params = params
 
-	url.FromFilter = fromFilter
+	url.BelongsToFilter = fromFilter
 	url.Rel = rel
 
 	url.NormalizePath()
