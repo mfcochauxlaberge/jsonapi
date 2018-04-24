@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// Marshal ...
 func Marshal(doc *Document, url *URL) ([]byte, error) {
 	// Data
 	var data json.RawMessage

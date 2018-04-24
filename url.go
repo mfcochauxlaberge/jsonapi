@@ -31,6 +31,7 @@ type URL struct {
 	Params *Params
 }
 
+// NewURL ...
 func NewURL() *URL {
 	return &URL{
 		Fragments: []string{},
@@ -121,6 +122,7 @@ func (u *URL) NormalizePath() string {
 	return u.Path
 }
 
+// FullURL ...
 func (u *URL) FullURL() string {
 	url := u.NormalizePath()
 
