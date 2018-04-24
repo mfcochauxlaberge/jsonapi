@@ -48,7 +48,7 @@ func marshalResource(r Resource, scheme, host string, fields []string, relData m
 					"links": buildRelationshipLinks(r, scheme, host, rel.Name),
 				}
 
-				for n, _ := range relData {
+				for n := range relData {
 					if n == rel.Name {
 						id := r.GetToOne(rel.Name)
 						if id != "" {
@@ -74,7 +74,7 @@ func marshalResource(r Resource, scheme, host string, fields []string, relData m
 					"links": buildRelationshipLinks(r, scheme, host, rel.Name),
 				}
 
-				for n, _ := range relData {
+				for n := range relData {
 					if n == rel.Name {
 						data := []map[string]string{}
 
