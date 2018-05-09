@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"encoding/json"
 	"errors"
 	"net/url"
 	"sort"
@@ -340,43 +341,50 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 			// Filters
 			field := param[7 : len(param)-1]
 
-			targets := []string{}
-			for _, v := range strings.Split(vals[0], ",") {
-				if v != "" {
-					targets = append(targets, v)
-				}
-			}
-
 			if r, ok := reg.Types[resType].Rels[field]; ok {
+				targets := []string{}
+				for _, v := range strings.Split(vals[0], ",") {
+					if v != "" {
+						targets = append(targets, v)
+					}
+				}
+
 				params.RelFilters[field] = RelFilter{
 					Type:        r.Type,
 					InverseName: r.InverseName,
 					IDs:         targets,
 				}
 			} else if a, ok := reg.Types[resType].Attrs[field]; ok {
-				rules := []string{}
-
+				cdt := Condition{}
 				if kind(a.Type) == "string" {
-					for i := range targets {
-						if len(targets[i]) > 2 {
-							rules = append(rules, targets[i][:2])
-							targets[i] = targets[i][2:]
-						} else {
-							panic("invalid url")
-						}
+					cdt.Kind = "string"
+					err := json.Unmarshal([]byte(vals[0]), &cdt)
+					if err != nil {
+						return nil, err
 					}
-				} else if kind(a.Type) == "number" {
-
+				} else if kind(a.Type) == "int" {
+					cdt.Kind = "int"
+					err := json.Unmarshal([]byte(vals[0]), &cdt)
+					if err != nil {
+						return nil, err
+					}
 				} else if kind(a.Type) == "bool" {
-
+					cdt.Kind = "bool"
+					err := json.Unmarshal([]byte(vals[0]), &cdt)
+					if err != nil {
+						return nil, err
+					}
 				} else if kind(a.Type) == "time" {
-
+					cdt.Kind = "time"
+					err := json.Unmarshal([]byte(vals[0]), &cdt)
+					if err != nil {
+						return nil, err
+					}
 				}
 
 				params.AttrFilters[field] = AttrFilter{
-					Type:    r.Type,
-					Rules:   rules,
-					Targets: targets,
+					Type:      a.Type,
+					Condition: cdt,
 				}
 			} else {
 				panic("relationship or attribute not found for filter")

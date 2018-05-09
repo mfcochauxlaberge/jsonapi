@@ -39,9 +39,8 @@ func NewParams() *Params {
 
 // AttrFilter ...
 type AttrFilter struct {
-	Type    string
-	Rules   []string
-	Targets []string
+	Type      string
+	Condition Condition
 }
 
 // RelFilter ...
