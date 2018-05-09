@@ -376,6 +376,53 @@ func TestParseParams(t *testing.T) {
 				},
 			},
 			expectedError: false,
+		}, {
+			// 4
+			url: `
+				?include=
+					to-many-from-one.to-one-from-many
+				&sort=to-many,str,,,-bool
+				&sort=uint8
+				&include=
+					to-many-from-many
+					to-many-from-one,
+				&page[number]=110
+				&page[size]=90
+				&filter[to-many-from-one]=abc123,def456
+				&filter[to-one-from-one]=ghi789
+			`,
+			resType: "mocktypes1",
+			expectedParams: Params{
+				Fields: map[string][]string{
+					"mocktypes1": reg.Types["mocktypes1"].Fields,
+				},
+				Attrs:       map[string][]Attr{},
+				Rels:        map[string][]Rel{},
+				RelData:     map[string][]string{},
+				AttrFilters: map[string]AttrFilter{},
+				RelFilters: map[string]RelFilter{
+					"to-many-from-one": RelFilter{
+						IDs:         []string{"abc123", "def456"},
+						InverseName: "to-one-from-many",
+						Type:        "mocktypes2",
+					},
+					"to-one-from-one": RelFilter{
+						IDs:         []string{"ghi789"},
+						InverseName: "to-one-from-one",
+						Type:        "mocktypes2",
+					},
+				},
+				SortingRules: []string{"str", "-bool", "uint8"},
+				PageSize:     90,
+				PageNumber:   110,
+				Include: [][]Rel{
+					[]Rel{
+						reg.Types["mocktypes1"].Rels["to-many-from-one"],
+						reg.Types["mocktypes2"].Rels["to-one-from-many"],
+					},
+				},
+			},
+			expectedError: false,
 		},
 	}
 
