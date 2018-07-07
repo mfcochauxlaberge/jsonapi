@@ -9,9 +9,11 @@ import (
 
 // Error represents an error object from the JSON API specification.
 type Error struct {
-	Status int    `json:"status"`
-	Title  string `json:"title"`
-	Detail string `json:"detail"`
+	ID     string                 `json:"id"`
+	Status int                    `json:"status"`
+	Title  string                 `json:"title"`
+	Detail string                 `json:"detail"`
+	Meta   map[string]interface{} `json:"meta"`
 }
 
 func (e Error) Error() string {
