@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
-	"strconv"
 )
 
 // Error represents an error object from the JSON API specification.
@@ -22,11 +21,29 @@ func (e Error) Error() string {
 
 // MarshalJSON ...
 func (e Error) MarshalJSON() ([]byte, error) {
-	return json.Marshal(map[string]string{
-		"status": strconv.FormatInt(int64(e.Status), 10),
-		"title":  e.Title,
-		"detail": e.Detail,
-	})
+	m := map[string]interface{}{}
+
+	if e.ID != "" {
+		m["id"] = e.ID
+	}
+
+	if e.Status >= 400 && e.Status <= 599 {
+		m["status"] = fmt.Sprintf("%d", e.Status)
+	}
+
+	if e.Title != "" {
+		m["title"] = e.Title
+	}
+
+	if e.Detail != "" {
+		m["detail"] = e.Detail
+	}
+
+	if len(e.Meta) > 0 {
+		m["meta"] = e.Meta
+	}
+
+	return json.Marshal(m)
 }
 
 // NewErrInternal ...
