@@ -65,6 +65,14 @@ func NewErrInternal() Error {
 	}
 }
 
+// NewErrServiceUnavailable ...
+func NewErrServiceUnavailable() Error {
+	return Error{
+		Status: http.StatusServiceUnavailable,
+		Title:  "Service unavailable",
+	}
+}
+
 // NewErrNotFound ...
 func NewErrNotFound() Error {
 	return Error{
