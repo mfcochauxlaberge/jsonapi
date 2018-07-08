@@ -60,8 +60,7 @@ func (e Error) MarshalJSON() ([]byte, error) {
 func NewErrInternal() Error {
 	return Error{
 		Status: http.StatusInternalServerError,
-		Title:  "Internal Server Error",
-		Detail: "Something went wrong.",
+		Title:  "Internal server error",
 	}
 }
 
