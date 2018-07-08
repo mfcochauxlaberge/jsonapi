@@ -56,63 +56,95 @@ func (e Error) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-// NewErrInternal ...
-func NewErrInternal() Error {
+// NewErrBadRequest (400) ...
+func NewErrBadRequest(title, detail string) Error {
+	return Error{
+		Status: http.StatusBadRequest,
+		Title:  title,
+		Detail: detail,
+	}
+}
+
+// NewErrUnauthorized (401) ...
+func NewErrUnauthorized() Error {
+	return Error{
+		Status: http.StatusUnauthorized,
+		Title:  "Unauthorized",
+		Detail: "Authentification is required to perform this request.",
+	}
+}
+
+// NewErrForbidden (403) ...
+func NewErrForbidden() Error {
+	return Error{
+		Status: http.StatusForbidden,
+		Title:  "Forbidden",
+		Detail: "Permission is required to perform this request.",
+	}
+}
+
+// NewErrNotFound (404) ...
+func NewErrNotFound() Error {
+	return Error{
+		Status: http.StatusNotFound,
+		Title:  "Not found",
+		Detail: "The URI does not exist.",
+	}
+}
+
+// NewErrPayloadTooLarge (413) ...
+func NewErrPayloadTooLarge() Error {
+	return Error{
+		Status: http.StatusRequestEntityTooLarge,
+		Title:  "Payload too large",
+		Detail: "That's what she said.",
+	}
+}
+
+// NewErrRequestURITooLong (414) ...
+func NewErrRequestURITooLong() Error {
+	return Error{
+		Status: http.StatusRequestURITooLong,
+		Title:  "URI too long",
+	}
+}
+
+// NewErrUnsupportedMediaType (415) ...
+func NewErrUnsupportedMediaType() Error {
+	return Error{
+		Status: http.StatusUnsupportedMediaType,
+		Title:  "Unsupported media type",
+	}
+}
+
+// NewErrTooManyRequests (429) ...
+func NewErrTooManyRequests() Error {
+	return Error{
+		Status: http.StatusTooManyRequests,
+		Title:  "Too many requests",
+	}
+}
+
+// NewErrRequestHeaderFieldsTooLarge (431) ...
+func NewErrRequestHeaderFieldsTooLarge() Error {
+	return Error{
+		Status: http.StatusRequestHeaderFieldsTooLarge,
+		Title:  "Header fields too large",
+	}
+}
+
+// NewErrInternalServerError (500) ...
+func NewErrInternalServerError() Error {
 	return Error{
 		Status: http.StatusInternalServerError,
 		Title:  "Internal server error",
 	}
 }
 
-// NewErrServiceUnavailable ...
+// NewErrServiceUnavailable (503) ...
 func NewErrServiceUnavailable() Error {
 	return Error{
 		Status: http.StatusServiceUnavailable,
 		Title:  "Service unavailable",
-	}
-}
-
-// NewErrNotFound ...
-func NewErrNotFound() Error {
-	return Error{
-		Status: http.StatusNotFound,
-		Title:  "Not Found",
-		Detail: "The URI does not exist.",
-	}
-}
-
-// NewErrBadRequest ...
-func NewErrBadRequest() Error {
-	return Error{
-		Status: http.StatusBadRequest,
-		Title:  "Bad Request",
-		Detail: "One or more attributes are invalid.",
-	}
-}
-
-// NewErrInvalidField ...
-func NewErrInvalidField(detail string) Error {
-	return Error{
-		Status: http.StatusBadRequest,
-		Title:  "Invalid Attribute",
-		Detail: detail,
-	}
-}
-
-// NewErrUnauthorized ...
-func NewErrUnauthorized() Error {
-	return Error{
-		Status: http.StatusUnauthorized,
-		Title:  "Unauthorized",
-		Detail: "Identification is required to perform this request.",
-	}
-}
-
-// NewErrForbidden ...
-func NewErrForbidden() Error {
-	return Error{
-		Status: http.StatusForbidden,
-		Title:  "Forbidden",
-		Detail: "Permission is required to perform this request.",
 	}
 }
