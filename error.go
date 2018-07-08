@@ -15,8 +15,18 @@ type Error struct {
 	Meta   map[string]interface{} `json:"meta"`
 }
 
+// Error returns the string representation of the error.
+//
+// If the error does note contain a valid error status code, it returns an
+// empty string.
 func (e Error) Error() string {
-	return fmt.Sprintf("%d %s: %s", e.Status, e.Title, e.Detail)
+	fullName := http.StatusText(e.Status)
+
+	if fullName != "" && e.Status >= 400 && e.Status <= 599 {
+		return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Title)
+	}
+
+	return ""
 }
 
 // MarshalJSON ...
