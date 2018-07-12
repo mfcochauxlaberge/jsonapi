@@ -1,14 +1,14 @@
 {
 	"errors": [
 		{
-			"detail": "Name cannot be empty.",
+			"detail": "name cannot be empty.",
 			"status": "400",
-			"title": "Invalid Attribute"
+			"title": "Invalid attribute"
 		},
 		{
-			"detail": "Age cannot be negative.",
+			"detail": "age cannot be negative.",
 			"status": "400",
-			"title": "Invalid Attribute"
+			"title": "Invalid attribute"
 		}
 	],
 	"jsonapi": {

@@ -177,8 +177,8 @@ func TestMarshalErrors(t *testing.T) {
 		{
 			// 0
 			errors: []Error{
-				NewErrInvalidField("Name cannot be empty."),
-				NewErrInvalidField("Age cannot be negative."),
+				NewErrBadRequest("Invalid attribute", "name cannot be empty."),
+				NewErrBadRequest("Invalid attribute", "age cannot be negative."),
 			},
 			errorExpected: false,
 			payloadFile:   "errors-1",
