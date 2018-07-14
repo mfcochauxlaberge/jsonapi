@@ -68,6 +68,10 @@ func (e Error) MarshalJSON() ([]byte, error) {
 		m["id"] = e.ID
 	}
 
+	if e.Code != "" {
+		m["code"] = e.Code
+	}
+
 	if e.Status >= 400 && e.Status <= 599 {
 		m["status"] = fmt.Sprintf("%d", e.Status)
 	}
@@ -78,6 +82,14 @@ func (e Error) MarshalJSON() ([]byte, error) {
 
 	if e.Detail != "" {
 		m["detail"] = e.Detail
+	}
+
+	if len(e.Links) > 0 {
+		m["links"] = e.Links
+	}
+
+	if len(e.Source) > 0 {
+		m["source"] = e.Source
 	}
 
 	if len(e.Meta) > 0 {

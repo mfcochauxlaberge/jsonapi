@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net/http"
 	"strings"
 	"testing"
 	"time"
@@ -192,12 +193,23 @@ func TestMarshalErrors(t *testing.T) {
 			payloadFile:   "errors-1",
 		}, {
 			// 1
-			errors: resetIDs([]Error{
-				NewErrBadRequest("Invalid attribute", "name cannot be empty."),
-				NewErrBadRequest("Invalid attribute", "age cannot be negative."),
-			}),
+			errors: resetIDs(func() []Error {
+				e1 := NewError()
+
+				e1.Code = "somecode"
+				e1.Status = http.StatusInternalServerError
+				e1.Title = "Error"
+				e1.Detail = "An error occured."
+				e1.Links["about"] = "https://example.org/errors/about"
+				e1.Source["pointer"] = "/data/attributes/title"
+				e1.Meta["str"] = "a string"
+				e1.Meta["num"] = 3943
+				e1.Meta["bool"] = true
+
+				return []Error{e1}
+			}()),
 			errorExpected: false,
-			payloadFile:   "errors-1",
+			payloadFile:   "errors-2",
 		},
 	}
 
