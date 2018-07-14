@@ -9,9 +9,12 @@ import (
 // Error represents an error object from the JSON API specification.
 type Error struct {
 	ID     string                 `json:"id"`
+	Code   string                 `json:"code"`
 	Status int                    `json:"status"`
 	Title  string                 `json:"title"`
 	Detail string                 `json:"detail"`
+	Links  map[string]string      `json:"links"`
+	Source map[string]interface{} `json:"source"`
 	Meta   map[string]interface{} `json:"meta"`
 }
 
