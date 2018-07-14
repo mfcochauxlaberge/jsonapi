@@ -44,10 +44,20 @@ func (e Error) Error() string {
 	fullName := http.StatusText(e.Status)
 
 	if fullName != "" && e.Status >= 400 && e.Status <= 599 {
-		return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Title)
+		if e.Detail != "" {
+			return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Detail)
+		} else if e.Title != "" {
+			return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Title)
+		} else {
+			return fmt.Sprintf("%d %s", e.Status, fullName)
+		}
 	}
 
-	return ""
+	if e.Detail != "" {
+		return e.Detail
+	} else {
+		return e.Title
+	}
 }
 
 // MarshalJSON ...
