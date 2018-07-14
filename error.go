@@ -18,6 +18,22 @@ type Error struct {
 	Meta   map[string]interface{} `json:"meta"`
 }
 
+// NewError returns an empty Error object.
+func NewError() Error {
+	err := Error{
+		ID:     "",
+		Code:   "",
+		Status: 0,
+		Title:  "",
+		Detail: "",
+		Links:  map[string]string{},
+		Source: map[string]interface{}{},
+		Meta:   map[string]interface{}{},
+	}
+
+	return err
+}
+
 // Error returns the string representation of the error.
 //
 // If the error does note contain a valid error status code, it returns an
@@ -61,93 +77,115 @@ func (e Error) MarshalJSON() ([]byte, error) {
 
 // NewErrBadRequest (400) ...
 func NewErrBadRequest(title, detail string) Error {
-	return Error{
-		Status: http.StatusBadRequest,
-		Title:  title,
-		Detail: detail,
-	}
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = title
+	e.Detail = detail
+
+	return e
 }
 
 // NewErrUnauthorized (401) ...
 func NewErrUnauthorized() Error {
-	return Error{
-		Status: http.StatusUnauthorized,
-		Title:  "Unauthorized",
-		Detail: "Authentification is required to perform this request.",
-	}
+	e := NewError()
+
+	e.Status = http.StatusUnauthorized
+	e.Title = "Unauthorized"
+	e.Detail = "Authentification is required to perform this request."
+
+	return e
 }
 
 // NewErrForbidden (403) ...
 func NewErrForbidden() Error {
-	return Error{
-		Status: http.StatusForbidden,
-		Title:  "Forbidden",
-		Detail: "Permission is required to perform this request.",
-	}
+	e := NewError()
+
+	e.Status = http.StatusForbidden
+	e.Title = "Forbidden"
+	e.Detail = "Permission is required to perform this request."
+
+	return e
 }
 
 // NewErrNotFound (404) ...
 func NewErrNotFound() Error {
-	return Error{
-		Status: http.StatusNotFound,
-		Title:  "Not found",
-		Detail: "The URI does not exist.",
-	}
+	e := NewError()
+
+	e.Status = http.StatusNotFound
+	e.Title = "Not found"
+	e.Detail = "The URI does not exist."
+
+	return e
 }
 
 // NewErrPayloadTooLarge (413) ...
 func NewErrPayloadTooLarge() Error {
-	return Error{
-		Status: http.StatusRequestEntityTooLarge,
-		Title:  "Payload too large",
-		Detail: "That's what she said.",
-	}
+	e := NewError()
+
+	e.Status = http.StatusRequestEntityTooLarge
+	e.Title = "Payload too large"
+	e.Detail = "That's what she said."
+
+	return e
 }
 
 // NewErrRequestURITooLong (414) ...
 func NewErrRequestURITooLong() Error {
-	return Error{
-		Status: http.StatusRequestURITooLong,
-		Title:  "URI too long",
-	}
+	e := NewError()
+
+	e.Status = http.StatusRequestURITooLong
+	e.Title = "URI too long"
+
+	return e
 }
 
 // NewErrUnsupportedMediaType (415) ...
 func NewErrUnsupportedMediaType() Error {
-	return Error{
-		Status: http.StatusUnsupportedMediaType,
-		Title:  "Unsupported media type",
-	}
+	e := NewError()
+
+	e.Status = http.StatusUnsupportedMediaType
+	e.Title = "Unsupported media type"
+
+	return e
 }
 
 // NewErrTooManyRequests (429) ...
 func NewErrTooManyRequests() Error {
-	return Error{
-		Status: http.StatusTooManyRequests,
-		Title:  "Too many requests",
-	}
+	e := NewError()
+
+	e.Status = http.StatusTooManyRequests
+	e.Title = "Too many requests"
+
+	return e
 }
 
 // NewErrRequestHeaderFieldsTooLarge (431) ...
 func NewErrRequestHeaderFieldsTooLarge() Error {
-	return Error{
-		Status: http.StatusRequestHeaderFieldsTooLarge,
-		Title:  "Header fields too large",
-	}
+	e := NewError()
+
+	e.Status = http.StatusRequestHeaderFieldsTooLarge
+	e.Title = "Header fields too large"
+
+	return e
 }
 
 // NewErrInternalServerError (500) ...
 func NewErrInternalServerError() Error {
-	return Error{
-		Status: http.StatusInternalServerError,
-		Title:  "Internal server error",
-	}
+	e := NewError()
+
+	e.Status = http.StatusInternalServerError
+	e.Title = "Internal server error"
+
+	return e
 }
 
 // NewErrServiceUnavailable (503) ...
 func NewErrServiceUnavailable() Error {
-	return Error{
-		Status: http.StatusServiceUnavailable,
-		Title:  "Service unavailable",
-	}
+	e := NewError()
+
+	e.Status = http.StatusServiceUnavailable
+	e.Title = "Service unavailable"
+
+	return e
 }
