@@ -169,6 +169,14 @@ func TestMarshalCollection(t *testing.T) {
 func TestMarshalErrors(t *testing.T) {
 	// reg := NewMockRegistry()
 
+	// Reset the IDs because the tests can't predict them.
+	resetIDs := func(errors []Error) []Error {
+		for i := range errors {
+			errors[i].ID = "00000000-0000-0000-0000-000000000000"
+		}
+		return errors
+	}
+
 	tests := []struct {
 		errors        []Error
 		errorExpected bool
@@ -176,10 +184,18 @@ func TestMarshalErrors(t *testing.T) {
 	}{
 		{
 			// 0
-			errors: []Error{
+			errors: resetIDs([]Error{
 				NewErrBadRequest("Invalid attribute", "name cannot be empty."),
 				NewErrBadRequest("Invalid attribute", "age cannot be negative."),
-			},
+			}),
+			errorExpected: false,
+			payloadFile:   "errors-1",
+		}, {
+			// 1
+			errors: resetIDs([]Error{
+				NewErrBadRequest("Invalid attribute", "name cannot be empty."),
+				NewErrBadRequest("Invalid attribute", "age cannot be negative."),
+			}),
 			errorExpected: false,
 			payloadFile:   "errors-1",
 		},

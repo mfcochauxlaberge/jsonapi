@@ -4,6 +4,8 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+
+	"github.com/twinj/uuid"
 )
 
 // Error represents an error object from the JSON API specification.
@@ -21,7 +23,7 @@ type Error struct {
 // NewError returns an empty Error object.
 func NewError() Error {
 	err := Error{
-		ID:     "",
+		ID:     uuid.NewV4().String(),
 		Code:   "",
 		Status: 0,
 		Title:  "",
