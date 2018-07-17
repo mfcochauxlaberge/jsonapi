@@ -110,6 +110,58 @@ func NewErrBadRequest(title, detail string) Error {
 	return e
 }
 
+// NewErrMalformedFilterParameter (400) ...
+func NewErrMalformedFilterParameter(badFitler string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Malformed filter parameter"
+	e.Detail = "The filter parameter is not a valid JSON object."
+	e.Source["parameter"] = "filter"
+	e.Meta["bad-filter"] = badFitler
+
+	return e
+}
+
+// NewErrInvalidPageNumberParameter (400) ...
+func NewErrInvalidPageNumberParameter(badPageNumber string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Invalid page number parameter"
+	e.Detail = "The page number parameter is not positive integer (including 0)."
+	e.Source["parameter"] = "page[number]"
+	e.Meta["bad-page-number"] = badPageNumber
+
+	return e
+}
+
+// NewErrInvalidPageSizeParameter (400) ...
+func NewErrInvalidPageSizeParameter(badPageSize string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Invalid page size parameter"
+	e.Detail = "The page size parameter is not positive integer (including 0)."
+	e.Source["parameter"] = "page[size]"
+	e.Meta["bad-page-size"] = badPageSize
+
+	return e
+}
+
+// NewErrUnknownParameter (400) ...
+func NewErrUnknownParameter(param string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown parameter"
+	e.Detail = fmt.Sprintf("%s is not a known parameter.", param)
+	e.Source["parameter"] = param
+	e.Meta["unknown-parameter"] = param
+
+	return e
+}
+
 // NewErrUnauthorized (401) ...
 func NewErrUnauthorized() Error {
 	e := NewError()
