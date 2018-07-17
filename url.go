@@ -458,60 +458,6 @@ func parseParams(reg *Registry, resType string, u *url.URL) (*Params, error) {
 	return params, nil
 }
 
-func deduceRoute(path []string) string {
-	const (
-		id   = "/:id"
-		meta = "meta"
-		rel  = "relationships"
-	)
-
-	route := ""
-
-	if len(path) >= 1 {
-		route = "/" + path[0]
-	}
-
-	if len(path) >= 2 {
-		if path[1] == meta {
-			route += "/" + meta
-		} else {
-			route += id
-		}
-	}
-
-	if len(path) >= 3 {
-		if path[2] == rel {
-			route += "/" + rel
-		} else if path[2] == meta {
-			route += "/" + meta
-		} else {
-			route += "/" + path[2]
-		}
-	}
-
-	if len(path) >= 4 {
-		if path[3] == meta {
-			route += "/" + meta
-		} else {
-			if path[2] == rel {
-				route += "/" + path[3]
-			} else {
-				route += id
-			}
-		}
-	}
-
-	if len(path) >= 5 {
-		if path[4] == meta {
-			route += "/" + meta
-		} else {
-			route += id
-		}
-	}
-
-	return route
-}
-
 func stringifyParams(params map[string][]string, wrapper string) []string {
 	strParams := []string{}
 	for key, vals := range params {
