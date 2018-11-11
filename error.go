@@ -149,6 +149,36 @@ func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	return e
 }
 
+// NewErrUnknownFieldInBody (400) ...
+func NewErrUnknownFieldInBody(typ, field string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown field in body"
+	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Source["pointer"] = "" // TODO
+	e.Meta["unknown-field"] = field
+	e.Meta["type"] = typ
+
+	return e
+}
+
+// NewErrUnknownFieldInURL (400) ...
+func NewErrUnknownFieldInURL(field string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown field in URL"
+	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Meta["unknown-field"] = field
+	// TODO
+	// if param == "filter" {
+	// 	e.Source["pointer"] = ""
+	// }
+
+	return e
+}
+
 // NewErrUnknownParameter (400) ...
 func NewErrUnknownParameter(param string) Error {
 	e := NewError()
@@ -158,6 +188,32 @@ func NewErrUnknownParameter(param string) Error {
 	e.Detail = fmt.Sprintf("%s is not a known parameter.", param)
 	e.Source["parameter"] = param
 	e.Meta["unknown-parameter"] = param
+
+	return e
+}
+
+// NewErrUnknownRelationshipInPath (400) ...
+func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown relationship"
+	e.Detail = fmt.Sprintf("%s is not a relationship of %s.", rel, typ)
+	e.Meta["unknown-relationship"] = rel
+	e.Meta["type"] = typ
+	e.Meta["path"] = path
+
+	return e
+}
+
+// NewErrUnknownTypeInURL (400) ...
+func NewErrUnknownTypeInURL(typ string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown type in URL"
+	e.Detail = fmt.Sprintf("%s is not a known type.", typ)
+	e.Meta["unknown-type"] = typ
 
 	return e
 }
