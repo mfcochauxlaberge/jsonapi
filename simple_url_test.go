@@ -35,7 +35,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -55,7 +55,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -75,7 +75,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -95,7 +95,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -115,7 +115,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/relationships/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -148,7 +148,7 @@ func TestSimpleURL(t *testing.T) {
 					"type3": []string{"attr5", "attr6", "rel4"},
 					"type4": []string{"attr7", "rel5", "rel6"},
 				},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{"attr2", "-attr1"},
 				PageSize:     20,
 				PageNumber:   1,
@@ -169,7 +169,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -190,7 +190,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -211,7 +211,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -232,7 +232,7 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
-				Filter:       &Condition{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,

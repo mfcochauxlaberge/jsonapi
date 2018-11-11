@@ -31,15 +31,8 @@ func TestParseURL(t *testing.T) {
 			// 2
 			url: `mocktypes1`,
 			expectedURL: URL{
-				Path: `
-					/mocktypes1
-					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
-					&page%5Bsize%5D=10
-					&page%5Bnumber%5D=1
-				`,
 				Fragments:       []string{"mocktypes1"},
 				Route:           "/mocktypes1",
-				Type:            "col",
 				BelongsToFilter: BelongsToFilter{},
 				ResType:         "mocktypes1",
 				ResID:           "",
@@ -51,17 +44,10 @@ func TestParseURL(t *testing.T) {
 			// 3
 			url: `https://api.example.com/mocktypes1`,
 			expectedURL: URL{
-				Scheme: "https",
-				Host:   "api.example.com",
-				Path: `
-					/mocktypes1
-					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
-					&page%5Bsize%5D=10
-					&page%5Bnumber%5D=1
-				`,
+				Scheme:          "https",
+				Host:            "api.example.com",
 				Fragments:       []string{"mocktypes1"},
 				Route:           "/mocktypes1",
-				Type:            "col",
 				BelongsToFilter: BelongsToFilter{},
 				ResType:         "mocktypes1",
 				ResID:           "",
@@ -73,15 +59,10 @@ func TestParseURL(t *testing.T) {
 			// 4
 			url: `https://example.com/mocktypes1/mc1-1`,
 			expectedURL: URL{
-				Scheme: "https",
-				Host:   "example.com",
-				Path: `
-					/mocktypes1/mc1-1
-					?fields%5Bmocktypes1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint%2Cuint16%2Cuint32%2Cuint8
-				`,
+				Scheme:          "https",
+				Host:            "example.com",
 				Fragments:       []string{"mocktypes1", "mc1-1"},
 				Route:           "/mocktypes1/:id",
-				Type:            "res",
 				BelongsToFilter: BelongsToFilter{},
 				ResType:         "mocktypes1",
 				ResID:           "mc1-1",
@@ -93,15 +74,10 @@ func TestParseURL(t *testing.T) {
 			// 5
 			url: `https://example.com/mocktypes1/mc1-1/to-one`,
 			expectedURL: URL{
-				Scheme: "https",
-				Host:   "example.com",
-				Path: `
-					/mocktypes1/mc1-1/to-one
-					?fields%5Bmocktypes2%5D=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cto-many-from-many%2Cto-many-from-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr
-				`,
+				Scheme:    "https",
+				Host:      "example.com",
 				Fragments: []string{"mocktypes1", "mc1-1", "to-one"},
 				Route:     "/mocktypes1/:id/to-one",
-				Type:      "related",
 				BelongsToFilter: BelongsToFilter{
 					Type: "mocktypes1",
 					ID:   "mc1-1",
@@ -125,17 +101,10 @@ func TestParseURL(t *testing.T) {
 			// 6
 			url: `https://example.com/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Scheme: "https",
-				Host:   "example.com",
-				Path: `
-					/mocktypes1/mc1-1/relationships/to-many-from-one
-					?fields%5Bmocktypes2%5D=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cto-many-from-many%2Cto-many-from-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr
-					&page%5Bsize%5D=10
-					&page%5Bnumber%5D=1
-				`,
+				Scheme:    "https",
+				Host:      "example.com",
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
-				Type:      "self",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -160,15 +129,8 @@ func TestParseURL(t *testing.T) {
 			// 7
 			url: `/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Path: `
-					/mocktypes1/mc1-1/relationships/to-many-from-one
-					?fields%5Bmocktypes2%5D=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cto-many-from-many%2Cto-many-from-one%2Cto-one-from-many%2Cto-one-from-one%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr
-					&page%5Bsize%5D=10
-					&page%5Bnumber%5D=1
-				`,
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
-				Type:      "self",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -193,15 +155,8 @@ func TestParseURL(t *testing.T) {
 			// 8
 			url: `/mocktypes1/mc1-1/relationships/to-many-from-one?fields[mocktypes2]=boolptr%2Cint8ptr`,
 			expectedURL: URL{
-				Path: `
-					/mocktypes1/mc1-1/relationships/to-many-from-one
-					?fields%5Bmocktypes2%5D=boolptr%2Cint8ptr
-					&page%5Bsize%5D=10
-					&page%5Bnumber%5D=1
-				`,
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
-				Type:      "self",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -227,10 +182,10 @@ func TestParseURL(t *testing.T) {
 
 	for n, test := range tests {
 		u, _ := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
-		url, err := ParseURL(reg, u)
+		url, err := ParseRawURL(reg, u.String())
 		tchek.ErrorExpected(t, n, test.expectedError, err)
 
-		test.expectedURL.Path = tchek.MakeOneLineNoSpaces(test.expectedURL.Path)
+		// test.expectedURL.Path = tchek.MakeOneLineNoSpaces(test.expectedURL.Path)
 
 		if !test.expectedError {
 			url.Params = nil
@@ -258,12 +213,11 @@ func TestParseParams(t *testing.T) {
 			// 0
 			url: `/`,
 			expectedParams: Params{
-				Fields:       map[string][]string{"": nil},
+				Fields:       map[string][]string{},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
-				AttrFilters:  map[string]AttrFilter{},
-				RelFilters:   map[string]RelFilter{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -274,12 +228,11 @@ func TestParseParams(t *testing.T) {
 			// 1
 			url: `?`,
 			expectedParams: Params{
-				Fields:       map[string][]string{"": nil},
+				Fields:       map[string][]string{},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
-				AttrFilters:  map[string]AttrFilter{},
-				RelFilters:   map[string]RelFilter{},
+				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
@@ -309,9 +262,8 @@ func TestParseParams(t *testing.T) {
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
-				AttrFilters:  map[string]AttrFilter{},
-				RelFilters:   map[string]RelFilter{},
-				SortingRules: []string{"str", "-bool", "uint8"},
+				Filter:       nil,
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -354,9 +306,8 @@ func TestParseParams(t *testing.T) {
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
-				AttrFilters:  map[string]AttrFilter{},
-				RelFilters:   map[string]RelFilter{},
-				SortingRules: []string{"str", "-bool", "uint8"},
+				Filter:       nil,
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -388,31 +339,17 @@ func TestParseParams(t *testing.T) {
 					to-many-from-one,
 				&page[number]=110
 				&page[size]=90
-				&filter[to-many-from-one]=abc123,def456
-				&filter[to-one-from-one]=ghi789
 			`,
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
 					"mocktypes1": reg.Types["mocktypes1"].Fields,
 				},
-				Attrs:       map[string][]Attr{},
-				Rels:        map[string][]Rel{},
-				RelData:     map[string][]string{},
-				AttrFilters: map[string]AttrFilter{},
-				RelFilters: map[string]RelFilter{
-					"to-many-from-one": RelFilter{
-						IDs:         []string{"abc123", "def456"},
-						InverseName: "to-one-from-many",
-						Type:        "mocktypes2",
-					},
-					"to-one-from-one": RelFilter{
-						IDs:         []string{"ghi789"},
-						InverseName: "to-one-from-one",
-						Type:        "mocktypes2",
-					},
-				},
-				SortingRules: []string{"str", "-bool", "uint8"},
+				Attrs:        map[string][]Attr{},
+				Rels:         map[string][]Rel{},
+				RelData:      map[string][]string{},
+				Filter:       nil,
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
 				PageSize:     90,
 				PageNumber:   110,
 				Include: [][]Rel{
@@ -430,7 +367,10 @@ func TestParseParams(t *testing.T) {
 		u, err := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
 		tchek.UnintendedError(err)
 
-		params, err := parseParams(reg, test.resType, u)
+		su, err := NewSimpleURL(u)
+		tchek.UnintendedError(err)
+
+		params, err := NewParams(reg, su, test.resType)
 		tchek.ErrorExpected(t, n, test.expectedError, err)
 
 		// Set Attrs and Rels

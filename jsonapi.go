@@ -95,14 +95,14 @@ func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
 	}
 
 	// Data
-	if url.Type == "res" {
+	if !url.IsCol && url.RelKind == "" {
 		res := reg.Resource(url.ResType)
 		err = json.Unmarshal(ske.Data, res)
 		if err != nil {
 			return nil, err
 		}
 		pl.Data = res
-	} else if url.Type == "self" {
+	} else if url.RelKind == "self" {
 		if !url.IsCol {
 			inc := Identifier{}
 			err = json.Unmarshal(ske.Data, &inc)

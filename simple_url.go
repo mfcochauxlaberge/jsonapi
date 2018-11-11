@@ -9,6 +9,8 @@ import (
 )
 
 type SimpleURL struct {
+	// Source string
+
 	// URL
 	Scheme    string   // http, https
 	Host      string   // api.example.com
@@ -34,7 +36,7 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 		Route:     "",
 
 		Fields:       map[string][]string{},
-		Filter:       &Condition{},
+		Filter:       nil,
 		SortingRules: []string{},
 		PageSize:     10,
 		PageNumber:   1,
@@ -65,12 +67,14 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 			// Filter
 			err := json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
 			if err != nil {
-				sURL.Filter = &Condition{}
+				sURL.Filter = nil
 				return sURL, NewErrMalformedFilterParameter(values.Get(name))
 			}
 		} else if name == "sort" {
 			// Sort
-			sURL.SortingRules = parseCommaList(values.Get(name))
+			for _, rules := range values[name] {
+				sURL.SortingRules = append(sURL.SortingRules, parseCommaList(rules)...)
+			}
 		} else if name == "page[size]" {
 			// Page size
 			size, err := strconv.ParseUint(values.Get(name), 10, 64)
@@ -87,7 +91,9 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 			sURL.PageNumber = int(num)
 		} else if name == "include" {
 			// Include
-			sURL.Include = parseCommaList(values.Get(name))
+			for _, include := range values[name] {
+				sURL.Include = append(sURL.Include, parseCommaList(include)...)
+			}
 		} else {
 			// Unkmown parameter
 			return sURL, NewErrUnknownParameter(name)
@@ -95,6 +101,10 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	}
 
 	return sURL, nil
+}
+
+func (s *SimpleURL) Path() string {
+	return strings.Join(s.Fragments, "/")
 }
 
 func parseCommaList(path string) []string {
