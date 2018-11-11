@@ -55,9 +55,9 @@ func (e Error) Error() string {
 
 	if e.Detail != "" {
 		return e.Detail
-	} else {
-		return e.Title
 	}
+
+	return e.Title
 }
 
 // MarshalJSON ...

@@ -144,7 +144,7 @@ func (u *URL) NormalizePath() string {
 		if err != nil {
 			// This should not happen since Filter should be validated
 			// at this point.
-			panic(fmt.Errorf("jsonapi: can't marshal filter: %s\n", err))
+			panic(fmt.Errorf("jsonapi: can't marshal filter: %s", err))
 		}
 		param := "filter=" + string(mf)
 		urlParams = append(urlParams, param)

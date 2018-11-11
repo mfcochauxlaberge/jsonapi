@@ -8,6 +8,7 @@ import (
 	"strings"
 )
 
+// SimpleURL ...
 type SimpleURL struct {
 	// Source string
 
@@ -27,6 +28,7 @@ type SimpleURL struct {
 	Include      []string
 }
 
+// NewSimpleURL ...
 func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	sURL := SimpleURL{
 		Scheme:    "",
@@ -103,6 +105,7 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	return sURL, nil
 }
 
+// Path ...
 func (s *SimpleURL) Path() string {
 	return strings.Join(s.Fragments, "/")
 }

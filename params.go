@@ -113,7 +113,7 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 			}
 		}
 	}
-	for t, _ := range params.Fields {
+	for t := range params.Fields {
 		if len(params.Fields[t]) == 0 {
 			params.Fields[t] = make([]string, len(reg.Types[t].Fields))
 			copy(params.Fields[t], reg.Types[t].Fields)
