@@ -28,9 +28,6 @@ func TestSimpleURL(t *testing.T) {
 				http://api.example.com
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{},
 				Route:     "",
 
@@ -48,9 +45,6 @@ func TestSimpleURL(t *testing.T) {
 				http://api.example.com/type
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type"},
 				Route:     "/type",
 
@@ -68,9 +62,6 @@ func TestSimpleURL(t *testing.T) {
 				http://api.example.com/type/id
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id"},
 				Route:     "/type/:id",
 
@@ -88,9 +79,6 @@ func TestSimpleURL(t *testing.T) {
 				http://api.example.com/type/id/rel
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 
@@ -108,9 +96,6 @@ func TestSimpleURL(t *testing.T) {
 				http://api.example.com/type/id/relationships/rel
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "relationships", "rel"},
 				Route:     "/type/:id/relationships/rel",
 
@@ -136,9 +121,6 @@ func TestSimpleURL(t *testing.T) {
 				&include=type2.type3,type4
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type"},
 				Route:     "/type",
 
@@ -162,9 +144,6 @@ func TestSimpleURL(t *testing.T) {
 				?filter=invalid
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 
@@ -183,9 +162,6 @@ func TestSimpleURL(t *testing.T) {
 				?page[size]=-1
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 
@@ -204,9 +180,6 @@ func TestSimpleURL(t *testing.T) {
 				?page[number]=-1
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 
@@ -225,9 +198,6 @@ func TestSimpleURL(t *testing.T) {
 				?unknownparam=somevalue
 			`,
 			expectedURL: SimpleURL{
-				Scheme:    "http",
-				Host:      "api.example.com",
-				Port:      "",
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 

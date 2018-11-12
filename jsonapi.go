@@ -18,10 +18,10 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
 		_, typ := res.IDAndType()
-		data, err = marshalResource(res, url.Scheme, url.Host, url.Params.Fields[typ], doc.RelData)
+		data, err = marshalResource(res, doc.PrePath, url.Params.Fields[typ], doc.RelData)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data, err = marshalCollection(col, url.Scheme, url.Host, url.Params.Fields[col.Type()], doc.RelData)
+		data, err = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
 	} else if id, ok := doc.Data.(Identifier); ok {
 		// Identifer
 		data, err = json.Marshal(id)
@@ -47,7 +47,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if len(data) > 0 {
 		for key := range doc.Included {
 			_, typ := doc.Included[key].IDAndType()
-			raw, err := marshalResource(doc.Included[key], url.Scheme, url.Host, url.Params.Fields[typ], doc.RelData)
+			raw, err := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
 			if err != nil {
 				return []byte{}, err
 			}
@@ -75,7 +75,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"self": url.FullURL(),
+			"self": doc.PrePath + url.FullURL(),
 		}
 	}
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}

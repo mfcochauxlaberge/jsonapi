@@ -13,9 +13,6 @@ type SimpleURL struct {
 	// Source string
 
 	// URL
-	Scheme    string   // http, https
-	Host      string   // api.example.com
-	Port      string   // 80
 	Fragments []string // [users, abc123, articles]
 	Route     string   // /users/:id/articles
 
@@ -31,9 +28,6 @@ type SimpleURL struct {
 // NewSimpleURL ...
 func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	sURL := SimpleURL{
-		Scheme:    "",
-		Host:      "",
-		Port:      "",
 		Fragments: []string{},
 		Route:     "",
 
@@ -51,9 +45,6 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 
 	// fmt.Printf("URL: %s\n", u.String())
 
-	sURL.Scheme = u.Scheme
-	sURL.Host = u.Hostname()
-	sURL.Port = u.Port()
 	sURL.Fragments = parseFragments(u.Path)
 	sURL.Route = deduceRoute(sURL.Fragments)
 

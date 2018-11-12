@@ -27,7 +27,7 @@ func TestBuildSelfLink(t *testing.T) {
 	}
 
 	for i, test := range tests {
-		link := buildSelfLink(test.res, "http", "example.com")
+		link := buildSelfLink(test.res, "http://example.com")
 		tchek.AreEqual(t, i, test.expectedString, link)
 	}
 }

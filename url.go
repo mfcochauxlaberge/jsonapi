@@ -11,9 +11,6 @@ import (
 // URL ...
 type URL struct {
 	// URL
-	Scheme    string
-	Host      string
-	Port      string
 	Fragments []string // [users, u1, articles]
 	Route     string   // /users/:id/articles
 
@@ -32,18 +29,6 @@ type URL struct {
 // NewURL ...
 func NewURL(reg *Registry, su SimpleURL) (*URL, error) {
 	url := &URL{}
-
-	// Scheme
-	url.Scheme = su.Scheme
-	if url.Scheme != "http" && url.Scheme != "https" {
-		url.Scheme = ""
-	}
-
-	// Host
-	url.Host = su.Host
-
-	// Port
-	url.Port = su.Port
 
 	// Route
 	url.Route = su.Route
@@ -186,10 +171,6 @@ func (u *URL) NormalizePath() string {
 // FullURL ...
 func (u *URL) FullURL() string {
 	url := u.NormalizePath()
-
-	if u.Scheme != "" && u.Host != "" {
-		url = u.Scheme + "://" + u.Host + url
-	}
 
 	return url
 }

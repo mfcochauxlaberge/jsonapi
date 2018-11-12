@@ -44,8 +44,6 @@ func TestParseURL(t *testing.T) {
 			// 3
 			url: `https://api.example.com/mocktypes1`,
 			expectedURL: URL{
-				Scheme:          "https",
-				Host:            "api.example.com",
 				Fragments:       []string{"mocktypes1"},
 				Route:           "/mocktypes1",
 				BelongsToFilter: BelongsToFilter{},
@@ -59,8 +57,6 @@ func TestParseURL(t *testing.T) {
 			// 4
 			url: `https://example.com/mocktypes1/mc1-1`,
 			expectedURL: URL{
-				Scheme:          "https",
-				Host:            "example.com",
 				Fragments:       []string{"mocktypes1", "mc1-1"},
 				Route:           "/mocktypes1/:id",
 				BelongsToFilter: BelongsToFilter{},
@@ -74,8 +70,6 @@ func TestParseURL(t *testing.T) {
 			// 5
 			url: `https://example.com/mocktypes1/mc1-1/to-one`,
 			expectedURL: URL{
-				Scheme:    "https",
-				Host:      "example.com",
 				Fragments: []string{"mocktypes1", "mc1-1", "to-one"},
 				Route:     "/mocktypes1/:id/to-one",
 				BelongsToFilter: BelongsToFilter{
@@ -101,8 +95,6 @@ func TestParseURL(t *testing.T) {
 			// 6
 			url: `https://example.com/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Scheme:    "https",
-				Host:      "example.com",
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
 				BelongsToFilter: BelongsToFilter{

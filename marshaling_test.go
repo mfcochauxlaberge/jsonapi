@@ -19,7 +19,7 @@ func TestMarshalResource(t *testing.T) {
 
 	tests := []struct {
 		data          Resource
-		host          string
+		prepath       string
 		params        string
 		meta          map[string]interface{}
 		errorExpected bool
@@ -39,13 +39,13 @@ func TestMarshalResource(t *testing.T) {
 		}, {
 			// 1
 			data:          mocktypes2.Elem(1),
-			host:          "https://example.org",
+			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "resource-2",
 		}, {
 			// 2
 			data:          mocktypes2.Elem(1),
-			host:          "https://example.org",
+			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
 			payloadFile:   "resource-3",
@@ -54,11 +54,12 @@ func TestMarshalResource(t *testing.T) {
 
 	for n, test := range tests {
 		doc := NewDocument()
+		doc.PrePath = test.prepath
 
 		doc.Data = test.data
 
 		id, resType := test.data.IDAndType()
-		rawurl := fmt.Sprintf("%s/%s/%s%s", test.host, resType, id, test.params)
+		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)
@@ -95,7 +96,7 @@ func TestMarshalCollection(t *testing.T) {
 
 	tests := []struct {
 		data          Collection
-		host          string
+		prepath       string
 		params        string
 		meta          map[string]interface{}
 		jsonapi       map[string]interface{}
@@ -116,14 +117,14 @@ func TestMarshalCollection(t *testing.T) {
 		}, {
 			// 1
 			data:          mocktypes2,
-			host:          "example.org",
+			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=uintptr,boolptr,timeptr",
 			errorExpected: false,
 			payloadFile:   "collection-2",
 		}, {
 			// 2
 			data:          WrapCollection(Wrap(&MockType1{})),
-			host:          "example.org",
+			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "collection-3",
 		},
@@ -131,15 +132,15 @@ func TestMarshalCollection(t *testing.T) {
 
 	for n, test := range tests {
 		doc := NewDocument()
+		doc.PrePath = test.prepath
 
 		doc.Data = test.data
 
 		_, resType := test.data.Sample().IDAndType()
-		rawurl := fmt.Sprintf("https://%s/%s%s", test.host, resType, test.params)
+		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
 		tchek.UnintendedError(err)
-		url.Host = test.host
 
 		doc.Meta = test.meta
 

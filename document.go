@@ -20,6 +20,9 @@ type Document struct {
 
 	// Errors
 	Errors []Error
+
+	// Internal
+	PrePath string
 }
 
 // NewDocument ...
