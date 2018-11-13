@@ -218,6 +218,71 @@ func NewErrUnknownTypeInURL(typ string) Error {
 	return e
 }
 
+// NewErrUnknownFieldInFilterParameter (400) ...
+func NewErrUnknownFieldInFilterParameter(field string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown field in filter parameter"
+	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Source["parameter"] = "filter"
+	e.Meta["unknown-field"] = field
+
+	return e
+}
+
+// NewErrUnknownOperatorInFilterParameter (400) ...
+func NewErrUnknownOperatorInFilterParameter(op string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown operator in filter parameter"
+	e.Detail = fmt.Sprintf("%s is not a known operator.", op)
+	e.Source["parameter"] = "filter"
+	e.Meta["unknown-operator"] = op
+
+	return e
+}
+
+// NewErrInvalidValueInFilterParameter (400) ...
+func NewErrInvalidValueInFilterParameter(val, kind string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown value in filter parameter"
+	e.Detail = fmt.Sprintf("%s is not a known value.", val)
+	e.Source["parameter"] = "filter"
+	e.Meta["invalid-value"] = val
+
+	return e
+}
+
+// NewErrUnknownCollationInFilterParameter (400) ...
+func NewErrUnknownCollationInFilterParameter(col string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown collation in filter parameter"
+	e.Detail = fmt.Sprintf("%s is not a known collation.", col)
+	e.Source["parameter"] = "filter"
+	e.Meta["unknown-collation"] = col
+
+	return e
+}
+
+// NewErrUnknownFilterParameterLabel (400) ...
+func NewErrUnknownFilterParameterLabel(label string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Unknown label in filter parameter"
+	e.Detail = fmt.Sprintf("%s is not a known filter query label.", label)
+	e.Source["parameter"] = "filter"
+	e.Meta["unknown-label"] = label
+
+	return e
+}
+
 // NewErrUnauthorized (401) ...
 func NewErrUnauthorized() Error {
 	e := NewError()
