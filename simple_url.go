@@ -18,6 +18,7 @@ type SimpleURL struct {
 
 	// Params
 	Fields       map[string][]string
+	FilterLabel  string
 	Filter       *Condition
 	SortingRules []string
 	PageSize     int
@@ -57,9 +58,16 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 				sURL.Fields[resType] = parseCommaList(values.Get(name))
 			}
 		} else if name == "filter" {
-			// Filter
-			err := json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
+			var err error
+			if values.Get(name)[0] != '{' {
+				// It should be a label
+				err = json.Unmarshal([]byte("\""+values.Get(name)+"\""), &sURL.FilterLabel)
+			} else {
+				// It should be a JSON object
+				err = json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
+			}
 			if err != nil {
+				sURL.FilterLabel = ""
 				sURL.Filter = nil
 				return sURL, NewErrMalformedFilterParameter(values.Get(name))
 			}

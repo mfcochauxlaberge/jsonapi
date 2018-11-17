@@ -15,7 +15,8 @@ type Params struct {
 	RelData map[string][]string
 
 	// Filter
-	Filter *Condition
+	FilterLabel string
+	Filter      *Condition
 
 	// Sorting
 	SortingRules []string
@@ -156,6 +157,7 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 	}
 
 	// Filter
+	params.FilterLabel = su.FilterLabel
 	params.Filter = su.Filter
 	// TODO
 

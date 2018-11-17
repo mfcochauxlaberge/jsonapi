@@ -141,20 +141,21 @@ func TestSimpleURL(t *testing.T) {
 			// 7
 			url: `
 				http://api.example.com/type/id/rel
-				?filter=invalid
+				?filter=label
 			`,
 			expectedURL: SimpleURL{
 				Fragments: []string{"type", "id", "rel"},
 				Route:     "/type/:id/rel",
 
 				Fields:       map[string][]string{},
+				FilterLabel:  "label",
 				Filter:       nil,
 				SortingRules: []string{},
 				PageSize:     10,
 				PageNumber:   1,
 				Include:      []string{},
 			},
-			expectedError: NewErrMalformedFilterParameter("invalid"),
+			expectedError: nil,
 		}, {
 			// 8
 			url: `

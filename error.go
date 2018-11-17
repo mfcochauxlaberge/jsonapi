@@ -116,7 +116,7 @@ func NewErrMalformedFilterParameter(badFitler string) Error {
 
 	e.Status = http.StatusBadRequest
 	e.Title = "Malformed filter parameter"
-	e.Detail = "The filter parameter is not a valid JSON object."
+	e.Detail = "The filter parameter is not a string or a valid JSON object."
 	e.Source["parameter"] = "filter"
 	e.Meta["bad-filter"] = badFitler
 

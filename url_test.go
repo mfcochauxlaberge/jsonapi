@@ -352,6 +352,27 @@ func TestParseParams(t *testing.T) {
 				},
 			},
 			expectedError: false,
+		}, {
+			// 4
+			url: `
+				?filter=label
+			`,
+			resType: "mocktypes1",
+			expectedParams: Params{
+				Fields: map[string][]string{
+					"mocktypes1": reg.Types["mocktypes1"].Fields,
+				},
+				Attrs:        map[string][]Attr{},
+				Rels:         map[string][]Rel{},
+				RelData:      map[string][]string{},
+				FilterLabel:  "label",
+				Filter:       nil,
+				SortingRules: []string{"bool", "int", "int16", "int32", "int64", "int8", "str", "time", "uint", "uint16", "uint32", "uint8"},
+				PageSize:     10,
+				PageNumber:   1,
+				Include:      [][]Rel{},
+			},
+			expectedError: false,
 		},
 	}
 
