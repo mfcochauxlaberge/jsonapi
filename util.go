@@ -7,7 +7,8 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 	mapPl := map[string]interface{}{}
 
 	// ID and type
-	mapPl["id"], mapPl["type"] = r.IDAndType()
+	mapPl["id"] = r.GetID()
+	mapPl["type"] = r.GetType()
 
 	// Attributes
 	attrs := map[string]interface{}{}

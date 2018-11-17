@@ -7,14 +7,12 @@ import "strings"
 //
 // v has to be a struct or a pointer to a struct.
 func buildSelfLink(res Resource, prepath string) string {
-	id, typ := res.IDAndType()
-
 	if !strings.HasSuffix(prepath, "/") {
 		prepath = prepath + "/"
 	}
 
-	if id != "" && typ != "" {
-		return prepath + typ + "/" + id
+	if res.GetID() != "" && res.GetType() != "" {
+		return prepath + res.GetType() + "/" + res.GetID()
 	}
 
 	return ""

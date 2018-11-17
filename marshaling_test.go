@@ -58,7 +58,8 @@ func TestMarshalResource(t *testing.T) {
 
 		doc.Data = test.data
 
-		id, resType := test.data.IDAndType()
+		id := test.data.GetID()
+		resType := test.data.GetType()
 		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)
@@ -136,7 +137,7 @@ func TestMarshalCollection(t *testing.T) {
 
 		doc.Data = test.data
 
-		_, resType := test.data.Sample().IDAndType()
+		resType := test.data.Sample().GetType()
 		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
 
 		url, err := ParseRawURL(reg, rawurl)

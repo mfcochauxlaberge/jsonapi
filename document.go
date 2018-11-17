@@ -38,8 +38,7 @@ func NewDocument() *Document {
 
 // Include ...
 func (d *Document) Include(res Resource) {
-	id, typ := res.IDAndType()
-	key := typ + " " + id
+	key := res.GetType() + " " + res.GetID()
 
 	if len(d.Included) == 0 {
 		d.Included = map[string]Resource{}
@@ -47,19 +46,17 @@ func (d *Document) Include(res Resource) {
 
 	if dres, ok := d.Data.(Resource); ok {
 		// Check resource
-		rid, rtype := dres.IDAndType()
-		rkey := rid + " " + rtype
+		rkey := dres.GetID() + " " + dres.GetType()
 
 		if rkey == key {
 			return
 		}
 	} else if col, ok := d.Data.(Collection); ok {
 		// Check Collection
-		_, ctyp := col.Sample().IDAndType()
-		if ctyp == typ {
+		ctyp := col.Sample().GetType()
+		if ctyp == res.GetType() {
 			for i := 0; i < col.Len(); i++ {
-				rid, rtype := col.Elem(i).IDAndType()
-				rkey := rid + " " + rtype
+				rkey := col.Elem(i).GetID() + " " + col.Elem(i).GetType()
 
 				if rkey == key {
 					return

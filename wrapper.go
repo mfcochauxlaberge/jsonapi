@@ -136,6 +136,18 @@ func (w *Wrapper) New() Resource {
 	return Wrap(newVal.Interface())
 }
 
+// GetID ...
+func (w *Wrapper) GetID() string {
+	id, _ := IDAndType(w.val.Interface())
+	return id
+}
+
+// GetType ...
+func (w *Wrapper) GetType() string {
+	_, typ := IDAndType(w.val.Interface())
+	return typ
+}
+
 // Get ...
 func (w *Wrapper) Get(key string) interface{} {
 	return w.getAttr(key, "")

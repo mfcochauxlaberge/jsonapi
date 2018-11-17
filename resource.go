@@ -3,7 +3,6 @@ package jsonapi
 // Resource ...
 type Resource interface {
 	// Structure
-	IDAndType() (string, string)
 	Attrs() []Attr
 	Rels() []Rel
 	Attr(key string) Attr
@@ -11,6 +10,8 @@ type Resource interface {
 	New() Resource
 
 	// Read
+	GetID() string
+	GetType() string
 	Get(key string) interface{}
 
 	// Update
