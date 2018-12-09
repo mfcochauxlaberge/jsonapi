@@ -9,18 +9,19 @@ import (
 
 func TestError(t *testing.T) {
 	tests := []struct {
+		name           string
 		err            Error
 		expectedString string
 	}{
 		{
-			// 0
+			name: "empty",
 			err: func() Error {
 				e := NewError()
 				return e
 			}(),
 			expectedString: "",
 		}, {
-			// 1
+			name: "title",
 			err: func() Error {
 				e := NewError()
 				e.Title = "An error"
@@ -28,7 +29,7 @@ func TestError(t *testing.T) {
 			}(),
 			expectedString: "An error",
 		}, {
-			// 2
+			name: "detail",
 			err: func() Error {
 				e := NewError()
 				e.Detail = "An error occured."
@@ -36,7 +37,7 @@ func TestError(t *testing.T) {
 			}(),
 			expectedString: "An error occured.",
 		}, {
-			// 3
+			name: "http status code",
 			err: func() Error {
 				e := NewError()
 				e.Status = http.StatusInternalServerError
@@ -44,7 +45,7 @@ func TestError(t *testing.T) {
 			}(),
 			expectedString: "500 Internal Server Error",
 		}, {
-			// 4
+			name: "http status code and title",
 			err: func() Error {
 				e := NewError()
 				e.Status = http.StatusInternalServerError
@@ -53,7 +54,7 @@ func TestError(t *testing.T) {
 			}(),
 			expectedString: "500 Internal Server Error: Internal server error",
 		}, {
-			// 5
+			name: "http status code and detail",
 			err: func() Error {
 				e := NewError()
 				e.Status = http.StatusInternalServerError
@@ -64,7 +65,7 @@ func TestError(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
-		tchek.AreEqual(t, n, test.err.Error(), test.expectedString)
+	for _, test := range tests {
+		tchek.AreEqual(t, test.name, test.err.Error(), test.expectedString)
 	}
 }

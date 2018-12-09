@@ -10,5 +10,5 @@ import (
 func TestDocument(t *testing.T) {
 	pl1 := Document{}
 
-	tchek.AreEqual(t, 0, nil, pl1.Data)
+	tchek.AreEqual(t, "empty", nil, pl1.Data)
 }

@@ -9,21 +9,22 @@ import (
 
 func TestSimpleURL(t *testing.T) {
 	tests := []struct {
+		name          string
 		url           string
 		expectedURL   SimpleURL
 		expectedError error
 	}{
 
 		{
-			// 0
-			url: ``,
+			name: "empty url",
+			url:  ``,
 			expectedURL: func() SimpleURL {
 				sURL, _ := NewSimpleURL(nil)
 				return sURL
 			}(),
 			expectedError: nil,
 		}, {
-			// 1
+			name: "empty path",
 			url: `
 				http://api.example.com
 			`,
@@ -40,7 +41,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 2
+			name: "collection",
 			url: `
 				http://api.example.com/type
 			`,
@@ -57,7 +58,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 3
+			name: "resource",
 			url: `
 				http://api.example.com/type/id
 			`,
@@ -74,7 +75,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 4
+			name: "relationship",
 			url: `
 				http://api.example.com/type/id/rel
 			`,
@@ -91,7 +92,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 5
+			name: "self relationship",
 			url: `
 				http://api.example.com/type/id/relationships/rel
 			`,
@@ -108,7 +109,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 6
+			name: "fields, sort, pagination, include",
 			url: `
 				http://api.example.com/type
 				?fields[type]=attr1,attr2,rel1
@@ -138,7 +139,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 7
+			name: "filter label",
 			url: `
 				http://api.example.com/type/id/rel
 				?filter=label
@@ -157,7 +158,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: nil,
 		}, {
-			// 8
+			name: "negative page size",
 			url: `
 				http://api.example.com/type/id/rel
 				?page[size]=-1
@@ -175,7 +176,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: NewErrInvalidPageSizeParameter("-1"),
 		}, {
-			// 9
+			name: "negative page number",
 			url: `
 				http://api.example.com/type/id/rel
 				?page[number]=-1
@@ -193,7 +194,7 @@ func TestSimpleURL(t *testing.T) {
 			},
 			expectedError: NewErrInvalidPageNumberParameter("-1"),
 		}, {
-			// 10
+			name: "unknown parameter",
 			url: `
 				http://api.example.com/type/id/rel
 				?unknownparam=somevalue
@@ -213,7 +214,7 @@ func TestSimpleURL(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		u, err := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
 		tchek.UnintendedError(err)
 
@@ -231,158 +232,161 @@ func TestSimpleURL(t *testing.T) {
 			err = jaErr
 		}
 
-		tchek.AreEqual(t, n, test.expectedURL, url)
-		tchek.AreEqual(t, n, test.expectedError, err)
+		tchek.AreEqual(t, test.name, test.expectedURL, url)
+		tchek.AreEqual(t, test.name, test.expectedError, err)
 	}
 }
 
 func TestParseCommaList(t *testing.T) {
 	tests := []struct {
+		name          string
 		source        string
 		expectedValue []string
 	}{
 		{
-			// 0
+			name:          "empty",
 			source:        ``,
 			expectedValue: []string{},
 		}, {
-			// 1
+			name:          "comma only",
 			source:        `,`,
 			expectedValue: []string{},
 		}, {
-			// 2
+			name:          "two commas only",
 			source:        `,,`,
 			expectedValue: []string{},
 		}, {
-			// 3
+			name:          "single item",
 			source:        `a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 4
+			name:          "start with comma",
 			source:        `,a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 5
+			name:          "start with two commas",
 			source:        `,,a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 6
+			name:          "start with comma and two items",
 			source:        `,a,b`,
 			expectedValue: []string{"a", "b"},
 		}, {
-			// 7
+			name:          "two items",
 			source:        `a,b`,
 			expectedValue: []string{"a", "b"},
 		}, {
-			// 8
+			name:          "two commas in middle",
 			source:        `a,,b`,
 			expectedValue: []string{"a", "b"},
 		},
 		{
-			// 8
+			name:          "end with two commas",
 			source:        `a,b,c,,`,
 			expectedValue: []string{"a", "b", "c"},
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		value := parseCommaList(test.source)
-		tchek.AreEqual(t, n, test.expectedValue, value)
+		tchek.AreEqual(t, test.name, test.expectedValue, value)
 	}
 }
 
 func TestParseFragments(t *testing.T) {
 	tests := []struct {
+		name          string
 		source        string
 		expectedValue []string
 	}{
 		{
-			// 0
+			name:          "empty",
 			source:        ``,
 			expectedValue: []string{},
 		}, {
-			// 1
+			name:          "slash only",
 			source:        `/`,
 			expectedValue: []string{},
 		}, {
-			// 2
+			name:          "double slash",
 			source:        `//`,
 			expectedValue: []string{},
 		}, {
-			// 3
+			name:          "single item",
 			source:        `a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 4
+			name:          "start with slash",
 			source:        `/a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 5
+			name:          "start with two slashes",
 			source:        `//a`,
 			expectedValue: []string{"a"},
 		}, {
-			// 6
+			name:          "standard path",
 			source:        `/a/b`,
 			expectedValue: []string{"a", "b"},
 		}, {
-			// 7
+			name:          "two commas in middle",
 			source:        `/a//b`,
 			expectedValue: []string{"a", "b"},
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		value := parseFragments(test.source)
-		tchek.AreEqual(t, n, test.expectedValue, value)
+		tchek.AreEqual(t, test.name, test.expectedValue, value)
 	}
 }
 
 func TestDeduceRoute(t *testing.T) {
 	tests := []struct {
+		name          string
 		source        []string
 		expectedValue string
 	}{
 		{
-			// 0
+			name:          "empty",
 			source:        []string{},
 			expectedValue: "",
 		}, {
-			// 1
+			name:          "collection",
 			source:        []string{"a"},
 			expectedValue: "/a",
 		}, {
-			// 2
+			name:          "resource",
 			source:        []string{"a", "b"},
 			expectedValue: "/a/:id",
 		}, {
-			// 3
+			name:          "related relationship",
 			source:        []string{"a", "b", "c"},
 			expectedValue: "/a/:id/c",
 		}, {
-			// 4
+			name:          "self relationship",
 			source:        []string{"a", "b", "relationships", "d"},
 			expectedValue: "/a/:id/relationships/d",
 		}, {
-			// 5
+			name:          "collection meta",
 			source:        []string{"a", "meta"},
 			expectedValue: "/a/meta",
 		}, {
-			// 6
+			name:          "resource meta",
 			source:        []string{"a", "b", "meta"},
 			expectedValue: "/a/:id/meta",
 		}, {
-			// 7
+			name:          "related relationships meta",
 			source:        []string{"a", "b", "relationships", "meta"},
 			expectedValue: "/a/:id/relationships/meta",
 		}, {
-			// 8
+			name:          "self relationships meta",
 			source:        []string{"a", "b", "relationships", "d", "meta"},
 			expectedValue: "/a/:id/relationships/d/meta",
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		value := deduceRoute(test.source)
-		tchek.AreEqual(t, n, test.expectedValue, value)
+		tchek.AreEqual(t, test.name, test.expectedValue, value)
 	}
 }

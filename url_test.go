@@ -12,24 +12,25 @@ func TestParseURL(t *testing.T) {
 	reg := NewMockRegistry()
 
 	tests := []struct {
+		name          string
 		url           string
 		expectedURL   URL
 		expectedError bool
 	}{
 
 		{
-			// 0
+			name:          "empty",
 			url:           ``,
 			expectedURL:   URL{},
 			expectedError: true,
 		}, {
-			// 1
+			name:          "empty path",
 			url:           `https://example.com`,
 			expectedURL:   URL{},
 			expectedError: true,
 		}, {
-			// 2
-			url: `mocktypes1`,
+			name: "collection name only",
+			url:  `mocktypes1`,
 			expectedURL: URL{
 				Fragments:       []string{"mocktypes1"},
 				Route:           "/mocktypes1",
@@ -41,8 +42,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 3
-			url: `https://api.example.com/mocktypes1`,
+			name: "full url for collection",
+			url:  `https://api.example.com/mocktypes1`,
 			expectedURL: URL{
 				Fragments:       []string{"mocktypes1"},
 				Route:           "/mocktypes1",
@@ -54,8 +55,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 4
-			url: `https://example.com/mocktypes1/mc1-1`,
+			name: "full url for resource",
+			url:  `https://example.com/mocktypes1/mc1-1`,
 			expectedURL: URL{
 				Fragments:       []string{"mocktypes1", "mc1-1"},
 				Route:           "/mocktypes1/:id",
@@ -67,8 +68,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 5
-			url: `https://example.com/mocktypes1/mc1-1/to-one`,
+			name: "full url for related relationship",
+			url:  `https://example.com/mocktypes1/mc1-1/to-one`,
 			expectedURL: URL{
 				Fragments: []string{"mocktypes1", "mc1-1", "to-one"},
 				Route:     "/mocktypes1/:id/to-one",
@@ -92,8 +93,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 6
-			url: `https://example.com/mocktypes1/mc1-1/relationships/to-many-from-one`,
+			name: "111111",
+			url:  `https://example.com/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -118,8 +119,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 7
-			url: `/mocktypes1/mc1-1/relationships/to-many-from-one`,
+			name: "full url for self relationship",
+			url:  `/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -144,8 +145,8 @@ func TestParseURL(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 8
-			url: `/mocktypes1/mc1-1/relationships/to-many-from-one?fields[mocktypes2]=boolptr%2Cint8ptr`,
+			name: "full url for self relationship with params",
+			url:  `/mocktypes1/mc1-1/relationships/to-many-from-one?fields[mocktypes2]=boolptr%2Cint8ptr`,
 			expectedURL: URL{
 				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
 				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
@@ -172,20 +173,16 @@ func TestParseURL(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		u, _ := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
 		url, err := ParseRawURL(reg, u.String())
-		tchek.ErrorExpected(t, n, test.expectedError, err)
+		tchek.ErrorExpected(t, test.name, test.expectedError, err)
 
 		// test.expectedURL.Path = tchek.MakeOneLineNoSpaces(test.expectedURL.Path)
 
 		if !test.expectedError {
 			url.Params = nil
-			tchek.AreEqual(
-				t, n,
-				test.expectedURL,
-				*url,
-			)
+			tchek.AreEqual(t, test.name, test.expectedURL, *url)
 		}
 	}
 }
@@ -195,6 +192,7 @@ func TestParseParams(t *testing.T) {
 	reg := NewMockRegistry()
 
 	tests := []struct {
+		name           string
 		url            string
 		resType        string
 		expectedParams Params
@@ -202,8 +200,8 @@ func TestParseParams(t *testing.T) {
 	}{
 
 		{
-			// 0
-			url: `/`,
+			name: "slash only",
+			url:  `/`,
 			expectedParams: Params{
 				Fields:       map[string][]string{},
 				Attrs:        map[string][]Attr{},
@@ -217,8 +215,8 @@ func TestParseParams(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 1
-			url: `?`,
+			name: "question mark",
+			url:  `?`,
 			expectedParams: Params{
 				Fields:       map[string][]string{},
 				Attrs:        map[string][]Attr{},
@@ -232,7 +230,7 @@ func TestParseParams(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 2
+			name: "include, sort, pagination in multiple parts",
 			url: `
 				?include=
 					to-many-from-one.to-one-from-many.to-one.to-many-from-many,
@@ -276,7 +274,7 @@ func TestParseParams(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 3
+			name: "sort param with many escaped commas",
 			url: `
 				?include=
 					to-many-from-one.to-one-from-many.to-one.to-many-from-many%2C
@@ -320,7 +318,7 @@ func TestParseParams(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 4
+			name: "sort param with many unescaped commas",
 			url: `
 				?include=
 					to-many-from-one.to-one-from-many
@@ -353,7 +351,7 @@ func TestParseParams(t *testing.T) {
 			},
 			expectedError: false,
 		}, {
-			// 4
+			name: "filter label",
 			url: `
 				?filter=label
 			`,
@@ -376,7 +374,7 @@ func TestParseParams(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		u, err := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
 		tchek.UnintendedError(err)
 
@@ -384,7 +382,7 @@ func TestParseParams(t *testing.T) {
 		tchek.UnintendedError(err)
 
 		params, err := NewParams(reg, su, test.resType)
-		tchek.ErrorExpected(t, n, test.expectedError, err)
+		tchek.ErrorExpected(t, test.name, test.expectedError, err)
 
 		// Set Attrs and Rels
 		for resType, fields := range test.expectedParams.Fields {
@@ -404,11 +402,7 @@ func TestParseParams(t *testing.T) {
 			// fmt.Printf("EXPECTED:\n%s\n", data)
 			// data, _ = json.MarshalIndent(params, "", "\t")
 			// fmt.Printf("PROVIDED:\n%s\n", data)
-			tchek.AreEqual(
-				t, n,
-				test.expectedParams,
-				*params,
-			)
+			tchek.AreEqual(t, test.name, test.expectedParams, *params)
 		}
 	}
 }

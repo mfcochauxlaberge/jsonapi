@@ -14,22 +14,23 @@ func TestFilterQuery(t *testing.T) {
 	// time2, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
 
 	tests := []struct {
+		name              string
 		query             string
 		expectedCondition Condition
 		expectedError     bool
 	}{
 		{
-			// 0
+			name:          "empty",
 			query:         ``,
 			expectedError: true,
 		},
 		{
-			// 1
+			name:          "null value",
 			query:         `{"v":null}`,
 			expectedError: false, // TODO
 		},
 		{
-			// 2
+			name: "standard values",
 			query: `{
 				"c": "col",
 				"f": "field",
@@ -46,19 +47,19 @@ func TestFilterQuery(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		cdt := Condition{}
 		err := json.Unmarshal([]byte(test.query), &cdt)
 
-		tchek.ErrorExpected(t, n, test.expectedError, err)
+		tchek.ErrorExpected(t, test.name, test.expectedError, err)
 
 		if !test.expectedError {
-			tchek.AreEqual(t, n, test.expectedCondition, cdt)
+			tchek.AreEqual(t, test.name, test.expectedCondition, cdt)
 
 			data, err := json.Marshal(&cdt)
 			tchek.UnintendedError(err)
 
-			tchek.AreEqual(t, n, tchek.MakeOneLineNoSpaces(test.query), tchek.MakeOneLineNoSpaces(string(data)))
+			tchek.AreEqual(t, test.name, tchek.MakeOneLineNoSpaces(test.query), tchek.MakeOneLineNoSpaces(string(data)))
 		}
 	}
 
@@ -67,13 +68,13 @@ func TestFilterQuery(t *testing.T) {
 		Op:  "=",
 		Val: func() {},
 	})
-	tchek.ErrorExpected(t, -1, true, err)
+	tchek.ErrorExpected(t, "function as value", true, err)
 
 	_, err = json.Marshal(&Condition{
 		Op:  "",
 		Val: "",
 	})
-	tchek.ErrorExpected(t, -2, false, err) // TODO
+	tchek.ErrorExpected(t, "empty operation and value", false, err) // TODO
 }
 
 func BenchmarkMarshalFilterQuery(b *testing.B) {

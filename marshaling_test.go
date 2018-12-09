@@ -18,6 +18,7 @@ func TestMarshalResource(t *testing.T) {
 	reg := NewMockRegistry()
 
 	tests := []struct {
+		name          string
 		data          Resource
 		prepath       string
 		params        string
@@ -26,7 +27,7 @@ func TestMarshalResource(t *testing.T) {
 		payloadFile   string
 	}{
 		{
-			// 0
+			name: "resource with meta",
 			data: mocktypes1.Elem(0),
 			meta: map[string]interface{}{
 				"num":       42,
@@ -37,13 +38,13 @@ func TestMarshalResource(t *testing.T) {
 			errorExpected: false,
 			payloadFile:   "resource-1",
 		}, {
-			// 1
+			name:          "resource with prepath",
 			data:          mocktypes2.Elem(1),
 			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "resource-2",
 		}, {
-			// 2
+			name:          "resource with prepath and params",
 			data:          mocktypes2.Elem(1),
 			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
@@ -52,7 +53,7 @@ func TestMarshalResource(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		doc := NewDocument()
 		doc.PrePath = test.prepath
 
@@ -69,7 +70,7 @@ func TestMarshalResource(t *testing.T) {
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		tchek.ErrorExpected(t, n, test.errorExpected, err)
+		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -86,7 +87,7 @@ func TestMarshalResource(t *testing.T) {
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, n, expectedOutput, output)
+			tchek.AreEqual(t, test.name, expectedOutput, output)
 		}
 	}
 }
@@ -96,6 +97,7 @@ func TestMarshalCollection(t *testing.T) {
 	reg := NewMockRegistry()
 
 	tests := []struct {
+		name          string
 		data          Collection
 		prepath       string
 		params        string
@@ -105,7 +107,7 @@ func TestMarshalCollection(t *testing.T) {
 		payloadFile   string
 	}{
 		{
-			// 0
+			name: "collection with meta",
 			data: mocktypes1,
 			meta: map[string]interface{}{
 				"num":       -32820,
@@ -116,14 +118,14 @@ func TestMarshalCollection(t *testing.T) {
 			errorExpected: false,
 			payloadFile:   "collection-1",
 		}, {
-			// 1
+			name:          "collection with prepath and params",
 			data:          mocktypes2,
 			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=uintptr,boolptr,timeptr",
 			errorExpected: false,
 			payloadFile:   "collection-2",
 		}, {
-			// 2
+			name:          "collection with prepath",
 			data:          WrapCollection(Wrap(&MockType1{})),
 			prepath:       "https://example.org",
 			errorExpected: false,
@@ -131,7 +133,7 @@ func TestMarshalCollection(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		doc := NewDocument()
 		doc.PrePath = test.prepath
 
@@ -147,7 +149,7 @@ func TestMarshalCollection(t *testing.T) {
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		tchek.ErrorExpected(t, n, test.errorExpected, err)
+		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -164,7 +166,7 @@ func TestMarshalCollection(t *testing.T) {
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, n, expectedOutput, output)
+			tchek.AreEqual(t, test.name, expectedOutput, output)
 		}
 	}
 }
@@ -181,12 +183,13 @@ func TestMarshalErrors(t *testing.T) {
 	}
 
 	tests := []struct {
+		name          string
 		errors        []Error
 		errorExpected bool
 		payloadFile   string
 	}{
 		{
-			// 0
+			name: "two http errors",
 			errors: resetIDs([]Error{
 				NewErrBadRequest("Invalid attribute", "name cannot be empty."),
 				NewErrBadRequest("Invalid attribute", "age cannot be negative."),
@@ -194,7 +197,7 @@ func TestMarshalErrors(t *testing.T) {
 			errorExpected: false,
 			payloadFile:   "errors-1",
 		}, {
-			// 1
+			name: "complex valid error",
 			errors: resetIDs(func() []Error {
 				e1 := NewError()
 
@@ -215,12 +218,12 @@ func TestMarshalErrors(t *testing.T) {
 		},
 	}
 
-	for n, test := range tests {
+	for _, test := range tests {
 		doc := NewDocument()
 		doc.Data = test.errors
 		// Marshal
 		payload, err := Marshal(doc, nil)
-		tchek.ErrorExpected(t, n, test.errorExpected, err)
+		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -237,7 +240,7 @@ func TestMarshalErrors(t *testing.T) {
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, n, expectedOutput, output)
+			tchek.AreEqual(t, test.name, expectedOutput, output)
 		}
 	}
 }

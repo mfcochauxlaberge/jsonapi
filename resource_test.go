@@ -20,20 +20,20 @@ func TestResource(t *testing.T) {
 	res := Wrap(p1)
 
 	// Get
-	tchek.AreEqual(t, 0, p1.Title, res.Get("title"))
-	tchek.AreEqual(t, 1, "some-artist", res.GetToOne("author"))
+	tchek.AreEqual(t, "get attribute", p1.Title, res.Get("title"))
+	tchek.AreEqual(t, "get to-one relationship", "some-artist", res.GetToOne("author"))
 
 	// Set
 	res.Set("title", "New Title")
-	tchek.AreEqual(t, 2, "New Title", p1.Title)
-	tchek.AreEqual(t, 3, "New Title", res.Get("title"))
+	tchek.AreEqual(t, "set string attribute", "New Title", p1.Title)
+	tchek.AreEqual(t, "set string attribute 2", "New Title", res.Get("title"))
 
 	p1.PaintedIn = time.Date(1932, 0, 0, 0, 0, 0, 0, loc)
-	tchek.AreEqual(t, 4, p1.PaintedIn, res.Get("painted-in"))
+	tchek.AreEqual(t, "set time attribute", p1.PaintedIn, res.Get("painted-in"))
 
 	res.SetToOne("author", "another-artist")
-	tchek.AreEqual(t, 5, "another-artist", p1.Author)
-	tchek.AreEqual(t, 6, "another-artist", res.GetToOne("author"))
+	tchek.AreEqual(t, "set to-one relationship", "another-artist", p1.Author)
+	tchek.AreEqual(t, "set to-one relationship 2", "another-artist", res.GetToOne("author"))
 }
 
 type painting struct {

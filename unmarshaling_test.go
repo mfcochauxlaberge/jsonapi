@@ -38,8 +38,8 @@ func TestUnmarshalResource(t *testing.T) {
 
 	dst1 := pl1.Data.(Resource)
 
-	tchek.HaveEqualAttributes(t, -1, res1, dst1)
-	tchek.AreEqual(t, -1, meta1, pl1.Meta)
+	tchek.HaveEqualAttributes(t, "same attribues", res1, dst1)
+	tchek.AreEqual(t, "same meta object", meta1, pl1.Meta)
 }
 
 func TestUnmarshalIdentifier(t *testing.T) {
@@ -68,8 +68,8 @@ func TestUnmarshalIdentifier(t *testing.T) {
 
 	dst1 := pl1.Data.(Identifier)
 
-	tchek.AreEqual(t, -1, id1, dst1)
-	tchek.AreEqual(t, -1, meta1, pl1.Meta)
+	tchek.AreEqual(t, "same identifier", id1, dst1)
+	tchek.AreEqual(t, "same meta map", meta1, pl1.Meta)
 }
 
 func TestUnmarshalIdentifiers(t *testing.T) {
@@ -102,6 +102,6 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 
 	dst1 := pl1.Data.(Identifiers)
 
-	tchek.AreEqual(t, -1, ids1, dst1)
-	tchek.AreEqual(t, -1, meta1, pl1.Meta)
+	tchek.AreEqual(t, "same identifiers", ids1, dst1)
+	tchek.AreEqual(t, "same meta map", meta1, pl1.Meta)
 }
