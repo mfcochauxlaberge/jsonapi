@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/twinj/uuid"
+	"github.com/myesui/uuid"
 )
 
 // Error represents an error object from the JSON API specification.
