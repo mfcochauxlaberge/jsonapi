@@ -126,10 +126,10 @@ func TestSimpleURL(t *testing.T) {
 				Route:     "/type",
 
 				Fields: map[string][]string{
-					"type":  []string{"attr1", "attr2", "rel1"},
-					"type2": []string{"attr3", "attr4", "rel2", "rel3"},
-					"type3": []string{"attr5", "attr6", "rel4"},
-					"type4": []string{"attr7", "rel5", "rel6"},
+					"type":  {"attr1", "attr2", "rel1"},
+					"type2": {"attr3", "attr4", "rel2", "rel3"},
+					"type3": {"attr5", "attr6", "rel4"},
+					"type4": {"attr7", "rel5", "rel6"},
 				},
 				Filter:       nil,
 				SortingRules: []string{"attr2", "-attr1"},

@@ -257,16 +257,16 @@ func TestParseParams(t *testing.T) {
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-many-from-many"],
 					},
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-many-from-one"],
 						reg.Types["mocktypes2"].Rels["to-one-from-many"],
 						reg.Types["mocktypes1"].Rels["to-one"],
 						reg.Types["mocktypes2"].Rels["to-many-from-many"],
 					},
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-one-from-one"],
 						reg.Types["mocktypes2"].Rels["to-many-from-many"],
 					},
@@ -301,16 +301,16 @@ func TestParseParams(t *testing.T) {
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-many-from-many"],
 					},
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-many-from-one"],
 						reg.Types["mocktypes2"].Rels["to-one-from-many"],
 						reg.Types["mocktypes1"].Rels["to-one"],
 						reg.Types["mocktypes2"].Rels["to-many-from-many"],
 					},
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-one-from-one"],
 						reg.Types["mocktypes2"].Rels["to-many-from-many"],
 					},
@@ -343,7 +343,7 @@ func TestParseParams(t *testing.T) {
 				PageSize:     90,
 				PageNumber:   110,
 				Include: [][]Rel{
-					[]Rel{
+					{
 						reg.Types["mocktypes1"].Rels["to-many-from-one"],
 						reg.Types["mocktypes2"].Rels["to-one-from-many"],
 					},

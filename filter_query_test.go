@@ -81,18 +81,18 @@ func BenchmarkMarshalFilterQuery(b *testing.B) {
 	cdt := Condition{
 		Op: "or",
 		Val: []Condition{
-			Condition{
+			{
 				Op:  "in",
 				Val: []string{"a", "b", "c"},
 			},
-			Condition{
+			{
 				Op: "and",
 				Val: []Condition{
-					Condition{
+					{
 						Op:  "~",
 						Val: "%a",
 					},
-					Condition{
+					{
 						Op:  ">=",
 						Val: "u",
 					},
