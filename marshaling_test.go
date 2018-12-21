@@ -204,7 +204,7 @@ func TestMarshalErrors(t *testing.T) {
 				e1.Code = "somecode"
 				e1.Status = http.StatusInternalServerError
 				e1.Title = "Error"
-				e1.Detail = "An error occured."
+				e1.Detail = "An error occurred."
 				e1.Links["about"] = "https://example.org/errors/about"
 				e1.Source["pointer"] = "/data/attributes/title"
 				e1.Meta["str"] = "a string"

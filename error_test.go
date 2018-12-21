@@ -32,10 +32,10 @@ func TestError(t *testing.T) {
 			name: "detail",
 			err: func() Error {
 				e := NewError()
-				e.Detail = "An error occured."
+				e.Detail = "An error occurred."
 				return e
 			}(),
-			expectedString: "An error occured.",
+			expectedString: "An error occurred.",
 		}, {
 			name: "http status code",
 			err: func() Error {
@@ -58,10 +58,10 @@ func TestError(t *testing.T) {
 			err: func() Error {
 				e := NewError()
 				e.Status = http.StatusInternalServerError
-				e.Detail = "An internal server error occured."
+				e.Detail = "An internal server error occurred."
 				return e
 			}(),
-			expectedString: "500 Internal Server Error: An internal server error occured.",
+			expectedString: "500 Internal Server Error: An internal server error occurred.",
 		},
 	}
 

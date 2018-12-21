@@ -2,7 +2,7 @@
 	"errors": [
 		{
 			"code": "somecode",
-			"detail": "An error occured.",
+			"detail": "An error occurred.",
 			"id": "00000000-0000-0000-0000-000000000000",
 			"links": {
 				"about": "https://example.org/errors/about"
