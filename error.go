@@ -386,3 +386,13 @@ func NewErrServiceUnavailable() Error {
 
 	return e
 }
+
+// NewErrNotImplemented (503) ...
+func NewErrNotImplemented() Error {
+	e := NewError()
+
+	e.Status = http.StatusNotImplemented
+	e.Title = "Not Implemented"
+
+	return e
+}
