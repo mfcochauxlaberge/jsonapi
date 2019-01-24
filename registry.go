@@ -72,10 +72,9 @@ func (r *Registry) RegisterType(v interface{}) {
 			def.String = ""
 
 			attrs[n] = Attr{
-				Name:    n,
-				Type:    sf.Type.String(),
-				Null:    strings.HasPrefix(sf.Type.String(), "*"),
-				Default: def,
+				Name: n,
+				Type: sf.Type.String(),
+				Null: strings.HasPrefix(sf.Type.String(), "*"),
 			}
 
 			fields = append(fields, n)

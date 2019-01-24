@@ -1,7 +1,5 @@
 package jsonapi
 
-import "database/sql"
-
 // Type ...
 type Type struct {
 	Name    string
@@ -13,10 +11,9 @@ type Type struct {
 
 // Attr ...
 type Attr struct {
-	Name    string
-	Type    string
-	Null    bool
-	Default sql.NullString
+	Name string
+	Type string
+	Null bool
 }
 
 // Rel ...
