@@ -3,7 +3,7 @@ package jsonapi
 import (
 	"testing"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestUnmarshalResource(t *testing.T) {

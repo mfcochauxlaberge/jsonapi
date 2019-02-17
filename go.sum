@@ -1,7 +1,7 @@
 github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c=
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
-github.com/kkaribu/tchek v0.2.0 h1:/VcfPCGHbMbVvWqH+LFXniJmaCBodSocyh9u0n8k4bQ=
-github.com/kkaribu/tchek v0.2.0/go.mod h1:SqTNgQxZ+DXsMmE2v0nUCqQjXnEG2bavXi0dQwDPBcs=
+github.com/mfcochauxlaberge/tchek v0.3.0 h1:SFmqbnfjxMbP7yV/FuHioIwYI9tmDtmO9Jd5smGu0KQ=
+github.com/mfcochauxlaberge/tchek v0.3.0/go.mod h1:e8jX6VID1Ku1XAZq8lkxRuGfSKIFL9sL7w4E3WDkx7o=
 github.com/myesui/uuid v1.0.0 h1:xCBmH4l5KuvLYc5L7AS7SZg9/jKdIFubM7OVoLqaQUI=
 github.com/myesui/uuid v1.0.0/go.mod h1:2CDfNgU0LR8mIdO8vdWd8i9gWWxLlcoIGGpSNgafq84=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=

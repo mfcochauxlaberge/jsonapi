@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestError(t *testing.T) {

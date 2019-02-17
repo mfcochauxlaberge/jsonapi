@@ -4,7 +4,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestResource(t *testing.T) {

@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestParseURL(t *testing.T) {

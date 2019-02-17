@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestMarshalResource(t *testing.T) {

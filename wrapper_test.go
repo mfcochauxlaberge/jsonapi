@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/kkaribu/tchek"
+	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestWrapper(t *testing.T) {
