@@ -1,5 +1,7 @@
 module github.com/mfcochauxlaberge/jsonapi
 
+go 1.11
+
 require (
 	github.com/davecgh/go-spew v1.1.1 // indirect
 	github.com/mfcochauxlaberge/tchek v0.3.0
