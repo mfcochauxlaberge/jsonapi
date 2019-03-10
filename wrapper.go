@@ -57,7 +57,7 @@ func Wrap(v interface{}) *Wrapper {
 		if apiTag == "attr" {
 			w.attrs = append(w.attrs, Attr{
 				Name: jsonTag,
-				Type: fs.Type.String(),
+				Type: GetAttrType(fs.Type.String()),
 			})
 		}
 	}

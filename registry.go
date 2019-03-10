@@ -73,7 +73,7 @@ func (r *Registry) RegisterType(v interface{}) {
 
 			attrs[n] = Attr{
 				Name: n,
-				Type: sf.Type.String(),
+				Type: GetAttrType(sf.Type.String()),
 				Null: strings.HasPrefix(sf.Type.String(), "*"),
 			}
 

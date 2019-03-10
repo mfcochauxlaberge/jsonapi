@@ -128,11 +128,11 @@ func TestWrapper(t *testing.T) {
 	for _, attr := range wrap1.Attrs() {
 		tchek.AreEqual(t, "copied attribute", wrap1.Get(attr.Name), wrap3.Get(attr.Name))
 
-		if attr.Type == "bool" {
+		if attr.Type == AttrTypeBool {
 			wrap3.Set(attr.Name, !wrap1.Get(attr.Name).(bool))
-		} else if attr.Type == "*bool" {
+		} else if attr.Type == AttrTypeBoolPtr {
 			wrap3.Set(attr.Name, !*(wrap1.Get(attr.Name).(*bool)))
-		} else if attr.Type == "time.Time" || attr.Type == "*time.Time" {
+		} else if attr.Type == AttrTypeTime || attr.Type == AttrTypeTimePtr {
 			wrap3.Set(attr.Name, time.Now())
 		} else {
 			wrap3.Set(attr.Name, "0")
