@@ -69,7 +69,7 @@ Author string `json:"author" api:"rel,users,articles"`
 
 ## Documentation
 
-Check out the [incomplete documentation](https://godoc.org/github.com/kkaribu/jsonapi).
+Check out the [incomplete documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
 
 ## Utilities
 

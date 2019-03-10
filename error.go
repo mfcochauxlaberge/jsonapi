@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/myesui/uuid"
+	"github.com/google/uuid"
 )
 
 // Error represents an error object from the JSON API specification.
@@ -23,7 +23,7 @@ type Error struct {
 // NewError returns an empty Error object.
 func NewError() Error {
 	err := Error{
-		ID:     uuid.NewV4().String(),
+		ID:     uuid.New().String(),
 		Code:   "",
 		Status: 0,
 		Title:  "",
