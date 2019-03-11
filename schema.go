@@ -1,5 +1,7 @@
 package jsonapi
 
+import "time"
+
 // Attribute types
 const (
 	AttrTypeInvalid = iota
@@ -174,6 +176,74 @@ func GetAttrString(t int) string {
 		return "*bool"
 	case AttrTypeTimePtr:
 		return "*time.Time"
+	default:
+		return ""
+	}
+}
+
+// ZeroValue ...
+func ZeroValue(t int) interface{} {
+	switch t {
+	case AttrTypeString:
+		return ""
+	case AttrTypeInt:
+		return int(0)
+	case AttrTypeInt8:
+		return int8(0)
+	case AttrTypeInt16:
+		return int16(0)
+	case AttrTypeInt32:
+		return int32(0)
+	case AttrTypeInt64:
+		return int64(0)
+	case AttrTypeUint:
+		return uint(0)
+	case AttrTypeUint8:
+		return uint8(0)
+	case AttrTypeUint16:
+		return uint16(0)
+	case AttrTypeUint32:
+		return uint32(0)
+	case AttrTypeBool:
+		return false
+	case AttrTypeTime:
+		return time.Time{}
+	case AttrTypeStringPtr:
+		var v *string
+		return v
+	case AttrTypeIntPtr:
+		var v *int
+		return v
+	case AttrTypeInt8Ptr:
+		var v *int8
+		return v
+	case AttrTypeInt16Ptr:
+		var v *int16
+		return v
+	case AttrTypeInt32Ptr:
+		var v *int32
+		return v
+	case AttrTypeInt64Ptr:
+		var v *int64
+		return v
+	case AttrTypeUintPtr:
+		var v *uint
+		return v
+	case AttrTypeUint8Ptr:
+		var v *uint8
+		return v
+	case AttrTypeUint16Ptr:
+		var v *uint16
+		return v
+	case AttrTypeUint32Ptr:
+		var v *uint32
+		return v
+	case AttrTypeBoolPtr:
+		var v *bool
+		return v
+	case AttrTypeTimePtr:
+		var v *time.Time
+		return v
 	default:
 		return ""
 	}
