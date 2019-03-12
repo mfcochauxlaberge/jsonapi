@@ -279,6 +279,6 @@ func ZeroValue(t int, null bool) interface{} {
 		}
 		return &v
 	default:
-		return ""
+		return nil
 	}
 }
