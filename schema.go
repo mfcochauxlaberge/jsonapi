@@ -135,8 +135,8 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrString ...
-func GetAttrString(t int, null bool) string {
+// GetAttrTypeString ...
+func GetAttrTypeString(t int, null bool) string {
 	switch t {
 	case AttrTypeString:
 		if !null {
