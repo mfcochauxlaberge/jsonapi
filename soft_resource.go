@@ -227,7 +227,7 @@ func (sr *SoftResource) check() {
 	for i := range sr.attrs {
 		n := sr.attrs[i].Name
 		if _, ok := sr.data[n]; !ok {
-			sr.data[n] = ZeroValue(sr.attrs[i].Type, sr.attrs[i].Null)
+			sr.data[n] = GetZeroValue(sr.attrs[i].Type, sr.attrs[i].Null)
 		}
 	}
 	for i := range sr.rels {

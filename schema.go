@@ -203,8 +203,8 @@ func GetAttrTypeString(t int, null bool) string {
 	}
 }
 
-// ZeroValue ...
-func ZeroValue(t int, null bool) interface{} {
+// GetZeroValue ...
+func GetZeroValue(t int, null bool) interface{} {
 	switch t {
 	case AttrTypeString:
 		v := ""
