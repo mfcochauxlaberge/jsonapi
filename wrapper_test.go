@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -128,15 +129,15 @@ func TestWrapper(t *testing.T) {
 	for _, attr := range wrap1.Attrs() {
 		tchek.AreEqual(t, "copied attribute", wrap1.Get(attr.Name), wrap3.Get(attr.Name))
 
-		if attr.Type == AttrTypeBool {
+		if attr.Type == AttrTypeBool && !attr.Null {
 			wrap3.Set(attr.Name, !wrap1.Get(attr.Name).(bool))
-		} else if attr.Type == AttrTypeBoolPtr {
+		} else if attr.Type == AttrTypeBool && attr.Null {
 			wrap3.Set(attr.Name, !*(wrap1.Get(attr.Name).(*bool)))
-		} else if attr.Type == AttrTypeTime || attr.Type == AttrTypeTimePtr {
+		} else if attr.Type == AttrTypeTime {
 			wrap3.Set(attr.Name, time.Now())
 		} else {
 			wrap3.Set(attr.Name, "0")
 		}
-		tchek.AreNotEqual(t, "modified copied attribute", wrap1.Get(attr.Name), wrap3.Get(attr.Name))
+		tchek.AreNotEqual(t, fmt.Sprintf("modified copied attribute %s (%v)", attr.Name, attr.Type), wrap1.Get(attr.Name), wrap3.Get(attr.Name))
 	}
 }

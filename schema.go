@@ -1,6 +1,9 @@
 package jsonapi
 
-import "time"
+import (
+	"strings"
+	"time"
+)
 
 // Attribute types
 const (
@@ -17,18 +20,6 @@ const (
 	AttrTypeUint32
 	AttrTypeBool
 	AttrTypeTime
-	AttrTypeStringPtr
-	AttrTypeIntPtr
-	AttrTypeInt8Ptr
-	AttrTypeInt16Ptr
-	AttrTypeInt32Ptr
-	AttrTypeInt64Ptr
-	AttrTypeUintPtr
-	AttrTypeUint8Ptr
-	AttrTypeUint16Ptr
-	AttrTypeUint32Ptr
-	AttrTypeBoolPtr
-	AttrTypeTimePtr
 )
 
 // Type ...
@@ -70,111 +61,142 @@ func (r *Rel) Inverse() Rel {
 }
 
 // GetAttrType ...
-func GetAttrType(t string) int {
-	switch t {
+func GetAttrType(t string) (int, bool) {
+	t2 := t
+	if strings.HasPrefix(t2, "*") {
+		t2 = t[1:]
+	}
+	switch t2 {
 	case "string":
-		return AttrTypeString
+		if t[0] != '*' {
+			return AttrTypeString, false
+		}
+		return AttrTypeString, true
 	case "int":
-		return AttrTypeInt
+		if t[0] != '*' {
+			return AttrTypeInt, false
+		}
+		return AttrTypeInt, true
 	case "int8":
-		return AttrTypeInt8
+		if t[0] != '*' {
+			return AttrTypeInt8, false
+		}
+		return AttrTypeInt8, true
 	case "int16":
-		return AttrTypeInt16
+		if t[0] != '*' {
+			return AttrTypeInt16, false
+		}
+		return AttrTypeInt16, true
 	case "int32":
-		return AttrTypeInt32
+		if t[0] != '*' {
+			return AttrTypeInt32, false
+		}
+		return AttrTypeInt32, true
 	case "int64":
-		return AttrTypeInt64
+		if t[0] != '*' {
+			return AttrTypeInt64, false
+		}
+		return AttrTypeInt64, true
 	case "uint":
-		return AttrTypeUint
+		if t[0] != '*' {
+			return AttrTypeUint, false
+		}
+		return AttrTypeUint, true
 	case "uint8":
-		return AttrTypeUint8
+		if t[0] != '*' {
+			return AttrTypeUint8, false
+		}
+		return AttrTypeUint8, true
 	case "uint16":
-		return AttrTypeUint16
+		if t[0] != '*' {
+			return AttrTypeUint16, false
+		}
+		return AttrTypeUint16, true
 	case "uint32":
-		return AttrTypeUint32
+		if t[0] != '*' {
+			return AttrTypeUint32, false
+		}
+		return AttrTypeUint32, true
 	case "bool":
-		return AttrTypeBool
+		if t[0] != '*' {
+			return AttrTypeBool, false
+		}
+		return AttrTypeBool, true
 	case "time.Time":
-		return AttrTypeTime
-	case "*string":
-		return AttrTypeStringPtr
-	case "*int":
-		return AttrTypeIntPtr
-	case "*int8":
-		return AttrTypeInt8Ptr
-	case "*int16":
-		return AttrTypeInt16Ptr
-	case "*int32":
-		return AttrTypeInt32Ptr
-	case "*int64":
-		return AttrTypeInt64Ptr
-	case "*uint":
-		return AttrTypeUintPtr
-	case "*uint8":
-		return AttrTypeUint8Ptr
-	case "*uint16":
-		return AttrTypeUint16Ptr
-	case "*uint32":
-		return AttrTypeUint32Ptr
-	case "*bool":
-		return AttrTypeBoolPtr
-	case "*time.Time":
-		return AttrTypeTimePtr
+		if t[0] != '*' {
+			return AttrTypeTime, false
+		}
+		return AttrTypeTime, true
 	default:
-		return AttrTypeInvalid
+		if t[0] != '*' {
+			return AttrTypeInvalid, false
+		}
+		return AttrTypeInvalid, true
 	}
 }
 
 // GetAttrString ...
-func GetAttrString(t int) string {
+func GetAttrString(t int, null bool) string {
 	switch t {
 	case AttrTypeString:
-		return "string"
-	case AttrTypeInt:
-		return "int"
-	case AttrTypeInt8:
-		return "int8"
-	case AttrTypeInt16:
-		return "int16"
-	case AttrTypeInt32:
-		return "int32"
-	case AttrTypeInt64:
-		return "int64"
-	case AttrTypeUint:
-		return "uint"
-	case AttrTypeUint8:
-		return "uint8"
-	case AttrTypeUint16:
-		return "uint16"
-	case AttrTypeUint32:
-		return "uint32"
-	case AttrTypeBool:
-		return "bool"
-	case AttrTypeTime:
-		return "time.Time"
-	case AttrTypeStringPtr:
+		if !null {
+			return "string"
+		}
 		return "*string"
-	case AttrTypeIntPtr:
+	case AttrTypeInt:
+		if !null {
+			return "int"
+		}
 		return "*int"
-	case AttrTypeInt8Ptr:
+	case AttrTypeInt8:
+		if !null {
+			return "int8"
+		}
 		return "*int8"
-	case AttrTypeInt16Ptr:
+	case AttrTypeInt16:
+		if !null {
+			return "int16"
+		}
 		return "*int16"
-	case AttrTypeInt32Ptr:
+	case AttrTypeInt32:
+		if !null {
+			return "int32"
+		}
 		return "*int32"
-	case AttrTypeInt64Ptr:
+	case AttrTypeInt64:
+		if !null {
+			return "int64"
+		}
 		return "*int64"
-	case AttrTypeUintPtr:
+	case AttrTypeUint:
+		if !null {
+			return "uint"
+		}
 		return "*uint"
-	case AttrTypeUint8Ptr:
+	case AttrTypeUint8:
+		if !null {
+			return "uint8"
+		}
 		return "*uint8"
-	case AttrTypeUint16Ptr:
+	case AttrTypeUint16:
+		if !null {
+			return "uint16"
+		}
 		return "*uint16"
-	case AttrTypeUint32Ptr:
+	case AttrTypeUint32:
+		if !null {
+			return "uint32"
+		}
 		return "*uint32"
-	case AttrTypeBoolPtr:
+	case AttrTypeBool:
+		if !null {
+			return "bool"
+		}
 		return "*bool"
-	case AttrTypeTimePtr:
+	case AttrTypeTime:
+		if !null {
+			return "time"
+		}
 		return "*time.Time"
 	default:
 		return ""
@@ -182,68 +204,80 @@ func GetAttrString(t int) string {
 }
 
 // ZeroValue ...
-func ZeroValue(t int) interface{} {
+func ZeroValue(t int, null bool) interface{} {
 	switch t {
 	case AttrTypeString:
-		return ""
+		v := ""
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeInt:
-		return int(0)
+		v := int(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeInt8:
-		return int8(0)
+		v := int8(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeInt16:
-		return int16(0)
+		v := int16(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeInt32:
-		return int32(0)
+		v := int32(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeInt64:
-		return int64(0)
+		v := int64(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeUint:
-		return uint(0)
+		v := uint(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeUint8:
-		return uint8(0)
+		v := uint8(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeUint16:
-		return uint16(0)
+		v := uint16(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeUint32:
-		return uint32(0)
+		v := uint32(0)
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeBool:
-		return false
+		v := false
+		if !null {
+			return v
+		}
+		return &v
 	case AttrTypeTime:
-		return time.Time{}
-	case AttrTypeStringPtr:
-		var v *string
-		return v
-	case AttrTypeIntPtr:
-		var v *int
-		return v
-	case AttrTypeInt8Ptr:
-		var v *int8
-		return v
-	case AttrTypeInt16Ptr:
-		var v *int16
-		return v
-	case AttrTypeInt32Ptr:
-		var v *int32
-		return v
-	case AttrTypeInt64Ptr:
-		var v *int64
-		return v
-	case AttrTypeUintPtr:
-		var v *uint
-		return v
-	case AttrTypeUint8Ptr:
-		var v *uint8
-		return v
-	case AttrTypeUint16Ptr:
-		var v *uint16
-		return v
-	case AttrTypeUint32Ptr:
-		var v *uint32
-		return v
-	case AttrTypeBoolPtr:
-		var v *bool
-		return v
-	case AttrTypeTimePtr:
-		var v *time.Time
-		return v
+		v := time.Time{}
+		if !null {
+			return v
+		}
+		return &v
 	default:
 		return ""
 	}

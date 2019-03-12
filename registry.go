@@ -71,10 +71,11 @@ func (r *Registry) RegisterType(v interface{}) {
 			def := sql.NullString{}
 			def.String = ""
 
+			typ, null := GetAttrType(sf.Type.String())
 			attrs[n] = Attr{
 				Name: n,
-				Type: GetAttrType(sf.Type.String()),
-				Null: strings.HasPrefix(sf.Type.String(), "*"),
+				Type: typ,
+				Null: null,
 			}
 
 			fields = append(fields, n)
