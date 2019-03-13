@@ -27,7 +27,7 @@ func TestSoftResource(t *testing.T) {
 		},
 		Attr{
 			Name: "attr2",
-			Type: AttrTypeStringPtr,
+			Type: AttrTypeString,
 			Null: true,
 		},
 	}
