@@ -9,8 +9,8 @@ import (
 func TestSoftResource(t *testing.T) {
 	sr := &SoftResource{}
 
-	tchek.AreEqual(t, "no attributes", []Attr{}, sr.Attrs())
-	tchek.AreEqual(t, "no relationships", []Rel{}, sr.Rels())
+	tchek.AreEqual(t, "no attributes", map[string]Attr{}, sr.Attrs())
+	tchek.AreEqual(t, "no relationships", map[string]Rel{}, sr.Rels())
 
 	// ID and type
 	sr.SetID("id")
@@ -19,13 +19,13 @@ func TestSoftResource(t *testing.T) {
 	tchek.AreEqual(t, "get type", "type", sr.GetType())
 
 	// Attributes
-	attrs := []Attr{
-		Attr{
+	attrs := map[string]Attr{
+		"attr1": Attr{
 			Name: "attr1",
 			Type: AttrTypeString,
 			Null: false,
 		},
-		Attr{
+		"attr2": Attr{
 			Name: "attr2",
 			Type: AttrTypeString,
 			Null: true,
@@ -39,8 +39,8 @@ func TestSoftResource(t *testing.T) {
 	tchek.AreEqual(t, "list all attributes", attrs, sr.Attrs())
 
 	// Relationships
-	rels := []Rel{
-		Rel{
+	rels := map[string]Rel{
+		"rel1": Rel{
 			Name:         "rel1",
 			Type:         "type",
 			ToOne:        true,
@@ -48,7 +48,7 @@ func TestSoftResource(t *testing.T) {
 			InverseType:  "type",
 			InverseToOne: true,
 		},
-		Rel{
+		"rel2": Rel{
 			Name:         "rel2",
 			Type:         "type",
 			ToOne:        false,
@@ -67,12 +67,12 @@ func TestSoftResource(t *testing.T) {
 	sr.RemoveField("attr1")
 	tchek.AreEqual(t, "can't get removed attribute", Attr{}, sr.Attr("attr1"))
 	sr.RemoveField("attr2")
-	tchek.AreEqual(t, "all attributes are removed", []Attr{}, sr.Attrs())
+	tchek.AreEqual(t, "all attributes are removed", map[string]Attr{}, sr.Attrs())
 
 	sr.RemoveField("rel1")
 	tchek.AreEqual(t, "can't get removed relationship", Rel{}, sr.Rel("rel1"))
 	sr.RemoveField("rel2")
-	tchek.AreEqual(t, "all relationships are removed", []Rel{}, sr.Rels())
+	tchek.AreEqual(t, "all relationships are removed", map[string]Rel{}, sr.Rels())
 
 	tchek.AreEqual(t, "get an nonexistent value", nil, sr.Get("nonexistent"))
 	tchek.AreEqual(t, "get an nonexistent to-one rel", "", sr.GetToOne("nonexistent"))

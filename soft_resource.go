@@ -6,93 +6,69 @@ import (
 
 // SoftResource ...
 type SoftResource struct {
-	typ   string
-	id    string
-	attrs []Attr
-	rels  []Rel
-	data  map[string]interface{}
+	id   string
+	typ  *Type
+	data map[string]interface{}
 }
 
 // Attrs ...
-func (sr *SoftResource) Attrs() []Attr {
+func (sr *SoftResource) Attrs() map[string]Attr {
 	sr.check()
-	return sr.attrs
+	return sr.typ.Attrs
 }
 
 // Rels ...
-func (sr *SoftResource) Rels() []Rel {
+func (sr *SoftResource) Rels() map[string]Rel {
 	sr.check()
-	return sr.rels
+	return sr.typ.Rels
 }
 
 // AddAttr ...
 func (sr *SoftResource) AddAttr(attr Attr) {
 	sr.check()
-	for _, f := range sr.fields() {
-		if f == attr.Name {
+	for _, name := range sr.fields() {
+		if name == attr.Name {
 			return
 		}
 	}
-	sr.attrs = append(sr.attrs, attr)
+	sr.typ.Attrs[attr.Name] = attr
 }
 
 // AddRel ...
 func (sr *SoftResource) AddRel(rel Rel) {
 	sr.check()
-	for _, f := range sr.fields() {
-		if f == rel.Name {
+	for _, name := range sr.fields() {
+		if name == rel.Name {
 			return
 		}
 	}
-	sr.rels = append(sr.rels, rel)
+	sr.typ.Rels[rel.Name] = rel
 }
 
 // RemoveField ...
 func (sr *SoftResource) RemoveField(field string) {
 	sr.check()
-	for i, a := range sr.attrs {
-		if field == a.Name {
-			sr.attrs = append(sr.attrs[:i], sr.attrs[i+1:]...)
-			return
-		}
-	}
-	for i, r := range sr.rels {
-		if field == r.Name {
-			sr.rels = append(sr.rels[:i], sr.rels[i+1:]...)
-			return
-		}
-	}
+	delete(sr.typ.Attrs, field)
+	delete(sr.typ.Rels, field)
 }
 
 // Attr ...
 func (sr *SoftResource) Attr(key string) Attr {
 	sr.check()
-	for i := range sr.attrs {
-		if sr.attrs[i].Name == key {
-			return sr.attrs[i]
-		}
-	}
-	return Attr{}
+	return sr.typ.Attrs[key]
 }
 
 // Rel ...
 func (sr *SoftResource) Rel(key string) Rel {
 	sr.check()
-	for i := range sr.rels {
-		if sr.rels[i].Name == key {
-			return sr.rels[i]
-		}
-	}
-	return Rel{}
+	return sr.typ.Rels[key]
 }
 
 // New ...
 func (sr *SoftResource) New() Resource {
 	sr.check()
 	return &SoftResource{
-		typ:   sr.typ,
-		attrs: append(sr.attrs[:0:0], sr.attrs...),
-		rels:  append(sr.rels[:0:0], sr.rels...),
+		typ: copystructure.Must(copystructure.Copy(sr.typ)).(*Type),
 	}
 }
 
@@ -105,16 +81,14 @@ func (sr *SoftResource) GetID() string {
 // GetType ...
 func (sr *SoftResource) GetType() string {
 	sr.check()
-	return sr.typ
+	return sr.typ.Name
 }
 
 // Get ...
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	for k := range sr.attrs {
-		if sr.attrs[k].Name == key {
-			return sr.data[key]
-		}
+	if _, ok := sr.typ.Attrs[key]; ok {
+		return sr.data[key]
 	}
 	return nil
 }
@@ -126,9 +100,9 @@ func (sr *SoftResource) SetID(id string) {
 }
 
 // SetType ...
-func (sr *SoftResource) SetType(typ string) {
+func (sr *SoftResource) SetType(name string) {
 	sr.check()
-	sr.typ = typ
+	sr.typ.Name = name
 }
 
 // Set ...
@@ -142,10 +116,8 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 // GetToOne ...
 func (sr *SoftResource) GetToOne(key string) string {
 	sr.check()
-	for i := range sr.rels {
-		if sr.rels[i].ToOne && sr.rels[i].Name == key {
-			return sr.data[key].(string)
-		}
+	if _, ok := sr.typ.Rels[key]; ok {
+		return sr.data[key].(string)
 	}
 	return ""
 }
@@ -153,10 +125,8 @@ func (sr *SoftResource) GetToOne(key string) string {
 // GetToMany ...
 func (sr *SoftResource) GetToMany(key string) []string {
 	sr.check()
-	for i := range sr.rels {
-		if !sr.rels[i].ToOne && sr.rels[i].Name == key {
-			return sr.data[key].([]string)
-		}
+	if _, ok := sr.typ.Rels[key]; ok {
+		return sr.data[key].([]string)
 	}
 	return []string{}
 }
@@ -187,11 +157,9 @@ func (sr *SoftResource) Validate() []error {
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 	return &SoftResource{
-		typ:   sr.typ,
-		id:    sr.id,
-		attrs: append(sr.attrs[:0:0], sr.attrs...),
-		rels:  append(sr.rels[:0:0], sr.rels...),
-		data:  copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
+		id:   sr.id,
+		typ:  copystructure.Must(copystructure.Copy(sr.typ)).(*Type),
+		data: copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
 	}
 }
 
@@ -203,37 +171,40 @@ func (sr *SoftResource) UnmarshalJSON(payload []byte) error {
 }
 
 func (sr *SoftResource) fields() []string {
-	fields := make([]string, 0, len(sr.attrs)+len(sr.rels))
-	for i := range sr.attrs {
-		fields = append(fields, sr.attrs[i].Name)
+	fields := make([]string, 0, len(sr.typ.Attrs)+len(sr.typ.Rels))
+	for i := range sr.typ.Attrs {
+		fields = append(fields, sr.typ.Attrs[i].Name)
 	}
-	for i := range sr.rels {
-		fields = append(fields, sr.rels[i].Name)
+	for i := range sr.typ.Rels {
+		fields = append(fields, sr.typ.Rels[i].Name)
 	}
 	return fields
 }
 
 func (sr *SoftResource) check() {
-	if sr.attrs == nil {
-		sr.attrs = []Attr{}
+	if sr.typ == nil {
+		sr.typ = &Type{}
 	}
-	if sr.rels == nil {
-		sr.rels = []Rel{}
+	if sr.typ.Attrs == nil {
+		sr.typ.Attrs = map[string]Attr{}
+	}
+	if sr.typ.Rels == nil {
+		sr.typ.Rels = map[string]Rel{}
 	}
 	if sr.data == nil {
 		sr.data = map[string]interface{}{}
 	}
 
-	for i := range sr.attrs {
-		n := sr.attrs[i].Name
+	for i := range sr.typ.Attrs {
+		n := sr.typ.Attrs[i].Name
 		if _, ok := sr.data[n]; !ok {
-			sr.data[n] = GetZeroValue(sr.attrs[i].Type, sr.attrs[i].Null)
+			sr.data[n] = GetZeroValue(sr.typ.Attrs[i].Type, sr.typ.Attrs[i].Null)
 		}
 	}
-	for i := range sr.rels {
-		n := sr.rels[i].Name
+	for i := range sr.typ.Rels {
+		n := sr.typ.Rels[i].Name
 		if _, ok := sr.data[n]; !ok {
-			if sr.rels[i].ToOne {
+			if sr.typ.Rels[i].ToOne {
 				sr.data[n] = ""
 			} else {
 				sr.data[n] = []string{}
