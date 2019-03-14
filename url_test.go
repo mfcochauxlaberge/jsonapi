@@ -246,8 +246,8 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields,
-					"mocktypes2": reg.Types["mocktypes2"].Fields,
+					"mocktypes1": reg.Types["mocktypes1"].Fields(),
+					"mocktypes2": reg.Types["mocktypes2"].Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -290,8 +290,8 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields,
-					"mocktypes2": reg.Types["mocktypes2"].Fields,
+					"mocktypes1": reg.Types["mocktypes1"].Fields(),
+					"mocktypes2": reg.Types["mocktypes2"].Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -333,7 +333,7 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields,
+					"mocktypes1": reg.Types["mocktypes1"].Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -358,7 +358,7 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields,
+					"mocktypes1": reg.Types["mocktypes1"].Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},

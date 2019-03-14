@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"sort"
 	"strings"
 	"time"
 )
@@ -25,10 +26,22 @@ const (
 // Type ...
 type Type struct {
 	Name    string
-	Fields  []string
 	Attrs   map[string]Attr
 	Rels    map[string]Rel
 	Default Resource
+}
+
+// Fields ...
+func (t Type) Fields() []string {
+	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
+	for i := range t.Attrs {
+		fields = append(fields, t.Attrs[i].Name)
+	}
+	for i := range t.Rels {
+		fields = append(fields, t.Rels[i].Name)
+	}
+	sort.Strings(fields)
+	return fields
 }
 
 // Attr ...

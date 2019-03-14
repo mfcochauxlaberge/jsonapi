@@ -128,7 +128,6 @@ func (r *Registry) RegisterType(v interface{}) {
 
 	r.Types[resType] = Type{
 		Name:    resType,
-		Fields:  fields,
 		Attrs:   attrs,
 		Rels:    rels,
 		Default: res,
