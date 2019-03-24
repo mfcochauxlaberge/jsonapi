@@ -4,5 +4,6 @@ package jsonapi
 type Request struct {
 	Method string
 	URL    *URL
+	User   string
 	Doc    Document
 }
