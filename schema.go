@@ -25,12 +25,15 @@ const (
 	AttrTypeTime
 )
 
-// Schema ...
+// A Schema contains a list of types. It makes sure that each type is valid and
+// unique.
+//
+// Check can be used to validate the relationships between the types.
 type Schema struct {
 	Types []Type
 }
 
-// AddType ...
+// AddType adds a type to the schema.
 func (s *Schema) AddType(typ Type) error {
 	// Validation
 	if typ.Name == "" {
@@ -49,7 +52,7 @@ func (s *Schema) AddType(typ Type) error {
 	return nil
 }
 
-// RemoveType ...
+// RemoveType removes a type from the schema.
 func (s *Schema) RemoveType(typ string) error {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
@@ -60,7 +63,7 @@ func (s *Schema) RemoveType(typ string) error {
 	return nil
 }
 
-// AddAttr ...
+// AddAttr adds an attribute to the specified type.
 func (s *Schema) AddAttr(typ string, attr Attr) error {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
@@ -71,7 +74,7 @@ func (s *Schema) AddAttr(typ string, attr Attr) error {
 	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// RemoveAttr ...
+// RemoveAttr removes an attribute from the specified type.
 func (s *Schema) RemoveAttr(typ string, attr string) error {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
@@ -82,7 +85,7 @@ func (s *Schema) RemoveAttr(typ string, attr string) error {
 	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// AddRel ...
+// AddRel adds a relationship to the specified type.
 func (s *Schema) AddRel(typ string, rel Rel) error {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
@@ -93,7 +96,7 @@ func (s *Schema) AddRel(typ string, rel Rel) error {
 	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// RemoveRel ...
+// RemoveRel removes a relationship from the specified type.
 func (s *Schema) RemoveRel(typ string, rel string) error {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
@@ -104,7 +107,8 @@ func (s *Schema) RemoveRel(typ string, rel string) error {
 	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// HasType ...
+// HasType returns a boolean indicating whether a type has the specified name
+// or not.
 func (s *Schema) HasType(name string) bool {
 	for i := range s.Types {
 		if s.Types[i].Name == name {
@@ -114,7 +118,7 @@ func (s *Schema) HasType(name string) bool {
 	return false
 }
 
-// GetType ...
+// GetType returns the type associated with the speficied name.
 func (s *Schema) GetType(name string) (Type, bool) {
 	var typ Type
 	for _, typ = range s.Types {
@@ -125,7 +129,8 @@ func (s *Schema) GetType(name string) (Type, bool) {
 	return typ, false
 }
 
-// Check ...
+// Check checks the integrity of all the relationships between the types and
+// returns all the errors that were found.
 func (s *Schema) Check() []error {
 	// TODO Don't use Registry (which should be removed anyway)
 	reg := Registry{}
@@ -135,7 +140,7 @@ func (s *Schema) Check() []error {
 	return reg.Check()
 }
 
-// Type ...
+// Type represents a JSON:API type.
 type Type struct {
 	Name    string
 	Attrs   map[string]Attr
@@ -143,7 +148,7 @@ type Type struct {
 	Default Resource
 }
 
-// AddAttr ...
+// AddAttr adds an attribute to the type.
 func (t *Type) AddAttr(attr Attr) error {
 	// Validation
 	if attr.Name == "" {
@@ -166,7 +171,7 @@ func (t *Type) AddAttr(attr Attr) error {
 	return nil
 }
 
-// RemoveAttr ...
+// RemoveAttr removes an attribute from the type.
 func (t *Type) RemoveAttr(attr string) error {
 	for i := range t.Attrs {
 		if t.Attrs[i].Name == attr {
@@ -177,7 +182,7 @@ func (t *Type) RemoveAttr(attr string) error {
 	return nil
 }
 
-// AddRel ...
+// AddRel adds a relationship to the type.
 func (t *Type) AddRel(rel Rel) error {
 	// Validation
 	if rel.Name == "" {
@@ -199,7 +204,7 @@ func (t *Type) AddRel(rel Rel) error {
 	return nil
 }
 
-// RemoveRel ...
+// RemoveRel removes a relationship from the type.
 func (t *Type) RemoveRel(rel string) error {
 	for i := range t.Rels {
 		if t.Rels[i].Name == rel {
@@ -210,7 +215,8 @@ func (t *Type) RemoveRel(rel string) error {
 	return nil
 }
 
-// Fields ...
+// Fields returns a slice of strings that contains the name of each attribute
+// and relationship combined. The list is sorted alphabetically.
 func (t Type) Fields() []string {
 	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
 	for i := range t.Attrs {
@@ -223,14 +229,22 @@ func (t Type) Fields() []string {
 	return fields
 }
 
-// Attr ...
+// Attr represents a JSON:API attribute.
 type Attr struct {
 	Name string
 	Type int
 	Null bool
 }
 
-// Rel ...
+// Rel represent a JSON:API relationship between two types.
+//
+// Name is the name of the field. Type is the name of the type this
+// relationship points to. ToOne is true for to-one relationships and
+// false for to-many relationships.
+//
+// For two-way relationships, the inverse fields must be set to their
+// corresponding values from the opposite relationship. For one-way
+// relationships, the values must be zeroed.
 type Rel struct {
 	Name         string
 	Type         string
@@ -240,7 +254,10 @@ type Rel struct {
 	InverseToOne bool
 }
 
-// Inverse ...
+// Inverse returns the opposite relationship.
+//
+// If the relationship is only one way, Name, Type, and ToOne will be set to
+// their zero values.
 func (r *Rel) Inverse() Rel {
 	return Rel{
 		Name:         r.InverseName,
@@ -252,7 +269,8 @@ func (r *Rel) Inverse() Rel {
 	}
 }
 
-// GetAttrType ...
+// GetAttrType returns the attribute type as an int (see constants) and a
+// boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {
 	t2 := t
 	if strings.HasPrefix(t2, "*") {
@@ -327,7 +345,9 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString ...
+// GetAttrTypeString return the name of the attribute type specified by an int
+// (see constants) and a boolean that indicates whether the value can be null
+// or not.
 func GetAttrTypeString(t int, null bool) string {
 	switch t {
 	case AttrTypeString:
@@ -395,7 +415,10 @@ func GetAttrTypeString(t int, null bool) string {
 	}
 }
 
-// GetZeroValue ...
+// GetZeroValue returns the zero value of the attribute type represented by the
+// specified int (see constants).
+//
+// If null is true, the returned value is a nil pointer.
 func GetZeroValue(t int, null bool) interface{} {
 	switch t {
 	case AttrTypeString:
