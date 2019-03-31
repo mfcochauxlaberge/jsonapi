@@ -9,8 +9,8 @@ import (
 // Resource ...
 type Resource interface {
 	// Structure
-	Attrs() []Attr
-	Rels() []Rel
+	Attrs() map[string]Attr
+	Rels() map[string]Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
 	New() Resource
@@ -56,11 +56,19 @@ func Equal(r1, r2 Resource) bool {
 	}
 
 	// Attributes
-	r1Attrs := r1.Attrs()
+	attrs := r1.Attrs()
+	r1Attrs := make([]Attr, 0, len(attrs))
+	for name := range attrs {
+		r1Attrs = append(r1Attrs, attrs[name])
+	}
 	sort.Slice(r1Attrs, func(i, j int) bool {
 		return r1Attrs[i].Name < r1Attrs[j].Name
 	})
-	r2Attrs := r2.Attrs()
+	attrs = r2.Attrs()
+	r2Attrs := make([]Attr, 0, len(attrs))
+	for name := range attrs {
+		r2Attrs = append(r2Attrs, attrs[name])
+	}
 	sort.Slice(r2Attrs, func(i, j int) bool {
 		return r2Attrs[i].Name < r2Attrs[j].Name
 	})
@@ -83,11 +91,19 @@ func Equal(r1, r2 Resource) bool {
 	}
 
 	// Relationships
-	r1Rels := r1.Rels()
+	rels := r1.Rels()
+	r1Rels := make([]Rel, 0, len(rels))
+	for name := range rels {
+		r1Rels = append(r1Rels, rels[name])
+	}
 	sort.Slice(r1Rels, func(i, j int) bool {
 		return r1Rels[i].Name < r1Rels[j].Name
 	})
-	r2Rels := r2.Rels()
+	rels = r1.Rels()
+	r2Rels := make([]Rel, 0, len(rels))
+	for name := range rels {
+		r2Rels = append(r2Rels, rels[name])
+	}
 	sort.Slice(r2Rels, func(i, j int) bool {
 		return r2Rels[i].Name < r2Rels[j].Name
 	})

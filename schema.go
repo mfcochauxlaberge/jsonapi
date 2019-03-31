@@ -1,6 +1,9 @@
 package jsonapi
 
 import (
+	"errors"
+	"fmt"
+	"sort"
 	"strings"
 	"time"
 )
@@ -22,13 +25,202 @@ const (
 	AttrTypeTime
 )
 
+// Schema ...
+type Schema struct {
+	Types []Type
+}
+
+// AddType ...
+func (s *Schema) AddType(typ Type) error {
+	// Validation
+	if typ.Name == "" {
+		return errors.New("jsonapi: type name is empty")
+	}
+
+	// Make sure the name isn't already used
+	for i := range s.Types {
+		if s.Types[i].Name == typ.Name {
+			return fmt.Errorf("jsonapi: type name %s is already used", typ.Name)
+		}
+	}
+
+	s.Types = append(s.Types, typ)
+
+	return nil
+}
+
+// RemoveType ...
+func (s *Schema) RemoveType(typ string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			s.Types = append(s.Types[0:i], s.Types[i+1:]...)
+		}
+	}
+
+	return nil
+}
+
+// AddAttr ...
+func (s *Schema) AddAttr(typ string, attr Attr) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].AddAttr(attr)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// RemoveAttr ...
+func (s *Schema) RemoveAttr(typ string, attr string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].RemoveAttr(attr)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// AddRel ...
+func (s *Schema) AddRel(typ string, rel Rel) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].AddRel(rel)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// RemoveRel ...
+func (s *Schema) RemoveRel(typ string, rel string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].RemoveRel(rel)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// HasType ...
+func (s *Schema) HasType(name string) bool {
+	for i := range s.Types {
+		if s.Types[i].Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// GetType ...
+func (s *Schema) GetType(name string) (Type, bool) {
+	var typ Type
+	for _, typ = range s.Types {
+		if typ.Name == name {
+			break
+		}
+	}
+	return typ, false
+}
+
+// Check ...
+func (s *Schema) Check() []error {
+	// TODO Don't use Registry (which should be removed anyway)
+	reg := Registry{}
+	for _, typ := range s.Types {
+		reg.Types[typ.Name] = typ
+	}
+	return reg.Check()
+}
+
 // Type ...
 type Type struct {
 	Name    string
-	Fields  []string
 	Attrs   map[string]Attr
 	Rels    map[string]Rel
 	Default Resource
+}
+
+// AddAttr ...
+func (t *Type) AddAttr(attr Attr) error {
+	// Validation
+	if attr.Name == "" {
+		return fmt.Errorf("jsonapi: attribute name is empty")
+	}
+
+	if GetAttrTypeString(attr.Type, attr.Null) == "" {
+		return fmt.Errorf("jsonapi: attribute type is invalid")
+	}
+
+	// Make sure the name isn't already used
+	for i := range t.Attrs {
+		if t.Attrs[i].Name == attr.Name {
+			return fmt.Errorf("jsonapi: attribute name %s is already used", attr.Name)
+		}
+	}
+
+	t.Attrs[attr.Name] = attr
+
+	return nil
+}
+
+// RemoveAttr ...
+func (t *Type) RemoveAttr(attr string) error {
+	for i := range t.Attrs {
+		if t.Attrs[i].Name == attr {
+			delete(t.Attrs, attr)
+		}
+	}
+
+	return nil
+}
+
+// AddRel ...
+func (t *Type) AddRel(rel Rel) error {
+	// Validation
+	if rel.Name == "" {
+		return fmt.Errorf("jsonapi: relationship name is empty")
+	}
+	if rel.Type == "" {
+		return fmt.Errorf("jsonapi: relationship type is empty")
+	}
+
+	// Make sure the name isn't already used
+	for i := range t.Rels {
+		if t.Rels[i].Name == rel.Name {
+			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.Name)
+		}
+	}
+
+	t.Rels[rel.Name] = rel
+
+	return nil
+}
+
+// RemoveRel ...
+func (t *Type) RemoveRel(rel string) error {
+	for i := range t.Rels {
+		if t.Rels[i].Name == rel {
+			delete(t.Rels, rel)
+		}
+	}
+
+	return nil
+}
+
+// Fields ...
+func (t Type) Fields() []string {
+	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
+	for i := range t.Attrs {
+		fields = append(fields, t.Attrs[i].Name)
+	}
+	for i := range t.Rels {
+		fields = append(fields, t.Rels[i].Name)
+	}
+	sort.Strings(fields)
+	return fields
 }
 
 // Attr ...

@@ -17,8 +17,8 @@ type Wrapper struct {
 
 	// Structure
 	typ   string
-	attrs []Attr
-	rels  []Rel
+	attrs map[string]Attr
+	rels  map[string]Rel
 }
 
 // Wrap ...
@@ -48,7 +48,7 @@ func Wrap(v interface{}) *Wrapper {
 	_, w.typ = IDAndType(v)
 
 	// Attributes
-	w.attrs = []Attr{}
+	w.attrs = map[string]Attr{}
 	for i := 0; i < w.val.NumField(); i++ {
 		fs := w.val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
@@ -56,16 +56,16 @@ func Wrap(v interface{}) *Wrapper {
 
 		if apiTag == "attr" {
 			typ, null := GetAttrType(fs.Type.String())
-			w.attrs = append(w.attrs, Attr{
+			w.attrs[jsonTag] = Attr{
 				Name: jsonTag,
 				Type: typ,
 				Null: null,
-			})
+			}
 		}
 	}
 
 	// Relationships
-	w.rels = []Rel{}
+	w.rels = map[string]Rel{}
 	for i := 0; i < w.val.NumField(); i++ {
 		fs := w.val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
@@ -81,13 +81,13 @@ func Wrap(v interface{}) *Wrapper {
 		}
 
 		if relTag[0] == "rel" {
-			w.rels = append(w.rels, Rel{
+			w.rels[jsonTag] = Rel{
 				Name:        jsonTag,
 				Type:        relTag[1],
 				ToOne:       toOne,
 				InverseName: invName,
 				InverseType: w.typ,
-			})
+			}
 		}
 	}
 
@@ -100,12 +100,12 @@ func (w *Wrapper) IDAndType() (string, string) {
 }
 
 // Attrs ...
-func (w *Wrapper) Attrs() []Attr {
+func (w *Wrapper) Attrs() map[string]Attr {
 	return w.attrs
 }
 
 // Rels ...
-func (w *Wrapper) Rels() []Rel {
+func (w *Wrapper) Rels() map[string]Rel {
 	return w.rels
 }
 
