@@ -45,8 +45,6 @@ func (r *Registry) RegisterType(v interface{}) {
 		panic(err)
 	}
 
-	res := Wrap(value.Interface())
-
 	value = value.Elem()
 
 	// Get ID field
@@ -127,11 +125,9 @@ func (r *Registry) RegisterType(v interface{}) {
 	}
 
 	r.Types[resType] = Type{
-		Name:    resType,
-		Fields:  fields,
-		Attrs:   attrs,
-		Rels:    rels,
-		Default: res,
+		Name:  resType,
+		Attrs: attrs,
+		Rels:  rels,
 	}
 }
 
@@ -167,7 +163,7 @@ func (r *Registry) Check() []error {
 // Resource ...
 func (r *Registry) Resource(name string) Resource {
 	if t, ok := r.Types[name]; ok {
-		return t.Default.New()
+		return NewSoftResource(t, nil)
 	}
 
 	panic(fmt.Sprintf(`jsonapi: type "%s" not found`, name))
@@ -176,7 +172,7 @@ func (r *Registry) Resource(name string) Resource {
 // Collection ...
 func (r *Registry) Collection(name string) Collection {
 	if t, ok := r.Types[name]; ok {
-		r := t.Default.New()
+		r := NewSoftResource(t, nil)
 		col := WrapCollection(r)
 		return col
 	}

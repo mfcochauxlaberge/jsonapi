@@ -1,6 +1,8 @@
 package jsonapi
 
 import (
+	"errors"
+	"fmt"
 	"strings"
 	"time"
 )
@@ -22,42 +24,160 @@ const (
 	AttrTypeTime
 )
 
-// Type ...
-type Type struct {
-	Name    string
-	Fields  []string
-	Attrs   map[string]Attr
-	Rels    map[string]Rel
-	Default Resource
+// Schema ...
+type Schema struct {
+	Types []Type
 }
 
-// Attr ...
-type Attr struct {
-	Name string
-	Type int
-	Null bool
-}
-
-// Rel ...
-type Rel struct {
-	Name         string
-	Type         string
-	ToOne        bool
-	InverseName  string
-	InverseType  string
-	InverseToOne bool
-}
-
-// Inverse ...
-func (r *Rel) Inverse() Rel {
-	return Rel{
-		Name:         r.InverseName,
-		Type:         r.InverseType,
-		ToOne:        r.InverseToOne,
-		InverseName:  r.Name,
-		InverseType:  r.Type,
-		InverseToOne: r.ToOne,
+// AddType ...
+func (s *Schema) AddType(typ Type) error {
+	// Validation
+	if typ.Name == "" {
+		return errors.New("jsonapi: type name is empty")
 	}
+
+	// Make sure the name isn't already used
+	for i := range s.Types {
+		if s.Types[i].Name == typ.Name {
+			return fmt.Errorf("jsonapi: type name %s is already used", typ.Name)
+		}
+	}
+
+	s.Types = append(s.Types, typ)
+
+	return nil
+}
+
+// RemoveType ...
+func (s *Schema) RemoveType(typ string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			s.Types = append(s.Types[0:i], s.Types[i+1:]...)
+		}
+	}
+
+	return nil
+}
+
+// AddAttr ...
+func (s *Schema) AddAttr(typ string, attr Attr) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].AddAttr(attr)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// RemoveAttr ...
+func (s *Schema) RemoveAttr(typ string, attr string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].RemoveAttr(attr)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// AddRel ...
+func (s *Schema) AddRel(typ string, rel Rel) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].AddRel(rel)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// RemoveRel ...
+func (s *Schema) RemoveRel(typ string, rel string) error {
+	for i := range s.Types {
+		if s.Types[i].Name == typ {
+			return s.Types[i].RemoveRel(rel)
+		}
+	}
+
+	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+}
+
+// HasType ...
+func (s *Schema) HasType(name string) bool {
+	for i := range s.Types {
+		if s.Types[i].Name == name {
+			return true
+		}
+	}
+	return false
+}
+
+// GetType ...
+func (s *Schema) GetType(name string) (Type, bool) {
+	var typ Type
+	for _, typ = range s.Types {
+		if typ.Name == name {
+			return typ, true
+		}
+	}
+	return typ, false
+}
+
+// Check ...
+func (s *Schema) Check() []error {
+	var (
+		ok   bool
+		errs = []error{}
+	)
+
+	// Check the inverse relationships
+	for _, typ := range s.Types {
+		// Relationships
+		for _, rel := range typ.Rels {
+			var targetType Type
+
+			// Does the relationship point to a type that exists?
+			if targetType, ok = s.GetType(rel.Type); !ok {
+				errs = append(errs, fmt.Errorf(
+					"jsonapi: the target type of relationship %s of type %s does not exist",
+					rel.Name,
+					typ.Name,
+				))
+			}
+
+			// Inverse relationship (if relevant)
+			if rel.InverseName != "" {
+				// Is the inverse relationship type the same as its type name?
+				if rel.InverseType != typ.Name {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
+						rel.Name,
+						typ.Name,
+						rel.InverseType,
+					))
+				}
+
+				// Do both relationships (current and inverse) point to each other?
+				var found bool
+				for _, invRel := range targetType.Rels {
+					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+						found = true
+					}
+				}
+				if !found {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: relationship %s of type %s and its inverse do not point each other",
+						rel.Name,
+						typ.Name,
+					))
+				}
+			}
+
+		}
+	}
+
+	return errs
 }
 
 // GetAttrType ...

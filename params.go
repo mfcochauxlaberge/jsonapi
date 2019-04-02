@@ -106,7 +106,7 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 		if typ, ok := reg.Types[t]; ok {
 			params.Fields[t] = []string{}
 			for _, f := range fields {
-				for _, ff := range typ.Fields {
+				for _, ff := range typ.Fields() {
 					if f == ff {
 						params.Fields[t] = append(params.Fields[t], f)
 					}
@@ -116,8 +116,8 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 	}
 	for t := range params.Fields {
 		if len(params.Fields[t]) == 0 {
-			params.Fields[t] = make([]string, len(reg.Types[t].Fields))
-			copy(params.Fields[t], reg.Types[t].Fields)
+			params.Fields[t] = make([]string, len(reg.Types[t].Fields()))
+			copy(params.Fields[t], reg.Types[t].Fields())
 		}
 	}
 
@@ -136,7 +136,7 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 		params.Attrs[typeName] = []Attr{}
 		params.Rels[typeName] = []Rel{}
 
-		for _, field := range typ.Fields {
+		for _, field := range typ.Fields() {
 			for _, field2 := range fields {
 				if field == field2 {
 					// Append to list of fields
