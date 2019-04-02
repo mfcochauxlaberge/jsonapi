@@ -3,7 +3,6 @@ package jsonapi
 import (
 	"errors"
 	"fmt"
-	"sort"
 	"strings"
 	"time"
 )
@@ -119,11 +118,13 @@ func (s *Schema) HasType(name string) bool {
 }
 
 // GetType returns the type associated with the speficied name.
+//
+// A boolean indicates whether a type was found or not.
 func (s *Schema) GetType(name string) (Type, bool) {
 	var typ Type
 	for _, typ = range s.Types {
 		if typ.Name == name {
-			break
+			return typ, true
 		}
 	}
 	return typ, false
@@ -132,141 +133,58 @@ func (s *Schema) GetType(name string) (Type, bool) {
 // Check checks the integrity of all the relationships between the types and
 // returns all the errors that were found.
 func (s *Schema) Check() []error {
-	// TODO Don't use Registry (which should be removed anyway)
-	reg := Registry{}
+	var (
+		ok   bool
+		errs = []error{}
+	)
+
+	// Check the inverse relationships
 	for _, typ := range s.Types {
-		reg.Types[typ.Name] = typ
-	}
-	return reg.Check()
-}
+		// Relationships
+		for _, rel := range typ.Rels {
+			var targetType Type
 
-// Type represents a JSON:API type.
-type Type struct {
-	Name    string
-	Attrs   map[string]Attr
-	Rels    map[string]Rel
-	Default Resource
-}
+			// Does the relationship point to a type that exists?
+			if targetType, ok = s.GetType(rel.Type); !ok {
+				errs = append(errs, fmt.Errorf(
+					"jsonapi: the target type of relationship %s of type %s does not exist",
+					rel.Name,
+					typ.Name,
+				))
+			}
 
-// AddAttr adds an attribute to the type.
-func (t *Type) AddAttr(attr Attr) error {
-	// Validation
-	if attr.Name == "" {
-		return fmt.Errorf("jsonapi: attribute name is empty")
-	}
+			// Inverse relationship (if relevant)
+			if rel.InverseName != "" {
+				// Is the inverse relationship type the same as its type name?
+				if rel.InverseType != typ.Name {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
+						rel.Name,
+						typ.Name,
+						rel.InverseType,
+					))
+				}
 
-	if GetAttrTypeString(attr.Type, attr.Null) == "" {
-		return fmt.Errorf("jsonapi: attribute type is invalid")
-	}
+				// Do both relationships (current and inverse) point to each other?
+				var found bool
+				for _, invRel := range targetType.Rels {
+					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+						found = true
+					}
+				}
+				if !found {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: relationship %s of type %s and its inverse do not point each other",
+						rel.Name,
+						typ.Name,
+					))
+				}
+			}
 
-	// Make sure the name isn't already used
-	for i := range t.Attrs {
-		if t.Attrs[i].Name == attr.Name {
-			return fmt.Errorf("jsonapi: attribute name %s is already used", attr.Name)
 		}
 	}
 
-	t.Attrs[attr.Name] = attr
-
-	return nil
-}
-
-// RemoveAttr removes an attribute from the type.
-func (t *Type) RemoveAttr(attr string) error {
-	for i := range t.Attrs {
-		if t.Attrs[i].Name == attr {
-			delete(t.Attrs, attr)
-		}
-	}
-
-	return nil
-}
-
-// AddRel adds a relationship to the type.
-func (t *Type) AddRel(rel Rel) error {
-	// Validation
-	if rel.Name == "" {
-		return fmt.Errorf("jsonapi: relationship name is empty")
-	}
-	if rel.Type == "" {
-		return fmt.Errorf("jsonapi: relationship type is empty")
-	}
-
-	// Make sure the name isn't already used
-	for i := range t.Rels {
-		if t.Rels[i].Name == rel.Name {
-			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.Name)
-		}
-	}
-
-	t.Rels[rel.Name] = rel
-
-	return nil
-}
-
-// RemoveRel removes a relationship from the type.
-func (t *Type) RemoveRel(rel string) error {
-	for i := range t.Rels {
-		if t.Rels[i].Name == rel {
-			delete(t.Rels, rel)
-		}
-	}
-
-	return nil
-}
-
-// Fields returns a slice of strings that contains the name of each attribute
-// and relationship combined. The list is sorted alphabetically.
-func (t Type) Fields() []string {
-	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
-	for i := range t.Attrs {
-		fields = append(fields, t.Attrs[i].Name)
-	}
-	for i := range t.Rels {
-		fields = append(fields, t.Rels[i].Name)
-	}
-	sort.Strings(fields)
-	return fields
-}
-
-// Attr represents a JSON:API attribute.
-type Attr struct {
-	Name string
-	Type int
-	Null bool
-}
-
-// Rel represent a JSON:API relationship between two types.
-//
-// Name is the name of the field. Type is the name of the type this
-// relationship points to. ToOne is true for to-one relationships and
-// false for to-many relationships.
-//
-// For two-way relationships, the inverse fields must be set to their
-// corresponding values from the opposite relationship. For one-way
-// relationships, the values must be zeroed.
-type Rel struct {
-	Name         string
-	Type         string
-	ToOne        bool
-	InverseName  string
-	InverseType  string
-	InverseToOne bool
-}
-
-// Inverse returns the opposite relationship.
-//
-// If the relationship is only one way, Name, Type, and ToOne will be set to
-// their zero values.
-func (r *Rel) Inverse() Rel {
-	return Rel{
-		Name:         r.InverseName,
-		Type:         r.InverseType,
-		ToOne:        r.InverseToOne,
-		InverseName:  r.Name,
-		InverseType:  r.Type,
-		InverseToOne: r.ToOne,
-	}
+	return errs
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
