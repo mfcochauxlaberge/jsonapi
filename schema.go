@@ -119,7 +119,7 @@ func (s *Schema) GetType(name string) (Type, bool) {
 	var typ Type
 	for _, typ = range s.Types {
 		if typ.Name == name {
-			break
+			return typ, true
 		}
 	}
 	return typ, false
