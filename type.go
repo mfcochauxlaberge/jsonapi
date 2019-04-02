@@ -7,10 +7,9 @@ import (
 
 // Type ...
 type Type struct {
-	Name    string
-	Attrs   map[string]Attr
-	Rels    map[string]Rel
-	Default Resource
+	Name  string
+	Attrs map[string]Attr
+	Rels  map[string]Rel
 }
 
 // AddAttr ...
