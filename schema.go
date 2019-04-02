@@ -127,12 +127,58 @@ func (s *Schema) GetType(name string) (Type, bool) {
 
 // Check ...
 func (s *Schema) Check() []error {
-	// TODO Don't use Registry (which should be removed anyway)
-	reg := Registry{}
+	var (
+		ok   bool
+		errs = []error{}
+	)
+
+	// Check the inverse relationships
 	for _, typ := range s.Types {
-		reg.Types[typ.Name] = typ
+		// Relationships
+		for _, rel := range typ.Rels {
+			var targetType Type
+
+			// Does the relationship point to a type that exists?
+			if targetType, ok = s.GetType(rel.Type); !ok {
+				errs = append(errs, fmt.Errorf(
+					"jsonapi: the target type of relationship %s of type %s does not exist",
+					rel.Name,
+					typ.Name,
+				))
+			}
+
+			// Inverse relationship (if relevant)
+			if rel.InverseName != "" {
+				// Is the inverse relationship type the same as its type name?
+				if rel.InverseType != typ.Name {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
+						rel.Name,
+						typ.Name,
+						rel.InverseType,
+					))
+				}
+
+				// Do both relationships (current and inverse) point to each other?
+				var found bool
+				for _, invRel := range targetType.Rels {
+					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+						found = true
+					}
+				}
+				if !found {
+					errs = append(errs, fmt.Errorf(
+						"jsonapi: relationship %s of type %s and its inverse do not point each other",
+						rel.Name,
+						typ.Name,
+					))
+				}
+			}
+
+		}
 	}
-	return reg.Check()
+
+	return errs
 }
 
 // Type ...
