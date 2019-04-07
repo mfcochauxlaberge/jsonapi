@@ -95,7 +95,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 
 	// Data
 	if !url.IsCol && url.RelKind == "" {
-		res := reg.Resource(url.ResType)
+		res := schema.GetResource(url.ResType)
 		err = json.Unmarshal(ske.Data, res)
 		if err != nil {
 			return nil, err
@@ -132,7 +132,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 		}
 
 		for i, inc2 := range incs {
-			res2 := reg.Resource(inc2.Type)
+			res2 := schema.GetResource(inc2.Type)
 			err = json.Unmarshal(ske.Included[i], res2)
 			if err != nil {
 				return nil, err

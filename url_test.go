@@ -8,8 +8,8 @@ import (
 )
 
 func TestParseURL(t *testing.T) {
-	// Registry
-	reg := NewMockRegistry()
+	// Schema
+	schema := NewMockSchema()
 
 	tests := []struct {
 		name          string
@@ -175,7 +175,7 @@ func TestParseURL(t *testing.T) {
 
 	for _, test := range tests {
 		u, _ := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
-		url, err := ParseRawURL(reg, u.String())
+		url, err := ParseRawURL(schema, u.String())
 		tchek.ErrorExpected(t, test.name, test.expectedError, err)
 
 		// test.expectedURL.Path = tchek.MakeOneLineNoSpaces(test.expectedURL.Path)
@@ -188,8 +188,10 @@ func TestParseURL(t *testing.T) {
 }
 
 func TestParseParams(t *testing.T) {
-	// Registry
-	reg := NewMockRegistry()
+	// Schema
+	schema := NewMockSchema()
+	mockTypes1, _ := schema.GetType("mockTypes1")
+	mockTypes2, _ := schema.GetType("mockTypes2")
 
 	tests := []struct {
 		name           string
@@ -246,8 +248,8 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields(),
-					"mocktypes2": reg.Types["mocktypes2"].Fields(),
+					"mocktypes1": mockTypes1.Fields(),
+					"mocktypes2": mockTypes2.Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -258,17 +260,17 @@ func TestParseParams(t *testing.T) {
 				PageNumber:   3,
 				Include: [][]Rel{
 					{
-						reg.Types["mocktypes1"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-many-from-many"],
 					},
 					{
-						reg.Types["mocktypes1"].Rels["to-many-from-one"],
-						reg.Types["mocktypes2"].Rels["to-one-from-many"],
-						reg.Types["mocktypes1"].Rels["to-one"],
-						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-many-from-one"],
+						mockTypes2.Rels["to-one-from-many"],
+						mockTypes1.Rels["to-one"],
+						mockTypes2.Rels["to-many-from-many"],
 					},
 					{
-						reg.Types["mocktypes1"].Rels["to-one-from-one"],
-						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-one-from-one"],
+						mockTypes2.Rels["to-many-from-many"],
 					},
 				},
 			},
@@ -290,8 +292,8 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields(),
-					"mocktypes2": reg.Types["mocktypes2"].Fields(),
+					"mocktypes1": mockTypes1.Fields(),
+					"mocktypes2": mockTypes2.Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -302,17 +304,17 @@ func TestParseParams(t *testing.T) {
 				PageNumber:   3,
 				Include: [][]Rel{
 					{
-						reg.Types["mocktypes1"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-many-from-many"],
 					},
 					{
-						reg.Types["mocktypes1"].Rels["to-many-from-one"],
-						reg.Types["mocktypes2"].Rels["to-one-from-many"],
-						reg.Types["mocktypes1"].Rels["to-one"],
-						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-many-from-one"],
+						mockTypes2.Rels["to-one-from-many"],
+						mockTypes1.Rels["to-one"],
+						mockTypes2.Rels["to-many-from-many"],
 					},
 					{
-						reg.Types["mocktypes1"].Rels["to-one-from-one"],
-						reg.Types["mocktypes2"].Rels["to-many-from-many"],
+						mockTypes1.Rels["to-one-from-one"],
+						mockTypes2.Rels["to-many-from-many"],
 					},
 				},
 			},
@@ -333,7 +335,7 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields(),
+					"mocktypes1": mockTypes1.Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -344,8 +346,8 @@ func TestParseParams(t *testing.T) {
 				PageNumber:   110,
 				Include: [][]Rel{
 					{
-						reg.Types["mocktypes1"].Rels["to-many-from-one"],
-						reg.Types["mocktypes2"].Rels["to-one-from-many"],
+						mockTypes1.Rels["to-many-from-one"],
+						mockTypes2.Rels["to-one-from-many"],
 					},
 				},
 			},
@@ -358,7 +360,7 @@ func TestParseParams(t *testing.T) {
 			resType: "mocktypes1",
 			expectedParams: Params{
 				Fields: map[string][]string{
-					"mocktypes1": reg.Types["mocktypes1"].Fields(),
+					"mocktypes1": mockTypes1.Fields(),
 				},
 				Attrs:        map[string][]Attr{},
 				Rels:         map[string][]Rel{},
@@ -381,17 +383,19 @@ func TestParseParams(t *testing.T) {
 		su, err := NewSimpleURL(u)
 		tchek.UnintendedError(err)
 
-		params, err := NewParams(reg, su, test.resType)
+		params, err := NewParams(schema, su, test.resType)
 		tchek.ErrorExpected(t, test.name, test.expectedError, err)
 
 		// Set Attrs and Rels
 		for resType, fields := range test.expectedParams.Fields {
 			for _, field := range fields {
-				if res, ok := reg.Types[resType]; ok {
+				if res, ok := schema.GetType(resType); ok {
 					if _, ok := res.Attrs[field]; ok {
 						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], res.Attrs[field])
-					} else if _, ok := reg.Types[resType].Rels[field]; ok {
-						test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], res.Rels[field])
+					} else if typ, ok := schema.GetType(resType); ok {
+						if _, ok := typ.Rels[field]; ok {
+							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], res.Rels[field])
+						}
 					}
 				}
 			}

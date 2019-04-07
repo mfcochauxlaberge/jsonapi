@@ -11,6 +11,13 @@ func NewMockSchema() *Schema {
 	typ, _ = ReflectType(MockType3{})
 	schema.AddType(typ)
 
+	for _, typ := range schema.Types {
+		for _, rel := range typ.Rels {
+			invType, _ := schema.GetType(rel.Type)
+			rel.InverseToOne = invType.Rels[rel.InverseName].ToOne
+		}
+	}
+
 	errs := schema.Check()
 	if len(errs) > 0 {
 		panic(errs[0])
