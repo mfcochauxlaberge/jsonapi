@@ -124,6 +124,15 @@ func (s *Schema) GetType(name string) (Type, bool) {
 	return typ, false
 }
 
+// GetResource ...
+func (s *Schema) GetResource(name string) Resource {
+	typ, ok := s.GetType(name)
+	if ok {
+		return NewSoftResource(typ, nil)
+	}
+	return nil
+}
+
 // Check ...
 func (s *Schema) Check() []error {
 	var (
