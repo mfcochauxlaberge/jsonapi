@@ -128,3 +128,10 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 
 	return json.Marshal(raws)
 }
+
+// ReflectType ...
+func ReflectType(v interface{}) (Type, error) {
+	typ := Type{}
+
+	return typ, nil
+}

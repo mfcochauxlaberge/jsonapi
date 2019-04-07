@@ -7,7 +7,7 @@ import (
 )
 
 func TestUnmarshalResource(t *testing.T) {
-	reg := NewMockRegistry()
+	schema := NewMockSchema()
 
 	res1 := Wrap(&MockType3{
 		ID:    "mt1",
@@ -17,7 +17,7 @@ func TestUnmarshalResource(t *testing.T) {
 		Rel2:  []string{"mt3", "mt4"},
 	})
 
-	url1, err := ParseRawURL(reg, "/mocktypes3/mt1")
+	url1, err := ParseRawURL(schema, "/mocktypes3/mt1")
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -33,7 +33,7 @@ func TestUnmarshalResource(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
-	pl1, err := Unmarshal(body1, url1, reg)
+	pl1, err := Unmarshal(body1, url1, schema)
 	tchek.UnintendedError(err)
 
 	dst1 := pl1.Data.(Resource)
@@ -43,11 +43,11 @@ func TestUnmarshalResource(t *testing.T) {
 }
 
 func TestUnmarshalIdentifier(t *testing.T) {
-	reg := NewMockRegistry()
+	schema := NewMockSchema()
 
 	id1 := Identifier{ID: "abc123", Type: "mocktypes1"}
 
-	url1, err := ParseRawURL(reg, "/mocktypes3/mt1/relationships/rel1")
+	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel1")
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -63,7 +63,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
-	pl1, err := Unmarshal(body1, url1, reg)
+	pl1, err := Unmarshal(body1, url1, schema)
 	tchek.UnintendedError(err)
 
 	dst1 := pl1.Data.(Identifier)
@@ -73,7 +73,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 }
 
 func TestUnmarshalIdentifiers(t *testing.T) {
-	reg := NewMockRegistry()
+	schema := NewMockSchema()
 
 	ids1 := Identifiers{
 		Identifier{ID: "abc123", Type: "mocktypes1"},
@@ -81,7 +81,7 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 		Identifier{ID: "ghi789", Type: "mocktypes1"},
 	}
 
-	url1, err := ParseRawURL(reg, "/mocktypes3/mt1/relationships/rel2")
+	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel2")
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -97,7 +97,7 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
-	pl1, err := Unmarshal(body1, url1, reg)
+	pl1, err := Unmarshal(body1, url1, schema)
 	tchek.UnintendedError(err)
 
 	dst1 := pl1.Data.(Identifiers)

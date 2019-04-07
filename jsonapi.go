@@ -83,7 +83,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 }
 
 // Unmarshal ...
-func Unmarshal(payload []byte, url *URL, reg *Registry) (*Payload, error) {
+func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 	pl := &Payload{}
 	ske := &payloadSkeleton{}
 
