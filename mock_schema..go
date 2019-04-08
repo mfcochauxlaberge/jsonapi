@@ -1,22 +1,39 @@
 package jsonapi
 
+import (
+	"fmt"
+)
+
 // NewMockSchema ...
 func NewMockSchema() *Schema {
 	schema := &Schema{}
 
 	typ, _ := ReflectType(MockType1{})
+	fmt.Printf("mocktypes1 rel11: %+v\n", typ.Rels["to-one-from-one"])
+	fmt.Printf("mocktypes1 rel12: %+v\n", typ.Rels["to-one-from-many"])
 	schema.AddType(typ)
 	typ, _ = ReflectType(MockType2{})
 	schema.AddType(typ)
 	typ, _ = ReflectType(MockType3{})
 	schema.AddType(typ)
 
-	for _, typ := range schema.Types {
-		for _, rel := range typ.Rels {
-			invType, _ := schema.GetType(rel.Type)
-			rel.InverseToOne = invType.Rels[rel.InverseName].ToOne
+	for t, typ := range schema.Types {
+		for r, rel := range typ.Rels {
+			invType, ok := schema.GetType(rel.Type)
+			if !ok {
+				panic("WHAT NOT FOUND")
+			}
+			fmt.Printf("rel %s and typ %s toone is %v", rel.Name, typ.Name, invType.Rels[rel.InverseName].ToOne)
+			// rel.InverseToOne = invType.Rels[rel.InverseName].ToOne
+			rel := schema.Types[t].Rels[r]
+			rel.ToOne = invType.Rels[rel.InverseName].ToOne
+			schema.Types[t].Rels[r] = rel
 		}
 	}
+
+	typ, _ = schema.GetType("mocktypes1")
+	fmt.Printf("mocktypes1 rel21: %+v\n", typ.Rels["to-one-from-one"])
+	fmt.Printf("mocktypes1 rel22: %+v\n", typ.Rels["to-one-from-many"])
 
 	errs := schema.Check()
 	if len(errs) > 0 {
