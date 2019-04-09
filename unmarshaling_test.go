@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"fmt"
 	"testing"
 
 	"github.com/mfcochauxlaberge/tchek"
@@ -44,10 +45,12 @@ func TestUnmarshalResource(t *testing.T) {
 
 func TestUnmarshalIdentifier(t *testing.T) {
 	schema := NewMockSchema()
+	fmt.Printf("Schema: %+v\n", schema.Types[2])
 
 	id1 := Identifier{ID: "abc123", Type: "mocktypes1"}
 
 	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel1")
+	fmt.Printf("URL1: %+v\n", url1)
 	tchek.UnintendedError(err)
 
 	meta1 := map[string]interface{}{
@@ -63,6 +66,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	tchek.UnintendedError(err)
 
+	fmt.Printf("URL: %+v\n", url1)
 	pl1, err := Unmarshal(body1, url1, schema)
 	tchek.UnintendedError(err)
 

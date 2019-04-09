@@ -64,6 +64,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
 		}
 
+		fmt.Printf("url.Rel, url.Rel.ToOne: %+v, %v\n", url.Rel, url.Rel.ToOne)
 		url.IsCol = !url.Rel.ToOne
 		url.ResType = url.Rel.Type
 		url.BelongsToFilter = BelongsToFilter{

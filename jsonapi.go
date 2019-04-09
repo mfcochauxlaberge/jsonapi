@@ -111,6 +111,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 			pl.Data = inc
 		} else {
 			incs := Identifiers{}
+			fmt.Printf("DATA: %v\n", string(ske.Data))
 			err = json.Unmarshal(ske.Data, &incs)
 			if err != nil {
 				return nil, err
