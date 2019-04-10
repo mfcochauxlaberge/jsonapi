@@ -115,13 +115,12 @@ func (s *Schema) HasType(name string) bool {
 
 // GetType ...
 func (s *Schema) GetType(name string) (Type, bool) {
-	var typ Type
-	for _, typ = range s.Types {
+	for _, typ := range s.Types {
 		if typ.Name == name {
 			return typ, true
 		}
 	}
-	return typ, false
+	return Type{}, false
 }
 
 // GetResource ...
