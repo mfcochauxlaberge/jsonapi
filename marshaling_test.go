@@ -172,8 +172,6 @@ func TestMarshalCollection(t *testing.T) {
 }
 
 func TestMarshalErrors(t *testing.T) {
-	// reg := NewMockRegistry()
-
 	// Reset the IDs because the tests can't predict them.
 	resetIDs := func(errors []Error) []Error {
 		for i := range errors {
