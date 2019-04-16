@@ -135,7 +135,10 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 	return json.Marshal(raws)
 }
 
-// ReflectType ...
+// ReflectType takes a struct or a pointer to a struct to analyse and builds a
+// Type object that is returned.
+//
+// If an error is returned, the Type object will be empty.
 func ReflectType(v interface{}) (Type, error) {
 	typ := Type{}
 
