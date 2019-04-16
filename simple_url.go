@@ -44,6 +44,8 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 		return sURL, errors.New("jsonapi: pointer to url.URL is nil")
 	}
 
+	// fmt.Printf("URL: %s\n", u.String())
+
 	sURL.Fragments = parseFragments(u.Path)
 	sURL.Route = deduceRoute(sURL.Fragments)
 
