@@ -62,12 +62,12 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		incRel := Rel{Type: resType}
 		for _, word := range words {
 			if typ, ok := schema.GetType(incRel.Type); ok {
-				if incRel, ok := typ.Rels[word]; ok {
+				if incRel, ok = typ.Rels[word]; ok {
 					params.Fields[incRel.Type] = []string{}
+				} else {
+					inclusions = append(inclusions[:i], inclusions[i+1:]...)
+					break
 				}
-			} else {
-				inclusions = append(inclusions[:i], inclusions[i+1:]...)
-				break
 			}
 		}
 	}
@@ -89,7 +89,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 			params.Include[i][w] = incRel
 
 			if w < len(words)-1 {
-				typ, _ := schema.GetType(resType)
+				typ, _ := schema.GetType(incRel.Type)
 				incRel = typ.Rels[words[w+1]]
 			}
 		}

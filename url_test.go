@@ -190,8 +190,8 @@ func TestParseURL(t *testing.T) {
 func TestParseParams(t *testing.T) {
 	// Schema
 	schema := NewMockSchema()
-	mockTypes1, _ := schema.GetType("mockTypes1")
-	mockTypes2, _ := schema.GetType("mockTypes2")
+	mockTypes1, _ := schema.GetType("mocktypes1")
+	mockTypes2, _ := schema.GetType("mocktypes2")
 
 	tests := []struct {
 		name           string
