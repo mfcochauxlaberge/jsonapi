@@ -1,6 +1,12 @@
 package jsonapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"reflect"
+	"strings"
+)
 
 // marshalResource ...
 func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) ([]byte, error) {
@@ -127,4 +133,71 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 	}
 
 	return json.Marshal(raws)
+}
+
+// ReflectType ...
+func ReflectType(v interface{}) (Type, error) {
+	typ := Type{}
+
+	val := reflect.ValueOf(v)
+	if val.Kind() == reflect.Ptr {
+		val = val.Elem()
+	}
+	if val.Kind() != reflect.Struct {
+		return typ, errors.New("jsonapi: value must represent a struct")
+	}
+
+	err := CheckType(val.Interface())
+	if err != nil {
+		return typ, fmt.Errorf("jsonapi: invalid type: %s", err)
+	}
+
+	// ID and type
+	_, typ.Name = IDAndType(v)
+
+	// Attributes
+	typ.Attrs = map[string]Attr{}
+	for i := 0; i < val.NumField(); i++ {
+		fs := val.Type().Field(i)
+		jsonTag := fs.Tag.Get("json")
+		apiTag := fs.Tag.Get("api")
+
+		if apiTag == "attr" {
+			fieldType, null := GetAttrType(fs.Type.String())
+			typ.Attrs[jsonTag] = Attr{
+				Name: jsonTag,
+				Type: fieldType,
+				Null: null,
+			}
+		}
+	}
+
+	// Relationships
+	typ.Rels = map[string]Rel{}
+	for i := 0; i < val.NumField(); i++ {
+		fs := val.Type().Field(i)
+		jsonTag := fs.Tag.Get("json")
+		relTag := strings.Split(fs.Tag.Get("api"), ",")
+		invName := ""
+		if len(relTag) == 3 {
+			invName = relTag[2]
+		}
+
+		toOne := true
+		if fs.Type.String() == "[]string" {
+			toOne = false
+		}
+
+		if relTag[0] == "rel" {
+			typ.Rels[jsonTag] = Rel{
+				Name:        jsonTag,
+				Type:        relTag[1],
+				ToOne:       toOne,
+				InverseName: invName,
+				InverseType: typ.Name,
+			}
+		}
+	}
+
+	return typ, nil
 }
