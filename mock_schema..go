@@ -1,21 +1,35 @@
 package jsonapi
 
-import "time"
+import (
+	"time"
+)
 
-// NewMockRegistry ...
-func NewMockRegistry() *Registry {
-	reg := NewRegistry()
+// NewMockSchema ...
+func NewMockSchema() *Schema {
+	schema := &Schema{}
 
-	reg.RegisterType(&MockType1{})
-	reg.RegisterType(&MockType2{})
-	reg.RegisterType(&MockType3{})
+	typ, _ := ReflectType(MockType1{})
+	schema.AddType(typ)
+	typ, _ = ReflectType(MockType2{})
+	schema.AddType(typ)
+	typ, _ = ReflectType(MockType3{})
+	schema.AddType(typ)
 
-	errs := reg.Check()
+	for t, typ := range schema.Types {
+		for r, rel := range typ.Rels {
+			invType, _ := schema.GetType(rel.Type)
+			rel := schema.Types[t].Rels[r]
+			rel.InverseToOne = invType.Rels[rel.InverseName].ToOne
+			schema.Types[t].Rels[r] = rel
+		}
+	}
+
+	errs := schema.Check()
 	if len(errs) > 0 {
 		panic(errs[0])
 	}
 
-	return reg
+	return schema
 }
 
 // MockType1 ...
