@@ -30,7 +30,7 @@ type Params struct {
 }
 
 // NewParams ...
-func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
+func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	params := &Params{
 		Fields:       map[string][]string{},
 		Attrs:        map[string][]Attr{},
@@ -60,13 +60,14 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 		words := strings.Split(inclusions[i], ".")
 
 		incRel := Rel{Type: resType}
-		var ok bool
 		for _, word := range words {
-			if incRel, ok = reg.Types[incRel.Type].Rels[word]; ok {
-				params.Fields[incRel.Type] = []string{}
-			} else {
-				inclusions = append(inclusions[:i], inclusions[i+1:]...)
-				break
+			if typ, ok := schema.GetType(incRel.Type); ok {
+				if incRel, ok = typ.Rels[word]; ok {
+					params.Fields[incRel.Type] = []string{}
+				} else {
+					inclusions = append(inclusions[:i], inclusions[i+1:]...)
+					break
+				}
 			}
 		}
 	}
@@ -81,13 +82,15 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 		var incRel Rel
 		for w := range words {
 			if w == 0 {
-				incRel = reg.Types[resType].Rels[words[0]]
+				typ, _ := schema.GetType(resType)
+				incRel = typ.Rels[words[0]]
 			}
 
 			params.Include[i][w] = incRel
 
 			if w < len(words)-1 {
-				incRel = reg.Types[incRel.Type].Rels[words[w+1]]
+				typ, _ := schema.GetType(incRel.Type)
+				incRel = typ.Rels[words[w+1]]
 			}
 		}
 	}
@@ -99,11 +102,11 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 	// Fields
 	for t, fields := range su.Fields {
 		if t != resType {
-			if _, ok := reg.Types[t]; !ok {
+			if _, ok := schema.GetType(t); !ok {
 				return nil, NewErrUnknownTypeInURL(t)
 			}
 		}
-		if typ, ok := reg.Types[t]; ok {
+		if typ, ok := schema.GetType(t); ok {
 			params.Fields[t] = []string{}
 			for _, f := range fields {
 				for _, ff := range typ.Fields() {
@@ -116,8 +119,9 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 	}
 	for t := range params.Fields {
 		if len(params.Fields[t]) == 0 {
-			params.Fields[t] = make([]string, len(reg.Types[t].Fields()))
-			copy(params.Fields[t], reg.Types[t].Fields())
+			typ, _ := schema.GetType(t)
+			params.Fields[t] = make([]string, len(typ.Fields()))
+			copy(params.Fields[t], typ.Fields())
 		}
 	}
 
@@ -129,7 +133,7 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 			rel  Rel
 			ok   bool
 		)
-		if typ, ok = reg.Types[typeName]; !ok {
+		if typ, ok = schema.GetType(typeName); !ok {
 			return nil, NewErrUnknownTypeInURL(typeName)
 		}
 
@@ -142,14 +146,18 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 					// Append to list of fields
 					// params.Fields[typeName] = append(params.Fields[typeName], field)
 
-					if attr, ok = reg.Types[typeName].Attrs[field]; ok {
-						// Append to list of attributes
-						params.Attrs[typeName] = append(params.Attrs[typeName], attr)
+					if typ, ok = schema.GetType(typeName); ok {
+						if attr, ok = typ.Attrs[field]; ok {
+							// Append to list of attributes
+							params.Attrs[typeName] = append(params.Attrs[typeName], attr)
+						}
 					}
 
-					if rel, ok = reg.Types[typeName].Rels[field]; ok {
-						// Append to list of relationships
-						params.Rels[typeName] = append(params.Rels[typeName], rel)
+					if typ, ok = schema.GetType(typeName); ok {
+						if rel, ok = typ.Rels[field]; ok {
+							// Append to list of relationships
+							params.Rels[typeName] = append(params.Rels[typeName], rel)
+						}
 					}
 				}
 			}
@@ -162,21 +170,22 @@ func NewParams(reg *Registry, su SimpleURL, resType string) (*Params, error) {
 	// TODO
 
 	// Sorting
-	sortingRules := make([]string, 0, len(reg.Types[resType].Attrs))
+	typ, _ := schema.GetType(resType)
+	sortingRules := make([]string, 0, len(typ.Attrs))
 	for _, rule := range su.SortingRules {
 		urule := rule
 		if urule[0] == '-' {
 			urule = urule[1:]
 		}
-		for _, attr := range reg.Types[resType].Attrs {
+		for _, attr := range typ.Attrs {
 			if urule == attr.Name {
 				sortingRules = append(sortingRules, rule)
 				break
 			}
 		}
 	}
-	restOfRules := make([]string, 0, len(reg.Types[resType].Attrs)-len(sortingRules))
-	for _, attr := range reg.Types[resType].Attrs {
+	restOfRules := make([]string, 0, len(typ.Attrs)-len(sortingRules))
+	for _, attr := range typ.Attrs {
 		found := false
 		for _, rule := range sortingRules {
 			urule := rule
