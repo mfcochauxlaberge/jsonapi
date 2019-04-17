@@ -2,15 +2,9 @@
 
 jsonapi is a complete library to marshal and unmarshal JSON API payloads.
 
+It also offers many tools for parsing URLs, handling resources, managing schemas, and building other tools on top of this library.
+
 The official specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
-
-Here's a list of features supported by the library:
-
- * Marshal and Unmarshal JSON API payloads
- * The generated payload is guaranteed to be valid according to the specification
- * All top-level members are supported (data, included, meta, errors...)
- * Structs can be used or interfaces can also be implemented
- * A bunch of utilities are provided to help build tools on top of this library
 
 ## State
 
@@ -21,8 +15,8 @@ The library is in **alpha** and its API is subject to change until v1 is release
 The simplest way to start using jsonapi is to use the Marshal and Unmarshal functions.
 
 ```
-func Marshal(v interface{}, url *URL, opts *Options) ([]byte, error)
-func Unmarshal(payload []byte, v interface{}) error
+func Marshal(doc *Document, url *URL) ([]byte, error)
+func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error)
 ```
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.
@@ -81,8 +75,11 @@ For example:
 // CheckType checks v to make sure it can be used as a type.
 func CheckType(v interface{}) error {
 
+// ReflectType reflects on an object and returns the corresponding Type.
+func ReflectType(v interface{}) (Type, error)
+
 // IDAndType returns the ID and type of v.
 func IDAndType(v interface{}) (string, string)
 ```
 
-See schema.go, document.go, url.go, and params.go for more.
+See util.go schema.go, document.go, url.go, and params.go for more.
