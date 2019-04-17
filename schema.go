@@ -121,13 +121,21 @@ func (s *Schema) HasType(name string) bool {
 //
 // A boolean indicates whether a type was found or not.
 func (s *Schema) GetType(name string) (Type, bool) {
-	var typ Type
-	for _, typ = range s.Types {
+	for _, typ := range s.Types {
 		if typ.Name == name {
 			return typ, true
 		}
 	}
-	return typ, false
+	return Type{}, false
+}
+
+// GetResource ...
+func (s *Schema) GetResource(name string) Resource {
+	typ, ok := s.GetType(name)
+	if ok {
+		return NewSoftResource(typ, nil)
+	}
+	return nil
 }
 
 // Check checks the integrity of all the relationships between the types and

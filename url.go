@@ -27,7 +27,7 @@ type URL struct {
 }
 
 // NewURL ...
-func NewURL(reg *Registry, su SimpleURL) (*URL, error) {
+func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	url := &URL{}
 
 	// Route
@@ -43,7 +43,7 @@ func NewURL(reg *Registry, su SimpleURL) (*URL, error) {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
 	if len(url.Fragments) >= 1 {
-		if typ, ok = reg.Types[url.Fragments[0]]; !ok {
+		if typ, ok = schema.GetType(url.Fragments[0]); !ok {
 			return nil, NewErrUnknownTypeInURL(url.Fragments[0])
 		}
 
@@ -82,7 +82,7 @@ func NewURL(reg *Registry, su SimpleURL) (*URL, error) {
 
 	// Params
 	var err error
-	url.Params, err = NewParams(reg, su, url.ResType)
+	url.Params, err = NewParams(schema, su, url.ResType)
 	if err != nil {
 		return nil, err
 	}
@@ -176,7 +176,7 @@ func (u *URL) FullURL() string {
 }
 
 // ParseRawURL ...
-func ParseRawURL(reg *Registry, rawurl string) (*URL, error) {
+func ParseRawURL(schema *Schema, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
 	if err != nil {
 		return nil, err
@@ -187,5 +187,5 @@ func ParseRawURL(reg *Registry, rawurl string) (*URL, error) {
 		return nil, err
 	}
 
-	return NewURL(reg, su)
+	return NewURL(schema, su)
 }

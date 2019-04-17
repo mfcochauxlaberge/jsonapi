@@ -15,7 +15,7 @@ import (
 
 func TestMarshalResource(t *testing.T) {
 	loc, _ := time.LoadLocation("")
-	reg := NewMockRegistry()
+	schema := NewMockSchema()
 
 	tests := []struct {
 		name          string
@@ -63,7 +63,7 @@ func TestMarshalResource(t *testing.T) {
 		resType := test.data.GetType()
 		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
 
-		url, err := ParseRawURL(reg, rawurl)
+		url, err := ParseRawURL(schema, rawurl)
 		tchek.UnintendedError(err)
 
 		doc.Meta = test.meta
@@ -94,7 +94,7 @@ func TestMarshalResource(t *testing.T) {
 
 func TestMarshalCollection(t *testing.T) {
 	loc, _ := time.LoadLocation("")
-	reg := NewMockRegistry()
+	schema := NewMockSchema()
 
 	tests := []struct {
 		name          string
@@ -142,7 +142,7 @@ func TestMarshalCollection(t *testing.T) {
 		resType := test.data.Sample().GetType()
 		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
 
-		url, err := ParseRawURL(reg, rawurl)
+		url, err := ParseRawURL(schema, rawurl)
 		tchek.UnintendedError(err)
 
 		doc.Meta = test.meta
@@ -172,8 +172,6 @@ func TestMarshalCollection(t *testing.T) {
 }
 
 func TestMarshalErrors(t *testing.T) {
-	// reg := NewMockRegistry()
-
 	// Reset the IDs because the tests can't predict them.
 	resetIDs := func(errors []Error) []Error {
 		for i := range errors {
