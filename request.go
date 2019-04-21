@@ -32,7 +32,6 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		Method: r.Method,
 		URL:    url,
 		Doc:    doc,
-		User:   "",
 	}
 
 	return req, nil
@@ -43,5 +42,4 @@ type Request struct {
 	Method string
 	URL    *URL
 	Doc    *Document
-	User   string
 }
