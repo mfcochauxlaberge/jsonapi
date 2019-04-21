@@ -15,14 +15,17 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		return nil, err
 	}
 
-	url, err := ParseRawURL(schema, r.URL.RawPath)
+	url, err := ParseRawURL(schema, r.URL.EscapedPath())
 	if err != nil {
 		return nil, err
 	}
 
-	doc, err := Unmarshal(body, url, schema)
-	if err != nil {
-		return nil, err
+	doc := &Document{}
+	if len(body) > 0 {
+		doc, err = Unmarshal(body, url, schema)
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	req := &Request{
