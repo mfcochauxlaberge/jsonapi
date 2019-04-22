@@ -1,0 +1,25 @@
+{
+	"errors": [
+		{
+			"code": "somecode",
+			"detail": "An error occurred.",
+			"id": "00000000-0000-0000-0000-000000000000",
+			"links": {
+				"about": "https://example.org/errors/about"
+			},
+			"meta": {
+				"bool": true,
+				"num": 3943,
+				"str": "a string"
+			},
+			"source": {
+				"pointer": "/data/attributes/title"
+			},
+			"status": "500",
+			"title": "Error"
+		}
+	],
+	"jsonapi": {
+		"version": "1.0"
+	}
+}

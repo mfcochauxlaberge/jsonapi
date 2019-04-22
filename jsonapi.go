@@ -83,8 +83,8 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 }
 
 // Unmarshal ...
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
-	pl := &Payload{}
+func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
+	doc := &Document{}
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -100,7 +100,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 		if err != nil {
 			return nil, err
 		}
-		pl.Data = res
+		doc.Data = res
 	} else if url.RelKind == "self" {
 		if !url.IsCol {
 			inc := Identifier{}
@@ -108,14 +108,14 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 			if err != nil {
 				return nil, err
 			}
-			pl.Data = inc
+			doc.Data = inc
 		} else {
 			incs := Identifiers{}
 			err = json.Unmarshal(ske.Data, &incs)
 			if err != nil {
 				return nil, err
 			}
-			pl.Data = incs
+			doc.Data = incs
 		}
 	}
 
@@ -137,14 +137,14 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error) {
 			if err != nil {
 				return nil, err
 			}
-			pl.Included[inc2.Type+" "+inc2.ID] = res2
+			doc.Included[inc2.Type+" "+inc2.ID] = res2
 		}
 	}
 
 	// Meta
-	pl.Meta = ske.Meta
+	doc.Meta = ske.Meta
 
-	return pl, nil
+	return doc, nil
 }
 
 // CheckType ...

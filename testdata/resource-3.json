@@ -1,0 +1,20 @@
+{
+	"data": {
+		"attributes": {
+			"strptr": "str",
+			"uintptr": 42
+		},
+		"id": "mt1-2",
+		"links": {
+			"self": "https://example.org/mocktypes2/mt1-2"
+		},
+		"relationships": {},
+		"type": "mocktypes2"
+	},
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "https://example.org/mocktypes2/mt1-2?fields%5Bmocktypes2%5D=strptr%2Cuintptr\u0026sort=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cuint16ptr%2Cuint32ptr%2Cuint8ptr%2Cuintptr"
+	}
+}
