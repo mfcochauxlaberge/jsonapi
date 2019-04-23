@@ -29,7 +29,11 @@ type Params struct {
 	Include [][]Rel
 }
 
-// NewParams ...
+// NewParams creates and returns a Params object built from a SimpleURL and a
+// given resource type. A schema is used for validation.
+//
+// If validation is not expected, it is recommended to simply build a SimpleURL
+// object with NewSimpleURL.
 func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	params := &Params{
 		Fields:       map[string][]string{},

@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-// Wrapper ...
+// Wrapper wraps a reflect.Value that represents a struct.
+//
+// The Wrap function can be used to wrap a struct and make a Wrapper object.
+//
+// It implements the Resource interface, so the value can be handled as if it
+// were a Resource.
 type Wrapper struct {
 	val reflect.Value // Actual value (with content)
 
@@ -21,7 +26,8 @@ type Wrapper struct {
 	rels  map[string]Rel
 }
 
-// Wrap ...
+// Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
+// can be used as a Resource to handle the given value.
 func Wrap(v interface{}) *Wrapper {
 	val := reflect.ValueOf(v)
 
@@ -94,22 +100,22 @@ func Wrap(v interface{}) *Wrapper {
 	return w
 }
 
-// IDAndType ...
+// IDAndType returns the ID and the type of the Wrapper.
 func (w *Wrapper) IDAndType() (string, string) {
 	return IDAndType(w.val.Interface())
 }
 
-// Attrs ...
+// Attrs returns the attributes of the Wrapper.
 func (w *Wrapper) Attrs() map[string]Attr {
 	return w.attrs
 }
 
-// Rels ...
+// Rels returns the relationships of the Wrapper.
 func (w *Wrapper) Rels() map[string]Rel {
 	return w.rels
 }
 
-// Attr ...
+// Attr returns the attribute that corresponds to the given key.
 func (w *Wrapper) Attr(key string) Attr {
 	for _, attr := range w.attrs {
 		if attr.Name == key {
@@ -120,7 +126,7 @@ func (w *Wrapper) Attr(key string) Attr {
 	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
 }
 
-// Rel ...
+// Rel returns the relationship that corresponds to the given key.
 func (w *Wrapper) Rel(key string) Rel {
 	for _, rel := range w.rels {
 		if rel.Name == key {

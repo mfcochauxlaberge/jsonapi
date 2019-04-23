@@ -2,10 +2,11 @@ package jsonapi
 
 import "strings"
 
-// buildSelfLink builds a URL that points to the resource
-// represented by the value v.
+// buildSelfLink builds a URL that points to the resource represented by the
+// value v.
 //
-// v has to be a struct or a pointer to a struct.
+// prepath is prepended to the path and usually represents a scheme and a
+// domain name.
 func buildSelfLink(res Resource, prepath string) string {
 	if !strings.HasSuffix(prepath, "/") {
 		prepath = prepath + "/"
@@ -18,6 +19,8 @@ func buildSelfLink(res Resource, prepath string) string {
 	return ""
 }
 
+// buildRelationshipLinks builds a links object (according to the JSON:API
+// specification) that include both the self and related members.
 func buildRelationshipLinks(res Resource, prepath, rel string) map[string]string {
 	return map[string]string{
 		"self":    buildSelfLink(res, prepath) + "/relationships/" + rel,
