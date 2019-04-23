@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-// Marshal ...
+// Marshal marshals a document according to the JSON:API speficication.
+//
+// Both doc and url must not be nil.
 func Marshal(doc *Document, url *URL) ([]byte, error) {
 	// Data
 	var data json.RawMessage
@@ -82,7 +84,9 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	return json.Marshal(plMap)
 }
 
-// Unmarshal ...
+// Unmarshal reads a payload to build and return a document object.
+//
+// Both url and schema must not be nil.
 func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	doc := &Document{}
 	ske := &payloadSkeleton{}
@@ -147,7 +151,9 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	return doc, nil
 }
 
-// CheckType ...
+// CheckType checks the given value and returns any error found.
+//
+// If nil is returned, than the value can be safely used with this library.
 func CheckType(v interface{}) error {
 	value := reflect.ValueOf(v)
 	kind := value.Kind()
