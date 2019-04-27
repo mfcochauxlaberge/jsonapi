@@ -80,7 +80,7 @@ func TestMarshalResource(t *testing.T) {
 			output := out.String()
 
 			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("tests/" + test.payloadFile + ".json")
+			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			tchek.UnintendedError(err)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
@@ -139,7 +139,7 @@ func TestMarshalCollection(t *testing.T) {
 
 		doc.Data = test.data
 
-		resType := test.data.Sample().GetType()
+		resType := test.data.Type()
 		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
 
 		url, err := ParseRawURL(schema, rawurl)
@@ -159,7 +159,7 @@ func TestMarshalCollection(t *testing.T) {
 			output := out.String()
 
 			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("tests/" + test.payloadFile + ".json")
+			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			tchek.UnintendedError(err)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
@@ -231,7 +231,7 @@ func TestMarshalErrors(t *testing.T) {
 			output := out.String()
 
 			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("tests/" + test.payloadFile + ".json")
+			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			tchek.UnintendedError(err)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
