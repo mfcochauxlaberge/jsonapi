@@ -52,19 +52,6 @@ func (wc *WrapperCollection) Add(r Resource) {
 	}
 }
 
-// Sample ...
-func (wc *WrapperCollection) Sample() Resource {
-	if wc.sample == nil {
-		if wc.Len() > 0 {
-			return wc.Elem(0).New()
-		}
-
-		panic("jsonapi: wrapper collection has no elements and no sample")
-	}
-
-	return wc.sample.New()
-}
-
 // UnmarshalJSON ...
 func (wc *WrapperCollection) UnmarshalJSON(payload []byte) error {
 	var raws []json.RawMessage
