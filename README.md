@@ -3,7 +3,9 @@
 <div align="center" style="text-align: center;">
   <img src="logo.png" height="120">
   <br>
-  <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
+    <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  </a>
 </div>
 
 jsonapi is a complete library to marshal and unmarshal JSON API payloads.
