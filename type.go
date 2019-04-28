@@ -30,6 +30,9 @@ func (t *Type) AddAttr(attr Attr) error {
 		}
 	}
 
+	if t.Attrs == nil {
+		t.Attrs = map[string]Attr{}
+	}
 	t.Attrs[attr.Name] = attr
 
 	return nil
@@ -63,6 +66,9 @@ func (t *Type) AddRel(rel Rel) error {
 		}
 	}
 
+	if t.Rels == nil {
+		t.Rels = map[string]Rel{}
+	}
 	t.Rels[rel.Name] = rel
 
 	return nil
