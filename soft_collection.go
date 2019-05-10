@@ -46,6 +46,7 @@ func (s *SoftCollection) Elem(i int) Resource {
 // TODO Why only SoftResource?
 func (s *SoftCollection) Add(r Resource) {
 	if sr, ok := r.(*SoftResource); ok {
+		sr.typ = s.typ
 		s.res = append(s.res, sr)
 	} else {
 		panic("jsonapi: can only add SoftResource to SoftCollection")
