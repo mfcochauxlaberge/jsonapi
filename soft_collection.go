@@ -7,29 +7,26 @@ import (
 
 // SoftCollection ...
 type SoftCollection struct {
-	typ string
+	typ *Type
 	res []*SoftResource
 
 	m sync.Mutex
 }
 
 // AddAttr ...
-func (s *SoftCollection) AddAttr(attr Attr) {
-	for i := range s.res {
-		s.res[i].AddAttr(attr)
-	}
+func (s *SoftCollection) AddAttr(attr Attr) error {
+	return s.typ.AddAttr(attr)
 }
 
 // AddRel ...
-func (s *SoftCollection) AddRel(rel Rel) {
-	for i := range s.res {
-		s.res[i].AddRel(rel)
-	}
+func (s *SoftCollection) AddRel(rel Rel) error {
+	return s.typ.AddRel(rel)
+
 }
 
 // Type ...
-func (s *SoftCollection) Type() string {
-	return s.typ
+func (s *SoftCollection) Type() Type {
+	return *s.typ
 }
 
 // Len ...
@@ -46,6 +43,7 @@ func (s *SoftCollection) Elem(i int) Resource {
 }
 
 // Add ...
+// TODO Why only SoftResource?
 func (s *SoftCollection) Add(r Resource) {
 	if sr, ok := r.(*SoftResource); ok {
 		s.res = append(s.res, sr)
@@ -54,13 +52,13 @@ func (s *SoftCollection) Add(r Resource) {
 	}
 }
 
-// Sample ...
-func (s *SoftCollection) Sample() Resource {
-	if len(s.res) > 0 {
-		return s.res[0].New()
-	}
-	return &SoftResource{}
-}
+// // Sample ...
+// func (s *SoftCollection) Sample() Resource {
+// 	if len(s.res) > 0 {
+// 		return s.res[0].New()
+// 	}
+// 	return &SoftResource{}
+// }
 
 // UnmarshalJSON ...
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
