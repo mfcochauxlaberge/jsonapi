@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Error represents an error object from the JSON API specification.
+// Error represents an error object from the JSON:API specification.
 type Error struct {
 	ID     string                 `json:"id"`
 	Code   string                 `json:"code"`

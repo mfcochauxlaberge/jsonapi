@@ -3,16 +3,18 @@
 <div align="center" style="text-align: center;">
   <img src="logo.png" height="120">
   <br>
-  <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
+    <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  </a>
 </div>
 
-jsonapi is a complete library to marshal and unmarshal JSON API payloads.
+jsonapi is a complete library to marshal and unmarshal JSON:API payloads.
 
 The official specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
 
 Here's a list of features supported by the library:
 
- * Marshal and Unmarshal JSON API payloads
+ * Marshal and Unmarshal JSON:API payloads
  * The generated payload is guaranteed to be valid according to the specification
  * All top-level members are supported (data, included, meta, errors...)
  * Structs can be used or interfaces can also be implemented
