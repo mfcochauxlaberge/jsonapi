@@ -7,6 +7,7 @@ import (
 // NewSoftResource ...
 func NewSoftResource(typ Type, vals map[string]interface{}) *SoftResource {
 	res := &SoftResource{}
+	res.typ = &typ
 
 	for _, attr := range typ.Attrs {
 		if val, ok := vals[attr.Name]; ok {

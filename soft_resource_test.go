@@ -12,6 +12,24 @@ func TestSoftResource(t *testing.T) {
 	assert.Equal(t, map[string]Attr{}, sr.Attrs())
 	assert.Equal(t, map[string]Rel{}, sr.Rels())
 
+	// NewSoftResource
+	typ := Type{Name: "type"}
+	typ.AddAttr(Attr{
+		Name: "attr1",
+		Type: AttrTypeString,
+		Null: false,
+	})
+	typ.AddRel(Rel{
+		Name:         "rel1",
+		Type:         "type",
+		ToOne:        true,
+		InverseName:  "rel1",
+		InverseType:  "type",
+		InverseToOne: true,
+	})
+	sr = NewSoftResource(typ, nil)
+	assert.Equal(t, &typ, sr.typ)
+
 	// ID and type
 	sr.SetID("id")
 	sr.SetType("type")
