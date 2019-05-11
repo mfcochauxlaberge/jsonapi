@@ -1,6 +1,8 @@
 package jsonapi
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/copystructure"
 )
 
@@ -125,9 +127,13 @@ func (sr *SoftResource) SetType(name string) {
 
 // Set ...
 func (sr *SoftResource) Set(key string, v interface{}) {
+	fmt.Printf("before: %+v\n", sr.data)
 	sr.check()
+	fmt.Printf("after	: %+v\n", sr.data)
 	if _, ok := sr.data[key]; ok {
 		sr.data[key] = v
+	} else {
+		panic(fmt.Errorf("can't set v (%v) for key %q", v, key))
 	}
 }
 
@@ -215,7 +221,9 @@ func (sr *SoftResource) check() {
 
 	for i := range sr.typ.Attrs {
 		n := sr.typ.Attrs[i].Name
+		fmt.Printf("attr %s exists\n", n)
 		if _, ok := sr.data[n]; !ok {
+			fmt.Printf("setting zero value for %v\n", n)
 			sr.data[n] = GetZeroValue(sr.typ.Attrs[i].Type, sr.typ.Attrs[i].Null)
 		}
 	}
