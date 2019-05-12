@@ -135,58 +135,87 @@ func TestSoftCollectionSort(t *testing.T) {
 	sr.SetID("res1")
 	sr.Set("attr1", 0)
 	sr.Set("attr2", nil)
-	sr.Set("attr3", nil)
+	sr.Set("attr3", (*bool)(nil))
 	sr.Set("attr4", now)
 	sc.Add(sr)
 
-	assert.Equal(t, now, sr.Get("attr4"))
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res2")
+	sr.Set("attr1", 0)
+	sr.Set("attr2", nil)
+	b1 := false
+	sr.Set("attr3", &b1)
+	sr.Set("attr4", now)
+	sc.Add(sr)
 
-	// sr = NewSoftResource(typ, nil)
-	// sr.SetID("res2")
-	// sr.Set("attr1", 0)
-	// sr.Set("attr2", nil)
-	// sr.Set("attr3", false)
-	// sr.Set("attr4", now)
-	// sc.Add(sr)
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res3")
+	sr.Set("attr1", 1)
+	sr.Set("attr2", "")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(-time.Second))
+	sc.Add(sr)
 
-	// assert.Equal(t, now, sr.Get("attr4"))
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res4")
+	sr.Set("attr1", -1)
+	sr.Set("attr2", "abc")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
 
-	// sr = NewSoftResource(typ, nil)
-	// sr.SetID("res3")
-	// sr.Set("attr1", 1)
-	// sr.Set("attr2", "")
-	// sr.Set("attr3", nil)
-	// sr.Set("attr4", now.Add(-time.Second))
-	// sc.Add(sr)
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res5")
+	sr.Set("attr1", -1)
+	sr.Set("attr2", "abc")
+	b2 := true
+	sr.Set("attr3", &b2)
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
 
-	// sr = NewSoftResource(typ, nil)
-	// sr.SetID("res4")
-	// sr.Set("attr1", -1)
-	// sr.Set("attr2", "abc")
-	// sr.Set("attr3", nil)
-	// sr.Set("attr4", now.Add(time.Second))
-	// sc.Add(sr)
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res6")
+	sr.Set("attr1", 2)
+	sr.Set("attr2", "")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
 
-	// sr = NewSoftResource(typ, nil)
-	// sr.SetID("res5")
-	// sr.Set("attr1", -1)
-	// sr.Set("attr2", "abc")
-	// sr.Set("attr3", true)
-	// sr.Set("attr4", now.Add(time.Second))
-	// sc.Add(sr)
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res7")
+	sr.Set("attr1", 2)
+	sr.Set("attr2", "abc")
+	b3 := true
+	sr.Set("attr3", &b3)
+	sr.Set("attr4", now.Add(-time.Second))
+	sc.Add(sr)
 
-	// sr = NewSoftResource(typ, nil)
-	// sr.SetID("res6")
-	// sr.Set("attr1", 2)
-	// sr.Set("attr2", "abc")
-	// sr.Set("attr3", false)
-	// sr.Set("attr4", now.Add(-time.Second))
-	// sc.Add(sr)
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res8")
+	sr.Set("attr1", 4)
+	sr.Set("attr2", "")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
 
-	// assert.Equal(t, "abc", sr.Get("attr2"))
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res9")
+	sr.Set("attr1", -1)
+	sr.Set("attr2", "def")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
+
+	sr = NewSoftResource(typ, nil)
+	sr.SetID("res10")
+	sr.Set("attr1", 4)
+	sr.Set("attr2", "")
+	sr.Set("attr3", (*bool)(nil))
+	sr.Set("attr4", now.Add(time.Second))
+	sc.Add(sr)
 
 	// Sort the collection
-	rules := []string{"attr3", "-attr4", "attr1", "-attr2"}
+	rules := []string{"-attr3", "-attr4", "attr1", "-attr2"}
 	sc.Sort(rules)
 
 	assert.Equal(t, rules, sc.sort)
@@ -194,13 +223,11 @@ func TestSoftCollectionSort(t *testing.T) {
 	// Make a ordered list of IDs
 	ids := []string{}
 	for i := 0; i < sc.Len(); i++ {
-		// fmt.Printf("sc: %+v\n", sc)
-		// fmt.Printf("sc.Elem(i): %+v\n", sc.Elem(i))
 		ids = append(ids, sc.Elem(i).GetID())
 	}
 
-	// expectedIDs := []string{
-	// 	"res5, res6", "res2", "res3", "res1", "res4",
-	// }
-	// assert.Equal(t, expectedIDs, ids)
+	expectedIDs := []string{
+		"res5, res7", "res2", "res9", "res4", "res6", "res10", "res8", "res1", "res3",
+	}
+	assert.Equal(t, expectedIDs, ids)
 }
