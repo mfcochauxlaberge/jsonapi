@@ -107,6 +107,8 @@ func (s *SoftCollection) Less(i, j int) bool {
 			inverse = true
 		}
 
+		fmt.Printf("Valeur %v %d: %+v\n", r, i, s.col[i].data[r])
+		fmt.Printf("Valeur %v %d: %+v\n", r, j, s.col[j].data[r])
 		switch v := s.col[i].data[r].(type) {
 		case string:
 			if v == s.col[j].data[r].(string) {
