@@ -23,8 +23,8 @@ func (s *SoftCollection) Type() Type {
 }
 
 // SetType ...
-func (s *SoftCollection) SetType(typ Type) {
-	s.typ = &typ
+func (s *SoftCollection) SetType(typ *Type) {
+	s.typ = typ
 }
 
 // AddAttr ...

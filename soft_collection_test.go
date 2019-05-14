@@ -43,7 +43,7 @@ func TestSoftCollection(t *testing.T) {
 	// Make a copy so that modifying the original typ
 	// does not modify the SoftCollection's type.
 	typcopy := copystructure.Must(copystructure.Copy(typ)).(Type)
-	sc.SetType(typcopy)
+	sc.SetType(&typcopy)
 
 	assert.Equal(t, sc.Type(), typ)
 
@@ -128,7 +128,7 @@ func TestSoftCollectionSort(t *testing.T) {
 		Type: AttrTypeTime,
 		Null: false,
 	})
-	sc.SetType(typ)
+	sc.SetType(&typ)
 
 	// Add some resources
 	sr := NewSoftResource(typ, nil)
