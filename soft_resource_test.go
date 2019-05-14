@@ -32,9 +32,11 @@ func TestSoftResource(t *testing.T) {
 
 	// ID and type
 	sr.SetID("id")
-	sr.SetType("type")
+	typ2 := typ
+	typ2.Name = "type2"
+	sr.SetType(&typ2)
 	assert.Equal(t, "id", sr.GetID())
-	assert.Equal(t, "type", sr.GetType())
+	assert.Equal(t, "type2", sr.GetType())
 
 	// Attributes
 	attrs := map[string]Attr{

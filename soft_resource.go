@@ -119,9 +119,9 @@ func (sr *SoftResource) SetID(id string) {
 }
 
 // SetType ...
-func (sr *SoftResource) SetType(name string) {
+func (sr *SoftResource) SetType(typ *Type) {
 	sr.check()
-	sr.typ.Name = name
+	sr.typ = typ
 }
 
 // Set ...
