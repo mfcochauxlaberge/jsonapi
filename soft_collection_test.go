@@ -215,7 +215,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	sc.Add(sr)
 
 	// Sort the collection
-	rules := []string{"-attr3", "-attr4", "attr1", "-attr2"}
+	rules := []string{"-attr3", "-attr4", "attr1", "-attr2", "id"}
 	sc.Sort(rules)
 
 	assert.Equal(t, rules, sc.sort)
@@ -227,7 +227,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	}
 
 	expectedIDs := []string{
-		"res5, res7", "res2", "res9", "res4", "res6", "res10", "res8", "res1", "res3",
+		"res5", "res7", "res2", "res9", "res4", "res6", "res10", "res8", "res1", "res3",
 	}
 	assert.Equal(t, expectedIDs, ids)
 }

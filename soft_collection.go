@@ -2,7 +2,6 @@ package jsonapi
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -107,328 +106,268 @@ func (s *SoftCollection) Less(i, j int) bool {
 			inverse = true
 		}
 
-		fmt.Printf("Valeur %v %d: %+v\n", r, i, s.col[i].data[r])
-		fmt.Printf("Valeur %v %d: %+v\n", r, j, s.col[j].data[r])
+		if r == "id" {
+			return s.col[i].GetID() < s.col[j].GetID() != inverse
+		}
+
+		// Here we return true if v < v2.
+		// The "!= inverse" part acts as a XOR operation so that
+		// the opposite boolean is returned when inverse sorting
+		// is required.
 		switch v := s.col[i].data[r].(type) {
 		case string:
-			if v == s.col[j].data[r].(string) {
+			v2 := s.col[j].data[r].(string)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(string)
-			}
-			return v < s.col[j].data[r].(string)
+			return v < v2 != inverse
 		case int:
-			if v == s.col[j].data[r].(int) {
+			v2 := s.col[j].data[r].(int)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(int)
-			}
-			return v < s.col[j].data[r].(int)
+			return v < v2 != inverse
 		case int8:
-			if v == s.col[j].data[r].(int8) {
+			v2 := s.col[j].data[r].(int8)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(int8)
-			}
-			return v < s.col[j].data[r].(int8)
+			return v < v2 != inverse
 		case int16:
-			if v == s.col[j].data[r].(int16) {
+			v2 := s.col[j].data[r].(int16)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(int16)
-			}
-			return v < s.col[j].data[r].(int16)
+			return v < v2 != inverse
 		case int32:
-			if v == s.col[j].data[r].(int32) {
+			v2 := s.col[j].data[r].(int32)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(int32)
-			}
-			return v < s.col[j].data[r].(int32)
+			return v < v2 != inverse
 		case int64:
-			if v == s.col[j].data[r].(int64) {
+			v2 := s.col[j].data[r].(int64)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(int64)
-			}
-			return v < s.col[j].data[r].(int64)
+			return v < v2 != inverse
 		case uint:
-			if v == s.col[j].data[r].(uint) {
+			v2 := s.col[j].data[r].(uint)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(uint)
-			}
-			return v < s.col[j].data[r].(uint)
+			return v < v2 != inverse
 		case uint8:
-			if v == s.col[j].data[r].(uint8) {
+			v2 := s.col[j].data[r].(uint8)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(uint8)
-			}
-			return v < s.col[j].data[r].(uint8)
+			return v < v2 != inverse
 		case uint16:
-			if v == s.col[j].data[r].(uint16) {
+			v2 := s.col[j].data[r].(uint16)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(uint16)
-			}
-			return v < s.col[j].data[r].(uint16)
+			return v < v2 != inverse
 		case uint32:
-			if v == s.col[j].data[r].(uint32) {
+			v2 := s.col[j].data[r].(uint32)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v > s.col[j].data[r].(uint32)
-			}
-			return v < s.col[j].data[r].(uint32)
+			return v < v2 != inverse
 		case bool:
-			if v == s.col[j].data[r].(bool) {
+			v2 := s.col[j].data[r].(bool)
+			if v == v2 {
 				continue
 			}
-			if inverse {
-				return v
-			}
-			return !v
+			return !v != inverse
 		case time.Time:
-			fmt.Printf("why?\n")
 			if v.Equal(s.col[j].data[r].(time.Time)) {
-				fmt.Printf("time is equal!\n")
 				continue
 			}
-			if inverse {
-				fmt.Printf("inverse: %v\n", v.After(s.col[j].data[r].(time.Time)))
-				return v.After(s.col[j].data[r].(time.Time))
-			}
-			fmt.Printf("inverse: %v\n", v.Before(s.col[j].data[r].(time.Time)))
-			return v.Before(s.col[j].data[r].(time.Time))
+			return v.Before(s.col[j].data[r].(time.Time)) != inverse
 		case *string:
 			p := s.col[j].data[r].(*string)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*string))
-			}
-			return *v < *(s.col[j].data[r].(*string))
+			return *v < *p != inverse
 		case *int:
 			p := s.col[j].data[r].(*int)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*int))
-			}
-			return *v < *(s.col[j].data[r].(*int))
+			return *v < *p != inverse
 		case *int8:
 			p := s.col[j].data[r].(*int8)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*int8))
-			}
-			return *v < *(s.col[j].data[r].(*int8))
+			return *v < *p != inverse
 		case *int16:
 			p := s.col[j].data[r].(*int16)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*int16))
-			}
-			return *v < *(s.col[j].data[r].(*int16))
+			return *v < *p != inverse
 		case *int32:
 			p := s.col[j].data[r].(*int32)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*int32))
-			}
-			return *v < *(s.col[j].data[r].(*int32))
+			return *v < *p != inverse
 		case *int64:
 			p := s.col[j].data[r].(*int64)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*int64))
-			}
-			return *v < *(s.col[j].data[r].(*int64))
+			return *v < *p != inverse
 		case *uint:
 			p := s.col[j].data[r].(*uint)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*uint))
-			}
-			return *v < *(s.col[j].data[r].(*uint))
+			return *v < *p != inverse
 		case *uint8:
 			p := s.col[j].data[r].(*uint8)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*uint8))
-			}
-			return *v < *(s.col[j].data[r].(*uint8))
+			return *v < *p != inverse
 		case *uint16:
 			p := s.col[j].data[r].(*uint16)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*uint16))
-			}
-			return *v < *(s.col[j].data[r].(*uint16))
+			return *v < *p != inverse
 		case *uint32:
 			p := s.col[j].data[r].(*uint32)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v > *(s.col[j].data[r].(*uint32))
-			}
-			return *v < *(s.col[j].data[r].(*uint32))
+			return *v < *p != inverse
 		case *bool:
 			p := s.col[j].data[r].(*bool)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if *v == *p {
-				return false
+				continue
 			}
-			if inverse {
-				return *v
-			}
-			return !*v
+			return !*v != inverse
 		case *time.Time:
 			p := s.col[j].data[r].(*time.Time)
 			if v == p {
-				return false
+				continue
 			}
 			if v == nil {
-				return false
+				return true != inverse
 			}
 			if p == nil {
-				return true
+				return false != inverse
 			}
 			if v.Equal(*p) {
 				continue
 			}
-			if inverse {
-				return v.After(*p)
-			}
-			return v.Before(*p)
+			return v.Before(*p) != inverse
 		}
 	}
 
-	fmt.Printf("hey!\n")
 	return false
 }
