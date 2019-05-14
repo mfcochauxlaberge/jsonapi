@@ -51,6 +51,17 @@ func (s *SoftCollection) Elem(i int) Resource {
 	return nil
 }
 
+// Resource ...
+func (s *SoftCollection) Resource(id string, fields []string) Resource {
+	for i := range s.col {
+		if s.col[i].GetID() == id {
+			sr := s.col[i].Copy()
+			return sr
+		}
+	}
+	return nil
+}
+
 // Add ...
 func (s *SoftCollection) Add(r Resource) {
 	// A SoftResource is built from the Resource and
