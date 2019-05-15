@@ -14,7 +14,7 @@ type SoftCollection struct {
 	col  []*SoftResource
 	sort []string
 
-	m sync.Mutex
+	sync.Mutex
 }
 
 // Type ...
@@ -60,6 +60,67 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 		}
 	}
 	return nil
+}
+
+// Range ...
+func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
+	s.Lock()
+	defer s.Unlock()
+
+	rangeCol := &SoftCollection{}
+
+	// Filter IDs
+	if len(ids) > 0 {
+		for _, rec := range s.col {
+			for _, id := range ids {
+				if rec.id == id {
+					rangeCol.Add(rec)
+				}
+			}
+		}
+	} else {
+		for _, rec := range s.col {
+			rangeCol.Add(rec)
+		}
+	}
+
+	// fmt.Printf("set: %v\n", s.col)
+	// fmt.Printf("rangeCol: %v\n", rangeCol.col)
+
+	// TODO Filter
+
+	// Sort
+	// rangeCol.Sort(sort)
+
+	// Pagination
+	// if pageSize == 0 {
+	// 	rangeCol = &SoftCollection{}
+	// } else {
+	skip := int(pageNumber * pageSize)
+	// fmt.Printf("pagenumber: %d\n", pageNumber)
+	// fmt.Printf("pagesize: %d\n", pageSize)
+	// fmt.Printf("skip: %d\n", skip)
+	// fmt.Printf("len(rangeCol.data): %d\n", len(rangeCol.data))
+	if skip >= len(rangeCol.col) {
+		rangeCol = &SoftCollection{}
+	} else {
+		page := &SoftCollection{}
+		for i := skip; i < len(rangeCol.col) && (pageSize == 0 || i < int(pageSize)); i++ {
+			page.Add(rangeCol.col[i])
+		}
+		rangeCol = page
+	}
+	// }
+
+	// fmt.Printf("rangeCol after: %v\n", rangeCol.col)
+
+	// Make the collection
+	col := []Resource{}
+	for _, rec := range rangeCol.col {
+		col = append(col, rec)
+	}
+
+	return col
 }
 
 // Add ...
