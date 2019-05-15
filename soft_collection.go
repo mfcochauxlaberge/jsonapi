@@ -84,23 +84,13 @@ func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields
 		}
 	}
 
-	// fmt.Printf("set: %v\n", s.col)
-	// fmt.Printf("rangeCol: %v\n", rangeCol.col)
-
 	// TODO Filter
 
 	// Sort
-	// rangeCol.Sort(sort)
+	rangeCol.Sort(sort)
 
 	// Pagination
-	// if pageSize == 0 {
-	// 	rangeCol = &SoftCollection{}
-	// } else {
 	skip := int(pageNumber * pageSize)
-	// fmt.Printf("pagenumber: %d\n", pageNumber)
-	// fmt.Printf("pagesize: %d\n", pageSize)
-	// fmt.Printf("skip: %d\n", skip)
-	// fmt.Printf("len(rangeCol.data): %d\n", len(rangeCol.data))
 	if skip >= len(rangeCol.col) {
 		rangeCol = &SoftCollection{}
 	} else {
@@ -110,9 +100,6 @@ func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields
 		}
 		rangeCol = page
 	}
-	// }
-
-	// fmt.Printf("rangeCol after: %v\n", rangeCol.col)
 
 	// Make the collection
 	col := []Resource{}
