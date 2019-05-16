@@ -135,6 +135,15 @@ func (s *SoftCollection) Add(r Resource) {
 	s.col = append(s.col, sr)
 }
 
+// Remove ...
+func (s *SoftCollection) Remove(id string) {
+	for i := range s.col {
+		if s.col[i].GetID() == id {
+			s.col = append(s.col[:i], s.col[i+1:]...)
+		}
+	}
+}
+
 // Set ...
 func (s *SoftCollection) Set(id, field string, v interface{}) {
 	for i := range s.col {
