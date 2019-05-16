@@ -144,6 +144,16 @@ func (s *SoftCollection) SetField(id, field string, v interface{}) {
 	}
 }
 
+// GetValue ...
+func (s *SoftCollection) GetValue(id, field string) interface{} {
+	for i := range s.col {
+		if s.col[i].GetID() == id {
+			return s.col[i].Get(field)
+		}
+	}
+	return nil
+}
+
 // UnmarshalJSON ...
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON unimplemented")
