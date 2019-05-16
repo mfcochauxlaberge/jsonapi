@@ -144,8 +144,8 @@ func (s *SoftCollection) Remove(id string) {
 	}
 }
 
-// Set ...
-func (s *SoftCollection) Set(id, field string, v interface{}) {
+// SetField ...
+func (s *SoftCollection) SetField(id, field string, v interface{}) {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
 			s.col[i].Set(field, v)
