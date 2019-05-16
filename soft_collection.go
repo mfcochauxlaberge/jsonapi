@@ -135,6 +135,15 @@ func (s *SoftCollection) Add(r Resource) {
 	s.col = append(s.col, sr)
 }
 
+// Set ...
+func (s *SoftCollection) Set(id, field string, v interface{}) {
+	for i := range s.col {
+		if s.col[i].GetID() == id {
+			s.col[i].Set(field, v)
+		}
+	}
+}
+
 // UnmarshalJSON ...
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON unimplemented")
