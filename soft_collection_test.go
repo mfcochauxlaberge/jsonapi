@@ -43,9 +43,9 @@ func TestSoftCollection(t *testing.T) {
 	// Make a copy so that modifying the original typ
 	// does not modify the SoftCollection's type.
 	typcopy := copystructure.Must(copystructure.Copy(typ)).(Type)
-	sc.SetType(&typcopy)
+	sc.Type = &typcopy
 
-	assert.Equal(t, sc.Type(), typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Modify the SoftCollection's type and the local type
 	// at the same time and check whether they still are
@@ -68,7 +68,7 @@ func TestSoftCollection(t *testing.T) {
 	typ.AddRel(rel5)
 	sc.AddRel(rel5)
 
-	assert.Equal(t, sc.Type(), typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add a SoftResource with more fields than those
 	// specified in the SoftCollection.
@@ -93,7 +93,7 @@ func TestSoftCollection(t *testing.T) {
 
 	sc.Add(sr)
 
-	assert.Equal(t, sc.Type(), typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add more elements to the SoftCollection.
 	sc.Add(&SoftResource{id: "res1"})
@@ -128,7 +128,7 @@ func TestSoftCollectionSort(t *testing.T) {
 		Type: AttrTypeTime,
 		Null: false,
 	})
-	sc.SetType(&typ)
+	sc.Type = &typ
 
 	// Add some resources
 	sr := NewSoftResource(typ, nil)

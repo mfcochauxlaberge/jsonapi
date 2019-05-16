@@ -10,31 +10,22 @@ import (
 
 // SoftCollection ...
 type SoftCollection struct {
-	typ  *Type
+	Type *Type
+
 	col  []*SoftResource
 	sort []string
 
 	sync.Mutex
 }
 
-// Type ...
-func (s *SoftCollection) Type() Type {
-	return *s.typ
-}
-
-// SetType ...
-func (s *SoftCollection) SetType(typ *Type) {
-	s.typ = typ
-}
-
 // AddAttr ...
 func (s *SoftCollection) AddAttr(attr Attr) error {
-	return s.typ.AddAttr(attr)
+	return s.Type.AddAttr(attr)
 }
 
 // AddRel ...
 func (s *SoftCollection) AddRel(rel Rel) error {
-	return s.typ.AddRel(rel)
+	return s.Type.AddRel(rel)
 
 }
 
@@ -116,7 +107,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.typ = s.typ
+	sr.typ = s.Type
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)
