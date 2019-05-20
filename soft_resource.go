@@ -106,11 +106,20 @@ func (sr *SoftResource) GetType() string {
 // Get ...
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	if _, ok := sr.typ.Attrs[key]; ok {
-		return sr.data[key]
+	if attr, ok := sr.typ.Attrs[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+		return GetZeroValue(attr.Type, attr.Null)
 	}
-	if _, ok := sr.typ.Rels[key]; ok {
-		return sr.data[key]
+	if rel, ok := sr.typ.Rels[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+		if rel.ToOne {
+			return ""
+		}
+		return []string{}
 	}
 	return nil
 }
