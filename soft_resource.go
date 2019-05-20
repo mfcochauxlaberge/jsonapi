@@ -109,6 +109,9 @@ func (sr *SoftResource) Get(key string) interface{} {
 	if _, ok := sr.typ.Attrs[key]; ok {
 		return sr.data[key]
 	}
+	if _, ok := sr.typ.Rels[key]; ok {
+		return sr.data[key]
+	}
 	return nil
 }
 
