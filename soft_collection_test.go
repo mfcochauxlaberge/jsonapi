@@ -102,6 +102,46 @@ func TestSoftCollection(t *testing.T) {
 	assert.Equal(t, 3, sc.Len())
 }
 
+func TestSoftCollectionResource(t *testing.T) {
+	sc := &SoftCollection{
+		Type: &Type{},
+	}
+
+	sc.Type.Name = "type1"
+	sc.Type.AddAttr(Attr{
+		Name: "attr1",
+		Type: AttrTypeString,
+		Null: false,
+	})
+	sc.Type.AddAttr(Attr{
+		Name: "attr2",
+		Type: AttrTypeInt,
+		Null: true,
+	})
+	sc.Type.AddRel(Rel{
+		Name:  "rel1",
+		Type:  "type2",
+		ToOne: true,
+	})
+
+	sr := &SoftResource{}
+	sr.SetType(sc.Type)
+	sr.SetID("res1")
+	sr.Set("attr", "value1")
+	sc.Add(sr)
+
+	// Resource with all fields
+	assert.Equal(t, sr, sc.Resource("res1", nil))
+
+	// Resource with some fields
+	// TODO Fix this test. It seems like defining any set of
+	// fields will make the assert pass.
+	assert.Equal(t, sr, sc.Resource("res1", []string{"attr2", "rel1"}))
+
+	// Resource not found
+	assert.Equal(t, nil, sc.Resource("notfound", nil))
+}
+
 func TestSoftCollectionSort(t *testing.T) {
 	now := time.Now()
 	sc := &SoftCollection{}
