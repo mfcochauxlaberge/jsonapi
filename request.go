@@ -37,7 +37,7 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 	return req, nil
 }
 
-// Request represents a JSON:API request.
+// A Request represents a JSON:API request.
 type Request struct {
 	Method string
 	URL    *URL
