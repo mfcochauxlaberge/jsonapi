@@ -7,6 +7,7 @@ import (
 // NewSoftResource ...
 func NewSoftResource(typ Type, vals map[string]interface{}) *SoftResource {
 	res := &SoftResource{}
+	res.typ = &typ
 
 	for _, attr := range typ.Attrs {
 		if val, ok := vals[attr.Name]; ok {
@@ -105,8 +106,20 @@ func (sr *SoftResource) GetType() string {
 // Get ...
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	if _, ok := sr.typ.Attrs[key]; ok {
-		return sr.data[key]
+	if attr, ok := sr.typ.Attrs[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+		return GetZeroValue(attr.Type, attr.Null)
+	}
+	if rel, ok := sr.typ.Rels[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+		if rel.ToOne {
+			return ""
+		}
+		return []string{}
 	}
 	return nil
 }
@@ -118,9 +131,9 @@ func (sr *SoftResource) SetID(id string) {
 }
 
 // SetType ...
-func (sr *SoftResource) SetType(name string) {
+func (sr *SoftResource) SetType(typ *Type) {
 	sr.check()
-	sr.typ.Name = name
+	sr.typ = typ
 }
 
 // Set ...

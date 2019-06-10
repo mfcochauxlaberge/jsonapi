@@ -98,7 +98,7 @@ func TestEqual(t *testing.T) {
 
 	tchek.AreEqual(t, "compare same resource with itself", true, Equal(mt11, mt11))
 	tchek.AreEqual(t, "compare two identical resources", true, Equal(mt11, mt12))
-	tchek.AreEqual(t, "compare two identical resources (different IDs)", false, StrictEqual(mt11, mt12))
+	tchek.AreEqual(t, "compare two identical resources (different IDs)", false, EqualStrict(mt11, mt12))
 	tchek.AreEqual(t, "compare two different resources", false, Equal(mt11, mt13))
 	tchek.AreEqual(t, "compare resources of different types", false, Equal(mt11, mt21))
 }

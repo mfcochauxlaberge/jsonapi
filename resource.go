@@ -131,8 +131,8 @@ func Equal(r1, r2 Resource) bool {
 	return true
 }
 
-// StrictEqual is like Equal, but it also considers IDs.
-func StrictEqual(r1, r2 Resource) bool {
+// EqualStrict is like Equal, but it also considers IDs.
+func EqualStrict(r1, r2 Resource) bool {
 	if r1.GetID() != r2.GetID() {
 		return false
 	}
