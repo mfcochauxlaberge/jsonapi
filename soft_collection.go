@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-// SoftCollection ...
+// SoftCollection is a collection of SoftResources where the type can
+// be changed for all elements at once by modifying the Type field.
 type SoftCollection struct {
 	Type *Type
 
@@ -18,23 +19,23 @@ type SoftCollection struct {
 	sync.Mutex
 }
 
-// AddAttr ...
+// AddAttr adds an attribute to all of the resources in the collection.
 func (s *SoftCollection) AddAttr(attr Attr) error {
 	return s.Type.AddAttr(attr)
 }
 
-// AddRel ...
+// AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
 	return s.Type.AddRel(rel)
 
 }
 
-// Len ...
+// Len returns the length of the collection.
 func (s *SoftCollection) Len() int {
 	return len(s.col)
 }
 
-// Elem ...
+// Elem returns the element at index i.
 func (s *SoftCollection) Elem(i int) Resource {
 	if i >= 0 && i < len(s.col) {
 		return s.col[i]
@@ -42,7 +43,9 @@ func (s *SoftCollection) Elem(i int) Resource {
 	return nil
 }
 
-// Resource ...
+// Resource returns the element with an ID equal to id.
+//
+// It builds and returns a SoftResource with only the specified fields.
 func (s *SoftCollection) Resource(id string, fields []string) Resource {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
