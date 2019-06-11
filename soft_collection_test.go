@@ -100,6 +100,12 @@ func TestSoftCollection(t *testing.T) {
 	sc.Add(&SoftResource{id: "res2"})
 
 	assert.Equal(t, 3, sc.Len())
+
+	// Remove an element.
+	sc.Remove("res1")
+	sc.Remove("res99")
+
+	assert.Equal(t, 2, sc.Len())
 }
 
 func TestSoftCollectionResource(t *testing.T) {
@@ -146,7 +152,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	now := time.Now()
 	sc := &SoftCollection{}
 
-	// Add type with some attributes
+	// Add type with some attributes.
 	typ := Type{Name: "thistype"}
 	typ.AddAttr(Attr{
 		Name: "attr1",
@@ -170,7 +176,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	})
 	sc.Type = &typ
 
-	// Add some resources
+	// Add some resources.
 	sr := NewSoftResource(typ, nil)
 	sr.SetID("res1")
 	sr.Set("attr1", 0)
@@ -254,13 +260,13 @@ func TestSoftCollectionSort(t *testing.T) {
 	sr.Set("attr4", now.Add(time.Second))
 	sc.Add(sr)
 
-	// Sort the collection
+	// Sort the collection.
 	rules := []string{"-attr3", "-attr4", "attr1", "-attr2", "id"}
 	sc.Sort(rules)
 
 	assert.Equal(t, rules, sc.sort)
 
-	// Make a ordered list of IDs
+	// Make an ordered list of IDs.
 	ids := []string{}
 	for i := 0; i < sc.Len(); i++ {
 		ids = append(ids, sc.Elem(i).GetID())
@@ -268,6 +274,19 @@ func TestSoftCollectionSort(t *testing.T) {
 
 	expectedIDs := []string{
 		"res5", "res7", "res2", "res9", "res4", "res6", "res10", "res8", "res1", "res3",
+	}
+	assert.Equal(t, expectedIDs, ids)
+
+	// Sort with an empty list of sorting rules.
+	sc.Sort([]string{})
+
+	ids = []string{}
+	for i := 0; i < sc.Len(); i++ {
+		ids = append(ids, sc.Elem(i).GetID())
+	}
+
+	expectedIDs = []string{
+		"res1", "res10", "res2", "res3", "res4", "res5", "res6", "res7", "res8", "res9",
 	}
 	assert.Equal(t, expectedIDs, ids)
 }

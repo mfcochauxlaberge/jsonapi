@@ -131,32 +131,34 @@ func (s *SoftCollection) Remove(id string) {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
 			s.col = append(s.col[:i], s.col[i+1:]...)
+			return
 		}
 	}
 }
 
-// SetField ...
-func (s *SoftCollection) SetField(id, field string, v interface{}) {
-	for i := range s.col {
-		if s.col[i].GetID() == id {
-			s.col[i].Set(field, v)
-		}
-	}
-}
+// // SetField ...
+// func (s *SoftCollection) SetField(id, field string, v interface{}) {
+// 	for i := range s.col {
+// 		if s.col[i].GetID() == id {
+// 			s.col[i].Set(field, v)
+// 		}
+// 	}
+// }
 
-// GetValue ...
-func (s *SoftCollection) GetValue(id, field string) interface{} {
-	for i := range s.col {
-		if s.col[i].GetID() == id {
-			return s.col[i].Get(field)
-		}
-	}
-	return nil
-}
+// // GetValue ...
+// func (s *SoftCollection) GetValue(id, field string) interface{} {
+// 	for i := range s.col {
+// 		if s.col[i].GetID() == id {
+// 			return s.col[i].Get(field)
+// 		}
+// 	}
+// 	return nil
+// }
 
 // UnmarshalJSON ...
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
-	return errors.New("jsonapi: SoftCollection.UnmarshalJSON unimplemented")
+	// TODO Implement this method
+	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")
 }
 
 // Sort ...
