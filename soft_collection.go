@@ -46,8 +46,7 @@ func (s *SoftCollection) Elem(i int) Resource {
 func (s *SoftCollection) Resource(id string, fields []string) Resource {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
-			sr := s.col[i].Copy()
-			return sr
+			return s.col[i]
 		}
 	}
 	return nil
