@@ -8,7 +8,8 @@ import (
 	"time"
 )
 
-// SoftCollection ...
+// SoftCollection is a collection of SoftResources where the type can
+// be changed for all elements at once by modifying the Type field.
 type SoftCollection struct {
 	Type *Type
 
@@ -18,23 +19,23 @@ type SoftCollection struct {
 	sync.Mutex
 }
 
-// AddAttr ...
+// AddAttr adds an attribute to all of the resources in the collection.
 func (s *SoftCollection) AddAttr(attr Attr) error {
 	return s.Type.AddAttr(attr)
 }
 
-// AddRel ...
+// AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
 	return s.Type.AddRel(rel)
 
 }
 
-// Len ...
+// Len returns the length of the collection.
 func (s *SoftCollection) Len() int {
 	return len(s.col)
 }
 
-// Elem ...
+// Elem returns the element at index i.
 func (s *SoftCollection) Elem(i int) Resource {
 	if i >= 0 && i < len(s.col) {
 		return s.col[i]
@@ -42,7 +43,9 @@ func (s *SoftCollection) Elem(i int) Resource {
 	return nil
 }
 
-// Resource ...
+// Resource returns the element with an ID equal to id.
+//
+// It builds and returns a SoftResource with only the specified fields.
 func (s *SoftCollection) Resource(id string, fields []string) Resource {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
@@ -52,7 +55,8 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 	return nil
 }
 
-// Range ...
+// Range returns a subset of the collection arranged according to the
+// given parameters.
 func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	s.Lock()
 	defer s.Unlock()
@@ -100,7 +104,7 @@ func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields
 	return col
 }
 
-// Add ...
+// Add creates a SoftResource and adds it to the collection.
 func (s *SoftCollection) Add(r Resource) {
 	// A SoftResource is built from the Resource and
 	// then it is added to the collection.
@@ -125,7 +129,9 @@ func (s *SoftCollection) Add(r Resource) {
 	s.col = append(s.col, sr)
 }
 
-// Remove ...
+// Remove removes the resource with an ID equal to id.
+//
+// Nothing happens if no resource has such an ID.
 func (s *SoftCollection) Remove(id string) {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
@@ -154,13 +160,16 @@ func (s *SoftCollection) Remove(id string) {
 // 	return nil
 // }
 
-// UnmarshalJSON ...
+// UnmarshalJSON populates a SoftCollection from the given payload.
+//
+// Only the attributes and relationships defined in the SoftCollection's
+// Type field will be considered.
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	// TODO Implement this method
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")
 }
 
-// Sort ...
+// Sort rearranges the order of the collection according the rules.
 func (s *SoftCollection) Sort(rules []string) {
 	s.sort = rules
 
@@ -171,12 +180,12 @@ func (s *SoftCollection) Sort(rules []string) {
 	sort.Sort(s)
 }
 
-// Swap ...
+// Swap implements sort.Interface's Swap method.
 func (s *SoftCollection) Swap(i, j int) {
 	s.col[i], s.col[j] = s.col[j], s.col[i]
 }
 
-// Less ...
+// Less implements sort.Interface's Less method.
 func (s *SoftCollection) Less(i, j int) bool {
 	for _, r := range s.sort {
 		inverse := false

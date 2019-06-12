@@ -8,7 +8,11 @@ import (
 	"strconv"
 )
 
-// URL ...
+// A URL stores all the information from a URL formatted for a JSON:API
+// request.
+//
+// The data structure allows to have more information than what the URL
+// itself stores.
 type URL struct {
 	// URL
 	Fragments []string // [users, u1, articles]
@@ -26,7 +30,8 @@ type URL struct {
 	Params *Params
 }
 
-// NewURL ...
+// NewURL builds a URL from a SimpleURL and a schema for validating and
+// supplementing the object with extra information.
 func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	url := &URL{}
 
@@ -90,7 +95,11 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	return url, nil
 }
 
-// BelongsToFilter ...
+// A BelongsToFilter represents a parent resource, used to filter out
+// resources that are not children of the parent.
+//
+// For example, in /articles/abc123/comments, the parent is the article
+// with the ID abc123.
 type BelongsToFilter struct {
 	Type        string
 	ID          string
@@ -98,7 +107,9 @@ type BelongsToFilter struct {
 	InverseName string
 }
 
-// NormalizePath ...
+// NormalizePath builds and returns the URL as a string.
+//
+// It returns exactly the same string given the same URL and schema.
 func (u *URL) NormalizePath() string {
 	// Path
 	path := "/"
@@ -168,14 +179,15 @@ func (u *URL) NormalizePath() string {
 	return path + params
 }
 
-// FullURL ...
+// FullURL returns the full URL as a string.
 func (u *URL) FullURL() string {
 	url := u.NormalizePath()
 
 	return url
 }
 
-// ParseRawURL ...
+// ParseRawURL parses rawurl to make a *url.URL before making and returning
+// a *URL.
 func ParseRawURL(schema *Schema, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
 	if err != nil {
