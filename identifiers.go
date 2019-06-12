@@ -2,7 +2,9 @@ package jsonapi
 
 import "encoding/json"
 
-// NewIdentifiers ...
+// NewIdentifiers returns an Identifiers object.
+//
+// t is the type of the identifiers. ids is the set of IDs.
 func NewIdentifiers(t string, ids []string) Identifiers {
 	identifiers := []Identifier{}
 
@@ -16,10 +18,10 @@ func NewIdentifiers(t string, ids []string) Identifiers {
 	return identifiers
 }
 
-// Identifiers ...
+// Identifiers represents a slice of Identifier.
 type Identifiers []Identifier
 
-// IDs ...
+// IDs returns the IDs part of the Identifiers.
 func (i Identifiers) IDs() []string {
 	ids := []string{}
 
@@ -30,13 +32,15 @@ func (i Identifiers) IDs() []string {
 	return ids
 }
 
-// Identifier ...
+// Identifier represents a resource's type and ID.
 type Identifier struct {
 	ID   string `json:"id"`
 	Type string `json:"type"`
 }
 
-// MarshalIdentifiers ...
+// MarshalIdentifiers builds a json.RawMessage object from the given IDs.
+//
+// TODO Implement the function.
 func MarshalIdentifiers(ids []string, toOne bool) json.RawMessage {
 	raw := ""
 
