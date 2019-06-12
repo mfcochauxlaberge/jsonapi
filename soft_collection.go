@@ -141,25 +141,6 @@ func (s *SoftCollection) Remove(id string) {
 	}
 }
 
-// // SetField ...
-// func (s *SoftCollection) SetField(id, field string, v interface{}) {
-// 	for i := range s.col {
-// 		if s.col[i].GetID() == id {
-// 			s.col[i].Set(field, v)
-// 		}
-// 	}
-// }
-
-// // GetValue ...
-// func (s *SoftCollection) GetValue(id, field string) interface{} {
-// 	for i := range s.col {
-// 		if s.col[i].GetID() == id {
-// 			return s.col[i].Get(field)
-// 		}
-// 	}
-// 	return nil
-// }
-
 // UnmarshalJSON populates a SoftCollection from the given payload.
 //
 // Only the attributes and relationships defined in the SoftCollection's
