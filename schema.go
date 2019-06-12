@@ -24,8 +24,8 @@ const (
 	AttrTypeTime
 )
 
-// A Schema contains a list of types. It makes sure that each type is valid and
-// unique.
+// A Schema contains a list of types. It makes sure that each type is
+// valid and unique.
 //
 // Check can be used to validate the relationships between the types.
 type Schema struct {
@@ -129,7 +129,8 @@ func (s *Schema) GetType(name string) (Type, bool) {
 	return Type{}, false
 }
 
-// GetResource ...
+// GetResource returns a resource of type SoftResource with the specified
+// type. All fields are set to their zero values.
 func (s *Schema) GetResource(name string) Resource {
 	typ, ok := s.GetType(name)
 	if ok {
@@ -138,8 +139,8 @@ func (s *Schema) GetResource(name string) Resource {
 	return nil
 }
 
-// Check checks the integrity of all the relationships between the types and
-// returns all the errors that were found.
+// Check checks the integrity of all the relationships between the types
+// and returns all the errors that were found.
 func (s *Schema) Check() []error {
 	var (
 		ok   bool
@@ -195,8 +196,8 @@ func (s *Schema) Check() []error {
 	return errs
 }
 
-// GetAttrType returns the attribute type as an int (see constants) and a
-// boolean that indicates whether the attribute can be null or not.
+// GetAttrType returns the attribute type as an int (see constants) and
+// a boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {
 	t2 := t
 	if strings.HasPrefix(t2, "*") {
@@ -271,9 +272,9 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString return the name of the attribute type specified by an int
-// (see constants) and a boolean that indicates whether the value can be null
-// or not.
+// GetAttrTypeString return the name of the attribute type specified
+// by an int (see constants) and a boolean that indicates whether the
+// value can be null or not.
 func GetAttrTypeString(t int, null bool) string {
 	switch t {
 	case AttrTypeString:
@@ -341,8 +342,8 @@ func GetAttrTypeString(t int, null bool) string {
 	}
 }
 
-// GetZeroValue returns the zero value of the attribute type represented by the
-// specified int (see constants).
+// GetZeroValue returns the zero value of the attribute type represented
+// by the specified int (see constants).
 //
 // If null is true, the returned value is a nil pointer.
 func GetZeroValue(t int, null bool) interface{} {

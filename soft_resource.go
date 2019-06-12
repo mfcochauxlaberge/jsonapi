@@ -43,7 +43,7 @@ func (sr *SoftResource) Attrs() map[string]Attr {
 	return sr.typ.Attrs
 }
 
-// Attrs returns the resource's relationships.
+// Rels returns the resource's relationships.
 func (sr *SoftResource) Rels() map[string]Rel {
 	sr.check()
 	return sr.typ.Rels

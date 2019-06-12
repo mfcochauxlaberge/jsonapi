@@ -8,7 +8,9 @@ import (
 	"strings"
 )
 
-// SimpleURL ...
+// A SimpleURL represents a URL not validated nor supplemented from a schema.
+//
+// It parses a URL in text format and stores the values as is.
 type SimpleURL struct {
 	// Source string
 
@@ -26,7 +28,7 @@ type SimpleURL struct {
 	Include      []string
 }
 
-// NewSimpleURL ...
+// NewSimpleURL takes and parses a *url.URL and returns a SimpleURL.
 func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	sURL := SimpleURL{
 		Fragments: []string{},
@@ -104,7 +106,8 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	return sURL, nil
 }
 
-// Path ...
+// Path returns the path only of the SimpleURL. It does not include any
+// query parameters.
 func (s *SimpleURL) Path() string {
 	return strings.Join(s.Fragments, "/")
 }
