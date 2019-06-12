@@ -55,7 +55,8 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 	return nil
 }
 
-// Range ...
+// Range returns a subset of the collection arranged according to the
+// given parameters.
 func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	s.Lock()
 	defer s.Unlock()
@@ -103,7 +104,7 @@ func (s *SoftCollection) Range(ids []string, _ *Condition, sort []string, fields
 	return col
 }
 
-// Add ...
+// Add creates a SoftResource and adds it to the collection.
 func (s *SoftCollection) Add(r Resource) {
 	// A SoftResource is built from the Resource and
 	// then it is added to the collection.
@@ -128,7 +129,9 @@ func (s *SoftCollection) Add(r Resource) {
 	s.col = append(s.col, sr)
 }
 
-// Remove ...
+// Remove removes the resource with an ID equal to id.
+//
+// Nothing happens if no resource has such an ID.
 func (s *SoftCollection) Remove(id string) {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
@@ -157,13 +160,16 @@ func (s *SoftCollection) Remove(id string) {
 // 	return nil
 // }
 
-// UnmarshalJSON ...
+// UnmarshalJSON populates a SoftCollection from the given payload.
+//
+// Only the attributes and relationships defined in the SoftCollection's
+// Type field will be considered.
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	// TODO Implement this method
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")
 }
 
-// Sort ...
+// Sort rearranges the order of the collection according the rules.
 func (s *SoftCollection) Sort(rules []string) {
 	s.sort = rules
 
@@ -174,12 +180,12 @@ func (s *SoftCollection) Sort(rules []string) {
 	sort.Sort(s)
 }
 
-// Swap ...
+// Swap implements sort.Interface's Swap method.
 func (s *SoftCollection) Swap(i, j int) {
 	s.col[i], s.col[j] = s.col[j], s.col[i]
 }
 
-// Less ...
+// Less implements sort.Interface's Less method.
 func (s *SoftCollection) Less(i, j int) bool {
 	for _, r := range s.sort {
 		inverse := false
