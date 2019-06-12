@@ -37,19 +37,19 @@ type SoftResource struct {
 	data map[string]interface{}
 }
 
-// Attrs ...
+// Attrs returns the resource's attributes.
 func (sr *SoftResource) Attrs() map[string]Attr {
 	sr.check()
 	return sr.typ.Attrs
 }
 
-// Rels ...
+// Attrs returns the resource's relationships.
 func (sr *SoftResource) Rels() map[string]Rel {
 	sr.check()
 	return sr.typ.Rels
 }
 
-// AddAttr ...
+// AddAttr adds an attribute.
 func (sr *SoftResource) AddAttr(attr Attr) {
 	sr.check()
 	for _, name := range sr.fields() {
@@ -60,7 +60,7 @@ func (sr *SoftResource) AddAttr(attr Attr) {
 	sr.typ.Attrs[attr.Name] = attr
 }
 
-// AddRel ...
+// AddRel adds a relationship.
 func (sr *SoftResource) AddRel(rel Rel) {
 	sr.check()
 	for _, name := range sr.fields() {
@@ -71,20 +71,20 @@ func (sr *SoftResource) AddRel(rel Rel) {
 	sr.typ.Rels[rel.Name] = rel
 }
 
-// RemoveField ...
+// RemoveField removes a field.
 func (sr *SoftResource) RemoveField(field string) {
 	sr.check()
 	delete(sr.typ.Attrs, field)
 	delete(sr.typ.Rels, field)
 }
 
-// Attr ...
+// Attr returns the attribute named after key.
 func (sr *SoftResource) Attr(key string) Attr {
 	sr.check()
 	return sr.typ.Attrs[key]
 }
 
-// Rel ...
+// Rel returns the relationship named after key.
 func (sr *SoftResource) Rel(key string) Rel {
 	sr.check()
 	return sr.typ.Rels[key]
