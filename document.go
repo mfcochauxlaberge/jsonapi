@@ -1,6 +1,6 @@
 package jsonapi
 
-// Document ...
+// A Document represents a JSON:API document.
 type Document struct {
 	// Data
 	Data interface{}
@@ -25,7 +25,7 @@ type Document struct {
 	PrePath string
 }
 
-// NewDocument ...
+// NewDocument returns a pointer to a new Document.
 func NewDocument() *Document {
 	return &Document{
 		Included:  map[string]Resource{},
@@ -36,7 +36,10 @@ func NewDocument() *Document {
 	}
 }
 
-// Include ...
+// Include adds res to the set of resources to be included under the
+// included top-level field.
+//
+// It also makes sure that resources are not added twice.
 func (d *Document) Include(res Resource) {
 	key := res.GetType() + " " + res.GetID()
 

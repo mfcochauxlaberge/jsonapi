@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 )
 
-// Condition ...
+// A Condition is used to define filters when querying collections.
 type Condition struct {
 	Field string      `json:"f"`
 	Op    string      `json:"o"`
@@ -12,7 +12,7 @@ type Condition struct {
 	Col   string      `json:"c"`
 }
 
-// cnd ...
+// cnd is an internal version of Condition.
 type cnd struct {
 	Field string          `json:"f"`
 	Op    string          `json:"o"`
@@ -20,7 +20,7 @@ type cnd struct {
 	Col   string          `json:"c"`
 }
 
-// UnmarshalJSON ...
+// UnmarshalJSON parses the provided data and populates a Condition.
 func (c *Condition) UnmarshalJSON(data []byte) error {
 	tmpCnd := cnd{}
 	err := json.Unmarshal(data, &tmpCnd)
@@ -57,7 +57,7 @@ func (c *Condition) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON ...
+// MarshalJSON marshals a Condition into JSON.
 func (c *Condition) MarshalJSON() ([]byte, error) {
 	payload := map[string]interface{}{}
 	if c.Field != "" {

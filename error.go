@@ -8,7 +8,7 @@ import (
 	"github.com/google/uuid"
 )
 
-// Error represents an error object from the JSON API specification.
+// An Error represents an error object from the JSON:API specification.
 type Error struct {
 	ID     string                 `json:"id"`
 	Code   string                 `json:"code"`
@@ -60,7 +60,8 @@ func (e Error) Error() string {
 	return e.Title
 }
 
-// MarshalJSON ...
+// MarshalJSON returns a JSON representation of the error according
+// to the JSON:API specification.
 func (e Error) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{}
 
@@ -99,7 +100,7 @@ func (e Error) MarshalJSON() ([]byte, error) {
 	return json.Marshal(m)
 }
 
-// NewErrBadRequest (400) ...
+// NewErrBadRequest (400) returns the corresponding error.
 func NewErrBadRequest(title, detail string) Error {
 	e := NewError()
 
@@ -110,7 +111,7 @@ func NewErrBadRequest(title, detail string) Error {
 	return e
 }
 
-// NewErrMalformedFilterParameter (400) ...
+// NewErrMalformedFilterParameter (400) returns the corresponding error.
 func NewErrMalformedFilterParameter(badFitler string) Error {
 	e := NewError()
 
@@ -123,7 +124,7 @@ func NewErrMalformedFilterParameter(badFitler string) Error {
 	return e
 }
 
-// NewErrInvalidPageNumberParameter (400) ...
+// NewErrInvalidPageNumberParameter (400) returns the corresponding error.
 func NewErrInvalidPageNumberParameter(badPageNumber string) Error {
 	e := NewError()
 
@@ -136,7 +137,7 @@ func NewErrInvalidPageNumberParameter(badPageNumber string) Error {
 	return e
 }
 
-// NewErrInvalidPageSizeParameter (400) ...
+// NewErrInvalidPageSizeParameter (400) returns the corresponding error.
 func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	e := NewError()
 
@@ -149,7 +150,7 @@ func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	return e
 }
 
-// NewErrUnknownFieldInBody (400) ...
+// NewErrUnknownFieldInBody (400) returns the corresponding error.
 func NewErrUnknownFieldInBody(typ, field string) Error {
 	e := NewError()
 
@@ -163,7 +164,7 @@ func NewErrUnknownFieldInBody(typ, field string) Error {
 	return e
 }
 
-// NewErrUnknownFieldInURL (400) ...
+// NewErrUnknownFieldInURL (400) returns the corresponding error.
 func NewErrUnknownFieldInURL(field string) Error {
 	e := NewError()
 
@@ -179,7 +180,7 @@ func NewErrUnknownFieldInURL(field string) Error {
 	return e
 }
 
-// NewErrUnknownParameter (400) ...
+// NewErrUnknownParameter (400) returns the corresponding error.
 func NewErrUnknownParameter(param string) Error {
 	e := NewError()
 
@@ -192,7 +193,7 @@ func NewErrUnknownParameter(param string) Error {
 	return e
 }
 
-// NewErrUnknownRelationshipInPath (400) ...
+// NewErrUnknownRelationshipInPath (400) returns the corresponding error.
 func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
 	e := NewError()
 
@@ -206,7 +207,7 @@ func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
 	return e
 }
 
-// NewErrUnknownTypeInURL (400) ...
+// NewErrUnknownTypeInURL (400) returns the corresponding error.
 func NewErrUnknownTypeInURL(typ string) Error {
 	e := NewError()
 
@@ -218,7 +219,7 @@ func NewErrUnknownTypeInURL(typ string) Error {
 	return e
 }
 
-// NewErrUnknownFieldInFilterParameter (400) ...
+// NewErrUnknownFieldInFilterParameter (400) returns the corresponding error.
 func NewErrUnknownFieldInFilterParameter(field string) Error {
 	e := NewError()
 
@@ -231,7 +232,7 @@ func NewErrUnknownFieldInFilterParameter(field string) Error {
 	return e
 }
 
-// NewErrUnknownOperatorInFilterParameter (400) ...
+// NewErrUnknownOperatorInFilterParameter (400) returns the corresponding error.
 func NewErrUnknownOperatorInFilterParameter(op string) Error {
 	e := NewError()
 
@@ -244,7 +245,7 @@ func NewErrUnknownOperatorInFilterParameter(op string) Error {
 	return e
 }
 
-// NewErrInvalidValueInFilterParameter (400) ...
+// NewErrInvalidValueInFilterParameter (400) returns the corresponding error.
 func NewErrInvalidValueInFilterParameter(val, kind string) Error {
 	e := NewError()
 
@@ -257,7 +258,7 @@ func NewErrInvalidValueInFilterParameter(val, kind string) Error {
 	return e
 }
 
-// NewErrUnknownCollationInFilterParameter (400) ...
+// NewErrUnknownCollationInFilterParameter (400) returns the corresponding error.
 func NewErrUnknownCollationInFilterParameter(col string) Error {
 	e := NewError()
 
@@ -270,7 +271,7 @@ func NewErrUnknownCollationInFilterParameter(col string) Error {
 	return e
 }
 
-// NewErrUnknownFilterParameterLabel (400) ...
+// NewErrUnknownFilterParameterLabel (400) returns the corresponding error.
 func NewErrUnknownFilterParameterLabel(label string) Error {
 	e := NewError()
 
@@ -283,7 +284,7 @@ func NewErrUnknownFilterParameterLabel(label string) Error {
 	return e
 }
 
-// NewErrUnauthorized (401) ...
+// NewErrUnauthorized (401) returns the corresponding error.
 func NewErrUnauthorized() Error {
 	e := NewError()
 
@@ -294,7 +295,7 @@ func NewErrUnauthorized() Error {
 	return e
 }
 
-// NewErrForbidden (403) ...
+// NewErrForbidden (403) returns the corresponding error.
 func NewErrForbidden() Error {
 	e := NewError()
 
@@ -305,7 +306,7 @@ func NewErrForbidden() Error {
 	return e
 }
 
-// NewErrNotFound (404) ...
+// NewErrNotFound (404) returns the corresponding error.
 func NewErrNotFound() Error {
 	e := NewError()
 
@@ -316,7 +317,7 @@ func NewErrNotFound() Error {
 	return e
 }
 
-// NewErrPayloadTooLarge (413) ...
+// NewErrPayloadTooLarge (413) returns the corresponding error.
 func NewErrPayloadTooLarge() Error {
 	e := NewError()
 
@@ -327,7 +328,7 @@ func NewErrPayloadTooLarge() Error {
 	return e
 }
 
-// NewErrRequestURITooLong (414) ...
+// NewErrRequestURITooLong (414) returns the corresponding error.
 func NewErrRequestURITooLong() Error {
 	e := NewError()
 
@@ -337,7 +338,7 @@ func NewErrRequestURITooLong() Error {
 	return e
 }
 
-// NewErrUnsupportedMediaType (415) ...
+// NewErrUnsupportedMediaType (415) returns the corresponding error.
 func NewErrUnsupportedMediaType() Error {
 	e := NewError()
 
@@ -347,7 +348,7 @@ func NewErrUnsupportedMediaType() Error {
 	return e
 }
 
-// NewErrTooManyRequests (429) ...
+// NewErrTooManyRequests (429) returns the corresponding error.
 func NewErrTooManyRequests() Error {
 	e := NewError()
 
@@ -357,7 +358,7 @@ func NewErrTooManyRequests() Error {
 	return e
 }
 
-// NewErrRequestHeaderFieldsTooLarge (431) ...
+// NewErrRequestHeaderFieldsTooLarge (431) returns the corresponding error.
 func NewErrRequestHeaderFieldsTooLarge() Error {
 	e := NewError()
 
@@ -367,7 +368,7 @@ func NewErrRequestHeaderFieldsTooLarge() Error {
 	return e
 }
 
-// NewErrInternalServerError (500) ...
+// NewErrInternalServerError (500) returns the corresponding error.
 func NewErrInternalServerError() Error {
 	e := NewError()
 
@@ -377,7 +378,7 @@ func NewErrInternalServerError() Error {
 	return e
 }
 
-// NewErrServiceUnavailable (503) ...
+// NewErrServiceUnavailable (503) returns the corresponding error.
 func NewErrServiceUnavailable() Error {
 	e := NewError()
 
@@ -387,7 +388,7 @@ func NewErrServiceUnavailable() Error {
 	return e
 }
 
-// NewErrNotImplemented (503) ...
+// NewErrNotImplemented (503) returns the corresponding error.
 func NewErrNotImplemented() Error {
 	e := NewError()
 

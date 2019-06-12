@@ -11,7 +11,12 @@ import (
 	"time"
 )
 
-// Wrapper ...
+// Wrapper wraps a reflect.Value that represents a struct.
+//
+// The Wrap function can be used to wrap a struct and make a Wrapper object.
+//
+// It implements the Resource interface, so the value can be handled as if it
+// were a Resource.
 type Wrapper struct {
 	val reflect.Value // Actual value (with content)
 
@@ -21,7 +26,8 @@ type Wrapper struct {
 	rels  map[string]Rel
 }
 
-// Wrap ...
+// Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
+// can be used as a Resource to handle the given value.
 func Wrap(v interface{}) *Wrapper {
 	val := reflect.ValueOf(v)
 
@@ -94,22 +100,22 @@ func Wrap(v interface{}) *Wrapper {
 	return w
 }
 
-// IDAndType ...
+// IDAndType returns the ID and the type of the Wrapper.
 func (w *Wrapper) IDAndType() (string, string) {
 	return IDAndType(w.val.Interface())
 }
 
-// Attrs ...
+// Attrs returns the attributes of the Wrapper.
 func (w *Wrapper) Attrs() map[string]Attr {
 	return w.attrs
 }
 
-// Rels ...
+// Rels returns the relationships of the Wrapper.
 func (w *Wrapper) Rels() map[string]Rel {
 	return w.rels
 }
 
-// Attr ...
+// Attr returns the attribute that corresponds to the given key.
 func (w *Wrapper) Attr(key string) Attr {
 	for _, attr := range w.attrs {
 		if attr.Name == key {
@@ -120,7 +126,7 @@ func (w *Wrapper) Attr(key string) Attr {
 	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
 }
 
-// Rel ...
+// Rel returns the relationship that corresponds to the given key.
 func (w *Wrapper) Rel(key string) Rel {
 	for _, rel := range w.rels {
 		if rel.Name == key {
@@ -131,41 +137,42 @@ func (w *Wrapper) Rel(key string) Rel {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// New ...
+// New returns a copy of the resource under the wrapper.
 func (w *Wrapper) New() Resource {
 	newVal := reflect.New(w.val.Type())
 
 	return Wrap(newVal.Interface())
 }
 
-// GetID ...
+// GetID returns the wrapped resource's ID.
 func (w *Wrapper) GetID() string {
 	id, _ := IDAndType(w.val.Interface())
 	return id
 }
 
-// GetType ...
+// GetType returns the wrapped resource's type.
 func (w *Wrapper) GetType() string {
 	_, typ := IDAndType(w.val.Interface())
 	return typ
 }
 
-// Get ...
+// Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
 	return w.getAttr(key, "")
 }
 
-// SetID ...
+// SetID sets the ID of the wrapped resource.
 func (w *Wrapper) SetID(id string) {
 	w.val.FieldByName("ID").SetString(id)
 }
 
-// Set ...
+// Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
 	w.setAttr(key, val)
 }
 
-// GetToOne ...
+// GetToOne returns the value associated with the relationship named
+// after key.
 func (w *Wrapper) GetToOne(key string) string {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
@@ -191,7 +198,8 @@ func (w *Wrapper) GetToOne(key string) string {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// GetToMany ...
+// GetToMany returns the value associated with the relationship named
+// after key.
 func (w *Wrapper) GetToMany(key string) []string {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
@@ -217,7 +225,7 @@ func (w *Wrapper) GetToMany(key string) []string {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// SetToOne ...
+// SetToOne sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToOne(key string, rel string) {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
@@ -244,7 +252,7 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// SetToMany ...
+// SetToMany sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToMany(key string, rels []string) {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
@@ -271,12 +279,14 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// Validate ...
+// Validate returns any errors found in the wrapped resource.
 func (w *Wrapper) Validate() []error {
 	return nil
 }
 
-// Copy ...
+// Copy makes a copy of the wrapped resource and returns it.
+//
+// The returned value's concrete type is also a Wrapper.
 func (w *Wrapper) Copy() Resource {
 	nw := Wrap(reflect.New(w.val.Type()).Interface())
 
@@ -297,7 +307,7 @@ func (w *Wrapper) Copy() Resource {
 	return nw
 }
 
-// UnmarshalJSON ...
+// UnmarshalJSON parses the payload and populates the wrapped resource.
 func (w *Wrapper) UnmarshalJSON(payload []byte) error {
 	var err error
 
