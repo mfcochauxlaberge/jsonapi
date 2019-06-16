@@ -11,6 +11,8 @@ import (
 )
 
 func TestNewRequest(t *testing.T) {
+	assert := assert.New(t)
+
 	// Schema
 	schema := newMockSchema()
 
@@ -35,8 +37,7 @@ func TestNewRequest(t *testing.T) {
 		req := httptest.NewRequest(test.method, test.url, body)
 
 		doc, err := NewRequest(req, test.schema)
-		assert.Equal(t, test.expectedError, err)
-
-		assert.Equal(t, test.method, doc.Method)
+		assert.Equal(test.expectedError, err, test.name)
+		assert.Equal(test.method, doc.Method, test.name)
 	}
 }

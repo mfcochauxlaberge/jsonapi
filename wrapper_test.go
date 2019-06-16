@@ -7,10 +7,13 @@ import (
 	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestWrapper(t *testing.T) {
+	assert := assert.New(t)
+
 	loc, _ := time.LoadLocation("")
 
 	res1 := &mockType1{
@@ -33,8 +36,8 @@ func TestWrapper(t *testing.T) {
 
 	// ID and type
 	id, typ := wrap1.IDAndType()
-	tchek.AreEqual(t, "id", res1.ID, id)
-	tchek.AreEqual(t, "type", "mocktypes1", typ)
+	assert.Equal(res1.ID, id, "id")
+	assert.Equal("mocktypes1", typ, "type")
 
 	// Get attributes
 	v1 := reflect.ValueOf(res1).Elem()
@@ -44,15 +47,15 @@ func TestWrapper(t *testing.T) {
 		n := sf.Tag.Get("json")
 
 		if sf.Tag.Get("api") == "attr" {
-			tchek.AreEqual(t, "api tag", f.Interface(), wrap1.Get(n))
+			assert.Equal(f.Interface(), wrap1.Get(n), "api tag")
 		}
 	}
 
 	// Set attributes
 	wrap1.Set("str", "another_string")
-	tchek.AreEqual(t, "set string attribute", "another_string", wrap1.Get("str"))
+	assert.Equal("another_string", wrap1.Get("str"), "set string attribute")
 	wrap1.Set("int", 3)
-	tchek.AreEqual(t, "set int attribute", 3, wrap1.Get("int"))
+	assert.Equal(3, wrap1.Get("int"), "set int attribute")
 
 	aStr := "another_string_ptr"
 	aInt := int(123)
@@ -88,8 +91,8 @@ func TestWrapper(t *testing.T) {
 
 	// ID and type
 	id, typ = wrap2.IDAndType()
-	tchek.AreEqual(t, "id 2", res2.ID, id)
-	tchek.AreEqual(t, "type 2", "mocktypes2", typ)
+	assert.Equal(res2.ID, id, "id 2")
+	assert.Equal("mocktypes2", typ, "type 2")
 
 	// Get attributes
 	v2 := reflect.ValueOf(res2).Elem()
@@ -99,36 +102,36 @@ func TestWrapper(t *testing.T) {
 		n := sf.Tag.Get("json")
 
 		if sf.Tag.Get("api") == "attr" {
-			tchek.AreEqual(t, "api tag 2", f.Interface(), wrap2.Get(n))
+			assert.Equal(f.Interface(), wrap2.Get(n), "api tag 2")
 		}
 	}
 
 	// Set attributes
 	var anotherString = "anotherString"
 	wrap2.Set("strptr", &anotherString)
-	tchek.AreEqual(t, "set string pointer attribute", &anotherString, wrap2.Get("strptr"))
+	assert.Equal(&anotherString, wrap2.Get("strptr"), "set string pointer attribute")
 	var newInt = 3
 	wrap2.Set("intptr", &newInt)
-	tchek.AreEqual(t, "set int pointer attribute", &newInt, wrap2.Get("intptr"))
+	assert.Equal(&newInt, wrap2.Get("intptr"), "set int pointer attribute")
 	wrap2.Set("uintptr", nil)
 	if wrap2.Get("uintptr") != nil {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
 		// way. If the nil check fails, then the next line will fail too.
-		tchek.AreEqual(t, "nil pointer", nil, wrap2.Get("uintptr"))
+		assert.Equal(t, "nil pointer", nil, wrap2.Get("uintptr"))
 	}
 	if res2.UintPtr != nil {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
 		// way. If the nil check fails, then the next line will fail too.
-		tchek.AreEqual(t, "nil pointer 2", nil, res2.UintPtr)
+		assert.Equal(t, "nil pointer 2", nil, res2.UintPtr)
 	}
 
 	// Copy
 	wrap3 := wrap1.Copy()
 
 	for _, attr := range wrap1.Attrs() {
-		tchek.AreEqual(t, "copied attribute", wrap1.Get(attr.Name), wrap3.Get(attr.Name))
+		assert.Equal(wrap1.Get(attr.Name), wrap3.Get(attr.Name), "copied attribute")
 
 		if attr.Type == AttrTypeBool && !attr.Null {
 			wrap3.Set(attr.Name, !wrap1.Get(attr.Name).(bool))
@@ -139,6 +142,6 @@ func TestWrapper(t *testing.T) {
 		} else {
 			wrap3.Set(attr.Name, "0")
 		}
-		tchek.AreNotEqual(t, fmt.Sprintf("modified copied attribute %s (%v)", attr.Name, attr.Type), wrap1.Get(attr.Name), wrap3.Get(attr.Name))
+		assert.NotEqual(wrap1.Get(attr.Name), wrap3.Get(attr.Name), fmt.Sprintf("modified copied attribute %s (%v)", attr.Name, attr.Type))
 	}
 }
