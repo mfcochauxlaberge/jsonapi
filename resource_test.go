@@ -5,10 +5,13 @@ import (
 	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestEqual(t *testing.T) {
+	assert := assert.New(t)
+
 	now := time.Now()
 
 	mt11 := Wrap(&mockType1{
@@ -97,9 +100,9 @@ func TestEqual(t *testing.T) {
 		ToManyFromMany: []string{"a", "b", "c"},
 	})
 
-	tchek.AreEqual(t, "compare same resource with itself", true, Equal(mt11, mt11))
-	tchek.AreEqual(t, "compare two identical resources", true, Equal(mt11, mt12))
-	tchek.AreEqual(t, "compare two identical resources (different IDs)", false, EqualStrict(mt11, mt12))
-	tchek.AreEqual(t, "compare two different resources", false, Equal(mt11, mt13))
-	tchek.AreEqual(t, "compare resources of different types", false, Equal(mt11, mt21))
+	assert.Equal(true, Equal(mt11, mt11), "compare same resource with itself")
+	assert.Equal(true, Equal(mt11, mt12), "compare two identical resources")
+	assert.Equal(false, EqualStrict(mt11, mt12), "compare two identical resources (different IDs)")
+	assert.Equal(false, Equal(mt11, mt13), "compare two different resources")
+	assert.Equal(false, Equal(mt11, mt21), "compare resources of different types")
 }

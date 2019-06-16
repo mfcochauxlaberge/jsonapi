@@ -11,10 +11,13 @@ import (
 	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestMarshalResource(t *testing.T) {
+	assert := assert.New(t)
+
 	loc, _ := time.LoadLocation("")
 	schema := newMockSchema()
 
@@ -65,13 +68,13 @@ func TestMarshalResource(t *testing.T) {
 		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
 
 		url, err := ParseRawURL(schema, rawurl)
-		tchek.UnintendedError(err)
+		assert.NoError(err, test.name)
 
 		doc.Meta = test.meta
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
+		assert.Equal(test.errorExpected, err != nil, test.name)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -82,18 +85,20 @@ func TestMarshalResource(t *testing.T) {
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
-			tchek.UnintendedError(err)
+			assert.NoError(err, test.name)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, test.name, expectedOutput, output)
+			assert.Equal(expectedOutput, output, test.name)
 		}
 	}
 }
 
 func TestMarshalCollection(t *testing.T) {
+	assert := assert.New(t)
+
 	loc, _ := time.LoadLocation("")
 	schema := newMockSchema()
 
@@ -144,13 +149,13 @@ func TestMarshalCollection(t *testing.T) {
 		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
 
 		url, err := ParseRawURL(schema, rawurl)
-		tchek.UnintendedError(err)
+		assert.NoError(err, test.name)
 
 		doc.Meta = test.meta
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
+		assert.Equal(test.errorExpected, err != nil, test.name)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -161,18 +166,20 @@ func TestMarshalCollection(t *testing.T) {
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
-			tchek.UnintendedError(err)
+			assert.NoError(err, test.name)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, test.name, expectedOutput, output)
+			assert.Equal(expectedOutput, output, test.name)
 		}
 	}
 }
 
 func TestMarshalErrors(t *testing.T) {
+	assert := assert.New(t)
+
 	// Reset the IDs because the tests can't predict them.
 	resetIDs := func(errors []Error) []Error {
 		for i := range errors {
@@ -222,7 +229,7 @@ func TestMarshalErrors(t *testing.T) {
 		doc.Data = test.errors
 		// Marshal
 		payload, err := Marshal(doc, nil)
-		tchek.ErrorExpected(t, test.name, test.errorExpected, err)
+		assert.Equal(test.errorExpected, err != nil, test.name)
 
 		if !test.errorExpected {
 			var out bytes.Buffer
@@ -233,13 +240,13 @@ func TestMarshalErrors(t *testing.T) {
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
-			tchek.UnintendedError(err)
+			assert.NoError(err, test.name)
 			out.Reset()
 			json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
-			tchek.AreEqual(t, test.name, expectedOutput, output)
+			assert.Equal(expectedOutput, output, test.name)
 		}
 	}
 }
