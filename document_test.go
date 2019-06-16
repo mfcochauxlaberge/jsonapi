@@ -1,8 +1,9 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"testing"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 

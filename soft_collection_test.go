@@ -1,8 +1,10 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"testing"
 	"time"
+
+	. "github.com/mfcochauxlaberge/jsonapi"
 
 	"github.com/mitchellh/copystructure"
 	"github.com/stretchr/testify/assert"
@@ -96,8 +98,12 @@ func TestSoftCollection(t *testing.T) {
 	assert.Equal(t, sc.Type, &typ)
 
 	// Add more elements to the SoftCollection.
-	sc.Add(&SoftResource{id: "res1"})
-	sc.Add(&SoftResource{id: "res2"})
+	sr = &SoftResource{}
+	sr.SetID("res1")
+	sc.Add(sr)
+	sr = &SoftResource{}
+	sr.SetID("res2")
+	sc.Add(sr)
 
 	assert.Equal(t, 3, sc.Len())
 
@@ -263,8 +269,6 @@ func TestSoftCollectionSort(t *testing.T) {
 	// Sort the collection.
 	rules := []string{"-attr3", "-attr4", "attr1", "-attr2", "id"}
 	sc.Sort(rules)
-
-	assert.Equal(t, rules, sc.sort)
 
 	// Make an ordered list of IDs.
 	ids := []string{}
