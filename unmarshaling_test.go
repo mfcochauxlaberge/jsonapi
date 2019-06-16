@@ -1,15 +1,16 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"testing"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestUnmarshalResource(t *testing.T) {
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
-	res1 := Wrap(&MockType3{
+	res1 := Wrap(&mockType3{
 		ID:    "mt1",
 		Attr1: "a string",
 		Attr2: 1,
@@ -43,7 +44,7 @@ func TestUnmarshalResource(t *testing.T) {
 }
 
 func TestUnmarshalIdentifier(t *testing.T) {
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	id1 := Identifier{ID: "abc123", Type: "mocktypes1"}
 
@@ -73,7 +74,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 }
 
 func TestUnmarshalIdentifiers(t *testing.T) {
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	ids1 := Identifiers{
 		Identifier{ID: "abc123", Type: "mocktypes1"},

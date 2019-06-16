@@ -1,4 +1,4 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"fmt"
@@ -6,13 +6,14 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestWrapper(t *testing.T) {
 	loc, _ := time.LoadLocation("")
 
-	res1 := &MockType1{
+	res1 := &mockType1{
 		ID:     "res123",
 		Str:    "a_string",
 		Int:    2,
@@ -67,7 +68,7 @@ func TestWrapper(t *testing.T) {
 	aTime := time.Date(2018, 2, 3, 4, 5, 6, 7, loc)
 
 	// Set the attributes after the wrapping
-	res2 := &MockType2{
+	res2 := &mockType2{
 		ID:        "res123",
 		StrPtr:    &aStr,
 		IntPtr:    &aInt,

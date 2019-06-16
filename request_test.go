@@ -1,16 +1,18 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"bytes"
 	"net/http/httptest"
 	"testing"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
+
 	"github.com/stretchr/testify/assert"
 )
 
 func TestNewRequest(t *testing.T) {
 	// Schema
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	tests := []struct {
 		name          string

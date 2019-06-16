@@ -1,4 +1,4 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"encoding/json"
@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"testing"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 

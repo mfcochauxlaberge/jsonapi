@@ -1,16 +1,17 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"testing"
 	"time"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestEqual(t *testing.T) {
 	now := time.Now()
 
-	mt11 := Wrap(&MockType1{
+	mt11 := Wrap(&mockType1{
 		ID:             "mt1",
 		Str:            "str",
 		Int:            1,
@@ -32,7 +33,7 @@ func TestEqual(t *testing.T) {
 		ToManyFromMany: []string{"a", "b", "c"},
 	})
 
-	mt12 := Wrap(&MockType1{
+	mt12 := Wrap(&mockType1{
 		ID:             "mt2",
 		Str:            "str",
 		Int:            1,
@@ -54,7 +55,7 @@ func TestEqual(t *testing.T) {
 		ToManyFromMany: []string{"a", "b", "c"},
 	})
 
-	mt13 := Wrap(&MockType1{
+	mt13 := Wrap(&mockType1{
 		ID:             "mt3",
 		Str:            "str",
 		Int:            11,
@@ -76,7 +77,7 @@ func TestEqual(t *testing.T) {
 		ToManyFromMany: []string{"d", "e", "f"},
 	})
 
-	mt21 := Wrap(&MockType2{
+	mt21 := Wrap(&mockType2{
 		ID:             "mt1",
 		StrPtr:         func() *string { v := string(1); return &v }(),
 		IntPtr:         func() *int { v := int(1); return &v }(),

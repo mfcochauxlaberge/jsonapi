@@ -1,15 +1,16 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"net/url"
 	"testing"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestParseURL(t *testing.T) {
 	// Schema
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	tests := []struct {
 		name          string
@@ -189,7 +190,7 @@ func TestParseURL(t *testing.T) {
 
 func TestParseParams(t *testing.T) {
 	// Schema
-	schema := NewMockSchema()
+	schema := newMockSchema()
 	mockTypes1, _ := schema.GetType("mocktypes1")
 	mockTypes2, _ := schema.GetType("mocktypes2")
 

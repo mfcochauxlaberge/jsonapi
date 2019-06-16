@@ -1,18 +1,20 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"time"
+
+	. "github.com/mfcochauxlaberge/jsonapi"
 )
 
-// NewMockSchema ...
-func NewMockSchema() *Schema {
+// newMockSchema ...
+func newMockSchema() *Schema {
 	schema := &Schema{}
 
-	typ, _ := ReflectType(MockType1{})
+	typ, _ := ReflectType(mockType1{})
 	schema.AddType(typ)
-	typ, _ = ReflectType(MockType2{})
+	typ, _ = ReflectType(mockType2{})
 	schema.AddType(typ)
-	typ, _ = ReflectType(MockType3{})
+	typ, _ = ReflectType(mockType3{})
 	schema.AddType(typ)
 
 	for t, typ := range schema.Types {
@@ -32,8 +34,8 @@ func NewMockSchema() *Schema {
 	return schema
 }
 
-// MockType1 ...
-type MockType1 struct {
+// mockType1 ...
+type mockType1 struct {
 	ID string `json:"id" api:"mocktypes1"`
 
 	// Attributes
@@ -59,8 +61,8 @@ type MockType1 struct {
 	ToManyFromMany []string `json:"to-many-from-many" api:"rel,mocktypes2,to-many-from-many"`
 }
 
-// MockType2 ...
-type MockType2 struct {
+// mockType2 ...
+type mockType2 struct {
 	ID string `json:"id" api:"mocktypes2"`
 
 	// Attributes
@@ -84,8 +86,8 @@ type MockType2 struct {
 	ToManyFromMany []string `json:"to-many-from-many" api:"rel,mocktypes1,to-many-from-many"`
 }
 
-// MockType3 ...
-type MockType3 struct {
+// mockType3 ...
+type mockType3 struct {
 	ID string `json:"id" api:"mocktypes3"`
 
 	// Attributes

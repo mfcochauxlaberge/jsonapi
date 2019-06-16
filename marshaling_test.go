@@ -1,4 +1,4 @@
-package jsonapi
+package jsonapi_test
 
 import (
 	"bytes"
@@ -10,12 +10,13 @@ import (
 	"testing"
 	"time"
 
+	. "github.com/mfcochauxlaberge/jsonapi"
 	"github.com/mfcochauxlaberge/tchek"
 )
 
 func TestMarshalResource(t *testing.T) {
 	loc, _ := time.LoadLocation("")
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	tests := []struct {
 		name          string
@@ -94,7 +95,7 @@ func TestMarshalResource(t *testing.T) {
 
 func TestMarshalCollection(t *testing.T) {
 	loc, _ := time.LoadLocation("")
-	schema := NewMockSchema()
+	schema := newMockSchema()
 
 	tests := []struct {
 		name          string
@@ -126,7 +127,7 @@ func TestMarshalCollection(t *testing.T) {
 			payloadFile:   "collection-2",
 		}, {
 			name:          "collection with prepath",
-			data:          WrapCollection(Wrap(&MockType1{})),
+			data:          WrapCollection(Wrap(&mockType1{})),
 			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "collection-3",

@@ -10,25 +10,30 @@ func TestBuildSelfLink(t *testing.T) {
 	tests := []struct {
 		name           string
 		res            Resource
+		id             string
 		expectedString string
 	}{
 		{
 			name:           "simple resource url",
-			res:            Wrap(&MockType1{ID: "1"}),
-			expectedString: "http://example.com/mocktypes1/1",
+			id:             "1",
+			expectedString: "http://example.com/type/1",
 		}, {
 			name:           "simple resource url with hyphen in id",
-			res:            Wrap(&MockType1{ID: "abc-123"}),
-			expectedString: "http://example.com/mocktypes1/abc-123",
+			id:             "abc-123",
+			expectedString: "http://example.com/type/abc-123",
 		}, {
 			name:           "empty id",
-			res:            Wrap(&MockType1{ID: ""}),
+			id:             "",
 			expectedString: "",
 		},
 	}
 
 	for _, test := range tests {
-		link := buildSelfLink(test.res, "http://example.com")
+		res := &SoftResource{}
+		res.SetType(&Type{Name: "type"})
+		res.SetID(test.id)
+
+		link := buildSelfLink(res, "http://example.com")
 		tchek.AreEqual(t, test.name, test.expectedString, link)
 	}
 }
