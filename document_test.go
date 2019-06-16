@@ -4,12 +4,13 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+	"github.com/stretchr/testify/assert"
 )
 
 // TestDocument ...
 func TestDocument(t *testing.T) {
-	pl1 := Document{}
+	assert := assert.New(t)
 
-	tchek.AreEqual(t, "empty", nil, pl1.Data)
+	pl1 := Document{}
+	assert.Equal(nil, pl1.Data, "empty")
 }

@@ -5,10 +5,13 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestSimpleURL(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name          string
 		url           string
@@ -216,8 +219,8 @@ func TestSimpleURL(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		u, err := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
-		tchek.UnintendedError(err)
+		u, err := url.Parse(makeOneLineNoSpaces(test.url))
+		assert.NoError(err, test.name)
 
 		url, err := NewSimpleURL(u)
 
@@ -233,7 +236,7 @@ func TestSimpleURL(t *testing.T) {
 			err = jaErr
 		}
 
-		tchek.AreEqual(t, test.name, test.expectedURL, url)
-		tchek.AreEqual(t, test.name, test.expectedError, err)
+		assert.Equal(test.expectedURL, url, test.name)
+		assert.Equal(test.expectedError, err, test.name)
 	}
 }

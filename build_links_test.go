@@ -3,10 +3,12 @@ package jsonapi
 import (
 	"testing"
 
-	"github.com/mfcochauxlaberge/tchek"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestBuildSelfLink(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name           string
 		res            Resource
@@ -34,6 +36,6 @@ func TestBuildSelfLink(t *testing.T) {
 		res.SetID(test.id)
 
 		link := buildSelfLink(res, "http://example.com")
-		tchek.AreEqual(t, test.name, test.expectedString, link)
+		assert.Equal(test.expectedString, link, test.name)
 	}
 }

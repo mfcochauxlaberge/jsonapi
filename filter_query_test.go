@@ -7,10 +7,12 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestFilterQuery(t *testing.T) {
+	assert := assert.New(t)
+
 	// time1, _ := time.Parse(time.RFC3339Nano, "2012-05-16T17:45:28.2539Z")
 	// time2, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
 
@@ -52,15 +54,15 @@ func TestFilterQuery(t *testing.T) {
 		cdt := Condition{}
 		err := json.Unmarshal([]byte(test.query), &cdt)
 
-		tchek.ErrorExpected(t, test.name, test.expectedError, err)
+		assert.Equal(test.expectedError, err != nil, test.name)
 
 		if !test.expectedError {
-			tchek.AreEqual(t, test.name, test.expectedCondition, cdt)
+			assert.Equal(test.expectedCondition, cdt, test.name)
 
 			data, err := json.Marshal(&cdt)
-			tchek.UnintendedError(err)
+			assert.NoError(err, test.name)
 
-			tchek.AreEqual(t, test.name, tchek.MakeOneLineNoSpaces(test.query), tchek.MakeOneLineNoSpaces(string(data)))
+			assert.Equal(makeOneLineNoSpaces(test.query), makeOneLineNoSpaces(string(data)), test.name)
 		}
 	}
 
@@ -69,13 +71,13 @@ func TestFilterQuery(t *testing.T) {
 		Op:  "=",
 		Val: func() {},
 	})
-	tchek.ErrorExpected(t, "function as value", true, err)
+	assert.Equal(true, err != nil, "function as value")
 
 	_, err = json.Marshal(&Condition{
 		Op:  "",
 		Val: "",
 	})
-	tchek.ErrorExpected(t, "empty operation and value", false, err) // TODO
+	assert.Equal(false, err != nil, "empty operation and value") // TODO
 }
 
 func BenchmarkMarshalFilterQuery(b *testing.B) {

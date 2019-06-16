@@ -3,10 +3,12 @@ package jsonapi
 import (
 	"testing"
 
-	"github.com/mfcochauxlaberge/tchek"
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParseCommaList(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name          string
 		source        string
@@ -58,11 +60,13 @@ func TestParseCommaList(t *testing.T) {
 
 	for _, test := range tests {
 		value := parseCommaList(test.source)
-		tchek.AreEqual(t, test.name, test.expectedValue, value)
+		assert.Equal(test.expectedValue, value, test.name)
 	}
 }
 
 func TestParseFragments(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name          string
 		source        string
@@ -105,11 +109,13 @@ func TestParseFragments(t *testing.T) {
 
 	for _, test := range tests {
 		value := parseFragments(test.source)
-		tchek.AreEqual(t, test.name, test.expectedValue, value)
+		assert.Equal(test.expectedValue, value, test.name)
 	}
 }
 
 func TestDeduceRoute(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name          string
 		source        []string
@@ -156,6 +162,6 @@ func TestDeduceRoute(t *testing.T) {
 
 	for _, test := range tests {
 		value := deduceRoute(test.source)
-		tchek.AreEqual(t, test.name, test.expectedValue, value)
+		assert.Equal(test.expectedValue, value, test.name)
 	}
 }

@@ -5,10 +5,13 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestError(t *testing.T) {
+	assert := assert.New(t)
+
 	tests := []struct {
 		name           string
 		err            Error
@@ -67,6 +70,6 @@ func TestError(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		tchek.AreEqual(t, test.name, test.err.Error(), test.expectedString)
+		assert.Equal(test.err.Error(), test.expectedString, test.name)
 	}
 }

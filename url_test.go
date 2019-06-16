@@ -5,10 +5,13 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestParseURL(t *testing.T) {
+	assert := assert.New(t)
+
 	// Schema
 	schema := newMockSchema()
 
@@ -175,20 +178,22 @@ func TestParseURL(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		u, _ := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
+		u, _ := url.Parse(makeOneLineNoSpaces(test.url))
 		url, err := ParseRawURL(schema, u.String())
-		tchek.ErrorExpected(t, test.name, test.expectedError, err)
+		assert.Equal(test.expectedError, err != nil, test.name)
 
-		// test.expectedURL.Path = tchek.MakeOneLineNoSpaces(test.expectedURL.Path)
+		// test.expectedURL.Path = makeOneLineNoSpaces(test.expectedURL.Path)
 
 		if !test.expectedError {
 			url.Params = nil
-			tchek.AreEqual(t, test.name, test.expectedURL, *url)
+			assert.Equal(test.expectedURL, *url, test.name)
 		}
 	}
 }
 
 func TestParseParams(t *testing.T) {
+	assert := assert.New(t)
+
 	// Schema
 	schema := newMockSchema()
 	mockTypes1, _ := schema.GetType("mocktypes1")
@@ -378,14 +383,14 @@ func TestParseParams(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		u, err := url.Parse(tchek.MakeOneLineNoSpaces(test.url))
-		tchek.UnintendedError(err)
+		u, err := url.Parse(makeOneLineNoSpaces(test.url))
+		assert.NoError(err, test.name)
 
 		su, err := NewSimpleURL(u)
-		tchek.UnintendedError(err)
+		assert.NoError(err, test.name)
 
 		params, err := NewParams(schema, su, test.resType)
-		tchek.ErrorExpected(t, test.name, test.expectedError, err)
+		assert.Equal(test.expectedError, err != nil, test.name)
 
 		// Set Attrs and Rels
 		for resType, fields := range test.expectedParams.Fields {
@@ -407,7 +412,7 @@ func TestParseParams(t *testing.T) {
 			// fmt.Printf("EXPECTED:\n%s\n", data)
 			// data, _ = json.MarshalIndent(params, "", "\t")
 			// fmt.Printf("PROVIDED:\n%s\n", data)
-			tchek.AreEqual(t, test.name, test.expectedParams, *params)
+			assert.Equal(test.expectedParams, *params, test.name)
 		}
 	}
 }

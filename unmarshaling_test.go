@@ -4,10 +4,13 @@ import (
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
-	"github.com/mfcochauxlaberge/tchek"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestUnmarshalResource(t *testing.T) {
+	assert := assert.New(t)
+
 	schema := newMockSchema()
 
 	res1 := Wrap(&mockType3{
@@ -19,8 +22,7 @@ func TestUnmarshalResource(t *testing.T) {
 	})
 
 	url1, err := ParseRawURL(schema, "/mocktypes3/mt1")
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	meta1 := map[string]interface{}{
 		"str": "a string\\^ç\"",
 		"num": float64(42),
@@ -32,25 +34,24 @@ func TestUnmarshalResource(t *testing.T) {
 	doc1.Meta = meta1
 
 	body1, err := Marshal(doc1, url1)
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	pl1, err := Unmarshal(body1, url1, schema)
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	// dst1 := pl1.Data.(Resource)
 
-	// tchek.HaveEqualAttributes(t, "same attribues", res1, dst1) TODO Fix test
-	tchek.AreEqual(t, "same meta object", meta1, pl1.Meta)
+	// assert.HaveEqualAttributes(t, "same attribues", res1, dst1) TODO Fix test
+	assert.Equal(meta1, pl1.Meta, "same meta object")
 }
 
 func TestUnmarshalIdentifier(t *testing.T) {
+	assert := assert.New(t)
+
 	schema := newMockSchema()
 
 	id1 := Identifier{ID: "abc123", Type: "mocktypes1"}
 
 	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel1")
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	meta1 := map[string]interface{}{
 		"str": "a string\\^ç\"",
 		"num": float64(42),
@@ -62,18 +63,18 @@ func TestUnmarshalIdentifier(t *testing.T) {
 	doc1.Meta = meta1
 
 	body1, err := Marshal(doc1, url1)
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	pl1, err := Unmarshal(body1, url1, schema)
-	tchek.UnintendedError(err)
-
+	assert.NoError(err)
 	dst1 := pl1.Data.(Identifier)
 
-	tchek.AreEqual(t, "same identifier", id1, dst1)
-	tchek.AreEqual(t, "same meta map", meta1, pl1.Meta)
+	assert.Equal(id1, dst1, "same identifier")
+	assert.Equal(meta1, pl1.Meta, "same meta map")
 }
 
 func TestUnmarshalIdentifiers(t *testing.T) {
+	assert := assert.New(t)
+
 	schema := newMockSchema()
 
 	ids1 := Identifiers{
@@ -83,7 +84,7 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 	}
 
 	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel2")
-	tchek.UnintendedError(err)
+	assert.NoError(err)
 
 	meta1 := map[string]interface{}{
 		"str": "a string\\^ç\"",
@@ -96,13 +97,13 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 	doc1.Meta = meta1
 
 	body1, err := Marshal(doc1, url1)
-	tchek.UnintendedError(err)
+	assert.NoError(err)
 
 	pl1, err := Unmarshal(body1, url1, schema)
-	tchek.UnintendedError(err)
+	assert.NoError(err)
 
 	dst1 := pl1.Data.(Identifiers)
 
-	tchek.AreEqual(t, "same identifiers", ids1, dst1)
-	tchek.AreEqual(t, "same meta map", meta1, pl1.Meta)
+	assert.Equal(ids1, dst1, "same identifiers")
+	assert.Equal(meta1, pl1.Meta, "same meta map")
 }
