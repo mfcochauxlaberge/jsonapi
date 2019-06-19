@@ -4,6 +4,11 @@ import (
 	"encoding/json"
 )
 
+// FilterResource reports whether res is part
+func FilterResource(res Resource, cond *Condition) bool {
+	return false
+}
+
 // A Condition is used to define filters when querying collections.
 type Condition struct {
 	Field string      `json:"f"`
