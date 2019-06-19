@@ -4,8 +4,45 @@ import (
 	"encoding/json"
 )
 
-// FilterResource reports whether res is part
+// FilterResource reports whether res is valid under the rules defined
+// in cond.
 func FilterResource(res Resource, cond *Condition) bool {
+	var (
+		val interface{}
+		// typ string
+	)
+	if _, ok := res.Attrs()[cond.Field]; ok {
+		val = res.Get(cond.Field)
+	}
+	if rel, ok := res.Rels()[cond.Field]; ok {
+		if rel.ToOne {
+			val = res.GetToOne(cond.Field)
+		} else {
+			val = res.GetToMany(cond.Field)
+		}
+	}
+
+	switch cond.Op {
+	case "and":
+		conds := cond.Val.([]*Condition)
+		for i := range conds {
+			if !FilterResource(res, conds[i]) {
+				return false
+			}
+		}
+	case "or":
+		conds := cond.Val.([]*Condition)
+		for i := range conds {
+			if FilterResource(res, conds[i]) {
+				return true
+			}
+		}
+	case "=", "!=", "<", "<=", ">", ">=":
+		if val == cond.Val {
+			return true
+		}
+	}
+
 	return false
 }
 

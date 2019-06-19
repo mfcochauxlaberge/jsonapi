@@ -10,6 +10,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestFilterResource(t *testing.T) {}
+
 func TestFilterQuery(t *testing.T) {
 	assert := assert.New(t)
 
