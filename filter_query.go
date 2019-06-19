@@ -4,48 +4,6 @@ import (
 	"encoding/json"
 )
 
-// FilterResource reports whether res is valid under the rules defined
-// in cond.
-func FilterResource(res Resource, cond *Condition) bool {
-	var (
-		val interface{}
-		// typ string
-	)
-	if _, ok := res.Attrs()[cond.Field]; ok {
-		val = res.Get(cond.Field)
-	}
-	if rel, ok := res.Rels()[cond.Field]; ok {
-		if rel.ToOne {
-			val = res.GetToOne(cond.Field)
-		} else {
-			val = res.GetToMany(cond.Field)
-		}
-	}
-
-	switch cond.Op {
-	case "and":
-		conds := cond.Val.([]*Condition)
-		for i := range conds {
-			if !FilterResource(res, conds[i]) {
-				return false
-			}
-		}
-	case "or":
-		conds := cond.Val.([]*Condition)
-		for i := range conds {
-			if FilterResource(res, conds[i]) {
-				return true
-			}
-		}
-	case "=", "!=", "<", "<=", ">", ">=":
-		if val == cond.Val {
-			return true
-		}
-	}
-
-	return false
-}
-
 // A Condition is used to define filters when querying collections.
 type Condition struct {
 	Field string      `json:"f"`
@@ -113,4 +71,129 @@ func (c *Condition) MarshalJSON() ([]byte, error) {
 		payload["c"] = c.Col
 	}
 	return json.Marshal(payload)
+}
+
+// FilterResource reports whether res is valid under the rules defined
+// in cond.
+func FilterResource(res Resource, cond *Condition) bool {
+	var (
+		val interface{}
+		// typ string
+	)
+	if _, ok := res.Attrs()[cond.Field]; ok {
+		val = res.Get(cond.Field)
+	}
+	if rel, ok := res.Rels()[cond.Field]; ok {
+		if rel.ToOne {
+			val = res.GetToOne(cond.Field)
+		} else {
+			val = res.GetToMany(cond.Field)
+		}
+	}
+
+	switch cond.Op {
+	case "and":
+		conds := cond.Val.([]*Condition)
+		for i := range conds {
+			if !FilterResource(res, conds[i]) {
+				return false
+			}
+		}
+	case "or":
+		conds := cond.Val.([]*Condition)
+		for i := range conds {
+			if FilterResource(res, conds[i]) {
+				return true
+			}
+		}
+	case "=", "!=", "<", "<=", ">", ">=":
+		if val == cond.Val {
+			return checkVal(cond.Op, val, cond.Val)
+		}
+	}
+
+	return false
+}
+
+func checkVal(op string, rval, cval interface{}) bool {
+	switch rval.(type) {
+	case string:
+		return checkStr(op, rval.(string), cval.(string))
+	case int:
+		return checkInt(op, int64(rval.(int)), int64(cval.(int)))
+	default:
+		return false
+	}
+}
+
+func checkStr(op string, rval, cval string) bool {
+	switch op {
+	case "=":
+		return rval == cval
+	case "!=":
+		return rval != cval
+	case "<":
+		return rval < cval
+	case "<=":
+		return rval <= cval
+	case ">":
+		return rval > cval
+	case ">=":
+		return rval >= cval
+	default:
+		return false
+	}
+}
+
+func checkInt(op string, rval, cval int64) bool {
+	switch op {
+	case "=":
+		return rval == cval
+	case "!=":
+		return rval != cval
+	case "<":
+		return rval < cval
+	case "<=":
+		return rval <= cval
+	case ">":
+		return rval > cval
+	case ">=":
+		return rval >= cval
+	default:
+		return false
+	}
+}
+
+func makeInt(val interface{}) (int64, bool) {
+	switch v := val.(type) {
+	case int:
+		return int64(v), true
+	case int8:
+		return int64(v), true
+	case int16:
+		return int64(v), true
+	case int32:
+		return int64(v), true
+	case int64:
+		return v, true
+	default:
+		return 0, false
+	}
+}
+
+func makeUint(val interface{}) (uint64, bool) {
+	switch v := val.(type) {
+	case uint:
+		return uint64(v), true
+	case uint8:
+		return uint64(v), true
+	case uint16:
+		return uint64(v), true
+	case uint32:
+		return uint64(v), true
+	case uint64:
+		return v, true
+	default:
+		return 0, false
+	}
 }
