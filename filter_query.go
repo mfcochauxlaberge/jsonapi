@@ -2,6 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"time"
 )
 
 // A Condition is used to define filters when querying collections.
@@ -121,6 +122,28 @@ func checkVal(op string, rval, cval interface{}) bool {
 		return checkStr(op, rval.(string), cval.(string))
 	case int:
 		return checkInt(op, int64(rval.(int)), int64(cval.(int)))
+	case int8:
+		return checkInt(op, int64(rval.(int8)), int64(cval.(int8)))
+	case int16:
+		return checkInt(op, int64(rval.(int16)), int64(cval.(int16)))
+	case int32:
+		return checkInt(op, int64(rval.(int32)), int64(cval.(int32)))
+	case int64:
+		return checkInt(op, rval.(int64), cval.(int64))
+	case uint:
+		return checkUint(op, uint64(rval.(uint)), uint64(cval.(uint)))
+	case uint8:
+		return checkUint(op, uint64(rval.(uint8)), uint64(cval.(uint8)))
+	case uint16:
+		return checkUint(op, uint64(rval.(uint16)), uint64(cval.(uint16)))
+	case uint32:
+		return checkUint(op, uint64(rval.(uint32)), uint64(cval.(uint32)))
+	case uint64:
+		return checkUint(op, rval.(uint64), cval.(uint64))
+	case bool:
+		return checkBool(op, rval.(bool), cval.(bool))
+	case time.Time:
+		return checkTime(op, rval.(time.Time), cval.(time.Time))
 	default:
 		return false
 	}
@@ -159,6 +182,55 @@ func checkInt(op string, rval, cval int64) bool {
 		return rval > cval
 	case ">=":
 		return rval >= cval
+	default:
+		return false
+	}
+}
+
+func checkUint(op string, rval, cval uint64) bool {
+	switch op {
+	case "=":
+		return rval == cval
+	case "!=":
+		return rval != cval
+	case "<":
+		return rval < cval
+	case "<=":
+		return rval <= cval
+	case ">":
+		return rval > cval
+	case ">=":
+		return rval >= cval
+	default:
+		return false
+	}
+}
+
+func checkBool(op string, rval, cval bool) bool {
+	switch op {
+	case "=":
+		return rval == cval
+	case "!=":
+		return rval != cval
+	default:
+		return false
+	}
+}
+
+func checkTime(op string, rval, cval time.Time) bool {
+	switch op {
+	case "=":
+		return rval.Equal(cval)
+	case "!=":
+		return !rval.Equal(cval)
+	case "<":
+		return rval.Before(cval)
+	case "<=":
+		return rval.Before(cval) || rval.Equal(cval)
+	case ">":
+		return rval.After(cval) || rval.Equal(cval)
+	case ">=":
+		return rval.After(cval) || rval.Equal(cval)
 	default:
 		return false
 	}
