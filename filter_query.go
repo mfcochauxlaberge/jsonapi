@@ -145,67 +145,67 @@ func checkVal(op string, rval, cval interface{}) bool {
 	case time.Time:
 		return checkTime(op, rval.(time.Time), cval.(time.Time))
 	case *string:
-		if rval == nil || cval == nil {
+		if rval.(*string) == nil || cval.(*string) == nil {
 			return rval == cval
 		}
 		return checkStr(op, *rval.(*string), *cval.(*string))
 	case *int:
-		if rval == nil || cval == nil {
+		if rval.(*int) == nil || cval.(*int) == nil {
 			return rval == cval
 		}
 		return checkInt(op, int64(*rval.(*int)), int64(*cval.(*int)))
 	case *int8:
-		if rval == nil || cval == nil {
+		if rval.(*int8) == nil || cval.(*int8) == nil {
 			return rval == cval
 		}
 		return checkInt(op, int64(*rval.(*int8)), int64(*cval.(*int8)))
 	case *int16:
-		if rval == nil || cval == nil {
+		if rval.(*int16) == nil || cval.(*int16) == nil {
 			return rval == cval
 		}
 		return checkInt(op, int64(*rval.(*int16)), int64(*cval.(*int16)))
 	case *int32:
-		if rval == nil || cval == nil {
+		if rval.(*int32) == nil || cval.(*int32) == nil {
 			return rval == cval
 		}
 		return checkInt(op, int64(*rval.(*int32)), int64(*cval.(*int32)))
 	case *int64:
-		if rval == nil || cval == nil {
+		if rval.(*int64) == nil || cval.(*int64) == nil {
 			return rval == cval
 		}
 		return checkInt(op, *rval.(*int64), *cval.(*int64))
 	case *uint:
-		if rval == nil || cval == nil {
+		if rval.(*uint) == nil || cval.(*uint) == nil {
 			return rval == cval
 		}
 		return checkUint(op, uint64(*rval.(*uint)), uint64(*cval.(*uint)))
 	case *uint8:
-		if rval == nil || cval == nil {
+		if rval.(*uint8) == nil || cval.(*uint8) == nil {
 			return rval == cval
 		}
 		return checkUint(op, uint64(*rval.(*uint8)), uint64(*cval.(*uint8)))
 	case *uint16:
-		if rval == nil || cval == nil {
+		if rval.(*uint16) == nil || cval.(*uint16) == nil {
 			return rval == cval
 		}
 		return checkUint(op, uint64(*rval.(*uint16)), uint64(*cval.(*uint16)))
 	case *uint32:
-		if rval == nil || cval == nil {
+		if rval.(*uint32) == nil || cval.(*uint32) == nil {
 			return rval == cval
 		}
 		return checkUint(op, uint64(*rval.(*uint32)), uint64(*cval.(*uint32)))
 	case *uint64:
-		if rval == nil || cval == nil {
+		if rval.(*uint64) == nil || cval.(*uint64) == nil {
 			return rval == cval
 		}
 		return checkUint(op, *rval.(*uint64), *cval.(*uint64))
 	case *bool:
-		if rval == nil || cval == nil {
+		if rval.(*bool) == nil || cval.(*bool) == nil {
 			return rval == cval
 		}
 		return checkBool(op, *rval.(*bool), *cval.(*bool))
 	case *time.Time:
-		if rval == nil || cval == nil {
+		if rval.(*time.Time) == nil || cval.(*time.Time) == nil {
 			return rval == cval
 		}
 		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
@@ -298,39 +298,5 @@ func checkTime(op string, rval, cval time.Time) bool {
 		return rval.After(cval) || rval.Equal(cval)
 	default:
 		return false
-	}
-}
-
-func makeInt(val interface{}) (int64, bool) {
-	switch v := val.(type) {
-	case int:
-		return int64(v), true
-	case int8:
-		return int64(v), true
-	case int16:
-		return int64(v), true
-	case int32:
-		return int64(v), true
-	case int64:
-		return v, true
-	default:
-		return 0, false
-	}
-}
-
-func makeUint(val interface{}) (uint64, bool) {
-	switch v := val.(type) {
-	case uint:
-		return uint64(v), true
-	case uint8:
-		return uint64(v), true
-	case uint16:
-		return uint64(v), true
-	case uint32:
-		return uint64(v), true
-	case uint64:
-		return v, true
-	default:
-		return 0, false
 	}
 }

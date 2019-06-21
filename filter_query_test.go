@@ -10,7 +10,50 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestFilterResource(t *testing.T) {}
+func TestFilterResource(t *testing.T) {
+	// col := SoftCollection{}
+	// types := []string{
+	// 	"string",
+	// 	"int", "int8", "int16", "int32", "int64",
+	// 	"uint", "uint8", "uint16", "uint32", "uint64",
+	// 	"bool",
+	// 	"time.Time",
+	// 	"*string",
+	// 	"*int", "*int8", "*int16", "*int32", "*int64",
+	// 	"*uint", "*uint8", "*uint16", "*uint32", "*uint64",
+	// 	"*bool",
+	// 	"*time.Time",
+	// }
+	// // ops := []string{"=", "!=", "<", "<=", ">", ">="}
+
+	// for i := range types {
+	// 	t1 := types[i]
+	// 	// i2 := i
+	// 	// if i == len(types)-1 {
+	// 	// 	i2 = 0
+	// 	// }
+	// 	// t2 := types[i2]
+	// 	typ := &Type{Name: "type1"}
+	// 	t, n := GetAttrType(t1)
+	// 	typ.Attrs["attr1"] = Attr{
+	// 		Name: "attr1",
+	// 		Type: t,
+	// 		Null: n,
+	// 	}
+	// 	// t, n = GetAttrType(t2)
+	// 	// typ.Attrs["attr2"] = Attr{
+	// 	// 	Name: "attr2",
+	// 	// 	Type: t,
+	// 	// 	Null: n,
+	// 	// }
+	// 	col.Type = typ
+
+	// 	res := SoftResource{}
+	// 	res.SetType(typ)
+	// 	res.Set("attr1")
+	// 	col.Add(res)
+	// }
+}
 
 func TestFilterQuery(t *testing.T) {
 	assert := assert.New(t)
