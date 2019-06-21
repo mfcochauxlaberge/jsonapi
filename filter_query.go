@@ -144,6 +144,71 @@ func checkVal(op string, rval, cval interface{}) bool {
 		return checkBool(op, rval.(bool), cval.(bool))
 	case time.Time:
 		return checkTime(op, rval.(time.Time), cval.(time.Time))
+	case *string:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkStr(op, *rval.(*string), *cval.(*string))
+	case *int:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkInt(op, int64(*rval.(*int)), int64(*cval.(*int)))
+	case *int8:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkInt(op, int64(*rval.(*int8)), int64(*cval.(*int8)))
+	case *int16:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkInt(op, int64(*rval.(*int16)), int64(*cval.(*int16)))
+	case *int32:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkInt(op, int64(*rval.(*int32)), int64(*cval.(*int32)))
+	case *int64:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkInt(op, *rval.(*int64), *cval.(*int64))
+	case *uint:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkUint(op, uint64(*rval.(*uint)), uint64(*cval.(*uint)))
+	case *uint8:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkUint(op, uint64(*rval.(*uint8)), uint64(*cval.(*uint8)))
+	case *uint16:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkUint(op, uint64(*rval.(*uint16)), uint64(*cval.(*uint16)))
+	case *uint32:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkUint(op, uint64(*rval.(*uint32)), uint64(*cval.(*uint32)))
+	case *uint64:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkUint(op, *rval.(*uint64), *cval.(*uint64))
+	case *bool:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkBool(op, *rval.(*bool), *cval.(*bool))
+	case *time.Time:
+		if rval == nil || cval == nil {
+			return rval == cval
+		}
+		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
 	default:
 		return false
 	}
