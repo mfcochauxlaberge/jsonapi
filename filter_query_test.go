@@ -17,241 +17,140 @@ func TestFilterResource(t *testing.T) {
 	assert := assert.New(t)
 
 	runs := map[string]struct {
+		kinds        []string
 		vals         []string
 		ops          []string
-		val          interface{}
+		val          string
 		expectations []int
 	}{
 		"string": {
+			kinds:        []string{"string"},
 			vals:         []string{"aaa", "bbb", "bbb", "ccc", "ccc", "ccc"},
 			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
 			val:          "bbb",
 			expectations: []int{2, 4, 1, 3, 3, 5},
 		},
 		"int": {
+			kinds:        []string{"int", "int8", "int16", "int32", "int64"},
 			vals:         []string{"-1", "-1", "0", "1", "1", "2", "2", "3", "4"},
 			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-			val:          1,
-			expectations: []int{2, 4, 1, 3, 3, 5},
+			val:          "1",
+			expectations: []int{2, 7, 3, 5, 4, 6},
 		},
+		"uint": {
+			kinds:        []string{"uint", "uint8", "uint16", "uint32", "uint64"},
+			vals:         []string{"0", "1", "1", "2", "2", "3", "4"},
+			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+			val:          "1",
+			expectations: []int{2, 5, 1, 3, 4, 6},
+		},
+		"bool": {
+			kinds:        []string{"bool"},
+			vals:         []string{"false", "true", "true"},
+			ops:          []string{"=", "!="},
+			val:          "true",
+			expectations: []int{2, 1},
+		},
+		"time.Time": {
+			kinds: []string{"time.Time"},
+			vals: []string{
+				"2009-11-10 22:59:58 +0000 UTC",
+				"2009-11-10 22:59:59 +0000 UTC",
+				"2009-11-10 23:00:00 +0000 UTC",
+				"2009-11-10 23:00:01 +0000 UTC",
+				"2009-11-10 23:00:01 +0000 UTC",
+				"2009-11-10 23:00:02 +0000 UTC",
+			},
+			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+			val:          "2009-11-10 23:00:00 +0000 UTC",
+			expectations: []int{1, 5, 2, 3, 3, 4},
+		},
+		// "*string": {
+		// 	kinds:        []string{"*string"},
+		// 	vals:         []string{nil, "", "aaa", "bbb", "bbb", "ccc", "ccc", "ccc"},
+		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+		// 	val:          "bbb",
+		// 	expectations: []int{2, 4, 1, 3, 3, 5},
+		// },
+		// "*int": {
+		// 	kinds:        []string{"*int", "*int8", "*int16", "*int32", "*int64"},
+		// 	vals:         []string{nil, "", "-1", "-1", "0", "1", "1", "2", "2", "3", "4"},
+		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+		// 	val:          "1",
+		// 	expectations: []int{2, 7, 3, 5, 4, 6},
+		// },
+		// "*uint": {
+		// 	kinds:        []string{"*uint", "*uint8", "*uint16", "*uint32", "*uint64"},
+		// 	vals:         []string{nil, "", "0", "1", "1", "2", "2", "3", "4"},
+		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+		// 	val:          "1",
+		// 	expectations: []int{2, 5, 1, 3, 4, 6},
+		// },
+		// "*bool": {
+		// 	kinds:        []string{"*bool"},
+		// 	vals:         []string{nil, "", "false", "true", "true"},
+		// 	ops:          []string{"=", "!="},
+		// 	val:          "true",
+		// 	expectations: []int{2, 1},
+		// },
+		// "*time.Time": {
+		// 	kinds: []string{"*time.Time"},
+		// 	vals: []string{
+		// 		nil
+		// 		"2009-11-10 22:59:58 +0000 UTC",
+		// 		"2009-11-10 22:59:59 +0000 UTC",
+		// 		"2009-11-10 23:00:00 +0000 UTC",
+		// 		"2009-11-10 23:00:01 +0000 UTC",
+		// 		"2009-11-10 23:00:01 +0000 UTC",
+		// 		"2009-11-10 23:00:02 +0000 UTC",
+		// 	},
+		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
+		// 	val:          "2009-11-10 23:00:00 +0000 UTC",
+		// 	expectations: []int{1, 5, 2, 3, 3, 4},
+		// },
 	}
 
 	for typ, run := range runs {
-		src := &SoftCollection{}
-		src.Type = &Type{Name: "type"}
-		ty, n := GetAttrType(typ)
-		src.Type.Attrs = map[string]Attr{
-			"attr": Attr{
-				Name: "attr",
-				Type: ty,
-				Null: n,
-			},
-		}
-
-		// strings := []string{"aaa", "bbb", "bbb", "ccc", "ccc", "ccc"}
-		// ops := []string{"=", "!=", "<", "<=", ">", ">="}
-		expectations := []int{2, 4, 1, 3, 3, 5}
-
-		for _, v := range run.vals {
-			res := &SoftResource{}
-			res.SetType(src.Type)
-			res.Set("attr", makeVal(v, typ))
-			src.Add(res)
-		}
-
-		cond := &Condition{}
-		cond.Field = "attr"
-		cond.Val = run.val
-		for i, op := range run.ops {
-			cond.Op = op
-			dst := &SoftCollection{}
-			for i := 0; i < src.Len(); i++ {
-				r := src.Elem(i)
-				if FilterResource(r, cond) {
-					dst.Add(r.Copy())
-				}
+		for _, kind := range run.kinds {
+			src := &SoftCollection{}
+			src.Type = &Type{Name: "type"}
+			ty, n := GetAttrType(typ)
+			src.Type.Attrs = map[string]Attr{
+				"attr": Attr{
+					Name: "attr",
+					Type: ty,
+					Null: n,
+				},
 			}
-			assert.Equal(expectations[i], dst.Len(), fmt.Sprintf("%s %v (string)", cond.Op, cond.Val))
+
+			for _, v := range run.vals {
+				res := &SoftResource{}
+				res.SetType(src.Type)
+				res.Set("attr", makeVal(v, kind))
+				src.Add(res)
+			}
+
+			cond := &Condition{}
+			cond.Field = "attr"
+			cond.Val = makeVal(run.val, kind)
+			for i, op := range run.ops {
+				cond.Op = op
+				dst := &SoftCollection{}
+				for i := 0; i < src.Len(); i++ {
+					r := src.Elem(i)
+					if FilterResource(r, cond) {
+						dst.Add(r.Copy())
+					}
+				}
+				assert.Equal(
+					run.expectations[i],
+					dst.Len(),
+					fmt.Sprintf("%s %v (%s)", cond.Op, cond.Val, kind),
+				)
+			}
 		}
 	}
 
-	// Int
-	// intKinds := []string{"int", "int8", "int16", "int32", "int64"}
-	// for _, intKind := range intKinds {
-	// 	src = &SoftCollection{}
-	// 	src.Type = &Type{Name: "type"}
-	// 	typ, n = GetAttrType(intKind)
-	// 	src.Type.Attrs = map[string]Attr{
-	// 		"attr": Attr{
-	// 			Name: "attr",
-	// 			Type: typ,
-	// 			Null: n,
-	// 		},
-	// 	}
-
-	// 	ints := []int{-1, -1, 0, 1, 1, 2, 2, 3, 4}
-	// 	ops = []string{"=", "!=", "<", "<=", ">", ">="}
-	// 	val = makeVal(1, intKind)
-	// 	expectations := []int{2, 7, 3, 5, 4, 6}
-
-	// 	for _, v := range ints {
-	// 		res := &SoftResource{}
-	// 		res.SetType(src.Type)
-	// 		res.Set("attr", makeVal(v, intKind))
-	// 		src.Add(res)
-	// 	}
-
-	// 	cond = &Condition{}
-	// 	cond.Field = "attr"
-	// 	cond.Val = val
-	// 	for i := range ops {
-	// 		cond.Op = ops[i]
-	// 		dst := &SoftCollection{}
-	// 		for i := 0; i < src.Len(); i++ {
-	// 			r := src.Elem(i)
-	// 			if FilterResource(r, cond) {
-	// 				dst.Add(r.Copy())
-	// 			}
-	// 		}
-	// 		assert.EqualValues(
-	// 			expectations[i],
-	// 			dst.Len(),
-	// 			fmt.Sprintf("%s %v (%s)", cond.Op, cond.Val, intKind),
-	// 		)
-	// 	}
-	// }
-
-	// // Uint
-	// uintKinds := []string{"uint", "uint8", "uint16", "uint32", "uint64"}
-	// for _, uintKind := range uintKinds {
-	// 	src = &SoftCollection{}
-	// 	src.Type = &Type{Name: "type"}
-	// 	typ, n = GetAttrType(uintKind)
-	// 	src.Type.Attrs = map[string]Attr{
-	// 		"attr": Attr{
-	// 			Name: "attr",
-	// 			Type: typ,
-	// 			Null: n,
-	// 		},
-	// 	}
-
-	// 	uints := []uint{0, 1, 1, 2, 2, 3, 4}
-	// 	ops = []string{"=", "!=", "<", "<=", ">", ">="}
-	// 	val = makeVal(1, uintKind)
-	// 	expectations := []uint{2, 5, 1, 3, 4, 6}
-
-	// 	for _, v := range uints {
-	// 		res := &SoftResource{}
-	// 		res.SetType(src.Type)
-	// 		res.Set("attr", makeVal(int(v), uintKind))
-	// 		src.Add(res)
-	// 	}
-
-	// 	cond = &Condition{}
-	// 	cond.Field = "attr"
-	// 	cond.Val = val
-	// 	for i := range ops {
-	// 		cond.Op = ops[i]
-	// 		dst := &SoftCollection{}
-	// 		for i := 0; i < src.Len(); i++ {
-	// 			r := src.Elem(i)
-	// 			if FilterResource(r, cond) {
-	// 				dst.Add(r.Copy())
-	// 			}
-	// 		}
-	// 		assert.EqualValues(
-	// 			expectations[i],
-	// 			dst.Len(),
-	// 			fmt.Sprintf("%s %v (%s)", cond.Op, cond.Val, uintKind),
-	// 		)
-	// 	}
-	// }
-
-	// // Bool
-	// src = &SoftCollection{}
-	// src.Type = &Type{Name: "type"}
-	// typ, n = GetAttrType("bool")
-	// src.Type.Attrs = map[string]Attr{
-	// 	"attr": Attr{
-	// 		Name: "attr",
-	// 		Type: typ,
-	// 		Null: n,
-	// 	},
-	// }
-
-	// bools := []bool{false, true, true}
-	// ops = []string{"=", "!="}
-	// val = true
-	// expectations = []int{2, 1}
-
-	// for _, v := range bools {
-	// 	res := &SoftResource{}
-	// 	res.SetType(src.Type)
-	// 	res.Set("attr", v)
-	// 	src.Add(res)
-	// }
-
-	// cond = &Condition{}
-	// cond.Field = "attr"
-	// cond.Val = val
-	// for i := range ops {
-	// 	cond.Op = ops[i]
-	// 	dst := &SoftCollection{}
-	// 	for i := 0; i < src.Len(); i++ {
-	// 		r := src.Elem(i)
-	// 		if FilterResource(r, cond) {
-	// 			dst.Add(r.Copy())
-	// 		}
-	// 	}
-	// 	assert.Equal(expectations[i], dst.Len(), fmt.Sprintf("%s %v (bool)", cond.Op, cond.Val))
-	// }
-
-	// // Time
-	// src = &SoftCollection{}
-	// src.Type = &Type{Name: "type"}
-	// typ, n = GetAttrType("bool")
-	// src.Type.Attrs = map[string]Attr{
-	// 	"attr": Attr{
-	// 		Name: "attr",
-	// 		Type: typ,
-	// 		Null: n,
-	// 	},
-	// }
-
-	// now := time.Now()
-	// times := []time.Time{
-	// 	now.Add(-2 * time.Second),
-	// 	now.Add(-time.Second),
-	// 	now,
-	// 	now.Add(time.Second),
-	// 	now.Add(time.Second),
-	// 	now.Add(2 * time.Second),
-	// }
-	// ops = []string{"=", "!=", "<", "<=", ">", ">="}
-	// val = now
-	// expectations = []int{1, 5, 2, 3, 3, 4}
-
-	// for _, v := range times {
-	// 	res := &SoftResource{}
-	// 	res.SetType(src.Type)
-	// 	res.Set("attr", v)
-	// 	src.Add(res)
-	// }
-
-	// cond = &Condition{}
-	// cond.Field = "attr"
-	// cond.Val = val
-	// for i := range ops {
-	// 	cond.Op = ops[i]
-	// 	dst := &SoftCollection{}
-	// 	for i := 0; i < src.Len(); i++ {
-	// 		r := src.Elem(i)
-	// 		if FilterResource(r, cond) {
-	// 			dst.Add(r.Copy())
-	// 		}
-	// 	}
-	// 	assert.Equal(expectations[i], dst.Len(), fmt.Sprintf("%s %v (time.Time)", cond.Op, cond.Val))
-	// }
 }
 
 func TestFilterQuery(t *testing.T) {
@@ -425,7 +324,7 @@ func makeVal(v string, t string) interface{} {
 		r = v == "true"
 	// time.Time
 	case "time.Time":
-		r, _ = time.Parse("Mon Jan 2 15:04:05 -0700 MST 2006", v)
+		r, _ = time.Parse("2006-02-01 15:04:05 -0700 MST", v)
 	}
 	return r
 }
