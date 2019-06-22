@@ -108,9 +108,7 @@ func FilterResource(res Resource, cond *Condition) bool {
 			}
 		}
 	case "=", "!=", "<", "<=", ">", ">=":
-		if val == cond.Val {
-			return checkVal(cond.Op, val, cond.Val)
-		}
+		return checkVal(cond.Op, val, cond.Val)
 	}
 
 	return false
@@ -293,7 +291,7 @@ func checkTime(op string, rval, cval time.Time) bool {
 	case "<=":
 		return rval.Before(cval) || rval.Equal(cval)
 	case ">":
-		return rval.After(cval) || rval.Equal(cval)
+		return rval.After(cval)
 	case ">=":
 		return rval.After(cval) || rval.Equal(cval)
 	default:
