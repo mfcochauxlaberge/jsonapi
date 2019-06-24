@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
-	"strconv"
 	"testing"
 	"time"
 
@@ -16,141 +15,283 @@ import (
 func TestFilterResource(t *testing.T) {
 	assert := assert.New(t)
 
-	runs := map[string]struct {
-		kinds        []string
-		vals         []string
-		ops          []string
-		val          string
-		expectations []int
+	now := time.Now()
+
+	tests := []struct {
+		rval     interface{}
+		op       string
+		cval     interface{}
+		expected bool
 	}{
-		"string": {
-			kinds:        []string{"string"},
-			vals:         []string{"aaa", "bbb", "bbb", "ccc", "ccc", "ccc"},
-			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-			val:          "bbb",
-			expectations: []int{2, 4, 1, 3, 3, 5},
-		},
-		"int": {
-			kinds:        []string{"int", "int8", "int16", "int32", "int64"},
-			vals:         []string{"-1", "-1", "0", "1", "1", "2", "2", "3", "4"},
-			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-			val:          "1",
-			expectations: []int{2, 7, 3, 5, 4, 6},
-		},
-		"uint": {
-			kinds:        []string{"uint", "uint8", "uint16", "uint32", "uint64"},
-			vals:         []string{"0", "1", "1", "2", "2", "3", "4"},
-			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-			val:          "1",
-			expectations: []int{2, 5, 1, 3, 4, 6},
-		},
-		"bool": {
-			kinds:        []string{"bool"},
-			vals:         []string{"false", "true", "true"},
-			ops:          []string{"=", "!="},
-			val:          "true",
-			expectations: []int{2, 1},
-		},
-		"time.Time": {
-			kinds: []string{"time.Time"},
-			vals: []string{
-				"2009-11-10 22:59:58 +0000 UTC",
-				"2009-11-10 22:59:59 +0000 UTC",
-				"2009-11-10 23:00:00 +0000 UTC",
-				"2009-11-10 23:00:01 +0000 UTC",
-				"2009-11-10 23:00:01 +0000 UTC",
-				"2009-11-10 23:00:02 +0000 UTC",
+		// string
+		{rval: "bbb", op: "=", cval: "aaa", expected: false},
+		{rval: "bbb", op: "=", cval: "bbb", expected: true},
+		{rval: "bbb", op: "!=", cval: "aaa", expected: true},
+		{rval: "bbb", op: "!=", cval: "bbb", expected: false},
+		{rval: "bbb", op: "<", cval: "aaa", expected: false},
+		{rval: "bbb", op: "<", cval: "bbb", expected: false},
+		{rval: "bbb", op: "<", cval: "ccc", expected: true},
+		{rval: "bbb", op: "<=", cval: "aaa", expected: false},
+		{rval: "bbb", op: "<=", cval: "bbb", expected: true},
+		{rval: "bbb", op: "<=", cval: "ccc", expected: true},
+		{rval: "bbb", op: ">", cval: "aaa", expected: true},
+		{rval: "bbb", op: ">", cval: "bbb", expected: false},
+		{rval: "bbb", op: ">", cval: "ccc", expected: false},
+		{rval: "bbb", op: ">=", cval: "aaa", expected: true},
+		{rval: "bbb", op: ">=", cval: "bbb", expected: true},
+		{rval: "bbb", op: ">=", cval: "ccc", expected: false},
+
+		// int
+		{rval: 1, op: "=", cval: 0, expected: false},
+		{rval: 1, op: "=", cval: 1, expected: true},
+		{rval: 1, op: "!=", cval: 0, expected: true},
+		{rval: 1, op: "!=", cval: 1, expected: false},
+		{rval: 1, op: "<", cval: 0, expected: false},
+		{rval: 1, op: "<", cval: 1, expected: false},
+		{rval: 1, op: "<", cval: 3, expected: true},
+		{rval: 1, op: "<=", cval: 0, expected: false},
+		{rval: 1, op: "<=", cval: 1, expected: true},
+		{rval: 1, op: "<=", cval: 3, expected: true},
+		{rval: 1, op: ">", cval: 0, expected: true},
+		{rval: 1, op: ">", cval: 1, expected: false},
+		{rval: 1, op: ">", cval: 3, expected: false},
+		{rval: 1, op: ">=", cval: 0, expected: true},
+		{rval: 1, op: ">=", cval: 1, expected: true},
+		{rval: 1, op: ">=", cval: 3, expected: false},
+
+		// int8
+		{rval: int8(1), op: "=", cval: int8(0), expected: false},
+		{rval: int8(1), op: "=", cval: int8(1), expected: true},
+		{rval: int8(1), op: "!=", cval: int8(0), expected: true},
+		{rval: int8(1), op: "!=", cval: int8(1), expected: false},
+		{rval: int8(1), op: "<", cval: int8(0), expected: false},
+		{rval: int8(1), op: "<", cval: int8(1), expected: false},
+		{rval: int8(1), op: "<", cval: int8(2), expected: true},
+		{rval: int8(1), op: "<=", cval: int8(0), expected: false},
+		{rval: int8(1), op: "<=", cval: int8(1), expected: true},
+		{rval: int8(1), op: "<=", cval: int8(2), expected: true},
+		{rval: int8(1), op: ">", cval: int8(0), expected: true},
+		{rval: int8(1), op: ">", cval: int8(1), expected: false},
+		{rval: int8(1), op: ">", cval: int8(2), expected: false},
+		{rval: int8(1), op: ">=", cval: int8(0), expected: true},
+		{rval: int8(1), op: ">=", cval: int8(1), expected: true},
+		{rval: int8(1), op: ">=", cval: int8(2), expected: false},
+
+		// int16
+		{rval: int16(1), op: "=", cval: int16(0), expected: false},
+		{rval: int16(1), op: "=", cval: int16(1), expected: true},
+		{rval: int16(1), op: "!=", cval: int16(0), expected: true},
+		{rval: int16(1), op: "!=", cval: int16(1), expected: false},
+		{rval: int16(1), op: "<", cval: int16(0), expected: false},
+		{rval: int16(1), op: "<", cval: int16(1), expected: false},
+		{rval: int16(1), op: "<", cval: int16(2), expected: true},
+		{rval: int16(1), op: "<=", cval: int16(0), expected: false},
+		{rval: int16(1), op: "<=", cval: int16(1), expected: true},
+		{rval: int16(1), op: "<=", cval: int16(2), expected: true},
+		{rval: int16(1), op: ">", cval: int16(0), expected: true},
+		{rval: int16(1), op: ">", cval: int16(1), expected: false},
+		{rval: int16(1), op: ">", cval: int16(2), expected: false},
+		{rval: int16(1), op: ">=", cval: int16(0), expected: true},
+		{rval: int16(1), op: ">=", cval: int16(1), expected: true},
+		{rval: int16(1), op: ">=", cval: int16(2), expected: false},
+
+		// int32
+		{rval: int32(1), op: "=", cval: int32(0), expected: false},
+		{rval: int32(1), op: "=", cval: int32(1), expected: true},
+		{rval: int32(1), op: "!=", cval: int32(0), expected: true},
+		{rval: int32(1), op: "!=", cval: int32(1), expected: false},
+		{rval: int32(1), op: "<", cval: int32(0), expected: false},
+		{rval: int32(1), op: "<", cval: int32(1), expected: false},
+		{rval: int32(1), op: "<", cval: int32(2), expected: true},
+		{rval: int32(1), op: "<=", cval: int32(0), expected: false},
+		{rval: int32(1), op: "<=", cval: int32(1), expected: true},
+		{rval: int32(1), op: "<=", cval: int32(2), expected: true},
+		{rval: int32(1), op: ">", cval: int32(0), expected: true},
+		{rval: int32(1), op: ">", cval: int32(1), expected: false},
+		{rval: int32(1), op: ">", cval: int32(2), expected: false},
+		{rval: int32(1), op: ">=", cval: int32(0), expected: true},
+		{rval: int32(1), op: ">=", cval: int32(1), expected: true},
+		{rval: int32(1), op: ">=", cval: int32(2), expected: false},
+
+		// int64
+		{rval: int64(1), op: "=", cval: int64(0), expected: false},
+		{rval: int64(1), op: "=", cval: int64(1), expected: true},
+		{rval: int64(1), op: "!=", cval: int64(0), expected: true},
+		{rval: int64(1), op: "!=", cval: int64(1), expected: false},
+		{rval: int64(1), op: "<", cval: int64(0), expected: false},
+		{rval: int64(1), op: "<", cval: int64(1), expected: false},
+		{rval: int64(1), op: "<", cval: int64(2), expected: true},
+		{rval: int64(1), op: "<=", cval: int64(0), expected: false},
+		{rval: int64(1), op: "<=", cval: int64(1), expected: true},
+		{rval: int64(1), op: "<=", cval: int64(2), expected: true},
+		{rval: int64(1), op: ">", cval: int64(0), expected: true},
+		{rval: int64(1), op: ">", cval: int64(1), expected: false},
+		{rval: int64(1), op: ">", cval: int64(2), expected: false},
+		{rval: int64(1), op: ">=", cval: int64(0), expected: true},
+		{rval: int64(1), op: ">=", cval: int64(1), expected: true},
+		{rval: int64(1), op: ">=", cval: int64(2), expected: false},
+
+		// uint
+		{rval: uint(1), op: "=", cval: uint(0), expected: false},
+		{rval: uint(1), op: "=", cval: uint(1), expected: true},
+		{rval: uint(1), op: "!=", cval: uint(0), expected: true},
+		{rval: uint(1), op: "!=", cval: uint(1), expected: false},
+		{rval: uint(1), op: "<", cval: uint(0), expected: false},
+		{rval: uint(1), op: "<", cval: uint(1), expected: false},
+		{rval: uint(1), op: "<", cval: uint(2), expected: true},
+		{rval: uint(1), op: "<=", cval: uint(0), expected: false},
+		{rval: uint(1), op: "<=", cval: uint(1), expected: true},
+		{rval: uint(1), op: "<=", cval: uint(2), expected: true},
+		{rval: uint(1), op: ">", cval: uint(0), expected: true},
+		{rval: uint(1), op: ">", cval: uint(1), expected: false},
+		{rval: uint(1), op: ">", cval: uint(2), expected: false},
+		{rval: uint(1), op: ">=", cval: uint(0), expected: true},
+		{rval: uint(1), op: ">=", cval: uint(1), expected: true},
+		{rval: uint(1), op: ">=", cval: uint(2), expected: false},
+
+		// uint8
+		{rval: uint8(1), op: "=", cval: uint8(0), expected: false},
+		{rval: uint8(1), op: "=", cval: uint8(1), expected: true},
+		{rval: uint8(1), op: "!=", cval: uint8(0), expected: true},
+		{rval: uint8(1), op: "!=", cval: uint8(1), expected: false},
+		{rval: uint8(1), op: "<", cval: uint8(0), expected: false},
+		{rval: uint8(1), op: "<", cval: uint8(1), expected: false},
+		{rval: uint8(1), op: "<", cval: uint8(2), expected: true},
+		{rval: uint8(1), op: "<=", cval: uint8(0), expected: false},
+		{rval: uint8(1), op: "<=", cval: uint8(1), expected: true},
+		{rval: uint8(1), op: "<=", cval: uint8(2), expected: true},
+		{rval: uint8(1), op: ">", cval: uint8(0), expected: true},
+		{rval: uint8(1), op: ">", cval: uint8(1), expected: false},
+		{rval: uint8(1), op: ">", cval: uint8(2), expected: false},
+		{rval: uint8(1), op: ">=", cval: uint8(0), expected: true},
+		{rval: uint8(1), op: ">=", cval: uint8(1), expected: true},
+		{rval: uint8(1), op: ">=", cval: uint8(2), expected: false},
+
+		// uint16
+		{rval: uint16(1), op: "=", cval: uint16(0), expected: false},
+		{rval: uint16(1), op: "=", cval: uint16(1), expected: true},
+		{rval: uint16(1), op: "!=", cval: uint16(0), expected: true},
+		{rval: uint16(1), op: "!=", cval: uint16(1), expected: false},
+		{rval: uint16(1), op: "<", cval: uint16(0), expected: false},
+		{rval: uint16(1), op: "<", cval: uint16(1), expected: false},
+		{rval: uint16(1), op: "<", cval: uint16(2), expected: true},
+		{rval: uint16(1), op: "<=", cval: uint16(0), expected: false},
+		{rval: uint16(1), op: "<=", cval: uint16(1), expected: true},
+		{rval: uint16(1), op: "<=", cval: uint16(2), expected: true},
+		{rval: uint16(1), op: ">", cval: uint16(0), expected: true},
+		{rval: uint16(1), op: ">", cval: uint16(1), expected: false},
+		{rval: uint16(1), op: ">", cval: uint16(2), expected: false},
+		{rval: uint16(1), op: ">=", cval: uint16(0), expected: true},
+		{rval: uint16(1), op: ">=", cval: uint16(1), expected: true},
+		{rval: uint16(1), op: ">=", cval: uint16(2), expected: false},
+
+		// uint32
+		{rval: uint32(1), op: "=", cval: uint32(0), expected: false},
+		{rval: uint32(1), op: "=", cval: uint32(1), expected: true},
+		{rval: uint32(1), op: "!=", cval: uint32(0), expected: true},
+		{rval: uint32(1), op: "!=", cval: uint32(1), expected: false},
+		{rval: uint32(1), op: "<", cval: uint32(0), expected: false},
+		{rval: uint32(1), op: "<", cval: uint32(1), expected: false},
+		{rval: uint32(1), op: "<", cval: uint32(2), expected: true},
+		{rval: uint32(1), op: "<=", cval: uint32(0), expected: false},
+		{rval: uint32(1), op: "<=", cval: uint32(1), expected: true},
+		{rval: uint32(1), op: "<=", cval: uint32(2), expected: true},
+		{rval: uint32(1), op: ">", cval: uint32(0), expected: true},
+		{rval: uint32(1), op: ">", cval: uint32(1), expected: false},
+		{rval: uint32(1), op: ">", cval: uint32(2), expected: false},
+		{rval: uint32(1), op: ">=", cval: uint32(0), expected: true},
+		{rval: uint32(1), op: ">=", cval: uint32(1), expected: true},
+		{rval: uint32(1), op: ">=", cval: uint32(2), expected: false},
+
+		// uint64
+		{rval: uint64(1), op: "=", cval: uint64(0), expected: false},
+		{rval: uint64(1), op: "=", cval: uint64(1), expected: true},
+		{rval: uint64(1), op: "!=", cval: uint64(0), expected: true},
+		{rval: uint64(1), op: "!=", cval: uint64(1), expected: false},
+		{rval: uint64(1), op: "<", cval: uint64(0), expected: false},
+		{rval: uint64(1), op: "<", cval: uint64(1), expected: false},
+		{rval: uint64(1), op: "<", cval: uint64(2), expected: true},
+		{rval: uint64(1), op: "<=", cval: uint64(0), expected: false},
+		{rval: uint64(1), op: "<=", cval: uint64(1), expected: true},
+		{rval: uint64(1), op: "<=", cval: uint64(2), expected: true},
+		{rval: uint64(1), op: ">", cval: uint64(0), expected: true},
+		{rval: uint64(1), op: ">", cval: uint64(1), expected: false},
+		{rval: uint64(1), op: ">", cval: uint64(2), expected: false},
+		{rval: uint64(1), op: ">=", cval: uint64(0), expected: true},
+		{rval: uint64(1), op: ">=", cval: uint64(1), expected: true},
+		{rval: uint64(1), op: ">=", cval: uint64(2), expected: false},
+
+		// bool
+		{rval: true, op: "=", cval: true, expected: true},
+		{rval: true, op: "=", cval: false, expected: false},
+		{rval: true, op: "!=", cval: true, expected: false},
+		{rval: true, op: "!=", cval: false, expected: true},
+
+		// time.Time
+		{rval: now, op: "=", cval: now.Add(-time.Second), expected: false},
+		{rval: now, op: "=", cval: now, expected: true},
+		{rval: now, op: "!=", cval: now.Add(-time.Second), expected: true},
+		{rval: now, op: "!=", cval: now, expected: false},
+		{rval: now, op: "<", cval: now.Add(-time.Second), expected: false},
+		{rval: now, op: "<", cval: now, expected: false},
+		{rval: now, op: "<", cval: now.Add(time.Second), expected: true},
+		{rval: now, op: "<=", cval: now.Add(-time.Second), expected: false},
+		{rval: now, op: "<=", cval: now, expected: true},
+		{rval: now, op: "<=", cval: now.Add(time.Second), expected: true},
+		{rval: now, op: ">", cval: now.Add(-time.Second), expected: true},
+		{rval: now, op: ">", cval: now, expected: false},
+		{rval: now, op: ">", cval: now.Add(time.Second), expected: false},
+		{rval: now, op: ">=", cval: now.Add(-time.Second), expected: true},
+		{rval: now, op: ">=", cval: now, expected: true},
+		{rval: now, op: ">=", cval: now.Add(time.Second), expected: false},
+
+		// *string
+		{rval: ptr("bbb"), op: "=", cval: nilptr("string"), expected: false},
+		{rval: ptr("bbb"), op: "=", cval: ptr("aaa"), expected: false},
+		{rval: ptr("bbb"), op: "=", cval: ptr("bbb"), expected: true},
+		{rval: ptr("bbb"), op: "!=", cval: nilptr("string"), expected: true},
+		{rval: ptr("bbb"), op: "!=", cval: ptr("aaa"), expected: true},
+		{rval: ptr("bbb"), op: "!=", cval: ptr("bbb"), expected: false},
+		{rval: ptr("bbb"), op: "<", cval: ptr("aaa"), expected: false},
+		{rval: ptr("bbb"), op: "<", cval: ptr("bbb"), expected: false},
+		{rval: ptr("bbb"), op: "<", cval: ptr("ccc"), expected: true},
+		{rval: ptr("bbb"), op: "<=", cval: ptr("aaa"), expected: false},
+		{rval: ptr("bbb"), op: "<=", cval: ptr("bbb"), expected: true},
+		{rval: ptr("bbb"), op: "<=", cval: ptr("ccc"), expected: true},
+		{rval: ptr("bbb"), op: ">", cval: ptr("aaa"), expected: true},
+		{rval: ptr("bbb"), op: ">", cval: ptr("bbb"), expected: false},
+		{rval: ptr("bbb"), op: ">", cval: ptr("ccc"), expected: false},
+		{rval: ptr("bbb"), op: ">=", cval: ptr("aaa"), expected: true},
+		{rval: ptr("bbb"), op: ">=", cval: ptr("bbb"), expected: true},
+		{rval: ptr("bbb"), op: ">=", cval: ptr("ccc"), expected: false},
+	}
+
+	for _, test := range tests {
+		typ := &Type{Name: "type"}
+		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
+		typ.Attrs = map[string]Attr{
+			"attr": Attr{
+				Name: "attr",
+				Type: ty,
+				Null: n,
 			},
-			ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-			val:          "2009-11-10 23:00:00 +0000 UTC",
-			expectations: []int{1, 5, 2, 3, 3, 4},
-		},
-		// "*string": {
-		// 	kinds:        []string{"*string"},
-		// 	vals:         []string{nil, "", "aaa", "bbb", "bbb", "ccc", "ccc", "ccc"},
-		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-		// 	val:          "bbb",
-		// 	expectations: []int{2, 4, 1, 3, 3, 5},
-		// },
-		// "*int": {
-		// 	kinds:        []string{"*int", "*int8", "*int16", "*int32", "*int64"},
-		// 	vals:         []string{nil, "", "-1", "-1", "0", "1", "1", "2", "2", "3", "4"},
-		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-		// 	val:          "1",
-		// 	expectations: []int{2, 7, 3, 5, 4, 6},
-		// },
-		// "*uint": {
-		// 	kinds:        []string{"*uint", "*uint8", "*uint16", "*uint32", "*uint64"},
-		// 	vals:         []string{nil, "", "0", "1", "1", "2", "2", "3", "4"},
-		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-		// 	val:          "1",
-		// 	expectations: []int{2, 5, 1, 3, 4, 6},
-		// },
-		// "*bool": {
-		// 	kinds:        []string{"*bool"},
-		// 	vals:         []string{nil, "", "false", "true", "true"},
-		// 	ops:          []string{"=", "!="},
-		// 	val:          "true",
-		// 	expectations: []int{2, 1},
-		// },
-		// "*time.Time": {
-		// 	kinds: []string{"*time.Time"},
-		// 	vals: []string{
-		// 		nil
-		// 		"2009-11-10 22:59:58 +0000 UTC",
-		// 		"2009-11-10 22:59:59 +0000 UTC",
-		// 		"2009-11-10 23:00:00 +0000 UTC",
-		// 		"2009-11-10 23:00:01 +0000 UTC",
-		// 		"2009-11-10 23:00:01 +0000 UTC",
-		// 		"2009-11-10 23:00:02 +0000 UTC",
-		// 	},
-		// 	ops:          []string{"=", "!=", "<", "<=", ">", ">="},
-		// 	val:          "2009-11-10 23:00:00 +0000 UTC",
-		// 	expectations: []int{1, 5, 2, 3, 3, 4},
-		// },
-	}
-
-	for typ, run := range runs {
-		for _, kind := range run.kinds {
-			src := &SoftCollection{}
-			src.Type = &Type{Name: "type"}
-			ty, n := GetAttrType(typ)
-			src.Type.Attrs = map[string]Attr{
-				"attr": Attr{
-					Name: "attr",
-					Type: ty,
-					Null: n,
-				},
-			}
-
-			for _, v := range run.vals {
-				res := &SoftResource{}
-				res.SetType(src.Type)
-				res.Set("attr", makeVal(v, kind))
-				src.Add(res)
-			}
-
-			cond := &Condition{}
-			cond.Field = "attr"
-			cond.Val = makeVal(run.val, kind)
-			for i, op := range run.ops {
-				cond.Op = op
-				dst := &SoftCollection{}
-				for i := 0; i < src.Len(); i++ {
-					r := src.Elem(i)
-					if FilterResource(r, cond) {
-						dst.Add(r.Copy())
-					}
-				}
-				assert.Equal(
-					run.expectations[i],
-					dst.Len(),
-					fmt.Sprintf("%s %v (%s)", cond.Op, cond.Val, kind),
-				)
-			}
 		}
-	}
 
+		res := &SoftResource{}
+		res.SetType(typ)
+		res.Set("attr", test.rval)
+
+		cond := &Condition{}
+		cond.Field = "attr"
+		cond.Op = test.op
+		cond.Val = test.cval
+
+		assert.Equal(
+			test.expected,
+			FilterResource(res, cond),
+			fmt.Sprintf("%v %s %v is %v", test.rval, test.op, test.cval, test.expected),
+		)
+	}
 }
 
 func TestFilterQuery(t *testing.T) {
@@ -283,48 +424,87 @@ func BenchmarkUnmarshalFilterQuery(b *testing.B) {
 	fmt.Fprintf(ioutil.Discard, "%v %v", cdt, err)
 }
 
-func makeVal(v string, t string) interface{} {
-	var r interface{}
+func ptr(v interface{}) interface{} {
+	switch c := v.(type) {
+	// String
+	case string:
+		return &c
+	// Integers
+	case int:
+		return &c
+	case int8:
+		return &c
+	case int16:
+		return &c
+	case int32:
+		return &c
+	case int64:
+		return &c
+	case uint:
+		return &c
+	case uint8:
+		return &c
+	case uint16:
+		return &c
+	case uint32:
+		return &c
+	case uint64:
+		return &c
+	// Bool
+	case bool:
+		return &c
+	// time.Time
+	case time.Time:
+		return &c
+	}
+	return nil
+}
+
+func nilptr(t string) interface{} {
 	switch t {
 	// String
 	case "string":
-		r = v
+		var p *string
+		return p
 	// Integers
 	case "int":
-		r, _ = strconv.Atoi(v)
+		var p *int
+		return p
 	case "int8":
-		r, _ = strconv.Atoi(v)
-		r = int8(r.(int))
+		var p *int8
+		return p
 	case "int16":
-		r, _ = strconv.Atoi(v)
-		r = int16(r.(int))
+		var p *int16
+		return p
 	case "int32":
-		r, _ = strconv.Atoi(v)
-		r = int32(r.(int))
+		var p *int32
+		return p
 	case "int64":
-		r, _ = strconv.Atoi(v)
-		r = int64(r.(int))
+		var p *int64
+		return p
 	case "uint":
-		r, _ = strconv.Atoi(v)
-		r = uint(r.(int))
+		var p *uint
+		return p
 	case "uint8":
-		r, _ = strconv.Atoi(v)
-		r = uint8(r.(int))
+		var p *uint8
+		return p
 	case "uint16":
-		r, _ = strconv.Atoi(v)
-		r = uint16(r.(int))
+		var p *uint16
+		return p
 	case "uint32":
-		r, _ = strconv.Atoi(v)
-		r = uint32(r.(int))
+		var p *uint32
+		return p
 	case "uint64":
-		r, _ = strconv.Atoi(v)
-		r = uint64(r.(int))
+		var p *uint64
+		return p
 	// Bool
 	case "bool":
-		r = v == "true"
+		var p *bool
+		return p
 	// time.Time
 	case "time.Time":
-		r, _ = time.Parse("2006-02-01 15:04:05 -0700 MST", v)
+		var p *time.Time
+		return p
 	}
-	return r
+	return nil
 }
