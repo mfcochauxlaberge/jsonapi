@@ -144,67 +144,143 @@ func checkVal(op string, rval, cval interface{}) bool {
 		return checkTime(op, rval.(time.Time), cval.(time.Time))
 	case *string:
 		if rval.(*string) == nil || cval.(*string) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*string) == cval.(*string)
+			} else if op == "!=" {
+				return rval.(*string) != cval.(*string)
+			} else {
+				return false
+			}
 		}
 		return checkStr(op, *rval.(*string), *cval.(*string))
 	case *int:
 		if rval.(*int) == nil || cval.(*int) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*int) == cval.(*int)
+			} else if op == "!=" {
+				return rval.(*int) != cval.(*int)
+			} else {
+				return false
+			}
 		}
 		return checkInt(op, int64(*rval.(*int)), int64(*cval.(*int)))
 	case *int8:
 		if rval.(*int8) == nil || cval.(*int8) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*int8) == cval.(*int8)
+			} else if op == "!=" {
+				return rval.(*int8) != cval.(*int8)
+			} else {
+				return false
+			}
 		}
 		return checkInt(op, int64(*rval.(*int8)), int64(*cval.(*int8)))
 	case *int16:
 		if rval.(*int16) == nil || cval.(*int16) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*int16) == cval.(*int16)
+			} else if op == "!=" {
+				return rval.(*int16) != cval.(*int16)
+			} else {
+				return false
+			}
 		}
 		return checkInt(op, int64(*rval.(*int16)), int64(*cval.(*int16)))
 	case *int32:
 		if rval.(*int32) == nil || cval.(*int32) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*int32) == cval.(*int32)
+			} else if op == "!=" {
+				return rval.(*int32) != cval.(*int32)
+			} else {
+				return false
+			}
 		}
 		return checkInt(op, int64(*rval.(*int32)), int64(*cval.(*int32)))
 	case *int64:
 		if rval.(*int64) == nil || cval.(*int64) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*int64) == cval.(*int64)
+			} else if op == "!=" {
+				return rval.(*int64) != cval.(*int64)
+			} else {
+				return false
+			}
 		}
 		return checkInt(op, *rval.(*int64), *cval.(*int64))
 	case *uint:
 		if rval.(*uint) == nil || cval.(*uint) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*uint) == cval.(*uint)
+			} else if op == "!=" {
+				return rval.(*uint) != cval.(*uint)
+			} else {
+				return false
+			}
 		}
 		return checkUint(op, uint64(*rval.(*uint)), uint64(*cval.(*uint)))
 	case *uint8:
 		if rval.(*uint8) == nil || cval.(*uint8) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*uint8) == cval.(*uint8)
+			} else if op == "!=" {
+				return rval.(*uint8) != cval.(*uint8)
+			} else {
+				return false
+			}
 		}
 		return checkUint(op, uint64(*rval.(*uint8)), uint64(*cval.(*uint8)))
 	case *uint16:
 		if rval.(*uint16) == nil || cval.(*uint16) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*uint16) == cval.(*uint16)
+			} else if op == "!=" {
+				return rval.(*uint16) != cval.(*uint16)
+			} else {
+				return false
+			}
 		}
 		return checkUint(op, uint64(*rval.(*uint16)), uint64(*cval.(*uint16)))
 	case *uint32:
 		if rval.(*uint32) == nil || cval.(*uint32) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*uint32) == cval.(*uint32)
+			} else if op == "!=" {
+				return rval.(*uint32) != cval.(*uint32)
+			} else {
+				return false
+			}
 		}
 		return checkUint(op, uint64(*rval.(*uint32)), uint64(*cval.(*uint32)))
 	case *uint64:
 		if rval.(*uint64) == nil || cval.(*uint64) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*uint64) == cval.(*uint64)
+			} else if op == "!=" {
+				return rval.(*uint64) != cval.(*uint64)
+			} else {
+				return false
+			}
 		}
 		return checkUint(op, *rval.(*uint64), *cval.(*uint64))
 	case *bool:
 		if rval.(*bool) == nil || cval.(*bool) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*bool) == cval.(*bool)
+			} else if op == "!=" {
+				return rval.(*bool) != cval.(*bool)
+			}
 		}
 		return checkBool(op, *rval.(*bool), *cval.(*bool))
 	case *time.Time:
 		if rval.(*time.Time) == nil || cval.(*time.Time) == nil {
-			return rval == cval
+			if op == "=" {
+				return rval.(*time.Time) == cval.(*time.Time)
+			} else if op == "!=" {
+				return rval.(*time.Time) != cval.(*time.Time)
+			} else {
+				return false
+			}
 		}
 		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
 	default:
