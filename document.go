@@ -41,7 +41,7 @@ func NewDocument() *Document {
 //
 // It also makes sure that resources are not added twice.
 func (d *Document) Include(res Resource) {
-	key := res.GetType().Name + " " + res.GetID()
+	key := res.GetID() + " " + res.GetType().Name
 
 	if len(d.Included) == 0 {
 		d.Included = map[string]Resource{}
