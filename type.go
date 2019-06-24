@@ -5,7 +5,7 @@ import (
 	"sort"
 )
 
-// Type stores all the necessary information about a type as represented
+// A Type stores all the necessary information about a type as represented
 // in the JSON:API specification.
 type Type struct {
 	Name  string
