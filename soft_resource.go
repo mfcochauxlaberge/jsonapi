@@ -4,6 +4,8 @@ import (
 	"github.com/mitchellh/copystructure"
 )
 
+var _ Resource = (*SoftResource)(nil)
+
 // NewSoftResource returns a new SoftResource with the given type.
 //
 // It is also populated with values from vals.
