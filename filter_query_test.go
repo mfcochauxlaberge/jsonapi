@@ -707,7 +707,7 @@ func TestFilterResource(t *testing.T) {
 		res.SetType(typ)
 		res.Set("attr", test.rval)
 
-		cond := &Filter{
+		filter := &Filter{
 			Field: "attr",
 			Op:    test.op,
 			Val:   test.cval,
@@ -715,7 +715,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, cond),
+			FilterResource(res, filter),
 			fmt.Sprintf("%v %s %v should be %v", test.rval, test.op, test.cval, test.expected),
 		)
 	}
@@ -777,7 +777,7 @@ func TestFilterResource(t *testing.T) {
 			res.SetToMany("rel", test.rval.([]string))
 		}
 
-		cond := &Filter{
+		filter := &Filter{
 			Field: "rel",
 			Op:    test.op,
 			Val:   test.cval,
@@ -785,7 +785,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, cond),
+			FilterResource(res, filter),
 			fmt.Sprintf("%v %s %v should be %v", test.cval, test.op, test.rval, test.expected),
 		)
 	}
@@ -829,7 +829,7 @@ func TestFilterResource(t *testing.T) {
 		typ := &Type{Name: "type"}
 		res := &SoftResource{}
 		res.SetType(typ)
-		conds := []*Filter{}
+		filters := []*Filter{}
 
 		for j := range test.rvals {
 			attrName := "attr" + strconv.Itoa(j)
@@ -844,29 +844,29 @@ func TestFilterResource(t *testing.T) {
 
 			res.Set(attrName, test.rvals[j])
 
-			conds = append(conds, &Filter{
+			filters = append(filters, &Filter{
 				Field: attrName,
 				Op:    test.ops[j],
 				Val:   test.cvals[j],
 			})
 		}
 
-		cond := &Filter{
-			Val: conds,
+		filter := &Filter{
+			Val: filters,
 		}
 
-		cond.Op = "and"
-		// cond = marshalUnmarshalFilter(t, cond)
-		result := FilterResource(res, cond)
+		filter.Op = "and"
+		// filter = marshalUnmarshalFilter(t, filter)
+		result := FilterResource(res, filter)
 		assert.Equal(
 			test.expectedAnd,
 			result,
 			fmt.Sprintf("'and' test %d is %t instead of %t", i, result, test.expectedAnd),
 		)
 
-		cond.Op = "or"
-		// cond = marshalUnmarshalFilter(t, cond)
-		result = FilterResource(res, cond)
+		filter.Op = "or"
+		// filter = marshalUnmarshalFilter(t, filter)
+		result = FilterResource(res, filter)
 		assert.Equal(
 			test.expectedOr,
 			result,

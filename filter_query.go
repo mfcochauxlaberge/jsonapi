@@ -70,46 +70,46 @@ func (c *Filter) UnmarshalJSON(data []byte) error {
 }
 
 // FilterResource reports whether res is valid under the rules defined
-// in cond.
-func FilterResource(res Resource, cond *Filter) bool {
+// in the filter.
+func FilterResource(res Resource, filter *Filter) bool {
 	var (
 		val interface{}
 		// typ string
 	)
-	if _, ok := res.Attrs()[cond.Field]; ok {
-		val = res.Get(cond.Field)
+	if _, ok := res.Attrs()[filter.Field]; ok {
+		val = res.Get(filter.Field)
 	}
-	if rel, ok := res.Rels()[cond.Field]; ok {
+	if rel, ok := res.Rels()[filter.Field]; ok {
 		if rel.ToOne {
-			val = res.GetToOne(cond.Field)
+			val = res.GetToOne(filter.Field)
 		} else {
-			val = res.GetToMany(cond.Field)
+			val = res.GetToMany(filter.Field)
 		}
 	}
 
-	switch cond.Op {
+	switch filter.Op {
 	case "and":
-		conds := cond.Val.([]*Filter)
-		for i := range conds {
-			if !FilterResource(res, conds[i]) {
+		filters := filter.Val.([]*Filter)
+		for i := range filters {
+			if !FilterResource(res, filters[i]) {
 				return false
 			}
 		}
 		return true
 	case "or":
-		conds := cond.Val.([]*Filter)
-		for i := range conds {
-			if FilterResource(res, conds[i]) {
+		filters := filter.Val.([]*Filter)
+		for i := range filters {
+			if FilterResource(res, filters[i]) {
 				return true
 			}
 		}
 		return false
 	case "in":
-		return checkIn(val.(string), cond.Val.([]string))
+		return checkIn(val.(string), filter.Val.([]string))
 	case "has":
-		return checkIn(cond.Val.(string), val.([]string))
+		return checkIn(filter.Val.(string), val.([]string))
 	default:
-		return checkVal(cond.Op, val, cond.Val)
+		return checkVal(filter.Op, val, filter.Val)
 	}
 }
 
