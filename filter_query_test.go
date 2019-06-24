@@ -856,6 +856,7 @@ func TestFilterResource(t *testing.T) {
 		}
 
 		cond.Op = "and"
+		// cond = marshalUnmarshalFilter(t, cond)
 		result := FilterResource(res, cond)
 		assert.Equal(
 			test.expectedAnd,
@@ -864,6 +865,7 @@ func TestFilterResource(t *testing.T) {
 		)
 
 		cond.Op = "or"
+		// cond = marshalUnmarshalFilter(t, cond)
 		result = FilterResource(res, cond)
 		assert.Equal(
 			test.expectedOr,
@@ -873,7 +875,7 @@ func TestFilterResource(t *testing.T) {
 	}
 }
 
-func TestFilterQuery(t *testing.T) {
+func TestFilterMarshaling(t *testing.T) {
 	assert := assert.New(t)
 
 	// time1, _ := time.Parse(time.RFC3339Nano, "2012-05-16T17:45:28.2539Z")
@@ -1087,3 +1089,13 @@ func nilptr(t string) interface{} {
 	}
 	return nil
 }
+
+// func marshalUnmarshalFilter(t *testing.T, f *Filter) *Filter {
+// 	payload, err := json.MarshalIndent(f, "", "\t")
+// 	assert.NoError(t, err)
+// 	var f2 Filter
+// 	err = json.Unmarshal(payload, &f2)
+// 	assert.NoError(t, err)
+// 	assert.NotNil(t, f2)
+// 	return &f2
+// }

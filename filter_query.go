@@ -22,6 +22,22 @@ type filter struct {
 	Col   string          `json:"c"`
 }
 
+// MarshalJSON marshals a filter into JSON.
+func (c *Filter) MarshalJSON() ([]byte, error) {
+	payload := map[string]interface{}{}
+	if c.Field != "" {
+		payload["f"] = c.Field
+	}
+	if c.Op != "" {
+		payload["o"] = c.Op
+	}
+	payload["v"] = c.Val
+	if c.Col != "" {
+		payload["c"] = c.Col
+	}
+	return json.Marshal(payload)
+}
+
 // UnmarshalJSON parses the provided data and populates a Filter.
 func (c *Filter) UnmarshalJSON(data []byte) error {
 	tmpFilter := filter{}
@@ -51,22 +67,6 @@ func (c *Filter) UnmarshalJSON(data []byte) error {
 	}
 
 	return nil
-}
-
-// MarshalJSON marshals a filter into JSON.
-func (c *Filter) MarshalJSON() ([]byte, error) {
-	payload := map[string]interface{}{}
-	if c.Field != "" {
-		payload["f"] = c.Field
-	}
-	if c.Op != "" {
-		payload["o"] = c.Op
-	}
-	payload["v"] = c.Val
-	if c.Col != "" {
-		payload["c"] = c.Col
-	}
-	return json.Marshal(payload)
 }
 
 // FilterResource reports whether res is valid under the rules defined
