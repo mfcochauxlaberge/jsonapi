@@ -41,7 +41,7 @@ func NewDocument() *Document {
 //
 // It also makes sure that resources are not added twice.
 func (d *Document) Include(res Resource) {
-	key := res.GetType() + " " + res.GetID()
+	key := res.GetType().Name + " " + res.GetID()
 
 	if len(d.Included) == 0 {
 		d.Included = map[string]Resource{}
@@ -49,7 +49,7 @@ func (d *Document) Include(res Resource) {
 
 	if dres, ok := d.Data.(Resource); ok {
 		// Check resource
-		rkey := dres.GetID() + " " + dres.GetType()
+		rkey := dres.GetID() + " " + dres.GetType().Name
 
 		if rkey == key {
 			return
@@ -57,9 +57,9 @@ func (d *Document) Include(res Resource) {
 	} else if col, ok := d.Data.(Collection); ok {
 		// Check Collection
 		ctyp := col.Type()
-		if ctyp == res.GetType() {
+		if ctyp == res.GetType().Name {
 			for i := 0; i < col.Len(); i++ {
-				rkey := col.Elem(i).GetID() + " " + col.Elem(i).GetType()
+				rkey := col.Elem(i).GetID() + " " + col.Elem(i).GetType().Name
 
 				if rkey == key {
 					return
