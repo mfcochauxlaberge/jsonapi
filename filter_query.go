@@ -2,6 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"sort"
 	"time"
 )
 
@@ -36,19 +37,13 @@ func (c *Condition) UnmarshalJSON(data []byte) error {
 	if tmpCnd.Op == "and" || tmpCnd.Op == "or" {
 		c.Field = ""
 
-		cnds := []Condition{}
+		cnds := []*Condition{}
 		err := json.Unmarshal(tmpCnd.Val, &cnds)
 		if err != nil {
 			return err
 		}
 		c.Val = cnds
-	} else if tmpCnd.Op == "=" ||
-		tmpCnd.Op == "!=" ||
-		tmpCnd.Op == "<" ||
-		tmpCnd.Op == "<=" ||
-		tmpCnd.Op == ">" ||
-		tmpCnd.Op == ">=" {
-
+	} else {
 		err := json.Unmarshal(tmpCnd.Val, &(c.Val)) // TODO parenthesis needed?
 		if err != nil {
 			return err
@@ -107,6 +102,8 @@ func FilterResource(res Resource, cond *Condition) bool {
 				return true
 			}
 		}
+	case "in":
+		return checkIn(val.(string), cond.Val.([]string))
 	case "=", "!=", "<", "<=", ">", ">=":
 		return checkVal(cond.Op, val, cond.Val)
 	}
@@ -283,6 +280,8 @@ func checkVal(op string, rval, cval interface{}) bool {
 			}
 		}
 		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
+	case []string:
+		return checkSlice(op, rval.([]string), cval.([]string))
 	default:
 		return false
 	}
@@ -373,4 +372,36 @@ func checkTime(op string, rval, cval time.Time) bool {
 	default:
 		return false
 	}
+}
+
+func checkSlice(op string, rval, cval []string) bool {
+	equal := false
+	if len(rval) == len(cval) {
+		sort.Strings(rval)
+		sort.Strings(cval)
+		equal = true
+		for i := 0; i < len(rval); i++ {
+			if rval[i] != cval[i] {
+				equal = false
+				break
+			}
+		}
+	}
+	switch op {
+	case "=":
+		return equal
+	case "!=":
+		return !equal
+	default:
+		return false
+	}
+}
+
+func checkIn(id string, ids []string) bool {
+	for i := range ids {
+		if id == ids[i] {
+			return true
+		}
+	}
+	return false
 }

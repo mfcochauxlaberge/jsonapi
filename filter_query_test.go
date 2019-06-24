@@ -17,7 +17,8 @@ func TestFilterResource(t *testing.T) {
 
 	now := time.Now()
 
-	tests := []struct {
+	// Tests for attributes
+	attrTests := []struct {
 		rval     interface{}
 		op       string
 		cval     interface{}
@@ -690,7 +691,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: ptr(now), op: ">=", cval: ptr(now.Add(time.Second)), expected: false},
 	}
 
-	for _, test := range tests {
+	for _, test := range attrTests {
 		typ := &Type{Name: "type"}
 		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Attrs = map[string]Attr{
@@ -713,9 +714,133 @@ func TestFilterResource(t *testing.T) {
 		assert.Equal(
 			test.expected,
 			FilterResource(res, cond),
-			fmt.Sprintf("%v %s %v is %v", test.rval, test.op, test.cval, test.expected),
+			fmt.Sprintf("%v %s %v should be %v", test.rval, test.op, test.cval, test.expected),
 		)
 	}
+
+	relTests := []struct {
+		rval     interface{}
+		op       string
+		cval     interface{}
+		expected bool
+	}{
+		// to-one
+		{rval: "id1", op: "=", cval: "id1", expected: true},
+		{rval: "id1", op: "=", cval: "id2", expected: false},
+		{rval: "id1", op: "!=", cval: "id1", expected: false},
+		{rval: "id1", op: "!=", cval: "id2", expected: true},
+		{rval: "id1", op: "in", cval: []string{"id1"}, expected: true},
+		{rval: "id1", op: "in", cval: []string{"id2"}, expected: false},
+		{rval: "id1", op: "in", cval: []string{"id1", "id2"}, expected: true},
+		{rval: "id1", op: "in", cval: []string{"id2", "id3"}, expected: false},
+
+		// to-many
+		{rval: []string{"id1"}, op: "=", cval: []string{"id1"}, expected: true},
+		{rval: []string{"id1"}, op: "=", cval: []string{"id2"}, expected: false},
+		{rval: []string{"id1"}, op: "=", cval: []string{"id1, id2"}, expected: false},
+		{rval: []string{"id1", "id2"}, op: "=", cval: []string{"id1", "id2"}, expected: true},
+		{rval: []string{"id1", "id2"}, op: "=", cval: []string{"id1", "id3"}, expected: false},
+		{rval: []string{"id1"}, op: "!=", cval: []string{"id1"}, expected: false},
+		{rval: []string{"id1"}, op: "!=", cval: []string{"id2"}, expected: true},
+		{rval: []string{"id1"}, op: "!=", cval: []string{"id1, id2"}, expected: true},
+		{rval: []string{"id1", "id2"}, op: "!=", cval: []string{"id1", "id2"}, expected: false},
+		{rval: []string{"id1", "id2"}, op: "!=", cval: []string{"id1", "id3"}, expected: true},
+	}
+
+	for _, test := range relTests {
+		typ := &Type{Name: "type"}
+		toOne := true
+		if _, ok := test.rval.([]string); ok {
+			toOne = false
+		}
+		// ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
+		typ.Rels = map[string]Rel{
+			"rel": Rel{
+				Name:  "rel",
+				Type:  "type",
+				ToOne: toOne,
+			},
+		}
+
+		res := &SoftResource{}
+		res.SetType(typ)
+		if toOne {
+			res.SetToOne("rel", test.rval.(string))
+		} else {
+			res.SetToMany("rel", test.rval.([]string))
+		}
+
+		cond := &Condition{}
+		cond.Field = "rel"
+		cond.Op = test.op
+		cond.Val = test.cval
+
+		assert.Equal(
+			test.expected,
+			FilterResource(res, cond),
+			fmt.Sprintf("%v %s %v should be %v", test.cval, test.op, test.rval, test.expected),
+		)
+	}
+
+	// Tests for relationships
+	typ := &Type{Name: "type"}
+	typ.AddRel(Rel{
+		Name:  "rel1",
+		Type:  "type",
+		ToOne: true,
+	})
+	typ.AddRel(Rel{
+		Name:  "rel2",
+		Type:  "type",
+		ToOne: false,
+	})
+	res := &SoftResource{}
+	res.SetType(typ)
+	res.SetToOne("rel1", "id1")
+	res.SetToMany("rel2", []string{"id1", "id2"})
+	FilterResource(res, &Condition{
+		Field: "rel1",
+		Op:    "=",
+		Val:   "id1",
+	})
+
+	// Tests for "and" operations
+	// n := len(tests)
+	// res = &SoftResource{}
+	// typ = &Type{Name: "type"}
+	// res.SetType(typ)
+	// conds := []*Condition{}
+	// expectation := true
+	// for i := 0; i < 3; i++ {
+	// 	r := rand.Intn(n)
+	// 	test := tests[r]
+	// 	if expectation && !test.expected {
+	// 		expectation = false
+	// 	}
+
+	// 	nt, null := GetAttrType(fmt.Sprintf("%T", test.rval))
+	// 	attr := Attr{
+	// 		Name: "attr" + strconv.Itoa(i),
+	// 		Type: nt,
+	// 		Null: null,
+	// 	}
+	// 	typ.AddAttr(attr)
+
+	// 	conds = append(conds, &Condition{
+	// 		Field: attr.Name,
+	// 		Op:    test.op,
+	// 		Val:   test.cval,
+	// 	})
+	// }
+	// cond := &Condition{
+	// 	Op:  "and",
+	// 	Val: conds,
+	// }
+
+	// result := FilterResource(res, cond)
+	// assert.Equal(expectation, result)
+
+	// Tests for "or" operations
 }
 
 func TestFilterQuery(t *testing.T) {
