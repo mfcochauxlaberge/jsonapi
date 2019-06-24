@@ -151,9 +151,12 @@ func (w *Wrapper) GetID() string {
 }
 
 // GetType returns the wrapped resource's type.
-func (w *Wrapper) GetType() string {
-	_, typ := IDAndType(w.val.Interface())
-	return typ
+func (w *Wrapper) GetType() *Type {
+	return &Type{
+		Name:  w.typ,
+		Attrs: w.attrs,
+		Rels:  w.rels,
+	}
 }
 
 // Get returns the value associated to the attribute named after key.

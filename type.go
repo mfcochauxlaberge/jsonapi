@@ -5,14 +5,15 @@ import (
 	"sort"
 )
 
-// Type ...
+// A Type stores all the necessary information about a type as represented
+// in the JSON:API specification.
 type Type struct {
 	Name  string
 	Attrs map[string]Attr
 	Rels  map[string]Rel
 }
 
-// AddAttr ...
+// AddAttr adds an attributes to the type.
 func (t *Type) AddAttr(attr Attr) error {
 	// Validation
 	if attr.Name == "" {
@@ -38,7 +39,7 @@ func (t *Type) AddAttr(attr Attr) error {
 	return nil
 }
 
-// RemoveAttr ...
+// RemoveAttr removes an attribute from the type if it exists.
 func (t *Type) RemoveAttr(attr string) error {
 	for i := range t.Attrs {
 		if t.Attrs[i].Name == attr {
@@ -49,7 +50,7 @@ func (t *Type) RemoveAttr(attr string) error {
 	return nil
 }
 
-// AddRel ...
+// AddRel adds a relationship to the type.
 func (t *Type) AddRel(rel Rel) error {
 	// Validation
 	if rel.Name == "" {
@@ -74,7 +75,7 @@ func (t *Type) AddRel(rel Rel) error {
 	return nil
 }
 
-// RemoveRel ...
+// RemoveRel removes a relationship from the type if it exists.
 func (t *Type) RemoveRel(rel string) error {
 	for i := range t.Rels {
 		if t.Rels[i].Name == rel {
@@ -85,8 +86,9 @@ func (t *Type) RemoveRel(rel string) error {
 	return nil
 }
 
-// Fields ...
-func (t Type) Fields() []string {
+// Fields returns a list of the names of all the fields (attributes and
+// relationships) in the type.
+func (t *Type) Fields() []string {
 	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
 	for i := range t.Attrs {
 		fields = append(fields, t.Attrs[i].Name)
@@ -98,14 +100,14 @@ func (t Type) Fields() []string {
 	return fields
 }
 
-// Attr ...
+// Attr represents a resource attribute.
 type Attr struct {
 	Name string
 	Type int
 	Null bool
 }
 
-// Rel ...
+// Rel represents a resource relationship.
 type Rel struct {
 	Name         string
 	Type         string
@@ -115,7 +117,7 @@ type Rel struct {
 	InverseToOne bool
 }
 
-// Inverse ...
+// Inverse returns the inverse relationship of r.
 func (r *Rel) Inverse() Rel {
 	return Rel{
 		Name:         r.InverseName,

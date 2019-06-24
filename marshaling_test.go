@@ -64,7 +64,7 @@ func TestMarshalResource(t *testing.T) {
 		doc.Data = test.data
 
 		id := test.data.GetID()
-		resType := test.data.GetType()
+		resType := test.data.GetType().Name
 		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
 
 		url, err := ParseRawURL(schema, rawurl)

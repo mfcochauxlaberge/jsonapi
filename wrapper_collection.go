@@ -10,7 +10,7 @@ func WrapCollection(r Resource) *WrapperCollection {
 	// 	r := Wrap(v)
 	// }
 
-	typ := r.GetType()
+	typ := r.GetType().Name
 
 	return &WrapperCollection{
 		typ:    typ,

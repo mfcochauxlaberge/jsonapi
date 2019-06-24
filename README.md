@@ -6,6 +6,12 @@
   <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
     <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
   </a>
+  <a href="https://codecov.io/gh/mfcochauxlaberge/jsonapi">
+    <img src="https://codecov.io/gh/mfcochauxlaberge/jsonapi/branch/master/graph/badge.svg">
+  </a>
+  <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
+    <img src="https://godoc.org/github.com/golang/gddo?status.svg">
+  </a>
 </div>
 
 jsonapi is a complete library to marshal and unmarshal JSON:API payloads.
