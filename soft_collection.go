@@ -8,25 +8,41 @@ import (
 	"time"
 )
 
+var _ Collection = (*SoftCollection)(nil)
+
 // SoftCollection is a collection of SoftResources where the type can
 // be changed for all elements at once by modifying the Type field.
 type SoftCollection struct {
-	Type *Type
-
+	typ  *Type
 	col  []*SoftResource
 	sort []string
 
 	sync.Mutex
 }
 
+// SetType sets the collection's type.
+func (s *SoftCollection) SetType(typ *Type) {
+	s.typ = typ
+}
+
+// GetType returns the collection's type.
+func (s *SoftCollection) GetType() *Type {
+	return s.typ
+}
+
+// Type returns the collection's type name.
+func (s *SoftCollection) Type() string {
+	return s.typ.Name
+}
+
 // AddAttr adds an attribute to all of the resources in the collection.
 func (s *SoftCollection) AddAttr(attr Attr) error {
-	return s.Type.AddAttr(attr)
+	return s.typ.AddAttr(attr)
 }
 
 // AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
-	return s.Type.AddRel(rel)
+	return s.typ.AddRel(rel)
 
 }
 
@@ -110,7 +126,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.typ = s.Type
+	sr.typ = s.typ
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)
