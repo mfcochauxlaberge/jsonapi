@@ -16,7 +16,7 @@ type Params struct {
 
 	// Filter
 	FilterLabel string
-	Filter      *Condition
+	Filter      *Filter
 
 	// Sorting
 	SortingRules []string

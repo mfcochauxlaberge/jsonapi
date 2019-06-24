@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"strconv"
 	"testing"
 	"time"
 
@@ -706,10 +707,11 @@ func TestFilterResource(t *testing.T) {
 		res.SetType(typ)
 		res.Set("attr", test.rval)
 
-		cond := &Condition{}
-		cond.Field = "attr"
-		cond.Op = test.op
-		cond.Val = test.cval
+		cond := &Filter{
+			Field: "attr",
+			Op:    test.op,
+			Val:   test.cval,
+		}
 
 		assert.Equal(
 			test.expected,
@@ -718,6 +720,7 @@ func TestFilterResource(t *testing.T) {
 		)
 	}
 
+	// Tests for relationships
 	relTests := []struct {
 		rval     interface{}
 		op       string
@@ -774,10 +777,11 @@ func TestFilterResource(t *testing.T) {
 			res.SetToMany("rel", test.rval.([]string))
 		}
 
-		cond := &Condition{}
-		cond.Field = "rel"
-		cond.Op = test.op
-		cond.Val = test.cval
+		cond := &Filter{
+			Field: "rel",
+			Op:    test.op,
+			Val:   test.cval,
+		}
 
 		assert.Equal(
 			test.expected,
@@ -786,65 +790,87 @@ func TestFilterResource(t *testing.T) {
 		)
 	}
 
-	// Tests for relationships
-	typ := &Type{Name: "type"}
-	typ.AddRel(Rel{
-		Name:  "rel1",
-		Type:  "type",
-		ToOne: true,
-	})
-	typ.AddRel(Rel{
-		Name:  "rel2",
-		Type:  "type",
-		ToOne: false,
-	})
-	res := &SoftResource{}
-	res.SetType(typ)
-	res.SetToOne("rel1", "id1")
-	res.SetToMany("rel2", []string{"id1", "id2"})
-	FilterResource(res, &Condition{
-		Field: "rel1",
-		Op:    "=",
-		Val:   "id1",
-	})
+	// Tests for "and" and "or"
+	andOrTests := []struct {
+		rvals       []interface{}
+		ops         []string
+		cvals       []interface{}
+		expectedAnd bool
+		expectedOr  bool
+	}{
+		{
+			rvals:       []interface{}{"abc", 1, true, now},
+			ops:         []string{"=", "=", "=", "="},
+			cvals:       []interface{}{"abc", 1, true, now},
+			expectedAnd: true,
+			expectedOr:  true,
+		}, {
+			rvals:       []interface{}{"abc", 1, false, now},
+			ops:         []string{"=", "=", "=", "="},
+			cvals:       []interface{}{"abc", 1, true, now},
+			expectedAnd: false,
+			expectedOr:  true,
+		}, {
+			rvals:       []interface{}{"abc", 1, false, now},
+			ops:         []string{"=", "!=", "!=", "="},
+			cvals:       []interface{}{"abc", 2, true, now},
+			expectedAnd: true,
+			expectedOr:  true,
+		}, {
+			rvals:       []interface{}{"abc", 1, false, now},
+			ops:         []string{"=", "!=", "=", "!="},
+			cvals:       []interface{}{"def", 1, true, now},
+			expectedAnd: false,
+			expectedOr:  false,
+		},
+	}
 
-	// Tests for "and" operations
-	// n := len(tests)
-	// res = &SoftResource{}
-	// typ = &Type{Name: "type"}
-	// res.SetType(typ)
-	// conds := []*Condition{}
-	// expectation := true
-	// for i := 0; i < 3; i++ {
-	// 	r := rand.Intn(n)
-	// 	test := tests[r]
-	// 	if expectation && !test.expected {
-	// 		expectation = false
-	// 	}
+	for i, test := range andOrTests {
+		typ := &Type{Name: "type"}
+		res := &SoftResource{}
+		res.SetType(typ)
+		conds := []*Filter{}
 
-	// 	nt, null := GetAttrType(fmt.Sprintf("%T", test.rval))
-	// 	attr := Attr{
-	// 		Name: "attr" + strconv.Itoa(i),
-	// 		Type: nt,
-	// 		Null: null,
-	// 	}
-	// 	typ.AddAttr(attr)
+		for j := range test.rvals {
+			attrName := "attr" + strconv.Itoa(j)
+			ty, n := GetAttrType(fmt.Sprintf("%T", test.rvals[j]))
+			typ.AddAttr(
+				Attr{
+					Name: attrName,
+					Type: ty,
+					Null: n,
+				},
+			)
 
-	// 	conds = append(conds, &Condition{
-	// 		Field: attr.Name,
-	// 		Op:    test.op,
-	// 		Val:   test.cval,
-	// 	})
-	// }
-	// cond := &Condition{
-	// 	Op:  "and",
-	// 	Val: conds,
-	// }
+			res.Set(attrName, test.rvals[j])
 
-	// result := FilterResource(res, cond)
-	// assert.Equal(expectation, result)
+			conds = append(conds, &Filter{
+				Field: attrName,
+				Op:    test.ops[j],
+				Val:   test.cvals[j],
+			})
+		}
 
-	// Tests for "or" operations
+		cond := &Filter{
+			Val: conds,
+		}
+
+		cond.Op = "and"
+		result := FilterResource(res, cond)
+		assert.Equal(
+			test.expectedAnd,
+			result,
+			fmt.Sprintf("'and' test %d is %t instead of %t", i, result, test.expectedAnd),
+		)
+
+		cond.Op = "or"
+		result = FilterResource(res, cond)
+		assert.Equal(
+			test.expectedOr,
+			result,
+			fmt.Sprintf("'or' test %d is %t instead of %t", i, result, test.expectedOr),
+		)
+	}
 }
 
 func TestFilterQuery(t *testing.T) {
@@ -854,10 +880,10 @@ func TestFilterQuery(t *testing.T) {
 	// time2, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
 
 	tests := []struct {
-		name              string
-		query             string
-		expectedCondition Condition
-		expectedError     bool
+		name           string
+		query          string
+		expectedFilter Filter
+		expectedError  bool
 	}{
 		{
 			name:          "empty",
@@ -877,7 +903,7 @@ func TestFilterQuery(t *testing.T) {
 				"o": "=",
 				"v": "string"
 			}`,
-			expectedCondition: Condition{
+			expectedFilter: Filter{
 				Field: "field",
 				Op:    "=",
 				Val:   "string",
@@ -888,13 +914,13 @@ func TestFilterQuery(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		cdt := Condition{}
+		cdt := Filter{}
 		err := json.Unmarshal([]byte(test.query), &cdt)
 
 		assert.Equal(test.expectedError, err != nil, test.name)
 
 		if !test.expectedError {
-			assert.Equal(test.expectedCondition, cdt, test.name)
+			assert.Equal(test.expectedFilter, cdt, test.name)
 
 			data, err := json.Marshal(&cdt)
 			assert.NoError(err, test.name)
@@ -904,13 +930,13 @@ func TestFilterQuery(t *testing.T) {
 	}
 
 	// Test marshaling error
-	_, err := json.Marshal(&Condition{
+	_, err := json.Marshal(&Filter{
 		Op:  "=",
 		Val: func() {},
 	})
 	assert.Equal(true, err != nil, "function as value")
 
-	_, err = json.Marshal(&Condition{
+	_, err = json.Marshal(&Filter{
 		Op:  "",
 		Val: "",
 	})
@@ -918,16 +944,16 @@ func TestFilterQuery(t *testing.T) {
 }
 
 func BenchmarkMarshalFilterQuery(b *testing.B) {
-	cdt := Condition{
+	cdt := Filter{
 		Op: "or",
-		Val: []Condition{
+		Val: []Filter{
 			{
 				Op:  "in",
 				Val: []string{"a", "b", "c"},
 			},
 			{
 				Op: "and",
-				Val: []Condition{
+				Val: []Filter{
 					{
 						Op:  "~",
 						Val: "%a",
@@ -965,12 +991,12 @@ func BenchmarkUnmarshalFilterQuery(b *testing.B) {
 	`)
 
 	var (
-		cdt Condition
+		cdt Filter
 		err error
 	)
 
 	for n := 0; n < b.N; n++ {
-		cdt = Condition{}
+		cdt = Filter{}
 		err = json.Unmarshal(query, &cdt)
 	}
 

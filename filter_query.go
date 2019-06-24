@@ -6,45 +6,45 @@ import (
 	"time"
 )
 
-// A Condition is used to define filters when querying collections.
-type Condition struct {
+// A Filter is used to define filters when querying collections.
+type Filter struct {
 	Field string      `json:"f"`
 	Op    string      `json:"o"`
 	Val   interface{} `json:"v"`
 	Col   string      `json:"c"`
 }
 
-// cnd is an internal version of Condition.
-type cnd struct {
+// filter is an internal version of Filter.
+type filter struct {
 	Field string          `json:"f"`
 	Op    string          `json:"o"`
 	Val   json.RawMessage `json:"v"`
 	Col   string          `json:"c"`
 }
 
-// UnmarshalJSON parses the provided data and populates a Condition.
-func (c *Condition) UnmarshalJSON(data []byte) error {
-	tmpCnd := cnd{}
-	err := json.Unmarshal(data, &tmpCnd)
+// UnmarshalJSON parses the provided data and populates a Filter.
+func (c *Filter) UnmarshalJSON(data []byte) error {
+	tmpFilter := filter{}
+	err := json.Unmarshal(data, &tmpFilter)
 	if err != nil {
 		return err
 	}
 
-	c.Field = tmpCnd.Field
-	c.Op = tmpCnd.Op
-	c.Col = tmpCnd.Col
+	c.Field = tmpFilter.Field
+	c.Op = tmpFilter.Op
+	c.Col = tmpFilter.Col
 
-	if tmpCnd.Op == "and" || tmpCnd.Op == "or" {
+	if tmpFilter.Op == "and" || tmpFilter.Op == "or" {
 		c.Field = ""
 
-		cnds := []*Condition{}
-		err := json.Unmarshal(tmpCnd.Val, &cnds)
+		filters := []*Filter{}
+		err := json.Unmarshal(tmpFilter.Val, &filters)
 		if err != nil {
 			return err
 		}
-		c.Val = cnds
+		c.Val = filters
 	} else {
-		err := json.Unmarshal(tmpCnd.Val, &(c.Val)) // TODO parenthesis needed?
+		err := json.Unmarshal(tmpFilter.Val, &(c.Val)) // TODO parenthesis needed?
 		if err != nil {
 			return err
 		}
@@ -53,8 +53,8 @@ func (c *Condition) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// MarshalJSON marshals a Condition into JSON.
-func (c *Condition) MarshalJSON() ([]byte, error) {
+// MarshalJSON marshals a filter into JSON.
+func (c *Filter) MarshalJSON() ([]byte, error) {
 	payload := map[string]interface{}{}
 	if c.Field != "" {
 		payload["f"] = c.Field
@@ -71,7 +71,7 @@ func (c *Condition) MarshalJSON() ([]byte, error) {
 
 // FilterResource reports whether res is valid under the rules defined
 // in cond.
-func FilterResource(res Resource, cond *Condition) bool {
+func FilterResource(res Resource, cond *Filter) bool {
 	var (
 		val interface{}
 		// typ string
@@ -89,28 +89,28 @@ func FilterResource(res Resource, cond *Condition) bool {
 
 	switch cond.Op {
 	case "and":
-		conds := cond.Val.([]*Condition)
+		conds := cond.Val.([]*Filter)
 		for i := range conds {
 			if !FilterResource(res, conds[i]) {
 				return false
 			}
 		}
+		return true
 	case "or":
-		conds := cond.Val.([]*Condition)
+		conds := cond.Val.([]*Filter)
 		for i := range conds {
 			if FilterResource(res, conds[i]) {
 				return true
 			}
 		}
+		return false
 	case "in":
 		return checkIn(val.(string), cond.Val.([]string))
 	case "has":
 		return checkIn(cond.Val.(string), val.([]string))
-	case "=", "!=", "<", "<=", ">", ">=":
+	default:
 		return checkVal(cond.Op, val, cond.Val)
 	}
-
-	return false
 }
 
 func checkVal(op string, rval, cval interface{}) bool {
