@@ -745,6 +745,10 @@ func TestFilterResource(t *testing.T) {
 		{rval: []string{"id1"}, op: "!=", cval: []string{"id1, id2"}, expected: true},
 		{rval: []string{"id1", "id2"}, op: "!=", cval: []string{"id1", "id2"}, expected: false},
 		{rval: []string{"id1", "id2"}, op: "!=", cval: []string{"id1", "id3"}, expected: true},
+		{rval: []string{"id1"}, op: "has", cval: "id1", expected: true},
+		{rval: []string{"id2"}, op: "has", cval: "id1", expected: false},
+		{rval: []string{"id1", "id2"}, op: "has", cval: "id1", expected: true},
+		{rval: []string{"id2", "id3"}, op: "has", cval: "id1", expected: false},
 	}
 
 	for _, test := range relTests {

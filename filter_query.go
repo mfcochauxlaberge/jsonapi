@@ -104,6 +104,8 @@ func FilterResource(res Resource, cond *Condition) bool {
 		}
 	case "in":
 		return checkIn(val.(string), cond.Val.([]string))
+	case "has":
+		return checkIn(cond.Val.(string), val.([]string))
 	case "=", "!=", "<", "<=", ">", ">=":
 		return checkVal(cond.Op, val, cond.Val)
 	}
