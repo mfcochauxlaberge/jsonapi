@@ -11,6 +11,8 @@ import (
 	"time"
 )
 
+var _ Resource = (*Wrapper)(nil)
+
 // Wrapper wraps a reflect.Value that represents a struct.
 //
 // The Wrap function can be used to wrap a struct and make a Wrapper object.

@@ -2,6 +2,8 @@ package jsonapi
 
 import "encoding/json"
 
+var _ Collection = (*WrapperCollection)(nil)
+
 // WrapCollection ...
 func WrapCollection(r Resource) *WrapperCollection {
 	// if r2, ok := v.(Resource); ok {
