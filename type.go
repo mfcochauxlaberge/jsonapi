@@ -88,7 +88,7 @@ func (t *Type) RemoveRel(rel string) error {
 
 // Fields returns a list of the names of all the fields (attributes and
 // relationships) in the type.
-func (t Type) Fields() []string {
+func (t *Type) Fields() []string {
 	fields := make([]string, 0, len(t.Attrs)+len(t.Rels))
 	for i := range t.Attrs {
 		fields = append(fields, t.Attrs[i].Name)
