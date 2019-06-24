@@ -19,7 +19,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
-		data, err = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType()], doc.RelData)
+		data, err = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
 		data, err = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
@@ -47,7 +47,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	inclusions := []*json.RawMessage{}
 	if len(data) > 0 {
 		for key := range doc.Included {
-			typ := doc.Included[key].GetType()
+			typ := doc.Included[key].GetType().Name
 			raw, err := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
 			if err != nil {
 				return []byte{}, err
@@ -222,7 +222,7 @@ func CheckType(v interface{}) error {
 func IDAndType(v interface{}) (string, string) {
 	switch nv := v.(type) {
 	case Resource:
-		return nv.GetID(), nv.GetType()
+		return nv.GetID(), nv.GetType().Name
 	}
 
 	val := reflect.ValueOf(v)

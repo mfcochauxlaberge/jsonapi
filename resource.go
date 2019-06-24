@@ -17,7 +17,7 @@ type Resource interface {
 
 	// Read
 	GetID() string
-	GetType() string
+	GetType() *Type
 	Get(key string) interface{}
 
 	// Update
@@ -51,7 +51,7 @@ type Resource interface {
 // IDs are ignored.
 func Equal(r1, r2 Resource) bool {
 	// Type
-	if r1.GetType() != r2.GetType() {
+	if r1.GetType().Name != r2.GetType().Name {
 		return false
 	}
 
