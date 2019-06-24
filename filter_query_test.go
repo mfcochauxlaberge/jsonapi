@@ -3,7 +3,6 @@ package jsonapi_test
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"strconv"
 	"testing"
 	"time"
@@ -943,66 +942,6 @@ func TestFilterMarshaling(t *testing.T) {
 		Val: "",
 	})
 	assert.Equal(false, err != nil, "empty operation and value") // TODO
-}
-
-func BenchmarkMarshalFilterQuery(b *testing.B) {
-	cdt := Filter{
-		Op: "or",
-		Val: []Filter{
-			{
-				Op:  "in",
-				Val: []string{"a", "b", "c"},
-			},
-			{
-				Op: "and",
-				Val: []Filter{
-					{
-						Op:  "~",
-						Val: "%a",
-					},
-					{
-						Op:  ">=",
-						Val: "u",
-					},
-				},
-			},
-		},
-	}
-
-	var (
-		data []byte
-		err  error
-	)
-
-	for n := 0; n < b.N; n++ {
-		data, err = json.Marshal(cdt)
-	}
-
-	fmt.Fprintf(ioutil.Discard, "%v %v", data, err)
-}
-
-func BenchmarkUnmarshalFilterQuery(b *testing.B) {
-	query := []byte(`
-		{ "or": [
-			{ "in": ["a", "b", "c"] },
-			{ "and": [
-				{ "~": "%a" },
-				{ "\u003e=": "u" }
-			] }
-		] }
-	`)
-
-	var (
-		cdt Filter
-		err error
-	)
-
-	for n := 0; n < b.N; n++ {
-		cdt = Filter{}
-		err = json.Unmarshal(query, &cdt)
-	}
-
-	fmt.Fprintf(ioutil.Discard, "%v %v", cdt, err)
 }
 
 func ptr(v interface{}) interface{} {
