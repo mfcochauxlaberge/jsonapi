@@ -21,7 +21,7 @@ type SimpleURL struct {
 	// Params
 	Fields       map[string][]string
 	FilterLabel  string
-	Filter       *Condition
+	Filter       *Filter
 	SortingRules []string
 	PageSize     int
 	PageNumber   int
