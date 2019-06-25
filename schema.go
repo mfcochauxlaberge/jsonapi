@@ -200,81 +200,39 @@ func (s *Schema) Check() []error {
 // GetAttrType returns the attribute type as an int (see constants) and
 // a boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {
-	t2 := t
-	if strings.HasPrefix(t2, "*") {
-		t2 = t[1:]
+	nullable := strings.HasPrefix(t, "*")
+	if nullable {
+		t = t[1:]
 	}
-	switch t2 {
+	switch t {
 	case "string":
-		if t[0] != '*' {
-			return AttrTypeString, false
-		}
-		return AttrTypeString, true
+		return AttrTypeString, nullable
 	case "int":
-		if t[0] != '*' {
-			return AttrTypeInt, false
-		}
-		return AttrTypeInt, true
+		return AttrTypeInt, nullable
 	case "int8":
-		if t[0] != '*' {
-			return AttrTypeInt8, false
-		}
-		return AttrTypeInt8, true
+		return AttrTypeInt8, nullable
 	case "int16":
-		if t[0] != '*' {
-			return AttrTypeInt16, false
-		}
-		return AttrTypeInt16, true
+		return AttrTypeInt16, nullable
 	case "int32":
-		if t[0] != '*' {
-			return AttrTypeInt32, false
-		}
-		return AttrTypeInt32, true
+		return AttrTypeInt32, nullable
 	case "int64":
-		if t[0] != '*' {
-			return AttrTypeInt64, false
-		}
-		return AttrTypeInt64, true
+		return AttrTypeInt64, nullable
 	case "uint":
-		if t[0] != '*' {
-			return AttrTypeUint, false
-		}
-		return AttrTypeUint, true
+		return AttrTypeUint, nullable
 	case "uint8":
-		if t[0] != '*' {
-			return AttrTypeUint8, false
-		}
-		return AttrTypeUint8, true
+		return AttrTypeUint8, nullable
 	case "uint16":
-		if t[0] != '*' {
-			return AttrTypeUint16, false
-		}
-		return AttrTypeUint16, true
+		return AttrTypeUint16, nullable
 	case "uint32":
-		if t[0] != '*' {
-			return AttrTypeUint32, false
-		}
-		return AttrTypeUint32, true
+		return AttrTypeUint32, nullable
 	case "uint64":
-		if t[0] != '*' {
-			return AttrTypeUint64, false
-		}
-		return AttrTypeUint64, true
+		return AttrTypeUint64, nullable
 	case "bool":
-		if t[0] != '*' {
-			return AttrTypeBool, false
-		}
-		return AttrTypeBool, true
+		return AttrTypeBool, nullable
 	case "time.Time":
-		if t[0] != '*' {
-			return AttrTypeTime, false
-		}
-		return AttrTypeTime, true
+		return AttrTypeTime, nullable
 	default:
-		if t[0] != '*' {
-			return AttrTypeInvalid, false
-		}
-		return AttrTypeInvalid, true
+		return AttrTypeInvalid, false
 	}
 }
 
