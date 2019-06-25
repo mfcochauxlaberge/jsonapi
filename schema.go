@@ -284,83 +284,83 @@ func GetAttrTypeString(t int, nullable bool) string {
 func GetZeroValue(t int, null bool) interface{} {
 	switch t {
 	case AttrTypeString:
-		v := ""
-		if !null {
-			return v
+		if null {
+			var np *string
+			return np
 		}
-		return &v
+		return ""
 	case AttrTypeInt:
-		v := int(0)
-		if !null {
-			return v
+		if null {
+			var np *int
+			return np
 		}
-		return &v
+		return int(0)
 	case AttrTypeInt8:
-		v := int8(0)
-		if !null {
-			return v
+		if null {
+			var np *int8
+			return np
 		}
-		return &v
+		return int8(0)
 	case AttrTypeInt16:
-		v := int16(0)
-		if !null {
-			return v
+		if null {
+			var np *int16
+			return np
 		}
-		return &v
+		return int16(0)
 	case AttrTypeInt32:
-		v := int32(0)
-		if !null {
-			return v
+		if null {
+			var np *int32
+			return np
 		}
-		return &v
+		return int32(0)
 	case AttrTypeInt64:
-		v := int64(0)
-		if !null {
-			return v
+		if null {
+			var np *int64
+			return np
 		}
-		return &v
+		return int64(0)
 	case AttrTypeUint:
-		v := uint(0)
-		if !null {
-			return v
+		if null {
+			var np *uint
+			return np
 		}
-		return &v
+		return uint(0)
 	case AttrTypeUint8:
-		v := uint8(0)
-		if !null {
-			return v
+		if null {
+			var np *uint8
+			return np
 		}
-		return &v
+		return uint8(0)
 	case AttrTypeUint16:
-		v := uint16(0)
-		if !null {
-			return v
+		if null {
+			var np *uint16
+			return np
 		}
-		return &v
+		return uint16(0)
 	case AttrTypeUint32:
-		v := uint32(0)
-		if !null {
-			return v
+		if null {
+			var np *uint32
+			return np
 		}
-		return &v
+		return uint32(0)
 	case AttrTypeUint64:
-		v := uint64(0)
-		if !null {
-			return v
+		if null {
+			var np *uint64
+			return np
 		}
-		return &v
+		return uint64(0)
 	case AttrTypeBool:
-		v := false
-		if !null {
-			return v
+		if null {
+			var np *bool
+			return np
 		}
-		return &v
+		return false
 	case AttrTypeTime:
-		v := time.Time{}
-		if !null {
-			return v
+		if null {
+			var np *time.Time
+			return np
 		}
-		return &v
+		return time.Time{}
 	default:
 		return nil
 	}
