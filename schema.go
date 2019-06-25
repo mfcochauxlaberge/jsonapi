@@ -239,76 +239,42 @@ func GetAttrType(t string) (int, bool) {
 // GetAttrTypeString return the name of the attribute type specified
 // by an int (see constants) and a boolean that indicates whether the
 // value can be null or not.
-func GetAttrTypeString(t int, null bool) string {
+func GetAttrTypeString(t int, nullable bool) string {
+	str := ""
 	switch t {
 	case AttrTypeString:
-		if !null {
-			return "string"
-		}
-		return "*string"
+		str = "string"
 	case AttrTypeInt:
-		if !null {
-			return "int"
-		}
-		return "*int"
+		str = "int"
 	case AttrTypeInt8:
-		if !null {
-			return "int8"
-		}
-		return "*int8"
+		str = "int8"
 	case AttrTypeInt16:
-		if !null {
-			return "int16"
-		}
-		return "*int16"
+		str = "int16"
 	case AttrTypeInt32:
-		if !null {
-			return "int32"
-		}
-		return "*int32"
+		str = "int32"
 	case AttrTypeInt64:
-		if !null {
-			return "int64"
-		}
-		return "*int64"
+		str = "int64"
 	case AttrTypeUint:
-		if !null {
-			return "uint"
-		}
-		return "*uint"
+		str = "uint"
 	case AttrTypeUint8:
-		if !null {
-			return "uint8"
-		}
-		return "*uint8"
+		str = "uint8"
 	case AttrTypeUint16:
-		if !null {
-			return "uint16"
-		}
-		return "*uint16"
+		str = "uint16"
 	case AttrTypeUint32:
-		if !null {
-			return "uint32"
-		}
-		return "*uint32"
+		str = "uint32"
 	case AttrTypeUint64:
-		if !null {
-			return "uint64"
-		}
-		return "*uint64"
+		str = "uint64"
 	case AttrTypeBool:
-		if !null {
-			return "bool"
-		}
-		return "*bool"
+		str = "bool"
 	case AttrTypeTime:
-		if !null {
-			return "time.Time"
-		}
-		return "*time.Time"
+		str = "time.Time"
 	default:
-		return ""
+		str = ""
 	}
+	if nullable {
+		return "*" + str
+	}
+	return str
 }
 
 // GetZeroValue returns the zero value of the attribute type represented
