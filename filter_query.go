@@ -60,7 +60,7 @@ func (c *Filter) UnmarshalJSON(data []byte) error {
 		}
 		c.Val = filters
 	} else {
-		err := json.Unmarshal(tmpFilter.Val, &(c.Val)) // TODO parenthesis needed?
+		err := json.Unmarshal(tmpFilter.Val, &c.Val)
 		if err != nil {
 			return err
 		}
