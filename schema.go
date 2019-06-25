@@ -20,6 +20,7 @@ const (
 	AttrTypeUint8
 	AttrTypeUint16
 	AttrTypeUint32
+	AttrTypeUint64
 	AttrTypeBool
 	AttrTypeTime
 )
@@ -254,6 +255,11 @@ func GetAttrType(t string) (int, bool) {
 			return AttrTypeUint32, false
 		}
 		return AttrTypeUint32, true
+	case "uint64":
+		if t[0] != '*' {
+			return AttrTypeUint64, false
+		}
+		return AttrTypeUint64, true
 	case "bool":
 		if t[0] != '*' {
 			return AttrTypeBool, false
@@ -327,6 +333,11 @@ func GetAttrTypeString(t int, null bool) string {
 			return "uint32"
 		}
 		return "*uint32"
+	case AttrTypeUint64:
+		if !null {
+			return "uint64"
+		}
+		return "*uint64"
 	case AttrTypeBool:
 		if !null {
 			return "bool"
@@ -404,6 +415,12 @@ func GetZeroValue(t int, null bool) interface{} {
 		return &v
 	case AttrTypeUint32:
 		v := uint32(0)
+		if !null {
+			return v
+		}
+		return &v
+	case AttrTypeUint64:
+		v := uint64(0)
 		if !null {
 			return v
 		}
