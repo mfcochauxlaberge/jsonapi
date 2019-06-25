@@ -334,7 +334,7 @@ func GetAttrTypeString(t int, null bool) string {
 		return "*bool"
 	case AttrTypeTime:
 		if !null {
-			return "time"
+			return "time.Time"
 		}
 		return "*time.Time"
 	default:
