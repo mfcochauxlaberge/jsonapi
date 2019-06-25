@@ -1,6 +1,8 @@
 package jsonapi_test
 
 import (
+	"fmt"
+	"strconv"
 	"testing"
 	"time"
 
@@ -154,142 +156,125 @@ func TestSoftCollectionResource(t *testing.T) {
 }
 
 func TestSoftCollectionSort(t *testing.T) {
-	now := time.Now()
-	sc := &SoftCollection{}
+	var (
+		now = time.Now()
+		sc  = &SoftCollection{}
+	)
 
-	// Add type with some attributes.
-	typ := Type{Name: "thistype"}
-	typ.AddAttr(Attr{
-		Name: "attr1",
-		Type: AttrTypeInt,
-		Null: false,
-	})
-	typ.AddAttr(Attr{
-		Name: "attr2",
-		Type: AttrTypeString,
-		Null: true,
-	})
-	typ.AddAttr(Attr{
-		Name: "attr3",
-		Type: AttrTypeBool,
-		Null: true,
-	})
-	typ.AddAttr(Attr{
-		Name: "attr4",
-		Type: AttrTypeTime,
-		Null: false,
-	})
+	attrs := []struct {
+		typ  string
+		vals [5]interface{}
+	}{
+		{
+			typ:  "string",
+			vals: [5]interface{}{"", "a", "b", "b", "c"},
+		}, {
+			typ:  "int",
+			vals: [5]interface{}{-1, 0, 1, 1, 2},
+		}, {
+			typ:  "int8",
+			vals: [5]interface{}{-1, 0, 1, 1, 2},
+		}, {
+			typ:  "int16",
+			vals: [5]interface{}{-1, 0, 1, 1, 2},
+		}, {
+			typ:  "int32",
+			vals: [5]interface{}{-1, 0, 1, 1, 2},
+		}, {
+			typ:  "int64",
+			vals: [5]interface{}{-1, 0, 1, 1, 2},
+		}, {
+			typ:  "uint",
+			vals: [5]interface{}{0, 1, 2, 2, 3},
+		}, {
+			typ:  "uint8",
+			vals: [5]interface{}{0, 1, 2, 2, 3},
+		}, {
+			typ:  "uint16",
+			vals: [5]interface{}{0, 1, 2, 2, 3},
+		}, {
+			typ:  "uint32",
+			vals: [5]interface{}{0, 1, 2, 2, 3},
+		}, {
+			typ:  "uint64",
+			vals: [5]interface{}{0, 1, 2, 2, 3},
+		}, {
+			typ:  "bool",
+			vals: [5]interface{}{false, true, true, false, false},
+		}, {
+			typ: "time.Time",
+			vals: [5]interface{}{
+				now.Add(-time.Second),
+				now,
+				now.Add(time.Second),
+				now.Add(time.Second),
+				now.Add(2 * time.Second),
+			},
+		},
+	}
+
+	// Add attributes to type
+	typ := Type{Name: "type"}
+	for i, t := range attrs {
+		ti, null := GetAttrType(t.typ)
+		typ.AddAttr(Attr{
+			Name: "attr" + strconv.Itoa(i),
+			Type: ti,
+			Null: null,
+		})
+	}
 	sc.SetType(&typ)
 
-	// Add some resources.
-	sr := NewSoftResource(typ, nil)
-	sr.SetID("res1")
-	sr.Set("attr1", 0)
-	sr.Set("attr2", nil)
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now)
-	sc.Add(sr)
+	// Add resources
+	for j := 0; j < 5; j++ {
+		sr := NewSoftResource(typ, nil)
+		sr.SetID("id" + strconv.Itoa(j))
+		for i, t := range attrs {
+			sr.Set("attr"+strconv.Itoa(i), t.vals[j])
+		}
+		sc.Add(sr)
+	}
 
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res2")
-	sr.Set("attr1", 0)
-	sr.Set("attr2", nil)
-	b1 := false
-	sr.Set("attr3", &b1)
-	sr.Set("attr4", now)
-	sc.Add(sr)
+	for j := 0; j < 5; j++ {
+		res := sc.Elem(j)
+		fmt.Printf("Resource: %s (%s)\n", res.GetID(), res.GetType().Name)
+		for _, field := range res.GetType().Fields() {
+			fmt.Printf("  %s: %q (%T)\n", field, res.Get(field), res.Get(field))
+		}
+	}
 
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res3")
-	sr.Set("attr1", 1)
-	sr.Set("attr2", ptr(""))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(-time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res4")
-	sr.Set("attr1", -1)
-	sr.Set("attr2", ptr("abc"))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res5")
-	sr.Set("attr1", -1)
-	sr.Set("attr2", ptr("abc"))
-	b2 := true
-	sr.Set("attr3", &b2)
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res6")
-	sr.Set("attr1", 2)
-	sr.Set("attr2", ptr(""))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res7")
-	sr.Set("attr1", 2)
-	sr.Set("attr2", ptr("abc"))
-	b3 := true
-	sr.Set("attr3", &b3)
-	sr.Set("attr4", now.Add(-time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res8")
-	sr.Set("attr1", 4)
-	sr.Set("attr2", ptr(""))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res9")
-	sr.Set("attr1", -1)
-	sr.Set("attr2", ptr("def"))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	sr = NewSoftResource(typ, nil)
-	sr.SetID("res10")
-	sr.Set("attr1", 4)
-	sr.Set("attr2", ptr(""))
-	sr.Set("attr3", (*bool)(nil))
-	sr.Set("attr4", now.Add(time.Second))
-	sc.Add(sr)
-
-	// Sort the collection.
-	rules := []string{"-attr3", "-attr4", "attr1", "-attr2", "id"}
+	// Sort
+	rules := []string{}
+	for i := 0; i < sc.Len(); i++ {
+		reverse := ""
+		if i%3 == 0 {
+			reverse = "-"
+		}
+		rules = append(rules, reverse+"attr"+strconv.Itoa(i))
+	}
 	sc.Sort(rules)
 
-	// Make an ordered list of IDs.
+	// Sorted IDs from the collection
 	ids := []string{}
 	for i := 0; i < sc.Len(); i++ {
 		ids = append(ids, sc.Elem(i).GetID())
 	}
 
 	expectedIDs := []string{
-		"res5", "res7", "res2", "res9", "res4", "res6", "res10", "res8", "res1", "res3",
+		"id4", "id2", "id3", "id1", "id0",
 	}
-	assert.Equal(t, expectedIDs, ids)
+	assert.Equal(t, expectedIDs, ids, fmt.Sprintf("rules: %v", rules))
 
-	// Sort with an empty list of sorting rules.
-	sc.Sort([]string{})
+	// // Sort with an empty list of sorting rules.
+	// sc.Sort([]string{})
 
-	ids = []string{}
-	for i := 0; i < sc.Len(); i++ {
-		ids = append(ids, sc.Elem(i).GetID())
-	}
+	// ids = []string{}
+	// for i := 0; i < sc.Len(); i++ {
+	// 	ids = append(ids, sc.Elem(i).GetID())
+	// }
 
-	expectedIDs = []string{
-		"res1", "res10", "res2", "res3", "res4", "res5", "res6", "res7", "res8", "res9",
-	}
-	assert.Equal(t, expectedIDs, ids)
+	// expectedIDs = []string{
+	// 	"id1", "id10", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9",
+	// }
+	// assert.Equal(t, expectedIDs, ids)
 }
