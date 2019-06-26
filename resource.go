@@ -17,7 +17,7 @@ type Resource interface {
 
 	// Read
 	GetID() string
-	GetType() *Type
+	GetType() Type
 	Get(key string) interface{}
 
 	// Update
