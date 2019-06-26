@@ -110,9 +110,9 @@ func (sr *SoftResource) GetID() string {
 }
 
 // GetType returns the resource's type.
-func (sr *SoftResource) GetType() *Type {
+func (sr *SoftResource) GetType() Type {
 	sr.check()
-	return sr.typ
+	return *sr.typ
 }
 
 // Get returns the value associated to the field named after key.

@@ -153,8 +153,8 @@ func (w *Wrapper) GetID() string {
 }
 
 // GetType returns the wrapped resource's type.
-func (w *Wrapper) GetType() *Type {
-	return &Type{
+func (w *Wrapper) GetType() Type {
+	return Type{
 		Name:  w.typ,
 		Attrs: w.attrs,
 		Rels:  w.rels,
