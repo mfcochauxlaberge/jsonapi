@@ -300,36 +300,36 @@ func TestSoftCollectionSort(t *testing.T) {
 	// 4, 10 => 40
 	// Formula: number of types * (number of types + 2)
 
-	// 0
-	// 0
 	// 1
+	// 1
+	// 2
 
-	// 10
-	// 10
-	// 01
-	// 01
-	// 00
-	// 00
+	// 21
+	// 21
+	// 12
+	// 12
+	// 11
+	// 11
 
-	// 100
-	// 100
-	// 010
-	// 010
-	// 001
-	// 001
-	// 000
-	// 000
+	// 211
+	// 211
+	// 121
+	// 121
+	// 112
+	// 112
+	// 111
+	// 111
 
-	// 1000
-	// 1000
-	// 0100
-	// 0100
-	// 0010
-	// 0010
-	// 0001
-	// 0001
-	// 0000
-	// 0000
+	// 2111
+	// 2111
+	// 1211
+	// 1211
+	// 1121
+	// 1121
+	// 1112
+	// 1112
+	// 1111
+	// 1111
 
 	// Add attributes to type
 	typ := &Type{Name: "type"}
@@ -373,7 +373,8 @@ func TestSoftCollectionSort(t *testing.T) {
 	for j := 0; j < sc.Len(); j++ {
 		res := sc.Elem(j)
 		fmt.Printf("Resource: %s (%s)\n", res.GetID(), res.GetType().Name)
-		for _, field := range res.GetType().Fields() {
+		typ := res.GetType()
+		for _, field := range typ.Fields() {
 			fmt.Printf("  %s: '%v' (%T)\n", field, res.Get(field), res.Get(field))
 		}
 	}
