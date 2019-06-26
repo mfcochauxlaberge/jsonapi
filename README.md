@@ -6,8 +6,8 @@
   <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
     <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
   </a>
-  <a href="https://codecov.io/gh/mfcochauxlaberge/jsonapi">
-    <img src="https://codecov.io/gh/mfcochauxlaberge/jsonapi/branch/master/graph/badge.svg">
+  <a href="https://coveralls.io/github/mfcochauxlaberge/jsonapi?branch=master">
+    <img src="https://coveralls.io/repos/github/mfcochauxlaberge/jsonapi/badge.svg?branch=master">
   </a>
   <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://godoc.org/github.com/golang/gddo?status.svg">
