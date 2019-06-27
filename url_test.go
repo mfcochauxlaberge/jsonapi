@@ -408,10 +408,6 @@ func TestParseParams(t *testing.T) {
 		}
 
 		if !test.expectedError {
-			// data, _ := json.MarshalIndent(test.expectedParams, "", "\t")
-			// fmt.Printf("EXPECTED:\n%s\n", data)
-			// data, _ = json.MarshalIndent(params, "", "\t")
-			// fmt.Printf("PROVIDED:\n%s\n", data)
 			assert.Equal(test.expectedParams, *params, test.name)
 		}
 	}
