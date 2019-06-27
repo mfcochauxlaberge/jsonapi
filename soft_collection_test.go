@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"fmt"
+	"sort"
 	"strconv"
 	"testing"
 	"time"
@@ -156,185 +157,106 @@ func TestSoftCollectionResource(t *testing.T) {
 }
 
 func TestSoftCollectionSort(t *testing.T) {
+	assert := assert.New(t)
+
 	var (
 		now = time.Now()
 		sc  = &SoftCollection{}
 	)
 
+	// A collection of resources will be created and
+	// one attribute will be added for each entry from
+	// the following slice.
+	// The point is to provoke all possible scenarios
+	// for each attribute type.
 	attrs := []struct {
-		typ  string
 		vals [2]interface{}
 	}{
-		{
-			typ:  "string",
-			vals: [2]interface{}{"", "a"},
-		}, {
-			typ:  "int",
-			vals: [2]interface{}{int(-1), int(0)},
-		}, {
-			typ:  "int8",
-			vals: [2]interface{}{int8(-1), int8(0)},
-		}, {
-			typ:  "int16",
-			vals: [2]interface{}{int16(-1), int16(0)},
-		}, {
-			typ:  "int32",
-			vals: [2]interface{}{int32(-1), int32(0)},
-		}, {
-			typ:  "int64",
-			vals: [2]interface{}{int64(-1), int64(0)},
-		}, {
-			typ:  "uint",
-			vals: [2]interface{}{uint(0), uint(1)},
-		}, {
-			typ:  "uint8",
-			vals: [2]interface{}{uint8(0), uint8(1)},
-		}, {
-			typ:  "uint16",
-			vals: [2]interface{}{uint16(0), uint16(1)},
-		}, {
-			typ:  "uint32",
-			vals: [2]interface{}{uint32(0), uint32(1)},
-		}, {
-			typ:  "uint64",
-			vals: [2]interface{}{uint64(0), uint64(1)},
-		}, {
-			typ:  "bool",
-			vals: [2]interface{}{false, true},
-		}, {
-			typ: "time.Time",
-			vals: [2]interface{}{
-				now,
-				now.Add(time.Second),
-			},
-		}, {
-			typ:  "*string",
-			vals: [2]interface{}{nilptr("string"), nilptr("string")},
-		}, {
-			typ:  "*string",
-			vals: [2]interface{}{nilptr("string"), ptr("a")},
-		}, {
-			typ:  "*int",
-			vals: [2]interface{}{nilptr("int"), nilptr("int")},
-		}, {
-			typ:  "*int",
-			vals: [2]interface{}{nilptr("int"), ptr(int(0))},
-		}, {
-			typ:  "*int8",
-			vals: [2]interface{}{nilptr("int8"), nilptr("int8")},
-		}, {
-			typ:  "*int8",
-			vals: [2]interface{}{nilptr("int8"), ptr(int8(0))},
-		}, {
-			typ:  "*int16",
-			vals: [2]interface{}{nilptr("int16"), nilptr("int16")},
-		}, {
-			typ:  "*int16",
-			vals: [2]interface{}{nilptr("int16"), ptr(int16(0))},
-		}, {
-			typ:  "*int32",
-			vals: [2]interface{}{nilptr("int32"), nilptr("int32")},
-		}, {
-			typ:  "*int32",
-			vals: [2]interface{}{nilptr("int32"), ptr(int32(0))},
-		}, {
-			typ:  "*int64",
-			vals: [2]interface{}{nilptr("int64"), nilptr("int64")},
-		}, {
-			typ:  "*int64",
-			vals: [2]interface{}{nilptr("int64"), ptr(int64(0))},
-		}, {
-			typ:  "*uint",
-			vals: [2]interface{}{nilptr("uint"), nilptr("uint")},
-		}, {
-			typ:  "*uint",
-			vals: [2]interface{}{nilptr("uint"), ptr(uint(0))},
-		}, {
-			typ:  "*uint8",
-			vals: [2]interface{}{nilptr("uint8"), nilptr("uint8")},
-		}, {
-			typ:  "*uint8",
-			vals: [2]interface{}{nilptr("uint8"), ptr(uint8(0))},
-		}, {
-			typ:  "*uint16",
-			vals: [2]interface{}{nilptr("uint16"), nilptr("uint16")},
-		}, {
-			typ:  "*uint16",
-			vals: [2]interface{}{nilptr("uint16"), ptr(uint16(0))},
-		}, {
-			typ:  "*uint32",
-			vals: [2]interface{}{nilptr("uint32"), nilptr("uint32")},
-		}, {
-			typ:  "*uint32",
-			vals: [2]interface{}{nilptr("uint32"), ptr(uint32(0))},
-		}, {
-			typ:  "*uint64",
-			vals: [2]interface{}{nilptr("uint64"), nilptr("uint64")},
-		}, {
-			typ:  "*uint64",
-			vals: [2]interface{}{nilptr("uint64"), ptr(uint64(0))},
-		}, {
-			typ:  "*bool",
-			vals: [2]interface{}{nilptr("bool"), ptr(true)},
-		}, {
-			typ:  "*bool",
-			vals: [2]interface{}{nilptr("bool"), nilptr("bool")},
-		}, {
-			typ: "*time.Time",
-			vals: [2]interface{}{
-				nilptr("time.Time"),
-				now,
-			},
-		}, {
-			typ: "*time.Time",
-			vals: [2]interface{}{
-				nilptr("time.Time"),
-				nilptr("time.Time"),
-			},
-		},
+		// non-nullable
+		{vals: [2]interface{}{"", "a"}},
+		{vals: [2]interface{}{int(-1), int(0)}},
+		{vals: [2]interface{}{int8(-1), int8(0)}},
+		{vals: [2]interface{}{int16(-1), int16(0)}},
+		{vals: [2]interface{}{int32(-1), int32(0)}},
+		{vals: [2]interface{}{int64(-1), int64(0)}},
+		{vals: [2]interface{}{uint(0), uint(1)}},
+		{vals: [2]interface{}{uint8(0), uint8(1)}},
+		{vals: [2]interface{}{uint16(0), uint16(1)}},
+		{vals: [2]interface{}{uint32(0), uint32(1)}},
+		{vals: [2]interface{}{uint64(0), uint64(1)}},
+		{vals: [2]interface{}{false, true}},
+		{vals: [2]interface{}{now, now.Add(time.Second)}},
+		// nullable
+		{vals: [2]interface{}{nilptr("string"), nilptr("string")}},
+		{vals: [2]interface{}{nilptr("string"), ptr("a")}},
+		{vals: [2]interface{}{ptr(""), nilptr("string")}},
+		{vals: [2]interface{}{ptr(""), ptr("")}},
+		{vals: [2]interface{}{ptr(""), ptr("a")}},
+		{vals: [2]interface{}{nilptr("int"), nilptr("int")}},
+		{vals: [2]interface{}{nilptr("int"), ptr(int(0))}},
+		{vals: [2]interface{}{ptr(int(-1)), nilptr("int")}},
+		{vals: [2]interface{}{ptr(int(-1)), ptr(int(-1))}},
+		{vals: [2]interface{}{ptr(int(-1)), ptr(int(0))}},
+		{vals: [2]interface{}{nilptr("int8"), nilptr("int8")}},
+		{vals: [2]interface{}{nilptr("int8"), ptr(int8(0))}},
+		{vals: [2]interface{}{ptr(int8(-1)), nilptr("int8")}},
+		{vals: [2]interface{}{ptr(int8(-1)), ptr(int8(-1))}},
+		{vals: [2]interface{}{ptr(int8(-1)), ptr(int8(0))}},
+		{vals: [2]interface{}{nilptr("int16"), nilptr("int16")}},
+		{vals: [2]interface{}{nilptr("int16"), ptr(int16(0))}},
+		{vals: [2]interface{}{ptr(int16(-1)), nilptr("int16")}},
+		{vals: [2]interface{}{ptr(int16(-1)), ptr(int16(-1))}},
+		{vals: [2]interface{}{ptr(int16(-1)), ptr(int16(0))}},
+		{vals: [2]interface{}{nilptr("int32"), nilptr("int32")}},
+		{vals: [2]interface{}{nilptr("int32"), ptr(int32(0))}},
+		{vals: [2]interface{}{ptr(int32(-1)), nilptr("int32")}},
+		{vals: [2]interface{}{ptr(int32(-1)), ptr(int32(-1))}},
+		{vals: [2]interface{}{ptr(int32(-1)), ptr(int32(0))}},
+		{vals: [2]interface{}{nilptr("int64"), nilptr("int64")}},
+		{vals: [2]interface{}{nilptr("int64"), ptr(int64(0))}},
+		{vals: [2]interface{}{ptr(int64(-1)), nilptr("int64")}},
+		{vals: [2]interface{}{ptr(int64(-1)), ptr(int64(-1))}},
+		{vals: [2]interface{}{ptr(int64(-1)), ptr(int64(0))}},
+		{vals: [2]interface{}{nilptr("uint"), nilptr("uint")}},
+		{vals: [2]interface{}{nilptr("uint"), ptr(uint(0))}},
+		{vals: [2]interface{}{ptr(uint(0)), nilptr("uint")}},
+		{vals: [2]interface{}{ptr(uint(0)), ptr(uint(0))}},
+		{vals: [2]interface{}{ptr(uint(0)), ptr(uint(1))}},
+		{vals: [2]interface{}{nilptr("uint8"), nilptr("uint8")}},
+		{vals: [2]interface{}{nilptr("uint8"), ptr(uint8(0))}},
+		{vals: [2]interface{}{ptr(uint8(0)), nilptr("uint8")}},
+		{vals: [2]interface{}{ptr(uint8(0)), ptr(uint8(0))}},
+		{vals: [2]interface{}{ptr(uint8(0)), ptr(uint8(1))}},
+		{vals: [2]interface{}{nilptr("uint16"), nilptr("uint16")}},
+		{vals: [2]interface{}{nilptr("uint16"), ptr(uint16(0))}},
+		{vals: [2]interface{}{ptr(uint16(0)), nilptr("uint16")}},
+		{vals: [2]interface{}{ptr(uint16(0)), ptr(uint16(0))}},
+		{vals: [2]interface{}{ptr(uint16(0)), ptr(uint16(1))}},
+		{vals: [2]interface{}{nilptr("uint32"), nilptr("uint32")}},
+		{vals: [2]interface{}{nilptr("uint32"), ptr(uint32(0))}},
+		{vals: [2]interface{}{ptr(uint32(0)), nilptr("uint32")}},
+		{vals: [2]interface{}{ptr(uint32(0)), ptr(uint32(0))}},
+		{vals: [2]interface{}{ptr(uint32(0)), ptr(uint32(1))}},
+		{vals: [2]interface{}{nilptr("uint64"), nilptr("uint64")}},
+		{vals: [2]interface{}{nilptr("uint64"), ptr(uint64(0))}},
+		{vals: [2]interface{}{ptr(uint64(0)), nilptr("uint64")}},
+		{vals: [2]interface{}{ptr(uint64(0)), ptr(uint64(0))}},
+		{vals: [2]interface{}{ptr(uint64(0)), ptr(uint64(1))}},
+		{vals: [2]interface{}{nilptr("bool"), nilptr("bool")}},
+		{vals: [2]interface{}{nilptr("bool"), ptr(false)}},
+		{vals: [2]interface{}{ptr(false), nilptr("bool")}},
+		{vals: [2]interface{}{ptr(false), ptr(false)}},
+		{vals: [2]interface{}{ptr(false), ptr(true)}},
+		{vals: [2]interface{}{nilptr("time.Time"), nilptr("time.Time")}},
+		{vals: [2]interface{}{nilptr("time.Time"), ptr(now)}},
+		{vals: [2]interface{}{ptr(now), ptr(now)}},
+		{vals: [2]interface{}{ptr(now), ptr(now.Add(time.Second))}},
 	}
-
-	// 1, 3 => 3
-	// 2, 6 => 12
-	// 3, 8 => 24
-	// 4, 10 => 40
-	// Formula: number of types * (number of types + 2)
-
-	// 1
-	// 1
-	// 2
-
-	// 21
-	// 21
-	// 12
-	// 12
-	// 11
-	// 11
-
-	// 211
-	// 211
-	// 121
-	// 121
-	// 112
-	// 112
-	// 111
-	// 111
-
-	// 2111
-	// 2111
-	// 1211
-	// 1211
-	// 1121
-	// 1121
-	// 1112
-	// 1112
-	// 1111
-	// 1111
 
 	// Add attributes to type
 	typ := &Type{Name: "type"}
 	for i, t := range attrs {
-		ti, null := GetAttrType(t.typ)
+		ti, null := GetAttrType(fmt.Sprintf("%T", t.vals[0]))
 		typ.AddAttr(Attr{
 			Name: "attr" + strconv.Itoa(i),
 			Type: ti,
@@ -344,39 +266,18 @@ func TestSoftCollectionSort(t *testing.T) {
 	sc.SetType(typ)
 
 	// Add resources
-	num := len(attrs)*2 + 2
-	for n := 0; n < num; n++ {
+	for i := range attrs {
 		sr := &SoftResource{}
 		sr.SetType(typ)
-		sr.SetID("id" + strconv.Itoa(n))
-		i2 := (n - (n % 2)) / 2
-		fmt.Printf("n: %d, i2: %d\n", n, i2)
-		for i := 0; i < len(attrs); i++ {
-			// i2 := len(attrs) + 1 - n
-			if i != i2 {
-				// fmt.Printf("first value\n")
-				if i == 2 {
-					fmt.Printf("setting %s/%s to %v (first)\n", sr.GetID(), "attr"+strconv.Itoa(i), attrs[i].vals[0])
-				}
-				sr.Set("attr"+strconv.Itoa(i), attrs[i].vals[0])
+		sr.SetID("id" + strconv.Itoa(i))
+		for j := range attrs {
+			if i != j {
+				sr.Set("attr"+strconv.Itoa(j), attrs[j].vals[0])
 			} else {
-				// fmt.Printf("second value\n")
-				if i == 2 {
-					fmt.Printf("setting %s/%s to %v (second)\n", sr.GetID(), "attr"+strconv.Itoa(i), attrs[i].vals[1])
-				}
-				sr.Set("attr"+strconv.Itoa(i), attrs[i].vals[1])
+				sr.Set("attr"+strconv.Itoa(j), attrs[j].vals[1])
 			}
 		}
 		sc.Add(sr)
-	}
-
-	for j := 0; j < sc.Len(); j++ {
-		res := sc.Elem(j)
-		fmt.Printf("Resource: %s (%s)\n", res.GetID(), res.GetType().Name)
-		typ := res.GetType()
-		for _, field := range typ.Fields() {
-			fmt.Printf("  %s: '%v' (%T)\n", field, res.Get(field), res.Get(field))
-		}
 	}
 
 	// Sort collection
@@ -397,43 +298,28 @@ func TestSoftCollectionSort(t *testing.T) {
 		ids = append(ids, sc.Elem(i).GetID())
 	}
 
-	// expectedIDs := []string{
-	// 	"id14", "id2", "id0", "id193", "id4", "id5", "id6", "id7", "id8",
-	// 	"id9", "id10", "id11", "id12", "id192", "id1", "id15", "id16", "id17",
-	// 	"id18", "id19", "id20", "id21", "id22", "id23", "id24", "id25", "id26",
-	// 	"id27", "id28", "id29", "id30", "id31", "id32", "id33", "id34", "id35",
-	// 	"id36", "id37", "id38", "id39", "id40", "id41", "id42", "id43", "id44",
-	// 	"id45", "id46", "id47", "id48", "id49", "id50", "id51", "id52", "id53",
-	// 	"id54", "id55", "id56", "id57", "id58", "id59", "id60", "id61", "id62",
-	// 	"id63", "id64", "id65", "id66", "id67", "id68", "id69", "id70", "id71",
-	// 	"id72", "id73", "id74", "id75", "id76", "id77", "id78", "id79", "id80",
-	// 	"id81", "id82", "id83", "id84", "id85", "id86", "id87", "id88", "id89",
-	// 	"id90", "id91", "id92", "id93", "id94", "id95", "id96", "id97", "id98",
-	// 	"id99", "id100", "id101", "id102", "id103", "id104", "id105", "id106",
-	// 	"id107", "id108", "id109", "id110", "id111", "id112", "id113", "id114",
-	// 	"id115", "id116", "id117", "id118", "id119", "id120", "id121", "id122",
-	// 	"id123", "id124", "id125", "id126", "id127", "id128", "id129", "id130",
-	// 	"id131", "id132", "id133", "id134", "id135", "id136", "id137", "id138",
-	// 	"id139", "id140", "id141", "id142", "id143", "id144", "id145", "id146",
-	// 	"id147", "id148", "id149", "id150", "id151", "id152", "id153", "id154",
-	// 	"id155", "id156", "id157", "id158", "id159", "id160", "id161", "id162",
-	// 	"id163", "id164", "id165", "id166", "id167", "id168", "id169", "id170",
-	// 	"id171", "id172", "id173", "id174", "id175", "id176", "id177", "id178",
-	// 	"id179", "id180", "id181", "id182", "id183", "id184", "id185", "id186",
-	// 	"id187", "id188", "id189", "id190", "id191", "id194", "id3", "id13",
-	// }
-	// assert.Equal(t, expectedIDs, ids, fmt.Sprintf("rules: %v", rules))
+	expectedIDs := []string{
+		"id0", "id3", "id6", "id9", "id12", "id20", "id24", "id25", "id27",
+		"id35", "id39", "id40", "id42", "id50", "id54", "id55", "id57",
+		"id69", "id70", "id72", "id10", "id13", "id16", "id18", "id21",
+		"id23", "id26", "id28", "id31", "id33", "id36", "id38", "id41",
+		"id43", "id46", "id48", "id51", "id53", "id56", "id58", "id61",
+		"id63", "id64", "id65", "id66", "id67", "id68", "id71", "id73",
+		"id75", "id76", "id74", "id62", "id60", "id59", "id52", "id49",
+		"id47", "id45", "id44", "id37", "id34", "id32", "id30", "id29",
+		"id22", "id19", "id17", "id15", "id14", "id11", "id8", "id7", "id5",
+		"id4", "id2", "id1",
+	}
+	assert.Equal(expectedIDs, ids, fmt.Sprintf("sort with rules: %v", rules))
 
-	// // Sort with an empty list of sorting rules.
-	// sc.Sort([]string{})
+	// Sort with an empty list of sorting rules.
+	sc.Sort([]string{})
 
-	// ids = []string{}
-	// for i := 0; i < sc.Len(); i++ {
-	// 	ids = append(ids, sc.Elem(i).GetID())
-	// }
+	ids = []string{}
+	for i := 0; i < sc.Len(); i++ {
+		ids = append(ids, sc.Elem(i).GetID())
+	}
 
-	// expectedIDs = []string{
-	// 	"id1", "id10", "id2", "id3", "id4", "id5", "id6", "id7", "id8", "id9",
-	// }
-	// assert.Equal(t, expectedIDs, ids)
+	sort.Strings(expectedIDs)
+	assert.Equal(expectedIDs, ids, "sort by ID")
 }

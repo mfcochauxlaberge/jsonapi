@@ -151,14 +151,10 @@ func (sr *SoftResource) SetType(typ *Type) {
 // Set sets the value associated to the field named key to v.
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
-	fmt.Printf("about to set %s to %v (%T)\n", key, v, v)
 	if attr, ok := sr.typ.Attrs[key]; ok {
-		fmt.Printf("attr found, type=%s\n", GetAttrTypeString(attr.Type, attr.Null))
 		if GetAttrTypeString(attr.Type, attr.Null) == fmt.Sprintf("%T", v) {
-			fmt.Printf("done (1)\n")
 			sr.data[key] = v
 		} else if v == nil && attr.Null {
-			fmt.Printf("done (2)\n")
 			sr.data[key] = GetZeroValue(attr.Type, attr.Null)
 		}
 	}
