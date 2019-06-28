@@ -37,9 +37,6 @@ type Resource interface {
 
 	// Copy
 	Copy() Resource
-
-	// JSON
-	UnmarshalJSON(payload []byte) error
 }
 
 // Equal reports whether r1 and r2 are equal.
