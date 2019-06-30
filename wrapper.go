@@ -1,7 +1,6 @@
 package jsonapi
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
@@ -305,75 +304,6 @@ func (w *Wrapper) Copy() Resource {
 	}
 
 	return nw
-}
-
-// UnmarshalJSON parses the payload and populates the wrapped resource.
-func (w *Wrapper) UnmarshalJSON(payload []byte) error {
-	var err error
-
-	// Resource
-	ske := resourceSkeleton{}
-	err = json.Unmarshal(payload, &ske)
-	if err != nil {
-		return err
-	}
-
-	// ID
-	w.SetID(ske.ID)
-
-	// Attributes
-	attrs := map[string]interface{}{}
-	err = json.Unmarshal(ske.Attributes, &attrs)
-	if err != nil {
-		return fmt.Errorf("jsonapi: the attributes could not be parsed: %s", err)
-	}
-
-	for _, attr := range w.Attrs() {
-		k := attr.Name
-		if v, ok := attrs[k]; ok {
-			switch nv := v.(type) {
-			case string:
-				w.Set(k, nv)
-			case float64:
-				w.Set(k, nv)
-			case bool:
-				w.Set(k, nv)
-			default:
-				if nv == nil {
-					continue
-				}
-
-				panic(fmt.Errorf("jsonapi: attribute of type %T is not supported", nv))
-			}
-		}
-	}
-
-	// Relationships
-	for n, skeRel := range ske.Relationships {
-		for _, rel := range w.Rels() {
-			if rel.Name == n {
-				if len(skeRel.Data) != 0 {
-					if rel.ToOne {
-						data := identifierSkeleton{}
-
-						err := json.Unmarshal(skeRel.Data, &data)
-						if err != nil {
-							return nil
-						}
-					} else {
-						data := []identifierSkeleton{}
-
-						err := json.Unmarshal(skeRel.Data, &data)
-						if err != nil {
-							return nil
-						}
-					}
-				}
-			}
-		}
-	}
-
-	return nil
 }
 
 // Private methods
