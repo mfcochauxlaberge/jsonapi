@@ -124,8 +124,7 @@ func (w *Wrapper) Attr(key string) Attr {
 			return attr
 		}
 	}
-
-	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
+	return Attr{}
 }
 
 // Rel returns the relationship that corresponds to the given key.
@@ -135,8 +134,7 @@ func (w *Wrapper) Rel(key string) Rel {
 			return rel
 		}
 	}
-
-	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+	return Rel{}
 }
 
 // New returns a copy of the resource under the wrapper.
