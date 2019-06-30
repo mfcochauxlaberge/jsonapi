@@ -11,6 +11,24 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestWrap(t *testing.T) {
+	assert := assert.New(t)
+
+	assert.Panics(func() {
+		_ = Wrap("just a string")
+	}, "panic when not a pointer to a struct")
+
+	assert.Panics(func() {
+		str := "just a string"
+		_ = Wrap(&str)
+	}, "panic when not a pointer to a struct")
+
+	assert.Panics(func() {
+		s := time.Now()
+		_ = Wrap(&s)
+	}, "panic when not a valid struct")
+}
+
 func TestWrapper(t *testing.T) {
 	assert := assert.New(t)
 
@@ -28,6 +46,7 @@ func TestWrapper(t *testing.T) {
 		Uint8:  8,
 		Uint16: 16,
 		Uint32: 32,
+		Uint64: 64,
 		Bool:   true,
 		Time:   time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
 	}
@@ -39,7 +58,31 @@ func TestWrapper(t *testing.T) {
 	assert.Equal(res1.ID, id, "id")
 	assert.Equal("mocktypes1", typ, "type")
 
+	wrap1.SetID("another-id")
+	assert.Equal(res1.ID, "another-id", "set id")
+
 	// Get attributes
+	attr := wrap1.Attr("str")
+	assert.Equal(Attr{
+		Name: "str",
+		Type: AttrTypeString,
+		Null: false,
+	}, attr, "get attribute (str)")
+	assert.Equal(Attr{}, wrap1.Attr("nonexistent"), "get non-existent attribute")
+
+	// Get relationships
+	rel := wrap1.Rel("to-one")
+	assert.Equal(Rel{
+		Name:         "to-one",
+		Type:         "mocktypes2",
+		ToOne:        true,
+		InverseName:  "",
+		InverseType:  "mocktypes1",
+		InverseToOne: false,
+	}, rel, "get relationship (to-one)")
+	assert.Equal(Rel{}, wrap1.Rel("nonexistent"), "get non-existent relationship")
+
+	// Get values (attributes)
 	v1 := reflect.ValueOf(res1).Elem()
 	for i := 0; i < v1.NumField(); i++ {
 		f := v1.Field(i)
@@ -51,7 +94,7 @@ func TestWrapper(t *testing.T) {
 		}
 	}
 
-	// Set attributes
+	// Set values (attributes)
 	wrap1.Set("str", "another_string")
 	assert.Equal("another_string", wrap1.Get("str"), "set string attribute")
 	wrap1.Set("int", 3)
@@ -67,10 +110,11 @@ func TestWrapper(t *testing.T) {
 	aUint8 := uint8(88)
 	aUint16 := uint16(1616)
 	aUint32 := uint32(3232)
+	aUint64 := uint64(6464)
 	aBool := false
 	aTime := time.Date(2018, 2, 3, 4, 5, 6, 7, loc)
 
-	// Set the attributes after the wrapping
+	// Set the values (attributes) after the wrapping
 	res2 := &mockType2{
 		ID:        "res123",
 		StrPtr:    &aStr,
@@ -83,6 +127,7 @@ func TestWrapper(t *testing.T) {
 		Uint8Ptr:  &aUint8,
 		Uint16Ptr: &aUint16,
 		Uint32Ptr: &aUint32,
+		Uint64Ptr: &aUint64,
 		BoolPtr:   &aBool,
 		TimePtr:   &aTime,
 	}
@@ -94,7 +139,7 @@ func TestWrapper(t *testing.T) {
 	assert.Equal(res2.ID, id, "id 2")
 	assert.Equal("mocktypes2", typ, "type 2")
 
-	// Get attributes
+	// Get values (attributes)
 	v2 := reflect.ValueOf(res2).Elem()
 	for i := 0; i < v2.NumField(); i++ {
 		f := v2.Field(i)
@@ -106,7 +151,7 @@ func TestWrapper(t *testing.T) {
 		}
 	}
 
-	// Set attributes
+	// Set values (attributes)
 	var anotherString = "anotherString"
 	wrap2.Set("strptr", &anotherString)
 	assert.Equal(&anotherString, wrap2.Get("strptr"), "set string pointer attribute")
@@ -127,21 +172,71 @@ func TestWrapper(t *testing.T) {
 		assert.Equal(t, "nil pointer 2", nil, res2.UintPtr)
 	}
 
-	// Copy
-	wrap3 := wrap1.Copy()
-
+	// New
+	wrap3 := wrap1.New()
 	for _, attr := range wrap1.Attrs() {
-		assert.Equal(wrap1.Get(attr.Name), wrap3.Get(attr.Name), "copied attribute")
+		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
+	}
+	for _, rel := range wrap1.Rels() {
+		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+	}
 
-		if attr.Type == AttrTypeBool && !attr.Null {
-			wrap3.Set(attr.Name, !wrap1.Get(attr.Name).(bool))
-		} else if attr.Type == AttrTypeBool && attr.Null {
-			wrap3.Set(attr.Name, !*(wrap1.Get(attr.Name).(*bool)))
-		} else if attr.Type == AttrTypeTime {
-			wrap3.Set(attr.Name, time.Now())
-		} else {
-			wrap3.Set(attr.Name, "0")
+	// Copy
+	wrap3 = wrap1.Copy()
+	for _, attr := range wrap1.Attrs() {
+		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
+	}
+	for _, rel := range wrap1.Rels() {
+		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+	}
+
+	wrap3.Set("str", "another string")
+	assert.NotEqual(
+		wrap1.Get("str"),
+		wrap3.Get("str"),
+		fmt.Sprintf("modified value does not affect original"),
+	)
+}
+
+func TestWrapperSet(t *testing.T) {
+	assert := assert.New(t)
+
+	tests := []struct {
+		typ   string // "1" for mockType1, "2" for mockType2
+		field string
+		val   interface{}
+	}{
+		{typ: "1", field: "str", val: "astring"},
+		{typ: "1", field: "int", val: int(9)},
+		{typ: "1", field: "int8", val: int8(9)},
+		{typ: "1", field: "int16", val: int16(9)},
+		{typ: "1", field: "int32", val: int32(9)},
+		{typ: "1", field: "int64", val: int64(9)},
+		{typ: "1", field: "uint", val: uint(9)},
+		{typ: "1", field: "uint8", val: uint8(9)},
+		{typ: "1", field: "uint16", val: uint16(9)},
+		{typ: "1", field: "uint32", val: uint32(9)},
+		{typ: "1", field: "uint64", val: uint64(9)},
+		{typ: "1", field: "bool", val: bool(true)},
+		{typ: "2", field: "strptr", val: ptr("astring")},
+		{typ: "2", field: "intptr", val: ptr(int(9))},
+		{typ: "2", field: "int8ptr", val: ptr(int8(9))},
+		{typ: "2", field: "int16ptr", val: ptr(int16(9))},
+		{typ: "2", field: "int32ptr", val: ptr(int32(9))},
+		{typ: "2", field: "int64ptr", val: ptr(int64(9))},
+		{typ: "2", field: "uintptr", val: ptr(uint(9))},
+		{typ: "2", field: "uint8ptr", val: ptr(uint8(9))},
+		{typ: "2", field: "uint16ptr", val: ptr(uint16(9))},
+		{typ: "2", field: "uint32ptr", val: ptr(uint32(9))},
+		{typ: "2", field: "uint64ptr", val: ptr(uint64(9))},
+		{typ: "2", field: "boolptr", val: ptr(bool(true))},
+	}
+
+	for _, test := range tests {
+		if test.typ == "1" {
+			res1 := Wrap(&mockType1{})
+			res1.Set(test.field, test.val)
+			assert.EqualValues(test.val, res1.Get(test.field))
 		}
-		assert.NotEqual(wrap1.Get(attr.Name), wrap3.Get(attr.Name), fmt.Sprintf("modified copied attribute %s (%v)", attr.Name, attr.Type))
 	}
 }
