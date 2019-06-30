@@ -1,14 +1,11 @@
 package jsonapi
 
 import (
-	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"reflect"
-	"strconv"
 	"strings"
-	"time"
 )
 
 var _ Resource = (*Wrapper)(nil)
@@ -422,152 +419,11 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 				field.Set(val)
 				return nil
 			}
-			if val.Kind() == reflect.Ptr {
-				val = val.Elem()
-			}
-			v = val.Interface()
 
-			// Convert to string
-			var str string
-			switch nv := v.(type) {
-			case string:
-				str = nv
-			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
-				str = fmt.Sprintf("%d", nv)
-			case bool:
-				if nv {
-					str = "true"
-				} else {
-					str = "false"
-				}
-			case time.Time:
-				str = nv.Format(time.RFC3339Nano)
-			case float32, float64:
-				str = fmt.Sprintf("")
-			case sql.NullString:
-				str = nv.String
-			default:
-				panic(fmt.Errorf("jsonapi: value is of unsupported type"))
-			}
-
-			// Convert from string
-			switch field.Type().String() {
-			case "string":
-				field.SetString(str)
-			case "*string":
-				field.Set(reflect.ValueOf(&str))
-			case "int", "int8", "int16", "int32", "int64":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				field.SetInt(i)
-			case "*int":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := int(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*int8":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := int8(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*int16":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := int16(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*int32":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := int32(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*int64":
-				i, err := strconv.ParseInt(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				field.Set(reflect.ValueOf(&i))
-			case "uint", "uint8", "uint16", "uint32", "uint64":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				field.SetUint(i)
-			case "*uint":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := uint(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*uint8":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := uint8(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*uint16":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := uint16(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*uint32":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := uint32(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "*uint64":
-				i, err := strconv.ParseUint(str, 10, 64)
-				if err != nil {
-					return err
-				}
-				ni := uint64(i)
-				field.Set(reflect.ValueOf(&ni))
-			case "bool":
-				if str == "true" {
-					field.SetBool(true)
-				} else if str == "false" {
-					field.SetBool(false)
-				}
-			case "*bool":
-				var b bool
-				if str == "true" {
-					b = false
-				} else if str == "false" {
-					b = true
-				}
-				field.Set(reflect.ValueOf(&b))
-			case "time.Time":
-				t, err := time.Parse(time.RFC3339Nano, str)
-				if err != nil {
-					return err
-				}
-				field.Set(reflect.ValueOf(t))
-			case "*time.Time":
-				t, err := time.Parse(time.RFC3339Nano, str)
-				if err != nil {
-					return err
-				}
-				field.Set(reflect.ValueOf(&t))
-			default:
-				return fmt.Errorf("jsonapi: field is of unsupported type")
-			}
-
-			return nil
+			panic(fmt.Sprintf("jsonapi: value is of wrong type (expected %q, got %q)",
+				field.Type(),
+				val.Type(),
+			))
 		}
 	}
 
