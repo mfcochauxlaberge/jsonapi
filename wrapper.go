@@ -432,7 +432,7 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 			switch nv := v.(type) {
 			case string:
 				str = nv
-			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32:
+			case int, int8, int16, int32, int64, uint, uint8, uint16, uint32, uint64:
 				str = fmt.Sprintf("%d", nv)
 			case bool:
 				if nv {
@@ -496,7 +496,7 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 					return err
 				}
 				field.Set(reflect.ValueOf(&i))
-			case "uint", "uint8", "uint16", "uint32":
+			case "uint", "uint8", "uint16", "uint32", "uint64":
 				i, err := strconv.ParseUint(str, 10, 64)
 				if err != nil {
 					return err
@@ -529,6 +529,13 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 					return err
 				}
 				ni := uint32(i)
+				field.Set(reflect.ValueOf(&ni))
+			case "*uint64":
+				i, err := strconv.ParseUint(str, 10, 64)
+				if err != nil {
+					return err
+				}
+				ni := uint64(i)
 				field.Set(reflect.ValueOf(&ni))
 			case "bool":
 				if str == "true" {

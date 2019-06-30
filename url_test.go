@@ -261,7 +261,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -305,7 +305,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -347,7 +347,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32"},
+				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
 				PageSize:     90,
 				PageNumber:   110,
 				Include: [][]Rel{
@@ -373,7 +373,7 @@ func TestParseParams(t *testing.T) {
 				RelData:      map[string][]string{},
 				FilterLabel:  "label",
 				Filter:       nil,
-				SortingRules: []string{"bool", "int", "int16", "int32", "int64", "int8", "str", "time", "uint", "uint16", "uint32", "uint8"},
+				SortingRules: []string{"bool", "int", "int16", "int32", "int64", "int8", "str", "time", "uint", "uint16", "uint32", "uint64", "uint8"},
 				PageSize:     10,
 				PageNumber:   1,
 				Include:      [][]Rel{},
