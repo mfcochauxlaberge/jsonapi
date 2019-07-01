@@ -19,13 +19,13 @@ func TestSoftCollection(t *testing.T) {
 	// Add type
 	typ := Type{Name: "thistype"}
 	typ.AddAttr(Attr{
-		Name: "attr1",
-		Type: AttrTypeInt,
+		Name:     "attr1",
+		Type:     AttrTypeInt,
 		Nullable: false,
 	})
 	typ.AddAttr(Attr{
-		Name: "attr2",
-		Type: AttrTypeString,
+		Name:     "attr2",
+		Type:     AttrTypeString,
 		Nullable: true,
 	})
 	typ.AddRel(Rel{
@@ -56,8 +56,8 @@ func TestSoftCollection(t *testing.T) {
 	// at the same time and check whether they still are
 	// the same.
 	attr3 := Attr{
-		Name: "attr3",
-		Type: AttrTypeBool,
+		Name:     "attr3",
+		Type:     AttrTypeBool,
 		Nullable: false,
 	}
 	rel5 := Rel{
@@ -79,8 +79,8 @@ func TestSoftCollection(t *testing.T) {
 	// specified in the SoftCollection.
 	sr := NewSoftResource(Type{Name: "thirdtype"}, nil)
 	attr4 := Attr{
-		Name: "attr4",
-		Type: AttrTypeUint16,
+		Name:     "attr4",
+		Type:     AttrTypeUint16,
 		Nullable: true,
 	}
 	sr.AddAttr(attr4)
@@ -123,13 +123,13 @@ func TestSoftCollectionResource(t *testing.T) {
 
 	sc.GetType().Name = "type1"
 	sc.GetType().AddAttr(Attr{
-		Name: "attr1",
-		Type: AttrTypeString,
+		Name:     "attr1",
+		Type:     AttrTypeString,
 		Nullable: false,
 	})
 	sc.GetType().AddAttr(Attr{
-		Name: "attr2",
-		Type: AttrTypeInt,
+		Name:     "attr2",
+		Type:     AttrTypeInt,
 		Nullable: true,
 	})
 	sc.GetType().AddRel(Rel{
@@ -258,8 +258,8 @@ func TestSoftCollectionSort(t *testing.T) {
 	for i, t := range attrs {
 		ti, null := GetAttrType(fmt.Sprintf("%T", t.vals[0]))
 		typ.AddAttr(Attr{
-			Name: "attr" + strconv.Itoa(i),
-			Type: ti,
+			Name:     "attr" + strconv.Itoa(i),
+			Type:     ti,
 			Nullable: null,
 		})
 	}
