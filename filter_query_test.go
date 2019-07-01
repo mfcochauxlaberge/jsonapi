@@ -714,7 +714,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, filter),
+			filter.IsAllowed(res),
 			fmt.Sprintf("%v %s %v should be %v", test.rval, test.op, test.cval, test.expected),
 		)
 	}
@@ -784,7 +784,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, filter),
+			filter.IsAllowed(res),
 			fmt.Sprintf("%v %s %v should be %v", test.cval, test.op, test.rval, test.expected),
 		)
 	}
@@ -856,7 +856,7 @@ func TestFilterResource(t *testing.T) {
 
 		filter.Op = "and"
 		// filter = marshalUnmarshalFilter(t, filter)
-		result := FilterResource(res, filter)
+		result := filter.IsAllowed(res)
 		assert.Equal(
 			test.expectedAnd,
 			result,
@@ -865,7 +865,7 @@ func TestFilterResource(t *testing.T) {
 
 		filter.Op = "or"
 		// filter = marshalUnmarshalFilter(t, filter)
-		result = FilterResource(res, filter)
+		result = filter.IsAllowed(res)
 		assert.Equal(
 			test.expectedOr,
 			result,

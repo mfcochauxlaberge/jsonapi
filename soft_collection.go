@@ -98,7 +98,7 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 	if filter != nil {
 		i := 0
 		for i < len(rangeCol.col) {
-			if !FilterResource(rangeCol.col[i], filter) {
+			if !filter.IsAllowed(rangeCol.col[i]) {
 				rangeCol.col = append(rangeCol.col[:i], rangeCol.col[i+1:]...)
 			} else {
 				i++
