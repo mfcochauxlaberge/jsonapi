@@ -73,7 +73,7 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 
 // Range returns a subset of the collection arranged according to the
 // given parameters.
-func (s *SoftCollection) Range(ids []string, _ *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
+func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	s.Lock()
 	defer s.Unlock()
 
@@ -94,7 +94,17 @@ func (s *SoftCollection) Range(ids []string, _ *Filter, sort []string, fields []
 		}
 	}
 
-	// TODO Filter
+	// Filter
+	if filter != nil {
+		i := 0
+		for i < len(rangeCol.col) {
+			if !FilterResource(rangeCol.col[i], filter) {
+				rangeCol.col = append(rangeCol.col[:i], rangeCol.col[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
 
 	// Sort
 	rangeCol.Sort(sort)

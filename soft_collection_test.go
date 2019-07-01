@@ -156,6 +156,139 @@ func TestSoftCollectionResource(t *testing.T) {
 	assert.Equal(t, nil, sc.Resource("notfound", nil))
 }
 
+func TestSoftCollectionRange(t *testing.T) {
+	assert := assert.New(t)
+
+	// Collection
+	col := SoftCollection{}
+	col.SetType(&Type{})
+	col.AddAttr(Attr{
+		Name:     "attr1",
+		Type:     AttrTypeString,
+		Nullable: false,
+	})
+	col.AddAttr(Attr{
+		Name:     "attr2",
+		Type:     AttrTypeInt,
+		Nullable: false,
+	})
+
+	resources := []struct {
+		id     string
+		fields map[string]interface{}
+	}{
+		{
+			id: "res1",
+			fields: map[string]interface{}{
+				"attr1": "string1",
+				"attr2": 2,
+			},
+		}, {
+			id: "res2",
+			fields: map[string]interface{}{
+				"attr1": "string2",
+				"attr2": 2,
+			},
+		}, {
+			id: "res3",
+			fields: map[string]interface{}{
+				"attr1": "string2",
+				"attr2": 0,
+			},
+		}, {
+			id: "res4",
+			fields: map[string]interface{}{
+				"attr1": "string2",
+				"attr2": 2,
+			},
+		}, {
+			id: "res5",
+			fields: map[string]interface{}{
+				"attr1": "string3",
+				"attr2": 2,
+			},
+		}, {
+			id: "res6",
+			fields: map[string]interface{}{
+				"attr1": "string3",
+				"attr2": 4,
+			},
+		}, {
+			id: "res7",
+			fields: map[string]interface{}{
+				"attr1": "string4",
+				"attr2": 0,
+			},
+		}, {
+			id: "res8",
+			fields: map[string]interface{}{
+				"attr1": "string5",
+				"attr2": 2,
+			},
+		},
+	}
+
+	for _, res := range resources {
+		sr := &SoftResource{}
+		sr.SetType(col.GetType())
+		sr.SetID(res.id)
+		for field, val := range res.fields {
+			sr.Set(field, val)
+		}
+		col.Add(sr)
+	}
+
+	// Range test 1
+	rangd := col.Range(
+		// IDs
+		[]string{},
+		// Filter
+		nil,
+		// Sort
+		[]string{},
+		// Fields
+		[]string{},
+		// PageSize
+		10,
+		// PageNumber
+		0,
+	)
+
+	expectedIDs := []string{
+		"res1", "res2", "res3", "res4", "res5", "res6", "res7", "res8",
+	}
+	ids := []string{}
+	for i := 0; i < len(rangd); i++ {
+		ids = append(ids, rangd[i].GetID())
+	}
+	assert.Equal(expectedIDs, ids, "range of IDs (1)")
+
+	// Range test 2
+	rangd = col.Range(
+		// IDs
+		[]string{"res1", "res2", "res3", "res4", "res5", "res6"},
+		// Filter
+		&Filter{Field: "attr2", Op: "=", Val: 2},
+		// Sort
+		[]string{"-attr1"},
+		// Fields
+		[]string{"attr1", "attr2"},
+		// PageSize
+		2,
+		// PageNumber
+		0,
+	)
+
+	expectedIDs = []string{"res5", "res2"}
+	ids = []string{}
+	for i := 0; i < len(rangd); i++ {
+		ids = append(ids, rangd[i].GetID())
+	}
+	assert.Equal(expectedIDs, ids, "range of IDs (2)")
+
+	// Range test 3
+	assert.Equal(0, len(col.Range(nil, nil, nil, nil, 1, 100)), "range of IDs (3)")
+}
 func TestSoftCollectionSort(t *testing.T) {
 	assert := assert.New(t)
 
