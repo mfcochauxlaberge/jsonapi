@@ -2,7 +2,6 @@ package jsonapi
 
 import (
 	"errors"
-	"fmt"
 	"sort"
 	"strings"
 	"sync"
@@ -96,7 +95,6 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 	}
 
 	// Filter
-	fmt.Printf("length: %d\n", rangeCol.Len())
 	if filter != nil {
 		i := 0
 		for i < len(rangeCol.col) {
@@ -107,7 +105,6 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 			}
 		}
 	}
-	fmt.Printf("length after: %d\n", rangeCol.Len())
 
 	// Sort
 	rangeCol.Sort(sort)
