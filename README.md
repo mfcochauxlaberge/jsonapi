@@ -38,6 +38,16 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error)
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.
 
+See the following section for more information about how to define structs for this library.
+
+## Concepts
+
+### Type
+
+A type is generally defined with a struct.
+
+There needs to be an ID field of type string. The `api` tag represents the name of the type.
+
 ```
 type User struct {
   ID string `json:"id" api:"users"` // ID is mandatory and the api tag sets the type
@@ -51,11 +61,9 @@ type User struct {
 }
 ```
 
-It is recommended to use the `json` tag which sets the name of the field.
+Other fields with the `api` tag (`attr` or `rel`) can be added as attributes or relationships.
 
-## Concepts
-
-### Attributes
+#### Attribute
 
 Attributes can be of the following types:
 
@@ -72,7 +80,7 @@ time.Time
 *time.Time
 ```
 
-### Relationships
+#### Relationship
 
 Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a slice of strings. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In the following example, our Article struct defines a relationship named author of type users:
 
