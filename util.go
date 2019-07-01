@@ -168,9 +168,9 @@ func ReflectType(v interface{}) (Type, error) {
 		if apiTag == "attr" {
 			fieldType, null := GetAttrType(fs.Type.String())
 			typ.Attrs[jsonTag] = Attr{
-				Name: jsonTag,
-				Type: fieldType,
-				Null: null,
+				Name:     jsonTag,
+				Type:     fieldType,
+				Nullable: null,
 			}
 		}
 	}

@@ -66,7 +66,7 @@ func TestWrapper(t *testing.T) {
 	assert.Equal(Attr{
 		Name: "str",
 		Type: AttrTypeString,
-		Null: false,
+		Nullable: false,
 	}, attr, "get attribute (str)")
 	assert.Equal(Attr{}, wrap1.Attr("nonexistent"), "get non-existent attribute")
 

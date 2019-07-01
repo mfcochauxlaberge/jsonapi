@@ -21,12 +21,12 @@ func TestSoftCollection(t *testing.T) {
 	typ.AddAttr(Attr{
 		Name: "attr1",
 		Type: AttrTypeInt,
-		Null: false,
+		Nullable: false,
 	})
 	typ.AddAttr(Attr{
 		Name: "attr2",
 		Type: AttrTypeString,
-		Null: true,
+		Nullable: true,
 	})
 	typ.AddRel(Rel{
 		Name:         "rel1",
@@ -58,7 +58,7 @@ func TestSoftCollection(t *testing.T) {
 	attr3 := Attr{
 		Name: "attr3",
 		Type: AttrTypeBool,
-		Null: false,
+		Nullable: false,
 	}
 	rel5 := Rel{
 		Name:         "rel5",
@@ -81,7 +81,7 @@ func TestSoftCollection(t *testing.T) {
 	attr4 := Attr{
 		Name: "attr4",
 		Type: AttrTypeUint16,
-		Null: true,
+		Nullable: true,
 	}
 	sr.AddAttr(attr4)
 	typ.AddAttr(attr4)
@@ -125,12 +125,12 @@ func TestSoftCollectionResource(t *testing.T) {
 	sc.GetType().AddAttr(Attr{
 		Name: "attr1",
 		Type: AttrTypeString,
-		Null: false,
+		Nullable: false,
 	})
 	sc.GetType().AddAttr(Attr{
 		Name: "attr2",
 		Type: AttrTypeInt,
-		Null: true,
+		Nullable: true,
 	})
 	sc.GetType().AddRel(Rel{
 		Name:  "rel1",
@@ -260,7 +260,7 @@ func TestSoftCollectionSort(t *testing.T) {
 		typ.AddAttr(Attr{
 			Name: "attr" + strconv.Itoa(i),
 			Type: ti,
-			Null: null,
+			Nullable: null,
 		})
 	}
 	sc.SetType(typ)

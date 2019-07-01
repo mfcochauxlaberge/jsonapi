@@ -696,9 +696,9 @@ func TestFilterResource(t *testing.T) {
 		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Attrs = map[string]Attr{
 			"attr": Attr{
-				Name: "attr",
-				Type: ty,
-				Null: n,
+				Name:     "attr",
+				Type:     ty,
+				Nullable: n,
 			},
 		}
 
@@ -835,9 +835,9 @@ func TestFilterResource(t *testing.T) {
 			ty, n := GetAttrType(fmt.Sprintf("%T", test.rvals[j]))
 			typ.AddAttr(
 				Attr{
-					Name: attrName,
-					Type: ty,
-					Null: n,
+					Name:     attrName,
+					Type:     ty,
+					Nullable: n,
 				},
 			)
 

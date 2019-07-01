@@ -19,7 +19,7 @@ func TestSoftResource(t *testing.T) {
 	typ.AddAttr(Attr{
 		Name: "attr1",
 		Type: AttrTypeString,
-		Null: false,
+		Nullable: false,
 	})
 	typ.AddRel(Rel{
 		Name:         "rel1",
@@ -45,12 +45,12 @@ func TestSoftResource(t *testing.T) {
 		"attr1": Attr{
 			Name: "attr1",
 			Type: AttrTypeString,
-			Null: false,
+			Nullable: false,
 		},
 		"attr2": Attr{
 			Name: "attr2",
 			Type: AttrTypeString,
-			Null: true,
+			Nullable: true,
 		},
 	}
 	for _, attr := range attrs {
