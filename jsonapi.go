@@ -2,10 +2,6 @@ package jsonapi
 
 import (
 	"encoding/json"
-	"errors"
-	"fmt"
-	"reflect"
-	"strings"
 )
 
 // Marshal marshals a document according to the JSON:API speficication.
@@ -151,100 +147,129 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	return doc, nil
 }
 
-// CheckType checks the given value and returns any error found.
-//
-// If nil is returned, than the value can be safely used with this library.
-func CheckType(v interface{}) error {
-	value := reflect.ValueOf(v)
-	kind := value.Kind()
+// marshalResource ...
+func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) ([]byte, error) {
+	mapPl := map[string]interface{}{}
 
-	// Check wether it's a struct
-	if kind != reflect.Struct {
-		return errors.New("jsonapi: not a struct")
-	}
+	// ID and type
+	mapPl["id"] = r.GetID()
+	mapPl["type"] = r.GetType().Name
 
-	// Check ID field
-	var (
-		idField reflect.StructField
-		ok      bool
-	)
-	if idField, ok = value.Type().FieldByName("ID"); !ok {
-		return errors.New("jsonapi: struct doesn't have an ID field")
-	}
-
-	resType := idField.Tag.Get("api")
-	if resType == "" {
-		return errors.New("jsonapi: ID field's api tag is empty")
-	}
-
-	// Check attributes
-	for i := 0; i < value.NumField(); i++ {
-		sf := value.Type().Field(i)
-
-		if sf.Tag.Get("api") == "attr" {
-			isValid := false
-
-			switch sf.Type.String() {
-			case "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "bool", "time.Time", "*string", "*int", "*int8", "*int16", "*int32", "*int64", "*uint", "*uint8", "*uint16", "*uint32", "*uint64", "*bool", "*time.Time":
-				isValid = true
-			}
-
-			if !isValid {
-				return fmt.Errorf("jsonapi: attribute %s of type %s is of unsupported type", sf.Name, resType)
+	// Attributes
+	attrs := map[string]interface{}{}
+	for _, attr := range r.Attrs() {
+		if len(fields) == 0 {
+			attrs[attr.Name] = r.Get(attr.Name)
+		} else {
+			for _, field := range fields {
+				if field == attr.Name {
+					attrs[attr.Name] = r.Get(attr.Name)
+					break
+				}
 			}
 		}
 	}
+	mapPl["attributes"] = attrs
 
-	// Check relationships
-	for i := 0; i < value.NumField(); i++ {
-		sf := value.Type().Field(i)
-
-		if strings.HasPrefix(sf.Tag.Get("api"), "rel,") {
-			s := strings.Split(sf.Tag.Get("api"), ",")
-
-			if len(s) < 2 || len(s) > 3 {
-				return fmt.Errorf("jsonapi: api tag of relationship %s of struct %s is invalid", sf.Name, value.Type().Name())
-			}
-
-			if sf.Type.String() != "string" && sf.Type.String() != "[]string" {
-				return fmt.Errorf("jsonapi: relationship %s of type %s is not string or []string", sf.Name, resType)
+	// Relationships
+	rels := map[string]*json.RawMessage{}
+	for _, rel := range r.Rels() {
+		include := false
+		if len(fields) == 0 {
+			include = true
+		} else {
+			for _, field := range fields {
+				if field == rel.Name {
+					include = true
+					break
+				}
 			}
 		}
+
+		if include {
+			if rel.ToOne {
+				var raw json.RawMessage
+
+				s := map[string]map[string]string{
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
+				}
+
+				for n := range relData {
+					if n == rel.Name {
+						id := r.GetToOne(rel.Name)
+						if id != "" {
+							s["data"] = map[string]string{
+								"id":   r.GetToOne(rel.Name),
+								"type": rel.Type,
+							}
+						} else {
+							s["data"] = nil
+						}
+
+						break
+					}
+				}
+
+				// var links map[string]string{}
+				raw, _ = json.Marshal(s)
+				rels[rel.Name] = &raw
+			} else {
+				var raw json.RawMessage
+
+				s := map[string]interface{}{
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
+				}
+
+				for n := range relData {
+					if n == rel.Name {
+						data := []map[string]string{}
+
+						for _, id := range r.GetToMany(rel.Name) {
+							data = append(data, map[string]string{
+								"id":   id,
+								"type": rel.Type,
+							})
+						}
+
+						s["data"] = data
+
+						break
+					}
+				}
+
+				raw, _ = json.Marshal(s)
+				rels[rel.Name] = &raw
+			}
+
+		}
+	}
+	mapPl["relationships"] = rels
+
+	// Links
+	mapPl["links"] = map[string]string{
+		"self": buildSelfLink(r, prepath), // TODO
 	}
 
-	return nil
+	return json.Marshal(mapPl)
 }
 
-// IDAndType returns the ID and the type of the resource represented by v.
-//
-// Two empty strings are returned if v is not recognized as a resource.
-// CheckType can be used to check the validity of a struct.
-func IDAndType(v interface{}) (string, string) {
-	switch nv := v.(type) {
-	case Resource:
-		return nv.GetID(), nv.GetType().Name
+// marshalCollection ...
+func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) ([]byte, error) {
+	var raws []*json.RawMessage
+
+	if c.Len() == 0 {
+		return []byte("[]"), nil
 	}
 
-	val := reflect.ValueOf(v)
-
-	// Allows pointers to structs
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
-	}
-
-	if val.Kind() == reflect.Struct {
-		idF := val.FieldByName("ID")
-
-		if !idF.IsValid() {
-			return "", ""
+	for i := 0; i < c.Len(); i++ {
+		r := c.Elem(i)
+		var raw json.RawMessage
+		raw, err := marshalResource(r, prepath, fields, relData)
+		if err != nil {
+			return []byte{}, err
 		}
-
-		idSF, _ := val.Type().FieldByName("ID")
-
-		if idF.Kind() == reflect.String {
-			return idF.String(), idSF.Tag.Get("api")
-		}
+		raws = append(raws, &raw)
 	}
 
-	return "", ""
+	return json.Marshal(raws)
 }

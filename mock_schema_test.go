@@ -49,6 +49,7 @@ type mockType1 struct {
 	Uint8  uint8     `json:"uint8" api:"attr"`
 	Uint16 uint16    `json:"uint16" api:"attr"`
 	Uint32 uint32    `json:"uint32" api:"attr"`
+	Uint64 uint64    `json:"uint64" api:"attr"`
 	Bool   bool      `json:"bool" api:"attr"`
 	Time   time.Time `json:"time" api:"attr"`
 
@@ -76,6 +77,7 @@ type mockType2 struct {
 	Uint8Ptr  *uint8     `json:"uint8ptr" api:"attr"`
 	Uint16Ptr *uint16    `json:"uint16ptr" api:"attr"`
 	Uint32Ptr *uint32    `json:"uint32ptr" api:"attr"`
+	Uint64Ptr *uint64    `json:"uint64ptr" api:"attr"`
 	BoolPtr   *bool      `json:"boolptr" api:"attr"`
 	TimePtr   *time.Time `json:"timeptr" api:"attr"`
 

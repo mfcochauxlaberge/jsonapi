@@ -37,6 +37,7 @@ func init() {
 			Uint8:  8,
 			Uint16: 1600,
 			Uint32: 32000,
+			Uint64: 64000,
 			Bool:   false,
 			Time:   time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
 		}),
@@ -59,6 +60,7 @@ func init() {
 	uint8Ptr := uint8(8)
 	uint16Ptr := uint16(1600)
 	uint32Ptr := uint32(32000)
+	uint64Ptr := uint64(64000)
 	boolPtr := false
 	timePtr := time.Date(2017, 1, 2, 3, 4, 5, 6, loc)
 	mocktypes2.Add(
@@ -74,6 +76,7 @@ func init() {
 			Uint8Ptr:  &uint8Ptr,
 			Uint16Ptr: &uint16Ptr,
 			Uint32Ptr: &uint32Ptr,
+			Uint64Ptr: &uint64Ptr,
 			BoolPtr:   &boolPtr,
 			TimePtr:   &timePtr,
 		}),

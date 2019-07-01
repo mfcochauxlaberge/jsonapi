@@ -696,9 +696,9 @@ func TestFilterResource(t *testing.T) {
 		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Attrs = map[string]Attr{
 			"attr": Attr{
-				Name: "attr",
-				Type: ty,
-				Null: n,
+				Name:     "attr",
+				Type:     ty,
+				Nullable: n,
 			},
 		}
 
@@ -835,9 +835,9 @@ func TestFilterResource(t *testing.T) {
 			ty, n := GetAttrType(fmt.Sprintf("%T", test.rvals[j]))
 			typ.AddAttr(
 				Attr{
-					Name: attrName,
-					Type: ty,
-					Null: n,
+					Name:     attrName,
+					Type:     ty,
+					Nullable: n,
 				},
 			)
 
@@ -942,91 +942,6 @@ func TestFilterMarshaling(t *testing.T) {
 		Val: "",
 	})
 	assert.Equal(false, err != nil, "empty operation and value") // TODO
-}
-
-func ptr(v interface{}) interface{} {
-	switch c := v.(type) {
-	// String
-	case string:
-		return &c
-	// Integers
-	case int:
-		return &c
-	case int8:
-		return &c
-	case int16:
-		return &c
-	case int32:
-		return &c
-	case int64:
-		return &c
-	case uint:
-		return &c
-	case uint8:
-		return &c
-	case uint16:
-		return &c
-	case uint32:
-		return &c
-	case uint64:
-		return &c
-	// Bool
-	case bool:
-		return &c
-	// time.Time
-	case time.Time:
-		return &c
-	}
-	return nil
-}
-
-func nilptr(t string) interface{} {
-	switch t {
-	// String
-	case "string":
-		var p *string
-		return p
-	// Integers
-	case "int":
-		var p *int
-		return p
-	case "int8":
-		var p *int8
-		return p
-	case "int16":
-		var p *int16
-		return p
-	case "int32":
-		var p *int32
-		return p
-	case "int64":
-		var p *int64
-		return p
-	case "uint":
-		var p *uint
-		return p
-	case "uint8":
-		var p *uint8
-		return p
-	case "uint16":
-		var p *uint16
-		return p
-	case "uint32":
-		var p *uint32
-		return p
-	case "uint64":
-		var p *uint64
-		return p
-	// Bool
-	case "bool":
-		var p *bool
-		return p
-	// time.Time
-	case "time.Time":
-		var p *time.Time
-		return p
-	}
-	return nil
 }
 
 // func marshalUnmarshalFilter(t *testing.T, f *Filter) *Filter {
