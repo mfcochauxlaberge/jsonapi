@@ -20,7 +20,7 @@ func (t *Type) AddAttr(attr Attr) error {
 		return fmt.Errorf("jsonapi: attribute name is empty")
 	}
 
-	if GetAttrTypeString(attr.Type, attr.Null) == "" {
+	if GetAttrTypeString(attr.Type, attr.Nullable) == "" {
 		return fmt.Errorf("jsonapi: attribute type is invalid")
 	}
 
@@ -102,9 +102,9 @@ func (t *Type) Fields() []string {
 
 // Attr represents a resource attribute.
 type Attr struct {
-	Name string
-	Type int
-	Null bool
+	Name     string
+	Type     int
+	Nullable bool
 }
 
 // Rel represents a resource relationship.
