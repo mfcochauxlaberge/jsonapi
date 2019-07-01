@@ -51,26 +51,28 @@ type User struct {
 }
 ```
 
-It is recommended to use the json tag which sets the name of the field.
+It is recommended to use the `json` tag which sets the name of the field.
 
-## Attributes
+## Concepts
+
+### Attributes
 
 Attributes can be of the following types:
 
 ```
 string
 int, int8, int16, int32, int64
-uint, uint8, uint16, uint32
+uint, uint8, uint16, uint32, uint64
 bool
 time.Time
 *string
 *int, *int8, *int16, *int32, *int64
-*uint, *uint8, *uint16, *uint32
+*uint, *uint8, *uint16, *uint32, *uint64
 *bool
 *time.Time
 ```
 
-## Relationships
+### Relationships
 
 Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a slice of strings. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In the following example, our Article struct defines a relationship named author of type users:
 
@@ -78,25 +80,38 @@ Relationships can be a bit tricky. To-one relationships are defined with a strin
 Author string `json:"author" api:"rel,users,articles"`
 ```
 
+### Wrapper
+
+A struct can be wrapped using the `Wrap` function which returns a pointer to a `Wrapper`. A `Wrapper` implements the `Resource` interface and can be used with this library. Modifying a Wrapper will modify the underlying struct. The resource's type is defined from reflecting on the struct.
+
+```
+user := User{}
+wrap := Wrap(&user)
+wrap.Set("name", "Mike")
+fmt.Printf(wrap.Get("name")) // Output: Mike
+fmt.Printf(user.Name) // Output: Mike
+```
+
+### SoftResource
+
+A SoftResource is a struct whose type (name, attributes, and relationships) can be modified indefinitely just like its values. When an attribute or a relationship is added, the new value is the zero value of the field type. For example, if you add an attribute named `my-attribute` of type string, then `softresource.Get("my-attribute")` will return an empty string.
+
+```
+sr := SoftResource{}
+sr.AddAttr(Attr{
+  Name: "attr",
+  Type: AttrTypeInt,
+  Null: false,
+})
+fmt.Println(sr.Get("attr")) // Output: 0
+```
+
+### URLs
+
+From a raw string that represents a URL, it is possible that create a `SimpleURL` which contains the information stored in the URL in a structure that is easier to handle.
+
+It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which contains additional information taken from the schema. `NewURL` returns a error if the URL does not respect the schema.
+
 ## Documentation
 
 Check out the [incomplete documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
-
-## Utilities
-
-Some structs and functions are provided to help build tools on top of this library.
-
-For example:
-
-```
-// CheckType checks v to make sure it can be used as a type.
-func CheckType(v interface{}) error {
-
-// ReflectType reflects on an object and returns the corresponding Type.
-func ReflectType(v interface{}) (Type, error)
-
-// IDAndType returns the ID and type of v.
-func IDAndType(v interface{}) (string, string)
-```
-
-See util.go schema.go, document.go, url.go, and params.go for more.
