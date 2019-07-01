@@ -42,9 +42,17 @@ See the following section for more information about how to define structs for t
 
 ## Concepts
 
+Here are some of the main concepts covered by the library.
+
+### Request
+
+A `Request` represents an HTTP request structured in a format easily readable from a JSON:API point of view.
+
+If you are familiar to the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
+
 ### Type
 
-A type is generally defined with a struct.
+A JSON:API type is generally defined with a struct.
 
 There needs to be an ID field of type string. The `api` tag represents the name of the type.
 
@@ -114,6 +122,8 @@ sr.AddAttr(Attr{
 fmt.Println(sr.Get("attr")) // Output: 0
 ```
 
+Take a look at the `SoftCollection` struct for a similar concept applied to an entire collection of resources.
+
 ### URLs
 
 From a raw string that represents a URL, it is possible that create a `SimpleURL` which contains the information stored in the URL in a structure that is easier to handle.
@@ -123,3 +133,5 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 ## Documentation
 
 Check out the [incomplete documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
+
+The best way to learn how to use it is to look at the source code and its comments.
