@@ -25,7 +25,7 @@ The official specification can be found at [jsonapi.org/format](http://jsonapi.o
 
 ## State
 
-The library is in **alpha** and its API is subject to change until v1 is released. Also, tests are not complete.
+The library is in **beta** and its API is subject to change until v1 is released.
 
 ## Quick start
 
