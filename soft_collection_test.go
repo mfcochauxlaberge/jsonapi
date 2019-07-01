@@ -456,3 +456,10 @@ func TestSoftCollectionSort(t *testing.T) {
 	sort.Strings(expectedIDs)
 	assert.Equal(expectedIDs, ids, "sort by ID")
 }
+
+func TestSoftCollectionMiscellaneous(t *testing.T) {
+	assert := assert.New(t)
+
+	sc := &SoftCollection{}
+	assert.Nil(sc.Elem(99), "nonexistent element")
+}
