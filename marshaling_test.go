@@ -226,7 +226,11 @@ func TestMarshalErrors(t *testing.T) {
 
 	for _, test := range tests {
 		doc := NewDocument()
-		doc.Data = test.errors
+		if len(test.errors) == 1 {
+			doc.Data = test.errors[0]
+		} else {
+			doc.Data = test.errors
+		}
 		// Marshal
 		payload, err := Marshal(doc, nil)
 		assert.Equal(test.errorExpected, err != nil, test.name)
@@ -249,4 +253,29 @@ func TestMarshalErrors(t *testing.T) {
 			assert.Equal(expectedOutput, output, test.name)
 		}
 	}
+}
+
+func TestMarshalOther(t *testing.T) {
+	assert := assert.New(t)
+
+	doc := &Document{
+		Data: nil,
+	}
+	payload, err := Marshal(doc, nil)
+	assert.NoError(err)
+
+	// Format the payload
+	var out bytes.Buffer
+	json.Indent(&out, payload, "", "\t")
+	output := out.String()
+
+	// Retrieve the expected result from file
+	content, err := ioutil.ReadFile("testdata/null-1.json")
+	assert.NoError(err)
+	out.Reset()
+	json.Indent(&out, content, "", "\t")
+	// Trim because otherwise there is an extra line at the end
+	expectedOutput := strings.TrimSpace(out.String())
+
+	assert.Equal(expectedOutput, output, "null data")
 }
