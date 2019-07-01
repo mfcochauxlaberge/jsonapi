@@ -6,6 +6,9 @@
   <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
     <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
   </a>
+  <a href="https://goreportcard.com/report/github.com/mfcochauxlaberge/jsonapi">
+    <img src="https://goreportcard.com/badge/github.com/mfcochauxlaberge/jsonapi">
+  </a>
   <a href="https://codecov.io/gh/mfcochauxlaberge/jsonapi">
     <img src="https://codecov.io/gh/mfcochauxlaberge/jsonapi/branch/master/graph/badge.svg">
   </a>
@@ -30,7 +33,7 @@ The simplest way to start using jsonapi is to use the Marshal and Unmarshal func
 
 ```
 func Marshal(doc *Document, url *URL) ([]byte, error)
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Payload, error)
+func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error)
 ```
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.

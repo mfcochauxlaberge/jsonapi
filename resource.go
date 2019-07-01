@@ -8,38 +8,31 @@ import (
 
 // A Resource is an element of a collection.
 type Resource interface {
+	// Creation
+	New() Resource
+	Copy() Resource
+
 	// Structure
 	Attrs() map[string]Attr
 	Rels() map[string]Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
-	New() Resource
 
 	// Read
 	GetID() string
-	GetType() *Type
+	GetType() Type
 	Get(key string) interface{}
+	GetToOne(key string) string
+	GetToMany(key string) []string
 
 	// Update
 	SetID(id string)
 	Set(key string, val interface{})
-
-	// Read relationship
-	GetToOne(key string) string
-	GetToMany(key string) []string
-
-	// Update relationship
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
 
 	// Validate
 	Validate() []error
-
-	// Copy
-	Copy() Resource
-
-	// JSON
-	UnmarshalJSON(payload []byte) error
 }
 
 // Equal reports whether r1 and r2 are equal.

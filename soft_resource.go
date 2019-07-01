@@ -1,6 +1,8 @@
 package jsonapi
 
 import (
+	"fmt"
+
 	"github.com/mitchellh/copystructure"
 )
 
@@ -108,9 +110,9 @@ func (sr *SoftResource) GetID() string {
 }
 
 // GetType returns the resource's type.
-func (sr *SoftResource) GetType() *Type {
+func (sr *SoftResource) GetType() Type {
 	sr.check()
-	return sr.typ
+	return *sr.typ
 }
 
 // Get returns the value associated to the field named after key.
@@ -149,8 +151,12 @@ func (sr *SoftResource) SetType(typ *Type) {
 // Set sets the value associated to the field named key to v.
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
-	if _, ok := sr.data[key]; ok {
-		sr.data[key] = v
+	if attr, ok := sr.typ.Attrs[key]; ok {
+		if GetAttrTypeString(attr.Type, attr.Null) == fmt.Sprintf("%T", v) {
+			sr.data[key] = v
+		} else if v == nil && attr.Null {
+			sr.data[key] = GetZeroValue(attr.Type, attr.Null)
+		}
 	}
 }
 
@@ -173,18 +179,18 @@ func (sr *SoftResource) GetToMany(key string) []string {
 }
 
 // SetToOne sets the relationship named after key to rel.
-func (sr *SoftResource) SetToOne(key string, rel string) {
+func (sr *SoftResource) SetToOne(key string, v string) {
 	sr.check()
-	if _, ok := sr.data[key]; ok {
-		sr.data[key] = rel
+	if rel, ok := sr.typ.Rels[key]; ok && rel.ToOne {
+		sr.data[key] = v
 	}
 }
 
 // SetToMany sets the relationship named after key to rel.
-func (sr *SoftResource) SetToMany(key string, rels []string) {
+func (sr *SoftResource) SetToMany(key string, v []string) {
 	sr.check()
-	if _, ok := sr.data[key]; ok {
-		sr.data[key] = rels
+	if rel, ok := sr.typ.Rels[key]; ok && !rel.ToOne {
+		sr.data[key] = v
 	}
 }
 
