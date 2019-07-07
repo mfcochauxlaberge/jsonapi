@@ -130,7 +130,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.typ = s.typ
+	sr.Type = s.typ
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)
