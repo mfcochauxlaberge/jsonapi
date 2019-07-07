@@ -72,6 +72,7 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 // given parameters.
 func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	rangeCol := &SoftCollection{}
+	rangeCol.SetType(s.typ)
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -109,6 +110,7 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 		rangeCol = &SoftCollection{}
 	} else {
 		page := &SoftCollection{}
+		page.SetType(s.typ)
 		for i := skip; i < len(rangeCol.col) && (pageSize == 0 || i < int(pageSize)); i++ {
 			page.Add(rangeCol.col[i])
 		}
