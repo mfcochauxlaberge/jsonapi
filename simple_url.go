@@ -37,8 +37,6 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 		Fields:       map[string][]string{},
 		Filter:       nil,
 		SortingRules: []string{},
-		PageSize:     10,
-		PageNumber:   1,
 		Include:      []string{},
 	}
 
