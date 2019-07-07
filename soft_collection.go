@@ -111,7 +111,7 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 	} else {
 		page := &SoftCollection{}
 		page.SetType(s.typ)
-		for i := skip; i < len(rangeCol.col) && (pageSize == 0 || i < int(pageSize)); i++ {
+		for i := skip; i < len(rangeCol.col) && i < skip+int(pageSize); i++ {
 			page.Add(rangeCol.col[i])
 		}
 		rangeCol = page
