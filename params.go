@@ -176,10 +176,16 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	// Sorting
 	typ, _ := schema.GetType(resType)
 	sortingRules := make([]string, 0, len(typ.Attrs))
+	idFound := false
 	for _, rule := range su.SortingRules {
 		urule := rule
 		if urule[0] == '-' {
 			urule = urule[1:]
+		}
+		if urule == "id" {
+			idFound = true
+			sortingRules = append(sortingRules, rule)
+			break
 		}
 		for _, attr := range typ.Attrs {
 			if urule == attr.Name {
@@ -207,6 +213,9 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	}
 	sort.Strings(restOfRules)
 	sortingRules = append(sortingRules, restOfRules...)
+	if !idFound {
+		sortingRules = append(sortingRules, "id")
+	}
 	params.SortingRules = sortingRules
 
 	// Pagination
