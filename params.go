@@ -174,49 +174,69 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	// TODO
 
 	// Sorting
-	typ, _ := schema.GetType(resType)
-	sortingRules := make([]string, 0, len(typ.Attrs))
-	idFound := false
-	for _, rule := range su.SortingRules {
-		urule := rule
-		if urule[0] == '-' {
-			urule = urule[1:]
+	// TODO All of the following is just to figure out
+	// if the URL represents a single resource or a
+	// collection. It should be done in a better way.
+	isCol := false
+	if len(su.Fragments) == 1 {
+		isCol = true
+	} else if len(su.Fragments) >= 3 {
+		relName := su.Fragments[len(su.Fragments)-1]
+		typ, _ := schema.GetType(su.Fragments[0])
+		var (
+			rel Rel
+			ok  bool
+		)
+		if rel, ok = typ.Rels[relName]; !ok {
+			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
 		}
-		if urule == "id" {
-			idFound = true
-			sortingRules = append(sortingRules, rule)
-			break
-		}
-		for _, attr := range typ.Attrs {
-			if urule == attr.Name {
-				sortingRules = append(sortingRules, rule)
-				break
-			}
-		}
+		isCol = !rel.ToOne
 	}
-	restOfRules := make([]string, 0, len(typ.Attrs)-len(sortingRules))
-	for _, attr := range typ.Attrs {
-		found := false
-		for _, rule := range sortingRules {
+	if isCol {
+		typ, _ := schema.GetType(resType)
+		sortingRules := make([]string, 0, len(typ.Attrs))
+		idFound := false
+		for _, rule := range su.SortingRules {
 			urule := rule
 			if urule[0] == '-' {
 				urule = urule[1:]
 			}
-			if urule == attr.Name {
-				found = true
+			if urule == "id" {
+				idFound = true
+				sortingRules = append(sortingRules, rule)
 				break
 			}
+			for _, attr := range typ.Attrs {
+				if urule == attr.Name {
+					sortingRules = append(sortingRules, rule)
+					break
+				}
+			}
 		}
-		if !found {
-			restOfRules = append(restOfRules, attr.Name)
+		restOfRules := make([]string, 0, len(typ.Attrs)-len(sortingRules))
+		for _, attr := range typ.Attrs {
+			found := false
+			for _, rule := range sortingRules {
+				urule := rule
+				if urule[0] == '-' {
+					urule = urule[1:]
+				}
+				if urule == attr.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				restOfRules = append(restOfRules, attr.Name)
+			}
 		}
+		sort.Strings(restOfRules)
+		sortingRules = append(sortingRules, restOfRules...)
+		if !idFound {
+			sortingRules = append(sortingRules, "id")
+		}
+		params.SortingRules = sortingRules
 	}
-	sort.Strings(restOfRules)
-	sortingRules = append(sortingRules, restOfRules...)
-	if !idFound {
-		sortingRules = append(sortingRules, "id")
-	}
-	params.SortingRules = sortingRules
 
 	// Pagination
 	params.PageSize = su.PageSize
