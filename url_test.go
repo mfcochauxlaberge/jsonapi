@@ -206,7 +206,6 @@ func TestParseParams(t *testing.T) {
 		expectedParams Params
 		expectedError  bool
 	}{
-
 		{
 			name: "slash only",
 			url:  `/`,
