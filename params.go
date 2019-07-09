@@ -213,7 +213,8 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 				}
 			}
 		}
-		restOfRules := make([]string, 0, len(typ.Attrs)-len(sortingRules))
+		// Add 1 because of id
+		restOfRules := make([]string, 0, len(typ.Attrs)+1-len(sortingRules))
 		for _, attr := range typ.Attrs {
 			found := false
 			for _, rule := range sortingRules {
