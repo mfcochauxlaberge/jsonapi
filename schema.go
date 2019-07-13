@@ -85,8 +85,8 @@ func (s *Schema) RemoveRel(typ string, rel string) error {
 	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// HasType returns a boolean indicating whether a type has the specified name
-// or not.
+// HasType returns a boolean indicating whether a type has the specified
+// name or not.
 func (s *Schema) HasType(name string) bool {
 	for i := range s.Types {
 		if s.Types[i].Name == name {
@@ -144,7 +144,8 @@ func (s *Schema) Check() []error {
 
 			// Inverse relationship (if relevant)
 			if rel.InverseName != "" {
-				// Is the inverse relationship type the same as its type name?
+				// Is the inverse relationship type the same as its
+				// type name?
 				if rel.InverseType != typ.Name {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
@@ -154,7 +155,8 @@ func (s *Schema) Check() []error {
 					))
 				}
 
-				// Do both relationships (current and inverse) point to each other?
+				// Do both relationships (current and inverse) point
+				// to each other?
 				var found bool
 				for _, invRel := range targetType.Rels {
 					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
