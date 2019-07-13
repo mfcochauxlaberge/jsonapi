@@ -8,27 +8,6 @@ import (
 
 var _ Resource = (*SoftResource)(nil)
 
-// NewSoftResource returns a new SoftResource with the given type.
-//
-// It is also populated with values from vals.
-func NewSoftResource(typ Type, vals map[string]interface{}) *SoftResource {
-	res := &SoftResource{}
-	res.Type = &typ
-
-	for _, attr := range typ.Attrs {
-		if val, ok := vals[attr.Name]; ok {
-			res.Set(attr.Name, val)
-		}
-	}
-	for _, rel := range typ.Rels {
-		if val, ok := vals[rel.Name]; ok {
-			res.Set(rel.Name, val)
-		}
-	}
-
-	return res
-}
-
 // SoftResource represents a resource whose type is defined by an internal
 // field of type *Type.
 //

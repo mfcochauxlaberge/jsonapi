@@ -29,7 +29,7 @@ func TestSoftResource(t *testing.T) {
 		InverseType:  "type",
 		InverseToOne: true,
 	})
-	sr = NewSoftResource(typ, nil)
+	sr = &SoftResource{Type: &typ}
 	// TODO assert.Equal(t, &typ, sr.typ)
 
 	// ID and type

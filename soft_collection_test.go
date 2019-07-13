@@ -77,7 +77,7 @@ func TestSoftCollection(t *testing.T) {
 
 	// Add a SoftResource with more fields than those
 	// specified in the SoftCollection.
-	sr := NewSoftResource(Type{Name: "thirdtype"}, nil)
+	sr := &SoftResource{Type: &Type{Name: "thirdtype"}}
 	attr4 := Attr{
 		Name:     "attr4",
 		Type:     AttrTypeUint16,
