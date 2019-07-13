@@ -33,14 +33,12 @@ func (s *Schema) AddType(typ Type) error {
 }
 
 // RemoveType removes a type from the schema.
-func (s *Schema) RemoveType(typ string) error {
+func (s *Schema) RemoveType(typ string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
 			s.Types = append(s.Types[0:i], s.Types[i+1:]...)
 		}
 	}
-
-	return nil
 }
 
 // AddAttr adds an attribute to the specified type.
