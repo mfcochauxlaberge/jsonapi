@@ -19,7 +19,7 @@ func newMockSchema() *Schema {
 
 	for t, typ := range schema.Types {
 		for r, rel := range typ.Rels {
-			invType, _ := schema.GetType(rel.Type)
+			invType := schema.GetType(rel.Type)
 			rel := schema.Types[t].Rels[r]
 			rel.InverseToOne = invType.Rels[rel.InverseName].ToOne
 			schema.Types[t].Rels[r] = rel

@@ -48,7 +48,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
 	if len(url.Fragments) >= 1 {
-		if typ, ok = schema.GetType(url.Fragments[0]); !ok {
+		if typ = schema.GetType(url.Fragments[0]); typ.Name == "" {
 			return nil, NewErrUnknownTypeInURL(url.Fragments[0])
 		}
 

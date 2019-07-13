@@ -98,21 +98,23 @@ func (s *Schema) HasType(name string) bool {
 
 // GetType returns the type associated with the speficied name.
 //
-// A boolean indicates whether a type was found or not.
-func (s *Schema) GetType(name string) (Type, bool) {
+// If no type with the given name is found, an zero instance of Type is
+// returned. Therefore, checking whether the Name field is empty or not
+// is a good way to dertermine whether the type was found or not.
+func (s *Schema) GetType(name string) Type {
 	for _, typ := range s.Types {
 		if typ.Name == name {
-			return typ, true
+			return typ
 		}
 	}
-	return Type{}, false
+	return Type{}
 }
 
 // GetResource returns a resource of type SoftResource with the specified
 // type. All fields are set to their zero values.
 func (s *Schema) GetResource(name string) Resource {
-	typ, ok := s.GetType(name)
-	if ok {
+	typ := s.GetType(name)
+	if typ.Name != "" {
 		return NewSoftResource(typ, nil)
 	}
 	return nil
@@ -122,7 +124,6 @@ func (s *Schema) GetResource(name string) Resource {
 // and returns all the errors that were found.
 func (s *Schema) Check() []error {
 	var (
-		ok   bool
 		errs = []error{}
 	)
 
@@ -133,7 +134,7 @@ func (s *Schema) Check() []error {
 			var targetType Type
 
 			// Does the relationship point to a type that exists?
-			if targetType, ok = s.GetType(rel.Type); !ok {
+			if targetType = s.GetType(rel.Type); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: the target type of relationship %s of type %s does not exist",
 					rel.Name,

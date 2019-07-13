@@ -196,8 +196,8 @@ func TestParseParams(t *testing.T) {
 
 	// Schema
 	schema := newMockSchema()
-	mockTypes1, _ := schema.GetType("mocktypes1")
-	mockTypes2, _ := schema.GetType("mocktypes2")
+	mockTypes1 := schema.GetType("mocktypes1")
+	mockTypes2 := schema.GetType("mocktypes2")
 
 	tests := []struct {
 		name           string
@@ -394,12 +394,12 @@ func TestParseParams(t *testing.T) {
 		// Set Attrs and Rels
 		for resType, fields := range test.expectedParams.Fields {
 			for _, field := range fields {
-				if res, ok := schema.GetType(resType); ok {
-					if _, ok := res.Attrs[field]; ok {
-						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], res.Attrs[field])
-					} else if typ, ok := schema.GetType(resType); ok {
+				if typ := schema.GetType(resType); typ.Name != "" {
+					if _, ok := typ.Attrs[field]; ok {
+						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], typ.Attrs[field])
+					} else if typ := schema.GetType(resType); typ.Name != "" {
 						if _, ok := typ.Rels[field]; ok {
-							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], res.Rels[field])
+							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], typ.Rels[field])
 						}
 					}
 				}
