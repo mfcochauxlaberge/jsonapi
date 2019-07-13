@@ -139,25 +139,24 @@ func (s *Schema) Check() []error {
 						typ.Name,
 						rel.InverseType,
 					))
-				}
-
-				// Do both relationships (current and inverse) point
-				// to each other?
-				var found bool
-				for _, invRel := range targetType.Rels {
-					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
-						found = true
+				} else {
+					// Do both relationships (current and inverse) point
+					// to each other?
+					var found bool
+					for _, invRel := range targetType.Rels {
+						if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+							found = true
+						}
+					}
+					if !found {
+						errs = append(errs, fmt.Errorf(
+							"jsonapi: relationship %s of type %s and its inverse do not point each other",
+							rel.Name,
+							typ.Name,
+						))
 					}
 				}
-				if !found {
-					errs = append(errs, fmt.Errorf(
-						"jsonapi: relationship %s of type %s and its inverse do not point each other",
-						rel.Name,
-						typ.Name,
-					))
-				}
 			}
-
 		}
 	}
 
