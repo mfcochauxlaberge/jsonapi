@@ -106,16 +106,6 @@ func (s *Schema) GetType(name string) Type {
 	return Type{}
 }
 
-// GetResource returns a resource of type SoftResource with the specified
-// type. All fields are set to their zero values.
-func (s *Schema) GetResource(name string) Resource {
-	typ := s.GetType(name)
-	if typ.Name != "" {
-		return NewSoftResource(typ, nil)
-	}
-	return nil
-}
-
 // Check checks the integrity of all the relationships between the types
 // and returns all the errors that were found.
 func (s *Schema) Check() []error {
