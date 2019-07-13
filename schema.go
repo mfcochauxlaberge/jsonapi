@@ -53,14 +53,12 @@ func (s *Schema) AddAttr(typ string, attr Attr) error {
 }
 
 // RemoveAttr removes an attribute from the specified type.
-func (s *Schema) RemoveAttr(typ string, attr string) error {
+func (s *Schema) RemoveAttr(typ string, attr string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
-			return s.Types[i].RemoveAttr(attr)
+			s.Types[i].RemoveAttr(attr)
 		}
 	}
-
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
 // AddRel adds a relationship to the specified type.
@@ -75,14 +73,12 @@ func (s *Schema) AddRel(typ string, rel Rel) error {
 }
 
 // RemoveRel removes a relationship from the specified type.
-func (s *Schema) RemoveRel(typ string, rel string) error {
+func (s *Schema) RemoveRel(typ string, rel string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
-			return s.Types[i].RemoveRel(rel)
+			s.Types[i].RemoveRel(rel)
 		}
 	}
-
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
 // HasType returns a boolean indicating whether a type has the specified

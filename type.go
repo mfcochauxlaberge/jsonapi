@@ -60,14 +60,12 @@ func (t *Type) AddAttr(attr Attr) error {
 }
 
 // RemoveAttr removes an attribute from the type if it exists.
-func (t *Type) RemoveAttr(attr string) error {
+func (t *Type) RemoveAttr(attr string) {
 	for i := range t.Attrs {
 		if t.Attrs[i].Name == attr {
 			delete(t.Attrs, attr)
 		}
 	}
-
-	return nil
 }
 
 // AddRel adds a relationship to the type.
@@ -96,14 +94,12 @@ func (t *Type) AddRel(rel Rel) error {
 }
 
 // RemoveRel removes a relationship from the type if it exists.
-func (t *Type) RemoveRel(rel string) error {
+func (t *Type) RemoveRel(rel string) {
 	for i := range t.Rels {
 		if t.Rels[i].Name == rel {
 			delete(t.Rels, rel)
 		}
 	}
-
-	return nil
 }
 
 // Fields returns a list of the names of all the fields (attributes and
