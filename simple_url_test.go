@@ -240,3 +240,13 @@ func TestSimpleURL(t *testing.T) {
 		assert.Equal(test.expectedError, err, test.name)
 	}
 }
+
+func TestSimpleURLPath(t *testing.T) {
+	assert := assert.New(t)
+
+	su := &SimpleURL{Fragments: []string{}}
+	assert.Equal("", su.Path())
+
+	su = &SimpleURL{Fragments: []string{"a", "b", "c"}}
+	assert.Equal("a/b/c", su.Path())
+}
