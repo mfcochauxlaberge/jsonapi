@@ -1,7 +1,6 @@
 package jsonapi_test
 
 import (
-	"sort"
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
@@ -41,7 +40,6 @@ func TestInclude(t *testing.T) {
 	for _, res := range doc.Included {
 		ids = append(ids, res.GetType().Name+"-"+res.GetID())
 	}
-	sort.Strings(ids)
 
 	expect := []string{
 		"t1-id2",
@@ -77,7 +75,6 @@ func TestInclude(t *testing.T) {
 	for _, res := range doc.Included {
 		ids = append(ids, res.GetType().Name+"-"+res.GetID())
 	}
-	sort.Strings(ids)
 
 	expect = []string{
 		"t1-id4",

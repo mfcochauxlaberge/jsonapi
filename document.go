@@ -6,7 +6,7 @@ type Document struct {
 	Data interface{}
 
 	// Included
-	Included map[string]Resource
+	Included []Resource
 
 	// References
 	Resources map[string]map[string]struct{}
@@ -28,7 +28,7 @@ type Document struct {
 // NewDocument returns a pointer to a new Document.
 func NewDocument() *Document {
 	return &Document{
-		Included:  map[string]Resource{},
+		Included:  []Resource{},
 		Resources: map[string]map[string]struct{}{},
 		Links:     map[string]Link{},
 		RelData:   map[string][]string{},
@@ -44,7 +44,7 @@ func (d *Document) Include(res Resource) {
 	key := res.GetID() + " " + res.GetType().Name
 
 	if len(d.Included) == 0 {
-		d.Included = map[string]Resource{}
+		d.Included = []Resource{}
 	}
 
 	if dres, ok := d.Data.(Resource); ok {
@@ -69,11 +69,13 @@ func (d *Document) Include(res Resource) {
 	}
 
 	// Check already included resources
-	if _, ok := d.Included[key]; ok {
-		return
+	for _, res := range d.Included {
+		if key == res.GetID()+" "+res.GetType().Name {
+			return
+		}
 	}
 
-	d.Included[key] = res
+	d.Included = append(d.Included, res)
 }
 
 // MarshalJSON ...

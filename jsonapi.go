@@ -141,7 +141,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 			if err != nil {
 				return nil, err
 			}
-			doc.Included[inc2.Type+" "+inc2.ID] = res2
+			doc.Included = append(doc.Included, res2)
 		}
 	}
 
