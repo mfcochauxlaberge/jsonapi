@@ -48,7 +48,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
 	if len(url.Fragments) >= 1 {
-		if typ, ok = schema.GetType(url.Fragments[0]); !ok {
+		if typ = schema.GetType(url.Fragments[0]); typ.Name == "" {
 			return nil, NewErrUnknownTypeInURL(url.Fragments[0])
 		}
 
@@ -93,6 +93,22 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	}
 
 	return url, nil
+}
+
+// NewURLFromRaw parses rawurl to make a *url.URL before making and returning
+// a *URL.
+func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
+	url, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+
+	su, err := NewSimpleURL(url)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewURL(schema, su)
 }
 
 // A BelongsToFilter represents a parent resource, used to filter out
@@ -184,20 +200,4 @@ func (u *URL) FullURL() string {
 	url := u.NormalizePath()
 
 	return url
-}
-
-// ParseRawURL parses rawurl to make a *url.URL before making and returning
-// a *URL.
-func ParseRawURL(schema *Schema, rawurl string) (*URL, error) {
-	url, err := url.Parse(rawurl)
-	if err != nil {
-		return nil, err
-	}
-
-	su, err := NewSimpleURL(url)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewURL(schema, su)
 }

@@ -179,7 +179,7 @@ func TestParseURL(t *testing.T) {
 
 	for _, test := range tests {
 		u, _ := url.Parse(makeOneLineNoSpaces(test.url))
-		url, err := ParseRawURL(schema, u.String())
+		url, err := NewURLFromRaw(schema, u.String())
 		assert.Equal(test.expectedError, err != nil, test.name)
 
 		// test.expectedURL.Path = makeOneLineNoSpaces(test.expectedURL.Path)
@@ -196,8 +196,8 @@ func TestParseParams(t *testing.T) {
 
 	// Schema
 	schema := newMockSchema()
-	mockTypes1, _ := schema.GetType("mocktypes1")
-	mockTypes2, _ := schema.GetType("mocktypes2")
+	mockTypes1 := schema.GetType("mocktypes1")
+	mockTypes2 := schema.GetType("mocktypes2")
 
 	tests := []struct {
 		name           string
@@ -206,7 +206,6 @@ func TestParseParams(t *testing.T) {
 		expectedParams Params
 		expectedError  bool
 	}{
-
 		{
 			name: "slash only",
 			url:  `/`,
@@ -217,8 +216,8 @@ func TestParseParams(t *testing.T) {
 				RelData:      map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -232,8 +231,8 @@ func TestParseParams(t *testing.T) {
 				RelData:      map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -261,7 +260,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
+				SortingRules: []string{},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -305,7 +304,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
+				SortingRules: []string{},
 				PageSize:     50,
 				PageNumber:   3,
 				Include: [][]Rel{
@@ -347,7 +346,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				Filter:       nil,
-				SortingRules: []string{"str", "-bool", "uint8", "int", "int16", "int32", "int64", "int8", "time", "uint", "uint16", "uint32", "uint64"},
+				SortingRules: []string{},
 				PageSize:     90,
 				PageNumber:   110,
 				Include: [][]Rel{
@@ -373,9 +372,9 @@ func TestParseParams(t *testing.T) {
 				RelData:      map[string][]string{},
 				FilterLabel:  "label",
 				Filter:       nil,
-				SortingRules: []string{"bool", "int", "int16", "int32", "int64", "int8", "str", "time", "uint", "uint16", "uint32", "uint64", "uint8"},
-				PageSize:     10,
-				PageNumber:   1,
+				SortingRules: []string{},
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -395,12 +394,12 @@ func TestParseParams(t *testing.T) {
 		// Set Attrs and Rels
 		for resType, fields := range test.expectedParams.Fields {
 			for _, field := range fields {
-				if res, ok := schema.GetType(resType); ok {
-					if _, ok := res.Attrs[field]; ok {
-						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], res.Attrs[field])
-					} else if typ, ok := schema.GetType(resType); ok {
+				if typ := schema.GetType(resType); typ.Name != "" {
+					if _, ok := typ.Attrs[field]; ok {
+						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], typ.Attrs[field])
+					} else if typ := schema.GetType(resType); typ.Name != "" {
 						if _, ok := typ.Rels[field]; ok {
-							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], res.Rels[field])
+							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], typ.Rels[field])
 						}
 					}
 				}

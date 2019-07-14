@@ -65,7 +65,8 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 
 		incRel := Rel{Type: resType}
 		for _, word := range words {
-			if typ, ok := schema.GetType(incRel.Type); ok {
+			if typ := schema.GetType(incRel.Type); typ.Name != "" {
+				var ok bool
 				if incRel, ok = typ.Rels[word]; ok {
 					params.Fields[incRel.Type] = []string{}
 				} else {
@@ -86,14 +87,14 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		var incRel Rel
 		for w := range words {
 			if w == 0 {
-				typ, _ := schema.GetType(resType)
+				typ := schema.GetType(resType)
 				incRel = typ.Rels[words[0]]
 			}
 
 			params.Include[i][w] = incRel
 
 			if w < len(words)-1 {
-				typ, _ := schema.GetType(incRel.Type)
+				typ := schema.GetType(incRel.Type)
 				incRel = typ.Rels[words[w+1]]
 			}
 		}
@@ -106,11 +107,11 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	// Fields
 	for t, fields := range su.Fields {
 		if t != resType {
-			if _, ok := schema.GetType(t); !ok {
+			if typ := schema.GetType(t); typ.Name == "" {
 				return nil, NewErrUnknownTypeInURL(t)
 			}
 		}
-		if typ, ok := schema.GetType(t); ok {
+		if typ := schema.GetType(t); typ.Name != "" {
 			params.Fields[t] = []string{}
 			for _, f := range fields {
 				for _, ff := range typ.Fields() {
@@ -123,7 +124,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	}
 	for t := range params.Fields {
 		if len(params.Fields[t]) == 0 {
-			typ, _ := schema.GetType(t)
+			typ := schema.GetType(t)
 			params.Fields[t] = make([]string, len(typ.Fields()))
 			copy(params.Fields[t], typ.Fields())
 		}
@@ -137,7 +138,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 			rel  Rel
 			ok   bool
 		)
-		if typ, ok = schema.GetType(typeName); !ok {
+		if typ = schema.GetType(typeName); typ.Name == "" {
 			return nil, NewErrUnknownTypeInURL(typeName)
 		}
 
@@ -150,14 +151,14 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 					// Append to list of fields
 					// params.Fields[typeName] = append(params.Fields[typeName], field)
 
-					if typ, ok = schema.GetType(typeName); ok {
+					if typ = schema.GetType(typeName); typ.Name != "" {
 						if attr, ok = typ.Attrs[field]; ok {
 							// Append to list of attributes
 							params.Attrs[typeName] = append(params.Attrs[typeName], attr)
 						}
 					}
 
-					if typ, ok = schema.GetType(typeName); ok {
+					if typ = schema.GetType(typeName); typ.Name != "" {
 						if rel, ok = typ.Rels[field]; ok {
 							// Append to list of relationships
 							params.Rels[typeName] = append(params.Rels[typeName], rel)
@@ -174,40 +175,70 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	// TODO
 
 	// Sorting
-	typ, _ := schema.GetType(resType)
-	sortingRules := make([]string, 0, len(typ.Attrs))
-	for _, rule := range su.SortingRules {
-		urule := rule
-		if urule[0] == '-' {
-			urule = urule[1:]
+	// TODO All of the following is just to figure out
+	// if the URL represents a single resource or a
+	// collection. It should be done in a better way.
+	isCol := false
+	if len(su.Fragments) == 1 {
+		isCol = true
+	} else if len(su.Fragments) >= 3 {
+		relName := su.Fragments[len(su.Fragments)-1]
+		typ := schema.GetType(su.Fragments[0])
+		var (
+			rel Rel
+			ok  bool
+		)
+		if rel, ok = typ.Rels[relName]; !ok {
+			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
 		}
-		for _, attr := range typ.Attrs {
-			if urule == attr.Name {
-				sortingRules = append(sortingRules, rule)
-				break
-			}
-		}
+		isCol = !rel.ToOne
 	}
-	restOfRules := make([]string, 0, len(typ.Attrs)-len(sortingRules))
-	for _, attr := range typ.Attrs {
-		found := false
-		for _, rule := range sortingRules {
+	if isCol {
+		typ := schema.GetType(resType)
+		sortingRules := make([]string, 0, len(typ.Attrs))
+		idFound := false
+		for _, rule := range su.SortingRules {
 			urule := rule
 			if urule[0] == '-' {
 				urule = urule[1:]
 			}
-			if urule == attr.Name {
-				found = true
+			if urule == "id" {
+				idFound = true
+				sortingRules = append(sortingRules, rule)
 				break
 			}
+			for _, attr := range typ.Attrs {
+				if urule == attr.Name {
+					sortingRules = append(sortingRules, rule)
+					break
+				}
+			}
 		}
-		if !found {
-			restOfRules = append(restOfRules, attr.Name)
+		// Add 1 because of id
+		restOfRules := make([]string, 0, len(typ.Attrs)+1-len(sortingRules))
+		for _, attr := range typ.Attrs {
+			found := false
+			for _, rule := range sortingRules {
+				urule := rule
+				if urule[0] == '-' {
+					urule = urule[1:]
+				}
+				if urule == attr.Name {
+					found = true
+					break
+				}
+			}
+			if !found {
+				restOfRules = append(restOfRules, attr.Name)
+			}
 		}
+		sort.Strings(restOfRules)
+		sortingRules = append(sortingRules, restOfRules...)
+		if !idFound {
+			sortingRules = append(sortingRules, "id")
+		}
+		params.SortingRules = sortingRules
 	}
-	sort.Strings(restOfRules)
-	sortingRules = append(sortingRules, restOfRules...)
-	params.SortingRules = sortingRules
 
 	// Pagination
 	params.PageSize = su.PageSize

@@ -33,14 +33,12 @@ func (s *Schema) AddType(typ Type) error {
 }
 
 // RemoveType removes a type from the schema.
-func (s *Schema) RemoveType(typ string) error {
+func (s *Schema) RemoveType(typ string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
 			s.Types = append(s.Types[0:i], s.Types[i+1:]...)
 		}
 	}
-
-	return nil
 }
 
 // AddAttr adds an attribute to the specified type.
@@ -55,14 +53,12 @@ func (s *Schema) AddAttr(typ string, attr Attr) error {
 }
 
 // RemoveAttr removes an attribute from the specified type.
-func (s *Schema) RemoveAttr(typ string, attr string) error {
+func (s *Schema) RemoveAttr(typ string, attr string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
-			return s.Types[i].RemoveAttr(attr)
+			s.Types[i].RemoveAttr(attr)
 		}
 	}
-
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
 // AddRel adds a relationship to the specified type.
@@ -77,18 +73,16 @@ func (s *Schema) AddRel(typ string, rel Rel) error {
 }
 
 // RemoveRel removes a relationship from the specified type.
-func (s *Schema) RemoveRel(typ string, rel string) error {
+func (s *Schema) RemoveRel(typ string, rel string) {
 	for i := range s.Types {
 		if s.Types[i].Name == typ {
-			return s.Types[i].RemoveRel(rel)
+			s.Types[i].RemoveRel(rel)
 		}
 	}
-
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
 }
 
-// HasType returns a boolean indicating whether a type has the specified name
-// or not.
+// HasType returns a boolean indicating whether a type has the specified
+// name or not.
 func (s *Schema) HasType(name string) bool {
 	for i := range s.Types {
 		if s.Types[i].Name == name {
@@ -100,31 +94,22 @@ func (s *Schema) HasType(name string) bool {
 
 // GetType returns the type associated with the speficied name.
 //
-// A boolean indicates whether a type was found or not.
-func (s *Schema) GetType(name string) (Type, bool) {
+// If no type with the given name is found, an zero instance of Type is
+// returned. Therefore, checking whether the Name field is empty or not
+// is a good way to dertermine whether the type was found or not.
+func (s *Schema) GetType(name string) Type {
 	for _, typ := range s.Types {
 		if typ.Name == name {
-			return typ, true
+			return typ
 		}
 	}
-	return Type{}, false
-}
-
-// GetResource returns a resource of type SoftResource with the specified
-// type. All fields are set to their zero values.
-func (s *Schema) GetResource(name string) Resource {
-	typ, ok := s.GetType(name)
-	if ok {
-		return NewSoftResource(typ, nil)
-	}
-	return nil
+	return Type{}
 }
 
 // Check checks the integrity of all the relationships between the types
 // and returns all the errors that were found.
 func (s *Schema) Check() []error {
 	var (
-		ok   bool
 		errs = []error{}
 	)
 
@@ -135,7 +120,7 @@ func (s *Schema) Check() []error {
 			var targetType Type
 
 			// Does the relationship point to a type that exists?
-			if targetType, ok = s.GetType(rel.Type); !ok {
+			if targetType = s.GetType(rel.Type); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: the target type of relationship %s of type %s does not exist",
 					rel.Name,
@@ -145,7 +130,8 @@ func (s *Schema) Check() []error {
 
 			// Inverse relationship (if relevant)
 			if rel.InverseName != "" {
-				// Is the inverse relationship type the same as its type name?
+				// Is the inverse relationship type the same as its
+				// type name?
 				if rel.InverseType != typ.Name {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
@@ -153,24 +139,24 @@ func (s *Schema) Check() []error {
 						typ.Name,
 						rel.InverseType,
 					))
-				}
-
-				// Do both relationships (current and inverse) point to each other?
-				var found bool
-				for _, invRel := range targetType.Rels {
-					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
-						found = true
+				} else {
+					// Do both relationships (current and inverse) point
+					// to each other?
+					var found bool
+					for _, invRel := range targetType.Rels {
+						if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+							found = true
+						}
+					}
+					if !found {
+						errs = append(errs, fmt.Errorf(
+							"jsonapi: relationship %s of type %s and its inverse do not point each other",
+							rel.Name,
+							typ.Name,
+						))
 					}
 				}
-				if !found {
-					errs = append(errs, fmt.Errorf(
-						"jsonapi: relationship %s of type %s and its inverse do not point each other",
-						rel.Name,
-						typ.Name,
-					))
-				}
 			}
-
 		}
 	}
 

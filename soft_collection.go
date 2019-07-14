@@ -4,7 +4,6 @@ import (
 	"errors"
 	"sort"
 	"strings"
-	"sync"
 	"time"
 )
 
@@ -16,8 +15,6 @@ type SoftCollection struct {
 	typ  *Type
 	col  []*SoftResource
 	sort []string
-
-	sync.Mutex
 }
 
 // SetType sets the collection's type.
@@ -73,11 +70,9 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 
 // Range returns a subset of the collection arranged according to the
 // given parameters.
-func (s *SoftCollection) Range(ids []string, _ *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
-	s.Lock()
-	defer s.Unlock()
-
+func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	rangeCol := &SoftCollection{}
+	rangeCol.SetType(s.typ)
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -94,7 +89,17 @@ func (s *SoftCollection) Range(ids []string, _ *Filter, sort []string, fields []
 		}
 	}
 
-	// TODO Filter
+	// Filter
+	if filter != nil {
+		i := 0
+		for i < len(rangeCol.col) {
+			if !filter.IsAllowed(rangeCol.col[i]) {
+				rangeCol.col = append(rangeCol.col[:i], rangeCol.col[i+1:]...)
+			} else {
+				i++
+			}
+		}
+	}
 
 	// Sort
 	rangeCol.Sort(sort)
@@ -105,7 +110,8 @@ func (s *SoftCollection) Range(ids []string, _ *Filter, sort []string, fields []
 		rangeCol = &SoftCollection{}
 	} else {
 		page := &SoftCollection{}
-		for i := skip; i < len(rangeCol.col) && (pageSize == 0 || i < int(pageSize)); i++ {
+		page.SetType(s.typ)
+		for i := skip; i < len(rangeCol.col) && i < skip+int(pageSize); i++ {
 			page.Add(rangeCol.col[i])
 		}
 		rangeCol = page
@@ -126,7 +132,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.typ = s.typ
+	sr.Type = s.typ
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)

@@ -23,44 +23,44 @@ type filter struct {
 }
 
 // MarshalJSON marshals a filter into JSON.
-func (c *Filter) MarshalJSON() ([]byte, error) {
+func (f *Filter) MarshalJSON() ([]byte, error) {
 	payload := map[string]interface{}{}
-	if c.Field != "" {
-		payload["f"] = c.Field
+	if f.Field != "" {
+		payload["f"] = f.Field
 	}
-	if c.Op != "" {
-		payload["o"] = c.Op
+	if f.Op != "" {
+		payload["o"] = f.Op
 	}
-	payload["v"] = c.Val
-	if c.Col != "" {
-		payload["c"] = c.Col
+	payload["v"] = f.Val
+	if f.Col != "" {
+		payload["c"] = f.Col
 	}
 	return json.Marshal(payload)
 }
 
 // UnmarshalJSON parses the provided data and populates a Filter.
-func (c *Filter) UnmarshalJSON(data []byte) error {
+func (f *Filter) UnmarshalJSON(data []byte) error {
 	tmpFilter := filter{}
 	err := json.Unmarshal(data, &tmpFilter)
 	if err != nil {
 		return err
 	}
 
-	c.Field = tmpFilter.Field
-	c.Op = tmpFilter.Op
-	c.Col = tmpFilter.Col
+	f.Field = tmpFilter.Field
+	f.Op = tmpFilter.Op
+	f.Col = tmpFilter.Col
 
 	if tmpFilter.Op == "and" || tmpFilter.Op == "or" {
-		c.Field = ""
+		f.Field = ""
 
 		filters := []*Filter{}
 		err := json.Unmarshal(tmpFilter.Val, &filters)
 		if err != nil {
 			return err
 		}
-		c.Val = filters
+		f.Val = filters
 	} else {
-		err := json.Unmarshal(tmpFilter.Val, &c.Val)
+		err := json.Unmarshal(tmpFilter.Val, &f.Val)
 		if err != nil {
 			return err
 		}
@@ -69,47 +69,47 @@ func (c *Filter) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// FilterResource reports whether res is valid under the rules defined
-// in the filter.
-func FilterResource(res Resource, filter *Filter) bool {
+// IsAllowed reports whether res is valid under the rules defined in the
+// filter.
+func (f *Filter) IsAllowed(res Resource) bool {
 	var (
 		val interface{}
 		// typ string
 	)
-	if _, ok := res.Attrs()[filter.Field]; ok {
-		val = res.Get(filter.Field)
+	if _, ok := res.Attrs()[f.Field]; ok {
+		val = res.Get(f.Field)
 	}
-	if rel, ok := res.Rels()[filter.Field]; ok {
+	if rel, ok := res.Rels()[f.Field]; ok {
 		if rel.ToOne {
-			val = res.GetToOne(filter.Field)
+			val = res.GetToOne(f.Field)
 		} else {
-			val = res.GetToMany(filter.Field)
+			val = res.GetToMany(f.Field)
 		}
 	}
 
-	switch filter.Op {
+	switch f.Op {
 	case "and":
-		filters := filter.Val.([]*Filter)
+		filters := f.Val.([]*Filter)
 		for i := range filters {
-			if !FilterResource(res, filters[i]) {
+			if !filters[i].IsAllowed(res) {
 				return false
 			}
 		}
 		return true
 	case "or":
-		filters := filter.Val.([]*Filter)
+		filters := f.Val.([]*Filter)
 		for i := range filters {
-			if FilterResource(res, filters[i]) {
+			if filters[i].IsAllowed(res) {
 				return true
 			}
 		}
 		return false
 	case "in":
-		return checkIn(val.(string), filter.Val.([]string))
+		return checkIn(val.(string), f.Val.([]string))
 	case "has":
-		return checkIn(filter.Val.(string), val.([]string))
+		return checkIn(f.Val.(string), val.([]string))
 	default:
-		return checkVal(filter.Op, val, filter.Val)
+		return checkVal(f.Op, val, f.Val)
 	}
 }
 
