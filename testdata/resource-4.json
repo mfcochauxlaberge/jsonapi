@@ -1,34 +1,44 @@
 {
 	"data": {
 		"attributes": {
-			"strptr": "str",
-			"uintptr": 42
+			"attr1": "str",
+			"attr2": 42
 		},
-		"id": "mt1-2",
+		"id": "mt3-1",
 		"links": {
-			"self": "https://example.org/mocktypes2/mt1-2"
+			"self": "https://example.org/mocktypes3/mt3-1"
 		},
 		"relationships": {},
-		"type": "mocktypes2"
+		"type": "mocktypes3"
 	},
 	"included": [
         {
             "attributes": {
-                "strptr": "str",
-                "uintptr": 42
+                "str": "astring"
             },
-            "id": "mt1-2",
+            "id": "mt1-1",
             "links": {
-                "self": "https://example.org/mocktypes2/mt1-2"
+                "self": "https://example.org/mocktypes1/mt1-1"
             },
             "relationships": {},
-            "type": "mocktypes2"
-        }
+            "type": "mocktypes1"
+		},
+		{
+			"attributes": {
+				"str": "anotherstring"
+			},
+			"id": "mt1-2",
+			"links": {
+				"self": "https://example.org/mocktypes1/mt1-2"
+			},
+			"relationships": {},
+			"type": "mocktypes1"
+		}
     ],
 	"jsonapi": {
 		"version": "1.0"
 	},
 	"links": {
-		"self": "https://example.org/mocktypes2/mt1-2?fields%5Bmocktypes2%5D=strptr%2Cuintptr\u0026sort=boolptr%2Cint16ptr%2Cint32ptr%2Cint64ptr%2Cint8ptr%2Cintptr%2Cstrptr%2Ctimeptr%2Cuint16ptr%2Cuint32ptr%2Cuint64ptr%2Cuint8ptr%2Cuintptr"
+		"self": "https://example.org/mocktypes3/mt3-1?fields%5Bmocktypes3%5D=attr1%2Cattr2\u0026fields%5Bmocktypes1%5D=str"
 	}
 }

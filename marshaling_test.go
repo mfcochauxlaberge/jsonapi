@@ -177,6 +177,58 @@ func TestMarshalCollection(t *testing.T) {
 	}
 }
 
+func TestMarshalInclusions(t *testing.T) {
+	assert := assert.New(t)
+
+	schema := newMockSchema()
+
+	doc := &Document{}
+	doc.PrePath = "https://example.org"
+	url, err := NewURLFromRaw(
+		schema,
+		makeOneLineNoSpaces(`
+			/mocktypes3/mt3-1
+			?fields[mocktypes1]=str
+			&fields[mocktypes3]=attr1,attr2
+		`),
+	)
+	assert.NoError(err)
+
+	res := Wrap(&mockType3{})
+	res.SetID("mt3-1")
+	res.Set("attr1", "str")
+	res.Set("attr2", 42)
+	doc.Data = Resource(res)
+
+	inc1 := Wrap(&mockType1{})
+	inc1.SetID("mt1-1")
+	inc1.Set("str", "astring")
+	doc.Include(inc1)
+
+	inc2 := Wrap(&mockType1{})
+	inc2.SetID("mt1-2")
+	inc2.Set("str", "anotherstring")
+	doc.Include(inc2)
+
+	payload, err := Marshal(doc, url)
+
+	var out bytes.Buffer
+
+	// Format the payload
+	json.Indent(&out, payload, "", "\t")
+	output := out.String()
+
+	// Retrieve the expected result from file
+	content, err := ioutil.ReadFile("testdata/resource-4.json")
+	assert.NoError(err)
+	out.Reset()
+	json.Indent(&out, content, "", "\t")
+	// Trim because otherwise there is an extra line at the end
+	expectedOutput := strings.TrimSpace(out.String())
+
+	assert.Equal(expectedOutput, output)
+}
+
 func TestMarshalErrors(t *testing.T) {
 	assert := assert.New(t)
 
