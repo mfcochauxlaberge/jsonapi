@@ -92,7 +92,7 @@ func Equal(r1, r2 Resource) bool {
 	sort.Slice(r1Rels, func(i, j int) bool {
 		return r1Rels[i].Name < r1Rels[j].Name
 	})
-	rels = r1.Rels()
+	rels = r2.Rels()
 	r2Rels := make([]Rel, 0, len(rels))
 	for name := range rels {
 		r2Rels = append(r2Rels, rels[name])
