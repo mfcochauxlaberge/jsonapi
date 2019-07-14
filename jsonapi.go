@@ -2,6 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"fmt"
 )
 
 // Marshal marshals a document according to the JSON:API speficication.
@@ -17,10 +18,10 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
-		data, err = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
+		data = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data, err = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
+		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
 	} else if id, ok := doc.Data.(Identifier); ok {
 		// Identifer
 		data, err = json.Marshal(id)
@@ -46,10 +47,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if len(data) > 0 {
 		for key := range doc.Included {
 			typ := doc.Included[key].GetType().Name
-			raw, err := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
-			if err != nil {
-				return []byte{}, err
-			}
+			raw := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
 			rawm := json.RawMessage(raw)
 			inclusions = append(inclusions, &rawm)
 		}
@@ -152,7 +150,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 }
 
 // marshalResource ...
-func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) ([]byte, error) {
+func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
 	// ID and type
@@ -254,26 +252,31 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath), // TODO
 	}
 
-	return json.Marshal(mapPl)
+	pl, err := json.Marshal(mapPl)
+	if err != nil {
+		panic(fmt.Errorf("jsonapi: could not marshal resource: %s", err.Error()))
+	}
+	return pl
 }
 
 // marshalCollection ...
-func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) ([]byte, error) {
+func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) []byte {
 	var raws []*json.RawMessage
 
 	if c.Len() == 0 {
-		return []byte("[]"), nil
+		return []byte("[]")
 	}
 
 	for i := 0; i < c.Len(); i++ {
 		r := c.Elem(i)
 		var raw json.RawMessage
-		raw, err := marshalResource(r, prepath, fields, relData)
-		if err != nil {
-			return []byte{}, err
-		}
+		raw = marshalResource(r, prepath, fields, relData)
 		raws = append(raws, &raw)
 	}
 
-	return json.Marshal(raws)
+	pl, err := json.Marshal(raws)
+	if err != nil {
+		panic(fmt.Errorf("jsonapi: could not marshal collection: %s", err.Error()))
+	}
+	return pl
 }
