@@ -313,3 +313,21 @@ func GetZeroValue(t int, null bool) interface{} {
 		return nil
 	}
 }
+
+// CopyType deeply copies the given type and returns the result.
+func CopyType(typ Type) Type {
+	ctyp := Type{
+		Name:  typ.Name,
+		Attrs: map[string]Attr{},
+		Rels:  map[string]Rel{},
+	}
+
+	for name, attr := range typ.Attrs {
+		ctyp.Attrs[name] = attr
+	}
+	for name, rel := range typ.Rels {
+		ctyp.Rels[name] = rel
+	}
+
+	return ctyp
+}
