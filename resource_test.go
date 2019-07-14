@@ -100,9 +100,9 @@ func TestEqual(t *testing.T) {
 		ToManyFromMany: []string{"a", "b", "c"},
 	})
 
-	assert.Equal(true, Equal(mt11, mt11), "compare same resource with itself")
-	assert.Equal(true, Equal(mt11, mt12), "compare two identical resources")
-	assert.Equal(false, EqualStrict(mt11, mt12), "compare two identical resources (different IDs)")
-	assert.Equal(false, Equal(mt11, mt13), "compare two different resources")
-	assert.Equal(false, Equal(mt11, mt21), "compare resources of different types")
+	assert.True(Equal(mt11, mt11), "compare same resource with itself")
+	assert.True(Equal(mt11, mt12), "compare two identical resources")
+	assert.False(EqualStrict(mt11, mt12), "compare two identical resources (different IDs)")
+	assert.False(Equal(mt11, mt13), "compare two different resources")
+	assert.False(Equal(mt11, mt21), "compare resources of different types")
 }
