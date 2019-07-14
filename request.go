@@ -15,7 +15,7 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		return nil, err
 	}
 
-	url, err := ParseRawURL(schema, r.URL.EscapedPath())
+	url, err := NewURLFromRaw(schema, r.URL.EscapedPath())
 	if err != nil {
 		return nil, err
 	}

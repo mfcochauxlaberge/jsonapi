@@ -21,7 +21,7 @@ func TestUnmarshalResource(t *testing.T) {
 		Rel2:  []string{"mt3", "mt4"},
 	})
 
-	url1, err := ParseRawURL(schema, "/mocktypes3/mt1")
+	url1, err := NewURLFromRaw(schema, "/mocktypes3/mt1")
 	assert.NoError(err)
 	meta1 := map[string]interface{}{
 		"str": "a string\\^ç\"",
@@ -50,7 +50,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 
 	id1 := Identifier{ID: "abc123", Type: "mocktypes1"}
 
-	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel1")
+	url1, err := NewURLFromRaw(schema, "/mocktypes3/mt1/relationships/rel1")
 	assert.NoError(err)
 	meta1 := map[string]interface{}{
 		"str": "a string\\^ç\"",
@@ -83,7 +83,7 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 		Identifier{ID: "ghi789", Type: "mocktypes1"},
 	}
 
-	url1, err := ParseRawURL(schema, "/mocktypes3/mt1/relationships/rel2")
+	url1, err := NewURLFromRaw(schema, "/mocktypes3/mt1/relationships/rel2")
 	assert.NoError(err)
 
 	meta1 := map[string]interface{}{

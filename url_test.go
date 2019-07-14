@@ -179,7 +179,7 @@ func TestParseURL(t *testing.T) {
 
 	for _, test := range tests {
 		u, _ := url.Parse(makeOneLineNoSpaces(test.url))
-		url, err := ParseRawURL(schema, u.String())
+		url, err := NewURLFromRaw(schema, u.String())
 		assert.Equal(test.expectedError, err != nil, test.name)
 
 		// test.expectedURL.Path = makeOneLineNoSpaces(test.expectedURL.Path)

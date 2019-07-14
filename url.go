@@ -95,6 +95,22 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	return url, nil
 }
 
+// NewURLFromRaw parses rawurl to make a *url.URL before making and returning
+// a *URL.
+func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
+	url, err := url.Parse(rawurl)
+	if err != nil {
+		return nil, err
+	}
+
+	su, err := NewSimpleURL(url)
+	if err != nil {
+		return nil, err
+	}
+
+	return NewURL(schema, su)
+}
+
 // A BelongsToFilter represents a parent resource, used to filter out
 // resources that are not children of the parent.
 //
@@ -184,20 +200,4 @@ func (u *URL) FullURL() string {
 	url := u.NormalizePath()
 
 	return url
-}
-
-// ParseRawURL parses rawurl to make a *url.URL before making and returning
-// a *URL.
-func ParseRawURL(schema *Schema, rawurl string) (*URL, error) {
-	url, err := url.Parse(rawurl)
-	if err != nil {
-		return nil, err
-	}
-
-	su, err := NewSimpleURL(url)
-	if err != nil {
-		return nil, err
-	}
-
-	return NewURL(schema, su)
 }
