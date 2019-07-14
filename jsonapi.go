@@ -9,9 +9,11 @@ import (
 // Both doc and url must not be nil.
 func Marshal(doc *Document, url *URL) ([]byte, error) {
 	// Data
-	var data json.RawMessage
-	var errors json.RawMessage
-	var err error
+	var (
+		data   json.RawMessage
+		errors json.RawMessage
+		err    error
+	)
 
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
