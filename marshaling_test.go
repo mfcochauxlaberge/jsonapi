@@ -182,8 +182,11 @@ func TestMarshalInclusions(t *testing.T) {
 
 	schema := newMockSchema()
 
+	// Document
 	doc := &Document{}
 	doc.PrePath = "https://example.org"
+
+	// URL
 	url, err := NewURLFromRaw(
 		schema,
 		makeOneLineNoSpaces(`
@@ -194,12 +197,14 @@ func TestMarshalInclusions(t *testing.T) {
 	)
 	assert.NoError(err)
 
+	// Data (single resource)
 	res := Wrap(&mockType3{})
 	res.SetID("mt3-1")
 	res.Set("attr1", "str")
 	res.Set("attr2", 42)
 	doc.Data = Resource(res)
 
+	// Inclusions
 	inc1 := Wrap(&mockType1{})
 	inc1.SetID("mt1-1")
 	inc1.Set("str", "astring")
@@ -212,6 +217,7 @@ func TestMarshalInclusions(t *testing.T) {
 
 	payload, err := Marshal(doc, url)
 
+	// Verification
 	var out bytes.Buffer
 
 	// Format the payload
