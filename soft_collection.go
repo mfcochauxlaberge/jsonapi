@@ -28,8 +28,8 @@ func (s *SoftCollection) GetType() *Type {
 }
 
 // Type returns the collection's type name.
-func (s *SoftCollection) Type() string {
-	return s.typ.Name
+func (s *SoftCollection) Type() Type {
+	return *s.typ
 }
 
 // AddAttr adds an attribute to all of the resources in the collection.

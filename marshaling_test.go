@@ -145,8 +145,8 @@ func TestMarshalCollection(t *testing.T) {
 
 		doc.Data = test.data
 
-		resType := test.data.Type()
-		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
+		typ := test.data.Type()
+		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, typ.Name, test.params)
 
 		url, err := NewURLFromRaw(schema, rawurl)
 		assert.NoError(err, test.name)

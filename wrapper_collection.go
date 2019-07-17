@@ -12,10 +12,8 @@ func WrapCollection(r Resource) *WrapperCollection {
 	// 	r := Wrap(v)
 	// }
 
-	typ := r.GetType().Name
-
 	return &WrapperCollection{
-		typ:    typ,
+		typ:    r.GetType(),
 		col:    []*Wrapper{},
 		sample: r,
 	}
@@ -23,13 +21,13 @@ func WrapCollection(r Resource) *WrapperCollection {
 
 // WrapperCollection ...
 type WrapperCollection struct {
-	typ    string
+	typ    Type
 	col    []*Wrapper
 	sample Resource
 }
 
 // Type ....
-func (wc *WrapperCollection) Type() string {
+func (wc *WrapperCollection) Type() Type {
 	return wc.typ
 }
 
