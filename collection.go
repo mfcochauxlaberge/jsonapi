@@ -4,7 +4,7 @@ package jsonapi
 type Collection interface {
 	// Type returns the name of the resources' type.
 	GetType() Type
-	// Len return the number of resources in the collection.
+	// Len returns the number of resources in the collection.
 	Len() int
 	// At returns the resource at index i.
 	At(i int) Resource
