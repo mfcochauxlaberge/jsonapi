@@ -4,7 +4,8 @@ import "encoding/json"
 
 var _ Collection = (*WrapperCollection)(nil)
 
-// WrapCollection ...
+// WrapCollection returns a *WrapperCollection which implements the
+// Collection interface and holds resources of the type defined in r.
 func WrapCollection(r Resource) *WrapperCollection {
 	// if r2, ok := v.(Resource); ok {
 	// 	r = r2
@@ -19,24 +20,31 @@ func WrapCollection(r Resource) *WrapperCollection {
 	}
 }
 
-// WrapperCollection ...
+// WrapperCollection is a Collection of resources of a certain type
+// defined using the WrapCollection constructor.
+//
+// Only resources of that type can be added to the collection and the
+// type may not be modified.
 type WrapperCollection struct {
 	typ    Type
 	col    []*Wrapper
 	sample Resource
 }
 
-// Type ....
+// Type returns the type of the resources in the collection.
 func (wc *WrapperCollection) Type() Type {
 	return wc.typ
 }
 
-// Len ...
+// Len returns the number of elements in the collection.
 func (wc *WrapperCollection) Len() int {
 	return len(wc.col)
 }
 
-// At ...
+// At returns the resource at the given index.
+//
+// It returns nil if the index is greater than the number of resources
+// in the collection.
 func (wc *WrapperCollection) At(i int) Resource {
 	if len(wc.col) > i {
 		return wc.col[i]
@@ -45,14 +53,15 @@ func (wc *WrapperCollection) At(i int) Resource {
 	return nil
 }
 
-// Add ...
+// Add appends the given resource at the end of the collection.
 func (wc *WrapperCollection) Add(r Resource) {
 	if wr, ok := r.(*Wrapper); ok {
 		wc.col = append(wc.col, wr)
 	}
 }
 
-// UnmarshalJSON ...
+// UnmarshalJSON populates the receiver with the resources represented in
+// the payload.
 func (wc *WrapperCollection) UnmarshalJSON(payload []byte) error {
 	var raws []json.RawMessage
 
