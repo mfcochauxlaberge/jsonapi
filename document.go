@@ -56,7 +56,7 @@ func (d *Document) Include(res Resource) {
 		}
 	} else if col, ok := d.Data.(Collection); ok {
 		// Check Collection
-		ctyp := col.Type()
+		ctyp := col.GetType()
 		if ctyp.Name == res.GetType().Name {
 			for i := 0; i < col.Len(); i++ {
 				rkey := col.At(i).GetID() + " " + col.At(i).GetType().Name

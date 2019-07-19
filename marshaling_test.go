@@ -145,7 +145,7 @@ func TestMarshalCollection(t *testing.T) {
 
 		doc.Data = test.data
 
-		typ := test.data.Type()
+		typ := test.data.GetType()
 		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, typ.Name, test.params)
 
 		url, err := NewURLFromRaw(schema, rawurl)

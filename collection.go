@@ -3,7 +3,7 @@ package jsonapi
 // A Collection can manage a set of ordered resources of the same type.
 type Collection interface {
 	// Type returns the name of the resources' type.
-	Type() Type
+	GetType() Type
 	// Len return the number of resources in the collection.
 	Len() int
 	// At returns the resource at index i.

@@ -12,34 +12,30 @@ var _ Collection = (*SoftCollection)(nil)
 // SoftCollection is a collection of SoftResources where the type can
 // be changed for all elements at once by modifying the Type field.
 type SoftCollection struct {
-	typ  *Type
+	Type *Type
+
 	col  []*SoftResource
 	sort []string
 }
 
 // SetType sets the collection's type.
 func (s *SoftCollection) SetType(typ *Type) {
-	s.typ = typ
+	s.Type = typ
 }
 
 // GetType returns the collection's type.
-func (s *SoftCollection) GetType() *Type {
-	return s.typ
-}
-
-// Type returns the collection's type name.
-func (s *SoftCollection) Type() Type {
-	return *s.typ
+func (s *SoftCollection) GetType() Type {
+	return *s.Type
 }
 
 // AddAttr adds an attribute to all of the resources in the collection.
 func (s *SoftCollection) AddAttr(attr Attr) error {
-	return s.typ.AddAttr(attr)
+	return s.Type.AddAttr(attr)
 }
 
 // AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
-	return s.typ.AddRel(rel)
+	return s.Type.AddRel(rel)
 
 }
 
@@ -72,7 +68,7 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 // given parameters.
 func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	rangeCol := &SoftCollection{}
-	rangeCol.SetType(s.typ)
+	rangeCol.SetType(s.Type)
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -110,7 +106,7 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 		rangeCol = &SoftCollection{}
 	} else {
 		page := &SoftCollection{}
-		page.SetType(s.typ)
+		page.SetType(s.Type)
 		for i := skip; i < len(rangeCol.col) && i < skip+int(pageSize); i++ {
 			page.Add(rangeCol.col[i])
 		}
@@ -132,7 +128,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.Type = s.typ
+	sr.Type = s.Type
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)

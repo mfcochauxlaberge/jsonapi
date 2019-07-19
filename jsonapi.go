@@ -21,7 +21,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 		data = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type().Name], doc.RelData)
+		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.GetType().Name], doc.RelData)
 	} else if id, ok := doc.Data.(Identifier); ok {
 		// Identifer
 		data, err = json.Marshal(id)

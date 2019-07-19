@@ -31,8 +31,8 @@ type WrapperCollection struct {
 	sample Resource
 }
 
-// Type returns the type of the resources in the collection.
-func (wc *WrapperCollection) Type() Type {
+// GetType returns the type of the resources in the collection.
+func (wc *WrapperCollection) GetType() Type {
 	return wc.typ
 }
 

@@ -50,7 +50,7 @@ func TestSoftCollection(t *testing.T) {
 	typcopy := copystructure.Must(copystructure.Copy(typ)).(Type)
 	sc.SetType(&typcopy)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Modify the SoftCollection's type and the local type
 	// at the same time and check whether they still are
@@ -73,7 +73,7 @@ func TestSoftCollection(t *testing.T) {
 	typ.AddRel(rel5)
 	sc.AddRel(rel5)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add a SoftResource with more fields than those
 	// specified in the SoftCollection.
@@ -98,7 +98,7 @@ func TestSoftCollection(t *testing.T) {
 
 	sc.Add(sr)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add more elements to the SoftCollection.
 	sr = &SoftResource{}
@@ -121,25 +121,25 @@ func TestSoftCollectionResource(t *testing.T) {
 	sc := &SoftCollection{}
 	sc.SetType(&Type{})
 
-	sc.GetType().Name = "type1"
-	sc.GetType().AddAttr(Attr{
+	sc.Type.Name = "type1"
+	sc.Type.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	sc.GetType().AddAttr(Attr{
+	sc.Type.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeInt,
 		Nullable: true,
 	})
-	sc.GetType().AddRel(Rel{
+	sc.Type.AddRel(Rel{
 		Name:  "rel1",
 		Type:  "type2",
 		ToOne: true,
 	})
 
 	sr := &SoftResource{}
-	sr.SetType(sc.GetType())
+	sr.SetType(sc.Type)
 	sr.SetID("res1")
 	sr.Set("attr", "value1")
 	sc.Add(sr)
@@ -230,7 +230,7 @@ func TestSoftCollectionRange(t *testing.T) {
 
 	for _, res := range resources {
 		sr := &SoftResource{}
-		sr.SetType(col.GetType())
+		sr.SetType(col.Type)
 		sr.SetID(res.id)
 		for field, val := range res.fields {
 			sr.Set(field, val)
