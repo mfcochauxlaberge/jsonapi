@@ -36,8 +36,8 @@ func (wc *WrapperCollection) Len() int {
 	return len(wc.col)
 }
 
-// Elem ...
-func (wc *WrapperCollection) Elem(i int) Resource {
+// At ...
+func (wc *WrapperCollection) At(i int) Resource {
 	if len(wc.col) > i {
 		return wc.col[i]
 	}

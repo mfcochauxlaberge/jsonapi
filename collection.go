@@ -6,8 +6,8 @@ type Collection interface {
 	Type() Type
 	// Len return the number of resources in the collection.
 	Len() int
-	// Elem returns the resource at index i.
-	Elem(i int) Resource
+	// At returns the resource at index i.
+	At(i int) Resource
 	// Add adds a resource in the collection.
 	Add(r Resource)
 

@@ -48,8 +48,8 @@ func (s *SoftCollection) Len() int {
 	return len(s.col)
 }
 
-// Elem returns the element at index i.
-func (s *SoftCollection) Elem(i int) Resource {
+// At returns the element at index i.
+func (s *SoftCollection) At(i int) Resource {
 	if i >= 0 && i < len(s.col) {
 		return s.col[i]
 	}

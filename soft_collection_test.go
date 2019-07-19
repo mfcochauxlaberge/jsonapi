@@ -428,7 +428,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	// Sorted IDs from the collection
 	ids := []string{}
 	for i := 0; i < sc.Len(); i++ {
-		ids = append(ids, sc.Elem(i).GetID())
+		ids = append(ids, sc.At(i).GetID())
 	}
 
 	expectedIDs := []string{
@@ -450,7 +450,7 @@ func TestSoftCollectionSort(t *testing.T) {
 
 	ids = []string{}
 	for i := 0; i < sc.Len(); i++ {
-		ids = append(ids, sc.Elem(i).GetID())
+		ids = append(ids, sc.At(i).GetID())
 	}
 
 	sort.Strings(expectedIDs)
@@ -461,5 +461,5 @@ func TestSoftCollectionMiscellaneous(t *testing.T) {
 	assert := assert.New(t)
 
 	sc := &SoftCollection{}
-	assert.Nil(sc.Elem(99), "nonexistent element")
+	assert.Nil(sc.At(99), "nonexistent element")
 }

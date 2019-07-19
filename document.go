@@ -59,7 +59,7 @@ func (d *Document) Include(res Resource) {
 		ctyp := col.Type()
 		if ctyp.Name == res.GetType().Name {
 			for i := 0; i < col.Len(); i++ {
-				rkey := col.Elem(i).GetID() + " " + col.Elem(i).GetType().Name
+				rkey := col.At(i).GetID() + " " + col.At(i).GetType().Name
 
 				if rkey == key {
 					return

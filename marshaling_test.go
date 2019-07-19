@@ -32,7 +32,7 @@ func TestMarshalResource(t *testing.T) {
 	}{
 		{
 			name: "resource with meta",
-			data: mocktypes1.Elem(0),
+			data: mocktypes1.At(0),
 			meta: map[string]interface{}{
 				"num":       42,
 				"timestamp": time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
@@ -43,13 +43,13 @@ func TestMarshalResource(t *testing.T) {
 			payloadFile:   "resource-1",
 		}, {
 			name:          "resource with prepath",
-			data:          mocktypes2.Elem(1),
+			data:          mocktypes2.At(1),
 			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "resource-2",
 		}, {
 			name:          "resource with prepath and params",
-			data:          mocktypes2.Elem(1),
+			data:          mocktypes2.At(1),
 			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
