@@ -1,6 +1,7 @@
 package jsonapi
 
-// A Collection can manage a set of ordered resources of the same type.
+// A Collection defines the interface of a structure that can manage a set
+// of ordered resources of the same type.
 type Collection interface {
 	// Type returns the name of the resources' type.
 	GetType() Type
