@@ -108,7 +108,6 @@ func TestMarshalCollection(t *testing.T) {
 		prepath       string
 		params        string
 		meta          map[string]interface{}
-		jsonapi       map[string]interface{}
 		errorExpected bool
 		payloadFile   string
 	}{
