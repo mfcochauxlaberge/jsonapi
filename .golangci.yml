@@ -1,0 +1,6 @@
+service:
+  project-path: github.com/mfcochauxlaberge/jsonapi
+  golangci-lint-version: 1.12
+  prepare:
+    - make deps
+    - make generate
