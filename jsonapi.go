@@ -269,8 +269,7 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 
 	for i := 0; i < c.Len(); i++ {
 		r := c.At(i)
-		var raw json.RawMessage
-		raw = marshalResource(r, prepath, fields, relData)
+		raw := json.RawMessage(marshalResource(r, prepath, fields, relData))
 		raws = append(raws, &raw)
 	}
 
