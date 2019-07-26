@@ -167,7 +167,7 @@ func (w *Wrapper) SetID(id string) {
 
 // Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
-	w.setAttr(key, val)
+	_ = w.setAttr(key, val)
 }
 
 // GetToOne returns the value associated with the relationship named

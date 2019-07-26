@@ -18,17 +18,17 @@ func TestSoftCollection(t *testing.T) {
 
 	// Add type
 	typ := Type{Name: "thistype"}
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeInt,
 		Nullable: false,
 	})
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeString,
 		Nullable: true,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel1",
 		Type:         "othertype",
 		ToOne:        true,
@@ -36,7 +36,7 @@ func TestSoftCollection(t *testing.T) {
 		InverseType:  "thistype",
 		InverseToOne: true,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel3",
 		Type:         "othertype",
 		ToOne:        false,
@@ -68,10 +68,10 @@ func TestSoftCollection(t *testing.T) {
 		InverseType:  "thistype",
 		InverseToOne: false,
 	}
-	typ.AddAttr(attr3)
-	sc.AddAttr(attr3)
-	typ.AddRel(rel5)
-	sc.AddRel(rel5)
+	_ = typ.AddAttr(attr3)
+	_ = sc.AddAttr(attr3)
+	_ = typ.AddRel(rel5)
+	_ = sc.AddRel(rel5)
 
 	assert.Equal(t, sc.Type, &typ)
 
@@ -84,7 +84,7 @@ func TestSoftCollection(t *testing.T) {
 		Nullable: true,
 	}
 	sr.AddAttr(attr4)
-	typ.AddAttr(attr4)
+	_ = typ.AddAttr(attr4)
 	rel7 := Rel{
 		Name:         "rel7",
 		Type:         "othertype",
@@ -94,7 +94,7 @@ func TestSoftCollection(t *testing.T) {
 		InverseToOne: true,
 	}
 	sr.AddRel(rel7)
-	typ.AddRel(rel7)
+	_ = typ.AddRel(rel7)
 
 	sc.Add(sr)
 
@@ -122,17 +122,17 @@ func TestSoftCollectionResource(t *testing.T) {
 	sc.SetType(&Type{})
 
 	sc.Type.Name = "type1"
-	sc.Type.AddAttr(Attr{
+	_ = sc.Type.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	sc.Type.AddAttr(Attr{
+	_ = sc.Type.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeInt,
 		Nullable: true,
 	})
-	sc.Type.AddRel(Rel{
+	_ = sc.Type.AddRel(Rel{
 		Name:  "rel1",
 		Type:  "type2",
 		ToOne: true,
@@ -162,12 +162,12 @@ func TestSoftCollectionRange(t *testing.T) {
 	// Collection
 	col := SoftCollection{}
 	col.SetType(&Type{})
-	col.AddAttr(Attr{
+	_ = col.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	col.AddAttr(Attr{
+	_ = col.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeInt,
 		Nullable: false,
@@ -390,7 +390,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	typ := &Type{Name: "type"}
 	for i, t := range attrs {
 		ti, null := GetAttrType(fmt.Sprintf("%T", t.vals[0]))
-		typ.AddAttr(Attr{
+		_ = typ.AddAttr(Attr{
 			Name:     "attr" + strconv.Itoa(i),
 			Type:     ti,
 			Nullable: null,

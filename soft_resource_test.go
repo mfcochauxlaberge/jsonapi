@@ -16,12 +16,12 @@ func TestSoftResource(t *testing.T) {
 
 	// NewSoftResource
 	typ := Type{Name: "type"}
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel1",
 		Type:         "type",
 		ToOne:        true,

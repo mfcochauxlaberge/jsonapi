@@ -11,11 +11,11 @@ func newMockSchema() *Schema {
 	schema := &Schema{}
 
 	typ, _ := ReflectType(mockType1{})
-	schema.AddType(typ)
+	_ = schema.AddType(typ)
 	typ, _ = ReflectType(mockType2{})
-	schema.AddType(typ)
+	_ = schema.AddType(typ)
 	typ, _ = ReflectType(mockType3{})
-	schema.AddType(typ)
+	_ = schema.AddType(typ)
 
 	for t, typ := range schema.Types {
 		for r, rel := range typ.Rels {
