@@ -279,10 +279,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -294,10 +294,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -309,10 +309,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -324,10 +324,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -339,10 +339,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -354,10 +354,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -369,10 +369,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -384,10 +384,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -399,10 +399,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -414,10 +414,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -429,10 +429,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -444,10 +444,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if v.Equal(*p) {
 				continue
