@@ -239,5 +239,9 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		params.SortingRules = sortingRules
 	}
 
+	// Pagination
+	params.PageSize = su.PageSize
+	params.PageNumber = su.PageNumber
+
 	return params, nil
 }
