@@ -9,7 +9,7 @@ import "strings"
 // domain name.
 func buildSelfLink(res Resource, prepath string) string {
 	if !strings.HasSuffix(prepath, "/") {
-		prepath = prepath + "/"
+		prepath += "/"
 	}
 
 	if res.GetID() != "" && res.GetType().Name != "" {

@@ -167,7 +167,7 @@ func (w *Wrapper) SetID(id string) {
 
 // Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
-	_ = w.setAttr(key, val)
+	w.setAttr(key, val)
 }
 
 // GetToOne returns the value associated with the relationship named
@@ -333,7 +333,7 @@ func (w *Wrapper) getAttr(key string, t string) interface{} {
 	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
 }
 
-func (w *Wrapper) setAttr(key string, v interface{}) error {
+func (w *Wrapper) setAttr(key string, v interface{}) {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -341,13 +341,13 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 		if key == sf.Tag.Get("json") {
 			if v == nil {
 				field.Set(reflect.New(field.Type()).Elem())
-				return nil
+				return
 			}
 
 			val := reflect.ValueOf(v)
 			if val.Type() == field.Type() {
 				field.Set(val)
-				return nil
+				return
 			}
 
 			panic(fmt.Sprintf("jsonapi: value is of wrong type (expected %q, got %q)",
