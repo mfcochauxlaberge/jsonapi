@@ -41,17 +41,7 @@ func CheckType(v interface{}) error {
 			isValid := false
 
 			switch sf.Type.String() {
-			case
-				"string",
-				"int", "int8", "int16", "int32", "int64",
-				"uint", "uint8", "uint16", "uint32", "uint64",
-				"bool",
-				"time.Time",
-				"*string",
-				"*int", "*int8", "*int16", "*int32", "*int64",
-				"*uint", "*uint8", "*uint16", "*uint32", "*uint64",
-				"*bool",
-				"*time.Time":
+			case "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "bool", "time.Time", "*string", "*int", "*int8", "*int16", "*int32", "*int64", "*uint", "*uint8", "*uint16", "*uint32", "*uint64", "*bool", "*time.Time":
 				isValid = true
 			}
 
