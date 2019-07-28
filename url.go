@@ -194,10 +194,3 @@ func (u *URL) NormalizePath() string {
 
 	return path + params
 }
-
-// FullURL returns the full URL as a string.
-func (u *URL) FullURL() string {
-	url := u.NormalizePath()
-
-	return url
-}
