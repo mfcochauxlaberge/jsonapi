@@ -4,3 +4,12 @@ linters:
     - lll
 
 linter-settings:
+  lll:
+    line-length: 80
+    tab-width: 4
+
+issues:
+  exclude-rules:
+    - path: doc.go
+      linters:
+        - lll
