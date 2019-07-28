@@ -193,3 +193,11 @@ func (u *URL) String() string {
 
 	return path + params
 }
+
+// UnescapedString returns the same thing as String, but special characters
+// are not escaped.
+func (u *URL) UnescapedString() string {
+	str, _ := url.PathUnescape(u.String())
+	// TODO Can an error occur?
+	return str
+}
