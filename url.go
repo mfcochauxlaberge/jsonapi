@@ -123,10 +123,12 @@ type BelongsToFilter struct {
 	InverseName string
 }
 
-// NormalizePath builds and returns the URL as a string.
+// String returns a string representation of the URL where special characters
+// are escaped.
 //
-// It returns exactly the same string given the same URL and schema.
-func (u *URL) NormalizePath() string {
+// The URL is normalized, so it always returns exactly the same string given
+// the same URL.
+func (u *URL) String() string {
 	// Path
 	path := "/"
 	for _, p := range u.Fragments {
