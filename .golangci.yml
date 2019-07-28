@@ -1,0 +1,6 @@
+linters:
+  enable:
+    - golint
+    - lll
+
+linter-settings:
