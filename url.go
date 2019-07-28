@@ -166,15 +166,12 @@ func (u *URL) String() string {
 
 	// Pagination
 	if u.IsCol {
-		if u.Params.PageSize == 0 {
-			u.Params.PageSize = 10
+		if u.Params.PageNumber != 0 {
+			urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.Itoa(u.Params.PageNumber))
 		}
-		urlParams = append(urlParams, "page%5Bsize%5D="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
-
-		if u.Params.PageNumber == 0 {
-			u.Params.PageNumber = 1
+		if u.Params.PageSize != 0 {
+			urlParams = append(urlParams, "page%5Bsize%5D="+strconv.Itoa(u.Params.PageSize))
 		}
-		urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
 	// Sorting
