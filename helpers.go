@@ -141,6 +141,14 @@ func ReflectType(v interface{}) (Type, error) {
 	return typ, nil
 }
 
+func MustReflectType(v interface{}) Type {
+	typ, err := ReflectType(v)
+	if err != nil {
+		panic(err)
+	}
+	return typ
+}
+
 // IDAndType returns the ID and the type of the resource represented by v.
 //
 // Two empty strings are returned if v is not recognized as a resource.
