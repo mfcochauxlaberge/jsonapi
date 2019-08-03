@@ -141,8 +141,8 @@ func Reflect(v interface{}) (Type, error) {
 	return typ, nil
 }
 
-func MustReflectType(v interface{}) Type {
-	typ, err := ReflectType(v)
+func MustReflect(v interface{}) Type {
+	typ, err := Reflect(v)
 	if err != nil {
 		panic(err)
 	}
