@@ -39,7 +39,7 @@ func Wrap(v interface{}) *Wrapper {
 
 	val = val.Elem()
 
-	err := CheckType(val.Interface())
+	err := Check(val.Interface())
 	if err != nil {
 		panic(fmt.Sprintf("jsonapi: invalid type: %s", err))
 	}
