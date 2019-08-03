@@ -9,7 +9,7 @@ import (
 
 // CheckType checks the given value and returns any error found.
 //
-// If nil is returned, than the value can be safely used with this library.
+// If nil is returned, then the value can be safely used with this library.
 func CheckType(v interface{}) error {
 	value := reflect.ValueOf(v)
 	kind := value.Kind()
