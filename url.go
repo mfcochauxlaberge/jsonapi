@@ -8,11 +8,10 @@ import (
 	"strconv"
 )
 
-// A URL stores all the information from a URL formatted for a JSON:API
-// request.
+// A URL stores all the information from a URL formatted for a JSON:API request.
 //
-// The data structure allows to have more information than what the URL
-// itself stores.
+// The data structure allows to have more information than what the URL itself
+// stores.
 type URL struct {
 	// URL
 	Fragments []string // [users, u1, articles]
@@ -42,8 +41,10 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	url.Fragments = su.Fragments
 
 	// IsCol, ResType, ResID, RelKind, Rel, BelongsToFilter
-	var typ Type
-	var ok bool
+	var (
+		typ Type
+		ok  bool
+	)
 	if len(url.Fragments) == 0 {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
@@ -66,7 +67,11 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	if len(url.Fragments) >= 3 {
 		relName := url.Fragments[len(url.Fragments)-1]
 		if url.Rel, ok = typ.Rels[relName]; !ok {
-			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
+			return nil, NewErrUnknownRelationshipInPath(
+				typ.Name,
+				relName,
+				su.Path(),
+			)
 		}
 
 		url.IsCol = !url.Rel.ToOne
@@ -111,11 +116,11 @@ func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	return NewURL(schema, su)
 }
 
-// A BelongsToFilter represents a parent resource, used to filter out
-// resources that are not children of the parent.
+// A BelongsToFilter represents a parent resource, used to filter out resources
+// that are not children of the parent.
 //
-// For example, in /articles/abc123/comments, the parent is the article
-// with the ID abc123.
+// For example, in /articles/abc123/comments, the parent is the article with the
+// ID abc123.
 type BelongsToFilter struct {
 	Type        string
 	ID          string
@@ -126,8 +131,8 @@ type BelongsToFilter struct {
 // String returns a string representation of the URL where special characters
 // are escaped.
 //
-// The URL is normalized, so it always returns exactly the same string given
-// the same URL.
+// The URL is normalized, so it always returns exactly the same string given the
+// same URL.
 func (u *URL) String() string {
 	// Path
 	path := "/"
@@ -167,10 +172,16 @@ func (u *URL) String() string {
 	// Pagination
 	if u.IsCol {
 		if u.Params.PageNumber != 0 {
-			urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)))
+			urlParams = append(
+				urlParams,
+				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
+			)
 		}
 		if u.Params.PageSize != 0 {
-			urlParams = append(urlParams, "page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)))
+			urlParams = append(
+				urlParams,
+				"page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)),
+			)
 		}
 	}
 
@@ -194,8 +205,8 @@ func (u *URL) String() string {
 	return path + params
 }
 
-// UnescapedString returns the same thing as String, but special characters
-// are not escaped.
+// UnescapedString returns the same thing as String, but special characters are
+// not escaped.
 func (u *URL) UnescapedString() string {
 	str, _ := url.PathUnescape(u.String())
 	// TODO Can an error occur?

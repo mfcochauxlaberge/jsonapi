@@ -28,11 +28,11 @@ type Params struct {
 	Include [][]Rel
 }
 
-// NewParams creates and returns a Params object built from a SimpleURL
-// and a given resource type. A schema is used for validation.
+// NewParams creates and returns a Params object built from a SimpleURL and a
+// given resource type. A schema is used for validation.
 //
-// If validation is not expected, it is recommended to simply build a
-// SimpleURL object with NewSimpleURL.
+// If validation is not expected, it is recommended to simply build a SimpleURL
+// object with NewSimpleURL.
 func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	params := &Params{
 		Fields:       map[string][]string{},
@@ -45,22 +45,22 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	}
 
 	// Include
-	inclusions := make([]string, len(su.Include))
-	copy(inclusions, su.Include)
-	sort.Strings(inclusions)
+	incs := make([]string, len(su.Include))
+	copy(incs, su.Include)
+	sort.Strings(incs)
 
 	// Remove duplicates and uncessary includes
-	for i := len(inclusions) - 1; i >= 0; i-- {
+	for i := len(incs) - 1; i >= 0; i-- {
 		if i > 0 {
-			if strings.HasPrefix(inclusions[i], inclusions[i-1]) {
-				inclusions = append(inclusions[:i-1], inclusions[i:]...)
+			if strings.HasPrefix(incs[i], incs[i-1]) {
+				incs = append(incs[:i-1], incs[i:]...)
 			}
 		}
 	}
 
 	// Check inclusions
-	for i := 0; i < len(inclusions); i++ {
-		words := strings.Split(inclusions[i], ".")
+	for i := 0; i < len(incs); i++ {
+		words := strings.Split(incs[i], ".")
 
 		incRel := Rel{Type: resType}
 		for _, word := range words {
@@ -69,7 +69,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 				if incRel, ok = typ.Rels[word]; ok {
 					params.Fields[incRel.Type] = []string{}
 				} else {
-					inclusions = append(inclusions[:i], inclusions[i+1:]...)
+					incs = append(incs[:i], incs[i+1:]...)
 					break
 				}
 			}
@@ -77,9 +77,9 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	}
 
 	// Build params.Include
-	params.Include = make([][]Rel, len(inclusions))
-	for i := range inclusions {
-		words := strings.Split(inclusions[i], ".")
+	params.Include = make([][]Rel, len(incs))
+	for i := range incs {
+		words := strings.Split(incs[i], ".")
 
 		params.Include[i] = make([]Rel, len(words))
 
@@ -131,13 +131,8 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 
 	// Attrs and Rels
 	for typeName, fields := range params.Fields {
-		var (
-			typ  Type
-			attr Attr
-			rel  Rel
-			ok   bool
-		)
-		if typ = schema.GetType(typeName); typ.Name == "" {
+		typ := schema.GetType(typeName)
+		if typ.Name == "" {
 			return nil, NewErrUnknownTypeInURL(typeName)
 		}
 
@@ -147,20 +142,19 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		for _, field := range typ.Fields() {
 			for _, field2 := range fields {
 				if field == field2 {
-					// Append to list of fields
-					// params.Fields[typeName] = append(params.Fields[typeName], field)
-
 					if typ = schema.GetType(typeName); typ.Name != "" {
-						if attr, ok = typ.Attrs[field]; ok {
+						if attr, ok := typ.Attrs[field]; ok {
 							// Append to list of attributes
-							params.Attrs[typeName] = append(params.Attrs[typeName], attr)
-						}
-					}
-
-					if typ = schema.GetType(typeName); typ.Name != "" {
-						if rel, ok = typ.Rels[field]; ok {
+							params.Attrs[typeName] = append(
+								params.Attrs[typeName],
+								attr,
+							)
+						} else if rel, ok := typ.Rels[field]; ok {
 							// Append to list of relationships
-							params.Rels[typeName] = append(params.Rels[typeName], rel)
+							params.Rels[typeName] = append(
+								params.Rels[typeName],
+								rel,
+							)
 						}
 					}
 				}
@@ -171,7 +165,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	// Filter
 	params.FilterLabel = su.FilterLabel
 	params.Filter = su.Filter
-	// TODO
+	// TODO Check whether the filter is valid
 
 	// Sorting
 	// TODO All of the following is just to figure out
