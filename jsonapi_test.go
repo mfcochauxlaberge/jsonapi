@@ -7,9 +7,11 @@ import (
 )
 
 var (
-	mocktypes1 Collection
-	mocktypes2 Collection
-	mocktypes3 Collection
+	mocktypes1  Collection
+	mocktypes11 Collection
+	mocktypes2  Collection
+	mocktypes21 Collection
+	mocktypes3  Collection
 	// urls  []*URL
 )
 
@@ -93,6 +95,38 @@ func init() {
 			ID:    "mt3-1",
 			Attr1: "str",
 			Attr2: 32,
+		}),
+	)
+
+	mocktypes11 = WrapCollection(Wrap(&mockType1{}))
+	mocktypes11.Add(
+		Wrap(&mockType1{
+			ID:             "mt11-1",
+			ToOne:          "mt21-1",
+			ToMany:         []string{"mt21-2", "mt21-3"},
+			ToOneFromOne:   "",
+			ToManyFromMany: []string{},
+			ToManyFromOne:  []string{},
+		}),
+	)
+
+	mocktypes21 = WrapCollection(Wrap(&mockType2{}))
+	mocktypes21.Add(
+		Wrap(&mockType2{
+			ID:      "mt21-1",
+			BoolPtr: &boolPtr,
+		}),
+	)
+	mocktypes21.Add(
+		Wrap(&mockType2{
+			ID:     "mt21-2",
+			IntPtr: &intPtr,
+		}),
+	)
+	mocktypes21.Add(
+		Wrap(&mockType2{
+			ID:     "mt21-3",
+			StrPtr: &strPtr,
 		}),
 	)
 }

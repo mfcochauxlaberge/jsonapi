@@ -1,12 +1,9 @@
 package jsonapi_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
@@ -24,6 +21,8 @@ func TestMarshalResource(t *testing.T) {
 	tests := []struct {
 		name          string
 		data          Resource
+		inclusions    []Resource
+		relData       map[string][]string
 		prepath       string
 		params        string
 		meta          map[string]interface{}
@@ -54,6 +53,52 @@ func TestMarshalResource(t *testing.T) {
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
 			payloadFile:   "resource-3",
+		}, {
+			name:          "resource with no attributes and relationships",
+			data:          mocktypes1.At(0),
+			prepath:       "https://example.org",
+			params:        "?fields[mocktypes1]=id",
+			errorExpected: false,
+			payloadFile:   "resource-5",
+		}, {
+			name: "resource with relationship data",
+			data: mocktypes11.At(0),
+			relData: map[string][]string{
+				"mocktypes1": []string{
+					"to-one", "to-many", "to-one-from-one", "to-many-from-many",
+				},
+			},
+			prepath: "https://example.org",
+			params: `
+				?fields[mocktypes1]=
+					to-one,to-many,
+					to-one-from-one,to-one-from-many,
+					to-many-from-one,to-many-from-many
+			`,
+			errorExpected: false,
+			payloadFile:   "resource-6",
+		}, {
+			name: "resource with inclusions",
+			data: mocktypes11.At(0),
+			inclusions: []Resource{
+				mocktypes21.At(0),
+				mocktypes21.At(1),
+				mocktypes21.At(2),
+			},
+			relData: map[string][]string{
+				"mocktypes1": []string{
+					"to-one", "to-many", "to-one-from-one", "to-many-from-many",
+				},
+			},
+			prepath: "https://example.org",
+			params: `
+				?fields[mocktypes1]=
+					to-one,to-many
+				&fields[mocktypes2]=
+					intptr,boolptr,strptr,
+			`,
+			errorExpected: false,
+			payloadFile:   "resource-7",
 		},
 	}
 
@@ -64,34 +109,33 @@ func TestMarshalResource(t *testing.T) {
 		doc.Data = test.data
 
 		id := test.data.GetID()
-		resType := test.data.GetType().Name
-		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
+		typ := test.data.GetType()
+		rawurl := fmt.Sprintf(
+			"%s/%s/%s%s",
+			test.prepath, typ.Name, id, makeOneLineNoSpaces(test.params),
+		)
 
 		url, err := NewURLFromRaw(schema, rawurl)
 		assert.NoError(err, test.name)
 
+		for _, inc := range test.inclusions {
+			doc.Include(inc)
+		}
+
+		doc.RelData = test.relData
 		doc.Meta = test.meta
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.NoError(err, test.name)
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
 }
@@ -154,26 +198,62 @@ func TestMarshalCollection(t *testing.T) {
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
+}
+
+func TestMarshalInclusions(t *testing.T) {
+	assert := assert.New(t)
+
+	schema := newMockSchema()
+
+	// Document
+	doc := &Document{}
+	doc.PrePath = "https://example.org"
+
+	// URL
+	url, err := NewURLFromRaw(
+		schema,
+		makeOneLineNoSpaces(`
+			/mocktypes3/mt3-1
+			?fields[mocktypes1]=str
+			&fields[mocktypes3]=attr1,attr2
+		`),
+	)
+	assert.NoError(err)
+
+	// Data (single resource)
+	res := Wrap(&mockType3{})
+	res.SetID("mt3-1")
+	res.Set("attr1", "str")
+	res.Set("attr2", 42)
+	doc.Data = Resource(res)
+
+	// Inclusions
+	inc1 := Wrap(&mockType1{})
+	inc1.SetID("mt1-1")
+	inc1.Set("str", "astring")
+	doc.Include(inc1)
+
+	inc2 := Wrap(&mockType1{})
+	inc2.SetID("mt1-2")
+	inc2.Set("str", "anotherstring")
+	doc.Include(inc2)
+
+	payload, _ := Marshal(doc, url)
+
+	// Retrieve the expected result from file
+	expected, _ := ioutil.ReadFile("testdata/resource-4.json")
+
+	assert.JSONEq(string(expected), string(payload))
 }
 
 func TestMarshalErrors(t *testing.T) {
@@ -225,27 +305,37 @@ func TestMarshalErrors(t *testing.T) {
 
 	for _, test := range tests {
 		doc := NewDocument()
-		doc.Data = test.errors
+		if len(test.errors) == 1 {
+			doc.Data = test.errors[0]
+		} else {
+			doc.Data = test.errors
+		}
+
 		// Marshal
 		payload, err := Marshal(doc, nil)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
+}
+
+func TestMarshalOther(t *testing.T) {
+	assert := assert.New(t)
+
+	doc := &Document{
+		Data: nil,
+	}
+	payload, err := Marshal(doc, nil)
+	assert.NoError(err)
+
+	// Retrieve the expected result from file
+	expected, _ := ioutil.ReadFile("testdata/null-1.json")
+
+	assert.JSONEq(string(expected), string(payload), "null data")
 }

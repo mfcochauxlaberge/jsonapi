@@ -3,6 +3,7 @@ package jsonapi
 import (
 	"encoding/json"
 	"fmt"
+	"sort"
 )
 
 // Marshal marshals a document according to the JSON:API speficication.
@@ -51,18 +52,24 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	}
 
 	// Included
-	inclusions := []*json.RawMessage{}
-	if len(data) > 0 {
-		for key := range doc.Included {
-			typ := doc.Included[key].GetType().Name
-			raw := marshalResource(
-				doc.Included[key],
-				doc.PrePath,
-				url.Params.Fields[typ],
-				doc.RelData,
-			)
-			rawm := json.RawMessage(raw)
-			inclusions = append(inclusions, &rawm)
+	var inclusions []*json.RawMessage
+	if len(doc.Included) > 0 {
+		sort.Slice(doc.Included, func(i, j int) bool {
+			return doc.Included[i].GetID() < doc.Included[j].GetID()
+		})
+
+		if len(data) > 0 {
+			for key := range doc.Included {
+				typ := doc.Included[key].GetType().Name
+				raw := marshalResource(
+					doc.Included[key],
+					doc.PrePath,
+					url.Params.Fields[typ],
+					doc.RelData,
+				)
+				rawm := json.RawMessage(raw)
+				inclusions = append(inclusions, &rawm)
+			}
 		}
 	}
 
@@ -162,7 +169,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	return doc, nil
 }
 
-// marshalResource ...
+// marshalResource marshals a Resource into a JSON-encoded payload.
 func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
@@ -172,14 +179,10 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 	// Attributes
 	attrs := map[string]interface{}{}
 	for _, attr := range r.Attrs() {
-		if len(fields) == 0 {
-			attrs[attr.Name] = r.Get(attr.Name)
-		} else {
-			for _, field := range fields {
-				if field == attr.Name {
-					attrs[attr.Name] = r.Get(attr.Name)
-					break
-				}
+		for _, field := range fields {
+			if field == attr.Name {
+				attrs[attr.Name] = r.Get(attr.Name)
+				break
 			}
 		}
 	}
@@ -189,26 +192,22 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 	rels := map[string]*json.RawMessage{}
 	for _, rel := range r.Rels() {
 		include := false
-		if len(fields) == 0 {
-			include = true
-		} else {
-			for _, field := range fields {
-				if field == rel.Name {
-					include = true
-					break
-				}
+		for _, field := range fields {
+			if field == rel.Name {
+				include = true
+				break
 			}
 		}
 
 		if include {
-			if rel.ToOne {
-				var raw json.RawMessage
+			var raw json.RawMessage
 
+			if rel.ToOne {
 				s := map[string]map[string]string{
 					"links": buildRelationshipLinks(r, prepath, rel.Name),
 				}
 
-				for n := range relData {
+				for _, n := range relData[r.GetType().Name] {
 					if n == rel.Name {
 						id := r.GetToOne(rel.Name)
 						if id != "" {
@@ -219,34 +218,29 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 						} else {
 							s["data"] = nil
 						}
-
 						break
 					}
 				}
 
-				// var links map[string]string{}
 				raw, _ = json.Marshal(s)
 				rels[rel.Name] = &raw
 			} else {
-				var raw json.RawMessage
-
 				s := map[string]interface{}{
 					"links": buildRelationshipLinks(r, prepath, rel.Name),
 				}
 
-				for n := range relData {
+				for _, n := range relData[r.GetType().Name] {
 					if n == rel.Name {
 						data := []map[string]string{}
-
-						for _, id := range r.GetToMany(rel.Name) {
+						ids := r.GetToMany(rel.Name)
+						sort.Strings(ids)
+						for _, id := range ids {
 							data = append(data, map[string]string{
 								"id":   id,
 								"type": rel.Type,
 							})
 						}
-
 						s["data"] = data
-
 						break
 					}
 				}
@@ -254,7 +248,6 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 				raw, _ = json.Marshal(s)
 				rels[rel.Name] = &raw
 			}
-
 		}
 	}
 	mapPl["relationships"] = rels
@@ -271,7 +264,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 	return pl
 }
 
-// marshalCollection ...
+// marshalCollection marshals a Collection into a JSON-encoded payload.
 func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) []byte {
 	var raws []*json.RawMessage
 

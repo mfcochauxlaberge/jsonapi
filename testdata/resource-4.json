@@ -1,0 +1,44 @@
+{
+	"data": {
+		"attributes": {
+			"attr1": "str",
+			"attr2": 42
+		},
+		"id": "mt3-1",
+		"links": {
+			"self": "https://example.org/mocktypes3/mt3-1"
+		},
+		"relationships": {},
+		"type": "mocktypes3"
+	},
+	"included": [
+        {
+            "attributes": {
+                "str": "astring"
+            },
+            "id": "mt1-1",
+            "links": {
+                "self": "https://example.org/mocktypes1/mt1-1"
+            },
+            "relationships": {},
+            "type": "mocktypes1"
+		},
+		{
+			"attributes": {
+				"str": "anotherstring"
+			},
+			"id": "mt1-2",
+			"links": {
+				"self": "https://example.org/mocktypes1/mt1-2"
+			},
+			"relationships": {},
+			"type": "mocktypes1"
+		}
+    ],
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "https://example.org/mocktypes3/mt3-1?fields%5Bmocktypes1%5D=str\u0026fields%5Bmocktypes3%5D=attr1%2Cattr2"
+	}
+}
