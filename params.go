@@ -5,29 +5,6 @@ import (
 	"strings"
 )
 
-// A Params object represents all the query parameters from the URL.
-type Params struct {
-	// Fields
-	Fields  map[string][]string
-	Attrs   map[string][]Attr
-	Rels    map[string][]Rel
-	RelData map[string][]string
-
-	// Filter
-	FilterLabel string
-	Filter      *Filter
-
-	// Sorting
-	SortingRules []string
-
-	// Pagination
-	PageSize   uint
-	PageNumber uint
-
-	// Include
-	Include [][]Rel
-}
-
 // NewParams creates and returns a Params object built from a SimpleURL and a
 // given resource type. A schema is used for validation.
 //
@@ -182,7 +159,11 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 			ok  bool
 		)
 		if rel, ok = typ.Rels[relName]; !ok {
-			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
+			return nil, NewErrUnknownRelationshipInPath(
+				typ.Name,
+				relName,
+				su.Path(),
+			)
 		}
 		isCol = !rel.ToOne
 	}
@@ -238,4 +219,27 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	params.PageNumber = su.PageNumber
 
 	return params, nil
+}
+
+// A Params object represents all the query parameters from the URL.
+type Params struct {
+	// Fields
+	Fields  map[string][]string
+	Attrs   map[string][]Attr
+	Rels    map[string][]Rel
+	RelData map[string][]string
+
+	// Filter
+	FilterLabel string
+	Filter      *Filter
+
+	// Sorting
+	SortingRules []string
+
+	// Pagination
+	PageSize   uint
+	PageNumber uint
+
+	// Include
+	Include [][]Rel
 }
