@@ -141,6 +141,8 @@ func Reflect(v interface{}) (Type, error) {
 	return typ, nil
 }
 
+// MustReflect calls Reflect and returns the result, except that it panics if
+// the error is not nil.
 func MustReflect(v interface{}) Type {
 	typ, err := Reflect(v)
 	if err != nil {
