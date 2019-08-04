@@ -150,6 +150,19 @@ func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	return e
 }
 
+// NewErrDuplicateFieldInFieldsParameter (400) returns the corresponding error.
+func NewErrDuplicateFieldInFieldsParameter(typ string, field string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Duplicate field"
+	e.Detail = "The fields parameter contains the same field more than once."
+	e.Source["parameter"] = "fields[" + typ + "]"
+	e.Meta["duplicate-field"] = field
+
+	return e
+}
+
 // NewErrUnknownFieldInBody (400) returns the corresponding error.
 func NewErrUnknownFieldInBody(typ, field string) Error {
 	e := NewError()
