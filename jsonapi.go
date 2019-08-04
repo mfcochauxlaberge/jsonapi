@@ -52,18 +52,24 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	}
 
 	// Included
-	inclusions := []*json.RawMessage{}
-	if len(data) > 0 {
-		for key := range doc.Included {
-			typ := doc.Included[key].GetType().Name
-			raw := marshalResource(
-				doc.Included[key],
-				doc.PrePath,
-				url.Params.Fields[typ],
-				doc.RelData,
-			)
-			rawm := json.RawMessage(raw)
-			inclusions = append(inclusions, &rawm)
+	var inclusions []*json.RawMessage
+	if len(doc.Included) > 0 {
+		sort.Slice(doc.Included, func(i, j int) bool {
+			return doc.Included[i].GetID() < doc.Included[j].GetID()
+		})
+
+		if len(data) > 0 {
+			for key := range doc.Included {
+				typ := doc.Included[key].GetType().Name
+				raw := marshalResource(
+					doc.Included[key],
+					doc.PrePath,
+					url.Params.Fields[typ],
+					doc.RelData,
+				)
+				rawm := json.RawMessage(raw)
+				inclusions = append(inclusions, &rawm)
+			}
 		}
 	}
 

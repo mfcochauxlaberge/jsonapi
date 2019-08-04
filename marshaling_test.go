@@ -19,9 +19,9 @@ func TestMarshalResource(t *testing.T) {
 	schema := newMockSchema()
 
 	tests := []struct {
-		name string
-		data Resource
-		// inclusions    []Resource
+		name          string
+		data          Resource
+		inclusions    []Resource
 		relData       map[string][]string
 		prepath       string
 		params        string
@@ -77,6 +77,28 @@ func TestMarshalResource(t *testing.T) {
 			`,
 			errorExpected: false,
 			payloadFile:   "resource-6",
+		}, {
+			name: "resource with inclusions",
+			data: mocktypes11.At(0),
+			inclusions: []Resource{
+				mocktypes21.At(0),
+				mocktypes21.At(1),
+				mocktypes21.At(2),
+			},
+			relData: map[string][]string{
+				"mocktypes1": []string{
+					"to-one", "to-many", "to-one-from-one", "to-many-from-many",
+				},
+			},
+			prepath: "https://example.org",
+			params: `
+				?fields[mocktypes1]=
+					to-one,to-many
+				&fields[mocktypes2]=
+					intptr,boolptr,strptr,
+			`,
+			errorExpected: false,
+			payloadFile:   "resource-7",
 		},
 	}
 
@@ -95,6 +117,10 @@ func TestMarshalResource(t *testing.T) {
 
 		url, err := NewURLFromRaw(schema, rawurl)
 		assert.NoError(err, test.name)
+
+		for _, inc := range test.inclusions {
+			doc.Include(inc)
+		}
 
 		doc.RelData = test.relData
 		doc.Meta = test.meta

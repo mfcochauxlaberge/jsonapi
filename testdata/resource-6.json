@@ -1,0 +1,70 @@
+{
+	"data": {
+		"attributes": {},
+		"id": "mt11-1",
+		"links": {
+			"self": "https://example.org/mocktypes1/mt11-1"
+		},
+		"relationships": {
+			"to-many": {
+				"data": [
+					{
+						"id": "mt21-2",
+						"type": "mocktypes2"
+					},
+					{
+						"id": "mt21-3",
+						"type": "mocktypes2"
+					}
+				],
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-many",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-many"
+				}
+			},
+			"to-many-from-many": {
+				"data": [],
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-many-from-many",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-many-from-many"
+				}
+			},
+			"to-many-from-one": {
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-many-from-one",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-many-from-one"
+				}
+			},
+			"to-one": {
+				"data": {
+					"id": "mt21-1",
+					"type": "mocktypes2"
+				},
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-one",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-one"
+				}
+			},
+			"to-one-from-many": {	
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-one-from-many",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-one-from-many"
+				}
+			},
+			"to-one-from-one": {
+				"data": null,
+				"links": {
+					"related": "https://example.org/mocktypes1/mt11-1/to-one-from-one",
+					"self": "https://example.org/mocktypes1/mt11-1/relationships/to-one-from-one"
+				}
+			}
+		},
+		"type": "mocktypes1"
+	},
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "https://example.org/mocktypes1/mt11-1?fields%5Bmocktypes1%5D=to-many%2Cto-many-from-many%2Cto-many-from-one%2Cto-one%2Cto-one-from-many%2Cto-one-from-one"
+	}
+}
