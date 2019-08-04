@@ -133,11 +133,16 @@ func (u *URL) String() string {
 	urlParams := []string{}
 
 	// Fields
-	for n := range u.Params.Fields {
-		sort.Strings(u.Params.Fields[n])
+	fields := make([]string, 0, len(u.Params.Fields))
+	for key := range u.Params.Fields {
+		fields = append(fields, key)
+	}
+	sort.Strings(fields)
+	for _, typ := range fields {
+		sort.Strings(u.Params.Fields[typ])
 
-		param := "fields%5B" + n + "%5D="
-		for _, f := range u.Params.Fields[n] {
+		param := "fields%5B" + typ + "%5D="
+		for _, f := range u.Params.Fields[typ] {
 			param += f + "%2C"
 		}
 		param = param[:len(param)-3]
