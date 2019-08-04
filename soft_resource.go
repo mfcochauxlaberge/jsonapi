@@ -8,8 +8,8 @@ import (
 
 var _ Resource = (*SoftResource)(nil)
 
-// SoftResource represents a resource whose type is defined by an internal
-// field of type *Type.
+// SoftResource represents a resource whose type is defined by an internal field
+// of type *Type.
 //
 // Changing the type automatically changes the resource's attributes and
 // relationships. When a field is added, its value is the zero value of the
@@ -74,8 +74,8 @@ func (sr *SoftResource) Rel(key string) Rel {
 	return sr.Type.Rels[key]
 }
 
-// New returns a new resource (of type SoftResource) with the same type
-// but without the values.
+// New returns a new resource (of type SoftResource) with the same type but
+// without the values.
 func (sr *SoftResource) New() Resource {
 	sr.check()
 	return &SoftResource{

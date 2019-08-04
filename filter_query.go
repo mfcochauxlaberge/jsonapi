@@ -69,8 +69,7 @@ func (f *Filter) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-// IsAllowed reports whether res is valid under the rules defined in the
-// filter.
+// IsAllowed reports whether res is valid under the rules defined in the filter.
 func (f *Filter) IsAllowed(res Resource) bool {
 	var (
 		val interface{}

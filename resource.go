@@ -37,9 +37,8 @@ type Resource interface {
 
 // Equal reports whether r1 and r2 are equal.
 //
-// Two resources are equal if their types are equal, all the attributes
-// are equal (same type and same value), and all the relationstips are
-// equal.
+// Two resources are equal if their types are equal, all the attributes are
+// equal (same type and same value), and all the relationstips are equal.
 //
 // IDs are ignored.
 func Equal(r1, r2 Resource) bool {

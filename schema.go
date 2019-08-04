@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// A Schema contains a list of types. It makes sure that each type is
-// valid and unique.
+// A Schema contains a list of types. It makes sure that each type is valid and
+// unique.
 //
 // Check can be used to validate the relationships between the types.
 type Schema struct {
@@ -95,8 +95,8 @@ func (s *Schema) HasType(name string) bool {
 // GetType returns the type associated with the speficied name.
 //
 // If no type with the given name is found, an zero instance of Type is
-// returned. Therefore, checking whether the Name field is empty or not
-// is a good way to dertermine whether the type was found or not.
+// returned. Therefore, checking whether the Name field is empty or not is a
+// good way to dertermine whether the type was found or not.
 func (s *Schema) GetType(name string) Type {
 	for _, typ := range s.Types {
 		if typ.Name == name {
@@ -106,8 +106,8 @@ func (s *Schema) GetType(name string) Type {
 	return Type{}
 }
 
-// Check checks the integrity of all the relationships between the types
-// and returns all the errors that were found.
+// Check checks the integrity of all the relationships between the types and
+// returns all the errors that were found.
 func (s *Schema) Check() []error {
 	var (
 		errs = []error{}
