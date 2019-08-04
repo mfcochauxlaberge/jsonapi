@@ -695,7 +695,7 @@ func TestFilterResource(t *testing.T) {
 		typ := &Type{Name: "type"}
 		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Attrs = map[string]Attr{
-			"attr": Attr{
+			"attr": {
 				Name:     "attr",
 				Type:     ty,
 				Nullable: n,
@@ -761,7 +761,7 @@ func TestFilterResource(t *testing.T) {
 		}
 		// ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Rels = map[string]Rel{
-			"rel": Rel{
+			"rel": {
 				Name:  "rel",
 				Type:  "type",
 				ToOne: toOne,
@@ -926,7 +926,11 @@ func TestFilterMarshaling(t *testing.T) {
 			data, err := json.Marshal(&cdt)
 			assert.NoError(err, test.name)
 
-			assert.Equal(makeOneLineNoSpaces(test.query), makeOneLineNoSpaces(string(data)), test.name)
+			assert.Equal(
+				makeOneLineNoSpaces(test.query),
+				makeOneLineNoSpaces(string(data)),
+				test.name,
+			)
 		}
 	}
 

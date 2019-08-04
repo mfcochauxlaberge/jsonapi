@@ -108,8 +108,10 @@ func TestParseURL(t *testing.T) {
 			name: "111111",
 			url:  `https://example.com/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
-				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Fragments: []string{
+					"mocktypes1", "mc1-1", "relationships", "to-many-from-one",
+				},
+				Route: "/mocktypes1/:id/relationships/to-many-from-one",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -134,8 +136,10 @@ func TestParseURL(t *testing.T) {
 			name: "full url for self relationship",
 			url:  `/mocktypes1/mc1-1/relationships/to-many-from-one`,
 			expectedURL: URL{
-				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
-				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Fragments: []string{
+					"mocktypes1", "mc1-1", "relationships", "to-many-from-one",
+				},
+				Route: "/mocktypes1/:id/relationships/to-many-from-one",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -158,10 +162,15 @@ func TestParseURL(t *testing.T) {
 			expectedError: false,
 		}, {
 			name: "full url for self relationship with params",
-			url:  `/mocktypes1/mc1-1/relationships/to-many-from-one?fields[mocktypes2]=boolptr%2Cint8ptr`,
+			url: `
+				/mocktypes1/mc1-1/relationships/to-many-from-one
+				?fields[mocktypes2]=boolptr%2Cint8ptr
+			`,
 			expectedURL: URL{
-				Fragments: []string{"mocktypes1", "mc1-1", "relationships", "to-many-from-one"},
-				Route:     "/mocktypes1/:id/relationships/to-many-from-one",
+				Fragments: []string{
+					"mocktypes1", "mc1-1", "relationships", "to-many-from-one",
+				},
+				Route: "/mocktypes1/:id/relationships/to-many-from-one",
 				BelongsToFilter: BelongsToFilter{
 					Type:        "mocktypes1",
 					ID:          "mc1-1",
@@ -404,10 +413,16 @@ func TestParseParams(t *testing.T) {
 			for _, field := range fields {
 				if typ := schema.GetType(resType); typ.Name != "" {
 					if _, ok := typ.Attrs[field]; ok {
-						test.expectedParams.Attrs[resType] = append(test.expectedParams.Attrs[resType], typ.Attrs[field])
+						test.expectedParams.Attrs[resType] = append(
+							test.expectedParams.Attrs[resType],
+							typ.Attrs[field],
+						)
 					} else if typ := schema.GetType(resType); typ.Name != "" {
 						if _, ok := typ.Rels[field]; ok {
-							test.expectedParams.Rels[resType] = append(test.expectedParams.Rels[resType], typ.Rels[field])
+							test.expectedParams.Rels[resType] = append(
+								test.expectedParams.Rels[resType],
+								typ.Rels[field],
+							)
 						}
 					}
 				}
@@ -431,16 +446,41 @@ func TestURLEscaping(t *testing.T) {
 		expectedUnescaped string
 	}{
 		{
-			url:               `/mocktypes1?fields[mocktypes1]=bool%2Cint8&page[number]=2&page[size]=10`,
-			expectedEscaped:   `/mocktypes1?fields%5Bmocktypes1%5D=bool%2Cint8&page%5Bnumber%5D=2&page%5Bsize%5D=10&sort=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cuint%2Cuint16%2Cuint32%2Cuint64%2Cuint8%2Cid`,
-			expectedUnescaped: `/mocktypes1?fields[mocktypes1]=bool,int8&page[number]=2&page[size]=10&sort=bool,int,int16,int32,int64,int8,str,time,uint,uint16,uint32,uint64,uint8,id`,
+			url: `
+				/mocktypes1
+				?fields[mocktypes1]=bool%2Cint8
+				&page[number]=2
+				&page[size]=10
+			`,
+			expectedEscaped: `
+				/mocktypes1
+				?fields%5Bmocktypes1%5D=bool%2Cint8
+				&page%5Bnumber%5D=2
+				&page%5Bsize%5D=10
+				&sort=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2C
+					uint%2Cuint16%2Cuint32%2Cuint64%2Cuint8%2Cid
+			`,
+			expectedUnescaped: `
+				/mocktypes1
+				?fields[mocktypes1]=bool,int8
+				&page[number]=2
+				&page[size]=10
+				&sort=bool,int,int16,int32,int64,int8,str,time,uint,uint16,
+					uint32,uint64,uint8,id
+			`,
 		},
 	}
 
 	for _, test := range tests {
-		url, err := NewURLFromRaw(schema, test.url)
+		url, err := NewURLFromRaw(schema, makeOneLineNoSpaces(test.url))
 		assert.NoError(err)
-		assert.Equal(test.expectedEscaped, url.String())
-		assert.Equal(test.expectedUnescaped, url.UnescapedString())
+		assert.Equal(
+			makeOneLineNoSpaces(test.expectedEscaped),
+			url.String(),
+		)
+		assert.Equal(
+			makeOneLineNoSpaces(test.expectedUnescaped),
+			url.UnescapedString(),
+		)
 	}
 }

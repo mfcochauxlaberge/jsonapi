@@ -102,8 +102,8 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	return sURL, nil
 }
 
-// Path returns the path only of the SimpleURL. It does not include any
-// query parameters.
+// Path returns the path only of the SimpleURL. It does not include any query
+// parameters.
 func (s *SimpleURL) Path() string {
 	return strings.Join(s.Fragments, "/")
 }

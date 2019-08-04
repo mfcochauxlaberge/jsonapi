@@ -38,8 +38,8 @@ func NewError() Error {
 
 // Error returns the string representation of the error.
 //
-// If the error does note contain a valid error status code, it returns an
-// empty string.
+// If the error does note contain a valid error status code, it returns an empty
+// string.
 func (e Error) Error() string {
 	fullName := http.StatusText(e.Status)
 
@@ -60,8 +60,8 @@ func (e Error) Error() string {
 	return e.Title
 }
 
-// MarshalJSON returns a JSON representation of the error according
-// to the JSON:API specification.
+// MarshalJSON returns a JSON representation of the error according to the
+// JSON:API specification.
 func (e Error) MarshalJSON() ([]byte, error) {
 	m := map[string]interface{}{}
 

@@ -41,12 +41,26 @@ func Check(v interface{}) error {
 			isValid := false
 
 			switch sf.Type.String() {
-			case "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "bool", "time.Time", "*string", "*int", "*int8", "*int16", "*int32", "*int64", "*uint", "*uint8", "*uint16", "*uint32", "*uint64", "*bool", "*time.Time":
+			case
+				"string",
+				"int", "int8", "int16", "int32", "int64",
+				"uint", "uint8", "uint16", "uint32", "uint64",
+				"bool",
+				"time.Time",
+				"*string",
+				"*int", "*int8", "*int16", "*int32", "*int64",
+				"*uint", "*uint8", "*uint16", "*uint32", "*uint64",
+				"*bool",
+				"*time.Time":
 				isValid = true
 			}
 
 			if !isValid {
-				return fmt.Errorf("jsonapi: attribute %s of type %s is of unsupported type", sf.Name, resType)
+				return fmt.Errorf(
+					"jsonapi: attribute %s of type %s is of unsupported type",
+					sf.Name,
+					resType,
+				)
 			}
 		}
 	}
@@ -59,11 +73,19 @@ func Check(v interface{}) error {
 			s := strings.Split(sf.Tag.Get("api"), ",")
 
 			if len(s) < 2 || len(s) > 3 {
-				return fmt.Errorf("jsonapi: api tag of relationship %s of struct %s is invalid", sf.Name, value.Type().Name())
+				return fmt.Errorf(
+					"jsonapi: api tag of relationship %s of struct %s is invalid",
+					sf.Name,
+					value.Type().Name(),
+				)
 			}
 
 			if sf.Type.String() != "string" && sf.Type.String() != "[]string" {
-				return fmt.Errorf("jsonapi: relationship %s of type %s is not string or []string", sf.Name, resType)
+				return fmt.Errorf(
+					"jsonapi: relationship %s of type %s is not string or []string",
+					sf.Name,
+					resType,
+				)
 			}
 		}
 	}
@@ -141,6 +163,8 @@ func Reflect(v interface{}) (Type, error) {
 	return typ, nil
 }
 
+// MustReflect calls Reflect and returns the result, except that it panics if
+// the error is not nil.
 func MustReflect(v interface{}) Type {
 	typ, err := Reflect(v)
 	if err != nil {

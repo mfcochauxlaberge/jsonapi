@@ -79,8 +79,8 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	return url, nil
 }
 
-// NewURLFromRaw parses rawurl to make a *url.URL before making and returning
-// a *URL.
+// NewURLFromRaw parses rawurl to make a *url.URL before making and returning a
+// *URL.
 func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
 	if err != nil {

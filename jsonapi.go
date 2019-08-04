@@ -18,10 +18,18 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
-		data = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
+		data = marshalResource(
+			res, doc.PrePath,
+			url.Params.Fields[res.GetType().Name],
+			doc.RelData,
+		)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.GetType().Name], doc.RelData)
+		data = marshalCollection(
+			col, doc.PrePath,
+			url.Params.Fields[col.GetType().Name],
+			doc.RelData,
+		)
 	} else if id, ok := doc.Data.(Identifier); ok {
 		// Identifier
 		data, err = json.Marshal(id)
@@ -47,7 +55,12 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if len(data) > 0 {
 		for key := range doc.Included {
 			typ := doc.Included[key].GetType().Name
-			raw := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
+			raw := marshalResource(
+				doc.Included[key],
+				doc.PrePath,
+				url.Params.Fields[typ],
+				doc.RelData,
+			)
 			rawm := json.RawMessage(raw)
 			inclusions = append(inclusions, &rawm)
 		}
@@ -153,7 +166,6 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
-	// ID and type
 	mapPl["id"] = r.GetID()
 	mapPl["type"] = r.GetType().Name
 

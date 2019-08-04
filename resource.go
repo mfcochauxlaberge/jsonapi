@@ -37,9 +37,8 @@ type Resource interface {
 
 // Equal reports whether r1 and r2 are equal.
 //
-// Two resources are equal if their types are equal, all the attributes
-// are equal (same type and same value), and all the relationstips are
-// equal.
+// Two resources are equal if their types are equal, all the attributes are
+// equal (same type and same value), and all the relationstips are equal.
 //
 // IDs are ignored.
 func Equal(r1, r2 Resource) bool {
@@ -76,7 +75,8 @@ func Equal(r1, r2 Resource) bool {
 			// TODO Fix the following condition one day, there should be a better
 			// way to do this. Basically, all nils (nil pointer, nil slice, etc)
 			// should be considered equal to a nil empty interface.
-			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" && fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
+			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" &&
+				fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
 				continue
 			}
 			return false
