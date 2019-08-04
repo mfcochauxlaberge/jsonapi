@@ -926,7 +926,11 @@ func TestFilterMarshaling(t *testing.T) {
 			data, err := json.Marshal(&cdt)
 			assert.NoError(err, test.name)
 
-			assert.Equal(makeOneLineNoSpaces(test.query), makeOneLineNoSpaces(string(data)), test.name)
+			assert.Equal(
+				makeOneLineNoSpaces(test.query),
+				makeOneLineNoSpaces(string(data)),
+				test.name,
+			)
 		}
 	}
 
