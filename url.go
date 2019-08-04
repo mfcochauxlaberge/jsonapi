@@ -8,27 +8,6 @@ import (
 	"strconv"
 )
 
-// A URL stores all the information from a URL formatted for a JSON:API request.
-//
-// The data structure allows to have more information than what the URL itself
-// stores.
-type URL struct {
-	// URL
-	Fragments []string // [users, u1, articles]
-	Route     string   // /users/:id/articles
-
-	// Data
-	IsCol           bool
-	ResType         string
-	ResID           string
-	RelKind         string
-	Rel             Rel
-	BelongsToFilter BelongsToFilter
-
-	// Params
-	Params *Params
-}
-
 // NewURL builds a URL from a SimpleURL and a schema for validating and
 // supplementing the object with extra information.
 func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
@@ -41,8 +20,10 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	url.Fragments = su.Fragments
 
 	// IsCol, ResType, ResID, RelKind, Rel, BelongsToFilter
-	var typ Type
-	var ok bool
+	var (
+		typ Type
+		ok  bool
+	)
 	if len(url.Fragments) == 0 {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
@@ -65,7 +46,11 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	if len(url.Fragments) >= 3 {
 		relName := url.Fragments[len(url.Fragments)-1]
 		if url.Rel, ok = typ.Rels[relName]; !ok {
-			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
+			return nil, NewErrUnknownRelationshipInPath(
+				typ.Name,
+				relName,
+				su.Path(),
+			)
 		}
 
 		url.IsCol = !url.Rel.ToOne
@@ -110,16 +95,25 @@ func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	return NewURL(schema, su)
 }
 
-// A BelongsToFilter represents a parent resource, used to filter out resources
-// that are not children of the parent.
+// A URL stores all the information from a URL formatted for a JSON:API request.
 //
-// For example, in /articles/abc123/comments, the parent is the article with the
-// ID abc123.
-type BelongsToFilter struct {
-	Type        string
-	ID          string
-	Name        string
-	InverseName string
+// The data structure allows to have more information than what the URL itself
+// stores.
+type URL struct {
+	// URL
+	Fragments []string // [users, u1, articles]
+	Route     string   // /users/:id/articles
+
+	// Data
+	IsCol           bool
+	ResType         string
+	ResID           string
+	RelKind         string
+	Rel             Rel
+	BelongsToFilter BelongsToFilter
+
+	// Params
+	Params *Params
 }
 
 // String returns a string representation of the URL where special characters
@@ -161,6 +155,8 @@ func (u *URL) String() string {
 		}
 		param := "filter=" + string(mf)
 		urlParams = append(urlParams, param)
+	} else if u.Params.FilterLabel != "" {
+		urlParams = append(urlParams, "filter="+u.Params.FilterLabel)
 	}
 
 	// Pagination
@@ -199,10 +195,22 @@ func (u *URL) String() string {
 	return path + params
 }
 
-// UnescapedString returns the same thing as String, but special characters
-// are not escaped.
+// UnescapedString returns the same thing as String, but special characters are
+// not escaped.
 func (u *URL) UnescapedString() string {
 	str, _ := url.PathUnescape(u.String())
 	// TODO Can an error occur?
 	return str
+}
+
+// A BelongsToFilter represents a parent resource, used to filter out resources
+// that are not children of the parent.
+//
+// For example, in /articles/abc123/comments, the parent is the article with the
+// ID abc123.
+type BelongsToFilter struct {
+	Type        string
+	ID          string
+	Name        string
+	InverseName string
 }
