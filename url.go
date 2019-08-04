@@ -155,6 +155,8 @@ func (u *URL) String() string {
 		}
 		param := "filter=" + string(mf)
 		urlParams = append(urlParams, param)
+	} else if u.Params.FilterLabel != "" {
+		urlParams = append(urlParams, "filter="+u.Params.FilterLabel)
 	}
 
 	// Pagination
