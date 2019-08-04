@@ -121,6 +121,14 @@ func TestErrorConstructors(t *testing.T) {
 			expected: "400 Bad Request: " +
 				"The page size parameter is not positive integer (including 0).",
 		}, {
+			name: "NewErrDuplicateFieldInFieldsParameter",
+			err: func() Error {
+				e := NewErrDuplicateFieldInFieldsParameter("type", "field")
+				return e
+			}(),
+			expected: "400 Bad Request: " +
+				"The fields parameter contains the same field more than once.",
+		}, {
 			name: "NewErrUnknownFieldInBody",
 			err: func() Error {
 				e := NewErrUnknownFieldInBody("type", "field")
