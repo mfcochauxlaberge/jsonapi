@@ -281,5 +281,5 @@ func TestMarshalOther(t *testing.T) {
 	// Retrieve the expected result from file
 	expected, _ := ioutil.ReadFile("testdata/null-1.json")
 
-	assert.Equal(string(expected), string(payload), "null data")
+	assert.JSONEq(string(expected), string(payload), "null data")
 }
