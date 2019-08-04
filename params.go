@@ -90,9 +90,13 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		if typ := schema.GetType(t); typ.Name != "" {
 			params.Fields[t] = []string{}
 			for _, f := range fields {
-				for _, ff := range typ.Fields() {
-					if f == ff {
-						params.Fields[t] = append(params.Fields[t], f)
+				if f == "id" {
+					params.Fields[t] = append(params.Fields[t], "id")
+				} else {
+					for _, ff := range typ.Fields() {
+						if f == ff {
+							params.Fields[t] = append(params.Fields[t], f)
+						}
 					}
 				}
 			}
