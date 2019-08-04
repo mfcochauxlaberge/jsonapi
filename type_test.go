@@ -267,14 +267,14 @@ func TestCopyType(t *testing.T) {
 	typ1 := Type{
 		Name: "type1",
 		Attrs: map[string]Attr{
-			"attr1": Attr{
+			"attr1": {
 				Name:     "attr1",
 				Type:     AttrTypeString,
 				Nullable: true,
 			},
 		},
 		Rels: map[string]Rel{
-			"rel1": Rel{
+			"rel1": {
 				Name:         "rel1",
 				Type:         "type2",
 				ToOne:        true,

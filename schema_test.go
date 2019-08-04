@@ -102,15 +102,15 @@ func TestSchemaCheck(t *testing.T) {
 		Name:  "type1",
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
-			"rel1": Rel{
+			"rel1": {
 				Name: "rel1",
 				Type: "type2",
 			},
-			"rel2": Rel{
+			"rel2": {
 				Name: "rel2-invalid",
 				Type: "nonexistent",
 			},
-			"rel3": Rel{
+			"rel3": {
 				Name: "rel3",
 				Type: "type1",
 			},
@@ -123,13 +123,13 @@ func TestSchemaCheck(t *testing.T) {
 		Name:  "type2",
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
-			"rel1": Rel{
+			"rel1": {
 				Name:        "rel1",
 				Type:        "type1",
 				InverseName: "rel1",
 				InverseType: "type1",
 			},
-			"rel2": Rel{
+			"rel2": {
 				Name:        "rel2",
 				Type:        "type1",
 				InverseName: "rel3",
