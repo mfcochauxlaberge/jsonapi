@@ -39,6 +39,6 @@
 		"version": "1.0"
 	},
 	"links": {
-		"self": "https://example.org/mocktypes3/mt3-1?fields%5Bmocktypes3%5D=attr1%2Cattr2\u0026fields%5Bmocktypes1%5D=str"
+		"self": "https://example.org/mocktypes3/mt3-1?fields%5Bmocktypes1%5D=str\u0026fields%5Bmocktypes3%5D=attr1%2Cattr2"
 	}
 }

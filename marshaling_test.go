@@ -1,12 +1,9 @@
 package jsonapi_test
 
 import (
-	"bytes"
-	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
@@ -74,24 +71,15 @@ func TestMarshalResource(t *testing.T) {
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			content, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.NoError(err, test.name)
+			assert.JSONEq(string(payload), string(content), test.name)
 		}
 	}
 }
@@ -154,24 +142,14 @@ func TestMarshalCollection(t *testing.T) {
 
 		// Marshal
 		payload, err := Marshal(doc, url)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
 }
@@ -214,24 +192,12 @@ func TestMarshalInclusions(t *testing.T) {
 	inc2.Set("str", "anotherstring")
 	doc.Include(inc2)
 
-	payload, err := Marshal(doc, url)
-
-	// Verification
-	var out bytes.Buffer
-
-	// Format the payload
-	json.Indent(&out, payload, "", "\t")
-	output := out.String()
+	payload, _ := Marshal(doc, url)
 
 	// Retrieve the expected result from file
-	content, err := ioutil.ReadFile("testdata/resource-4.json")
-	assert.NoError(err)
-	out.Reset()
-	json.Indent(&out, content, "", "\t")
-	// Trim because otherwise there is an extra line at the end
-	expectedOutput := strings.TrimSpace(out.String())
+	expected, _ := ioutil.ReadFile("testdata/resource-4.json")
 
-	assert.Equal(expectedOutput, output)
+	assert.JSONEq(string(expected), string(payload))
 }
 
 func TestMarshalErrors(t *testing.T) {
@@ -288,26 +254,17 @@ func TestMarshalErrors(t *testing.T) {
 		} else {
 			doc.Data = test.errors
 		}
+
 		// Marshal
 		payload, err := Marshal(doc, nil)
-		assert.Equal(test.errorExpected, err != nil, test.name)
 
-		if !test.errorExpected {
-			var out bytes.Buffer
-
-			// Format the payload
-			_ = json.Indent(&out, payload, "", "\t")
-			output := out.String()
-
-			// Retrieve the expected result from file
-			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+		if test.errorExpected {
+			assert.Error(err, test.name)
+		} else {
 			assert.NoError(err, test.name)
-			out.Reset()
-			_ = json.Indent(&out, content, "", "\t")
-			// Trim because otherwise there is an extra line at the end
-			expectedOutput := strings.TrimSpace(out.String())
-
-			assert.Equal(expectedOutput, output, test.name)
+			// Retrieve the expected result from file
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
 }
@@ -321,18 +278,8 @@ func TestMarshalOther(t *testing.T) {
 	payload, err := Marshal(doc, nil)
 	assert.NoError(err)
 
-	// Format the payload
-	var out bytes.Buffer
-	json.Indent(&out, payload, "", "\t")
-	output := out.String()
-
 	// Retrieve the expected result from file
-	content, err := ioutil.ReadFile("testdata/null-1.json")
-	assert.NoError(err)
-	out.Reset()
-	json.Indent(&out, content, "", "\t")
-	// Trim because otherwise there is an extra line at the end
-	expectedOutput := strings.TrimSpace(out.String())
+	expected, _ := ioutil.ReadFile("testdata/null-1.json")
 
-	assert.Equal(expectedOutput, output, "null data")
+	assert.Equal(string(expected), string(payload), "null data")
 }
