@@ -19,8 +19,10 @@ func TestMarshalResource(t *testing.T) {
 	schema := newMockSchema()
 
 	tests := []struct {
-		name          string
-		data          Resource
+		name string
+		data Resource
+		// inclusions    []Resource
+		relData       map[string][]string
 		prepath       string
 		params        string
 		meta          map[string]interface{}
@@ -51,6 +53,30 @@ func TestMarshalResource(t *testing.T) {
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
 			payloadFile:   "resource-3",
+		}, {
+			name:          "resource with no attributes and relationships",
+			data:          mocktypes1.At(0),
+			prepath:       "https://example.org",
+			params:        "?fields[mocktypes1]=id",
+			errorExpected: false,
+			payloadFile:   "resource-5",
+		}, {
+			name: "resource with relationship data",
+			data: mocktypes11.At(0),
+			relData: map[string][]string{
+				"mocktypes1": []string{
+					"to-one", "to-many", "to-one-from-one", "to-many-from-many",
+				},
+			},
+			prepath: "https://example.org",
+			params: `
+				?fields[mocktypes1]=
+					to-one,to-many,
+					to-one-from-one,to-one-from-many,
+					to-many-from-one,to-many-from-many
+			`,
+			errorExpected: false,
+			payloadFile:   "resource-6",
 		},
 	}
 
@@ -61,12 +87,16 @@ func TestMarshalResource(t *testing.T) {
 		doc.Data = test.data
 
 		id := test.data.GetID()
-		resType := test.data.GetType().Name
-		rawurl := fmt.Sprintf("%s/%s/%s%s", test.prepath, resType, id, test.params)
+		typ := test.data.GetType()
+		rawurl := fmt.Sprintf(
+			"%s/%s/%s%s",
+			test.prepath, typ.Name, id, makeOneLineNoSpaces(test.params),
+		)
 
 		url, err := NewURLFromRaw(schema, rawurl)
 		assert.NoError(err, test.name)
 
+		doc.RelData = test.relData
 		doc.Meta = test.meta
 
 		// Marshal
@@ -77,9 +107,9 @@ func TestMarshalResource(t *testing.T) {
 		} else {
 			assert.NoError(err, test.name)
 			// Retrieve the expected result from file
-			content, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
+			expected, _ := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
-			assert.JSONEq(string(payload), string(content), test.name)
+			assert.JSONEq(string(expected), string(payload), test.name)
 		}
 	}
 }

@@ -7,9 +7,10 @@ import (
 )
 
 var (
-	mocktypes1 Collection
-	mocktypes2 Collection
-	mocktypes3 Collection
+	mocktypes1  Collection
+	mocktypes11 Collection
+	mocktypes2  Collection
+	mocktypes3  Collection
 	// urls  []*URL
 )
 
@@ -93,6 +94,18 @@ func init() {
 			ID:    "mt3-1",
 			Attr1: "str",
 			Attr2: 32,
+		}),
+	)
+
+	mocktypes11 = WrapCollection(Wrap(&mockType1{}))
+	mocktypes11.Add(
+		Wrap(&mockType1{
+			ID:             "mt1-1",
+			ToOne:          "id1",
+			ToMany:         []string{"id2", "id3"},
+			ToOneFromOne:   "",
+			ToManyFromMany: []string{},
+			ToManyFromOne:  []string{},
 		}),
 	)
 }
