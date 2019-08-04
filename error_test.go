@@ -2,7 +2,6 @@ package jsonapi_test
 
 import (
 	"net/http"
-	"strings"
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
@@ -272,10 +271,6 @@ func TestErrorConstructors(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		assert.Equal(
-			strings.Trim(test.expected, "\n\t"),
-			test.err.Error(),
-			test.name,
-		)
+		assert.Equal(test.expected, test.err.Error(), test.name)
 	}
 }
