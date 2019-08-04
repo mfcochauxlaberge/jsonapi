@@ -36,8 +36,8 @@ func NewDocument() *Document {
 	}
 }
 
-// Include adds res to the set of resources to be included under the
-// included top-level field.
+// Include adds res to the set of resources to be included under the included
+// top-level field.
 //
 // It also makes sure that resources are not added twice.
 func (d *Document) Include(res Resource) {

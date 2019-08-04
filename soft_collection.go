@@ -9,8 +9,8 @@ import (
 
 var _ Collection = (*SoftCollection)(nil)
 
-// SoftCollection is a collection of SoftResources where the type can
-// be changed for all elements at once by modifying the Type field.
+// SoftCollection is a collection of SoftResources where the type can be changed
+// for all elements at once by modifying the Type field.
 type SoftCollection struct {
 	Type *Type
 
@@ -161,8 +161,8 @@ func (s *SoftCollection) Remove(id string) {
 
 // UnmarshalJSON populates a SoftCollection from the given payload.
 //
-// Only the attributes and relationships defined in the SoftCollection's
-// Type field will be considered.
+// Only the attributes and relationships defined in the SoftCollection's Type
+// field will be considered.
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	// TODO Implement this method
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")

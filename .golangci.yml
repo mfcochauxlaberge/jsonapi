@@ -9,6 +9,7 @@ linters:
     - govet
     - ineffassign
     - interfacer
+    - lll
     - misspell
     - nakedret
     - prealloc
@@ -21,3 +22,18 @@ linters:
     - unparam
     - unused
     - varcheck
+
+linters-settings:
+  lll:
+    line-length: 100
+    tab-width: 4
+
+issues:
+  exclude-rules:
+    - path: doc.go
+      linters:
+        - lll
+    
+    - source: ^func
+      linters:
+        - lll

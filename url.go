@@ -8,11 +8,10 @@ import (
 	"strconv"
 )
 
-// A URL stores all the information from a URL formatted for a JSON:API
-// request.
+// A URL stores all the information from a URL formatted for a JSON:API request.
 //
-// The data structure allows to have more information than what the URL
-// itself stores.
+// The data structure allows to have more information than what the URL itself
+// stores.
 type URL struct {
 	// URL
 	Fragments []string // [users, u1, articles]
@@ -95,8 +94,8 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	return url, nil
 }
 
-// NewURLFromRaw parses rawurl to make a *url.URL before making and returning
-// a *URL.
+// NewURLFromRaw parses rawurl to make a *url.URL before making and returning a
+// *URL.
 func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
 	if err != nil {
@@ -111,11 +110,11 @@ func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	return NewURL(schema, su)
 }
 
-// A BelongsToFilter represents a parent resource, used to filter out
-// resources that are not children of the parent.
+// A BelongsToFilter represents a parent resource, used to filter out resources
+// that are not children of the parent.
 //
-// For example, in /articles/abc123/comments, the parent is the article
-// with the ID abc123.
+// For example, in /articles/abc123/comments, the parent is the article with the
+// ID abc123.
 type BelongsToFilter struct {
 	Type        string
 	ID          string
@@ -126,8 +125,8 @@ type BelongsToFilter struct {
 // String returns a string representation of the URL where special characters
 // are escaped.
 //
-// The URL is normalized, so it always returns exactly the same string given
-// the same URL.
+// The URL is normalized, so it always returns exactly the same string given the
+// same URL.
 func (u *URL) String() string {
 	// Path
 	path := "/"
@@ -167,10 +166,16 @@ func (u *URL) String() string {
 	// Pagination
 	if u.IsCol {
 		if u.Params.PageNumber != 0 {
-			urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)))
+			urlParams = append(
+				urlParams,
+				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
+			)
 		}
 		if u.Params.PageSize != 0 {
-			urlParams = append(urlParams, "page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)))
+			urlParams = append(
+				urlParams,
+				"page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)),
+			)
 		}
 	}
 

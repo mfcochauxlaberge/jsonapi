@@ -170,8 +170,7 @@ func (w *Wrapper) Set(key string, val interface{}) {
 	w.setAttr(key, val)
 }
 
-// GetToOne returns the value associated with the relationship named
-// after key.
+// GetToOne returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToOne(key string) string {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
@@ -197,8 +196,7 @@ func (w *Wrapper) GetToOne(key string) string {
 	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
 }
 
-// GetToMany returns the value associated with the relationship named
-// after key.
+// GetToMany returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToMany(key string) []string {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
