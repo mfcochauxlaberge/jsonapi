@@ -39,7 +39,7 @@ func Wrap(v interface{}) *Wrapper {
 
 	val = val.Elem()
 
-	err := CheckType(val.Interface())
+	err := Check(val.Interface())
 	if err != nil {
 		panic(fmt.Sprintf("jsonapi: invalid type: %s", err))
 	}
@@ -333,7 +333,7 @@ func (w *Wrapper) getAttr(key string, t string) interface{} {
 	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
 }
 
-func (w *Wrapper) setAttr(key string, v interface{}) error {
+func (w *Wrapper) setAttr(key string, v interface{}) {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -341,13 +341,13 @@ func (w *Wrapper) setAttr(key string, v interface{}) error {
 		if key == sf.Tag.Get("json") {
 			if v == nil {
 				field.Set(reflect.New(field.Type()).Elem())
-				return nil
+				return
 			}
 
 			val := reflect.ValueOf(v)
 			if val.Type() == field.Type() {
 				field.Set(val)
-				return nil
+				return
 			}
 
 			panic(fmt.Sprintf("jsonapi: value is of wrong type (expected %q, got %q)",

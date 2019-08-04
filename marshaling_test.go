@@ -80,14 +80,14 @@ func TestMarshalResource(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
@@ -108,7 +108,6 @@ func TestMarshalCollection(t *testing.T) {
 		prepath       string
 		params        string
 		meta          map[string]interface{}
-		jsonapi       map[string]interface{}
 		errorExpected bool
 		payloadFile   string
 	}{
@@ -161,14 +160,14 @@ func TestMarshalCollection(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
@@ -235,14 +234,14 @@ func TestMarshalErrors(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 

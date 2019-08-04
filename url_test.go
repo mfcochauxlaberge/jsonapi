@@ -419,3 +419,28 @@ func TestParseParams(t *testing.T) {
 		}
 	}
 }
+
+func TestURLEscaping(t *testing.T) {
+	assert := assert.New(t)
+
+	schema := newMockSchema()
+
+	tests := []struct {
+		url               string
+		expectedEscaped   string
+		expectedUnescaped string
+	}{
+		{
+			url:               `/mocktypes1?fields[mocktypes1]=bool%2Cint8&page[number]=2&page[size]=10`,
+			expectedEscaped:   `/mocktypes1?fields%5Bmocktypes1%5D=bool%2Cint8&page%5Bnumber%5D=2&page%5Bsize%5D=10&sort=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cuint%2Cuint16%2Cuint32%2Cuint64%2Cuint8%2Cid`,
+			expectedUnescaped: `/mocktypes1?fields[mocktypes1]=bool,int8&page[number]=2&page[size]=10&sort=bool,int,int16,int32,int64,int8,str,time,uint,uint16,uint32,uint64,uint8,id`,
+		},
+	}
+
+	for _, test := range tests {
+		url, err := NewURLFromRaw(schema, test.url)
+		assert.NoError(err)
+		assert.Equal(test.expectedEscaped, url.String())
+		assert.Equal(test.expectedUnescaped, url.UnescapedString())
+	}
+}

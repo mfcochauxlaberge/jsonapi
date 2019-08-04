@@ -23,7 +23,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 		// Collection
 		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.GetType().Name], doc.RelData)
 	} else if id, ok := doc.Data.(Identifier); ok {
-		// Identifer
+		// Identifier
 		data, err = json.Marshal(id)
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
@@ -72,7 +72,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"self": doc.PrePath + url.FullURL(),
+			"self": doc.PrePath + url.String(),
 		}
 	}
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
@@ -269,8 +269,7 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 
 	for i := 0; i < c.Len(); i++ {
 		r := c.At(i)
-		var raw json.RawMessage
-		raw = marshalResource(r, prepath, fields, relData)
+		raw := json.RawMessage(marshalResource(r, prepath, fields, relData))
 		raws = append(raws, &raw)
 	}
 

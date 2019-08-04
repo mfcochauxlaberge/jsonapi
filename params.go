@@ -2,7 +2,6 @@ package jsonapi
 
 import (
 	"sort"
-	"strconv"
 	"strings"
 )
 
@@ -22,8 +21,8 @@ type Params struct {
 	SortingRules []string
 
 	// Pagination
-	PageSize   int
-	PageNumber int
+	PageSize   uint
+	PageNumber uint
 
 	// Include
 	Include [][]Rel
@@ -242,13 +241,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 
 	// Pagination
 	params.PageSize = su.PageSize
-	if params.PageSize < 0 || params.PageSize > 100 {
-		return nil, NewErrInvalidPageSizeParameter(strconv.FormatInt(int64(params.PageSize), 10))
-	}
 	params.PageNumber = su.PageNumber
-	if params.PageNumber < 0 {
-		return nil, NewErrInvalidPageNumberParameter(strconv.FormatInt(int64(params.PageNumber), 10))
-	}
 
 	return params, nil
 }

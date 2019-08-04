@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-// CheckType checks the given value and returns any error found.
+// Check checks the given value and returns any error found.
 //
-// If nil is returned, than the value can be safely used with this library.
-func CheckType(v interface{}) error {
+// If nil is returned, then the value can be safely used with this library.
+func Check(v interface{}) error {
 	value := reflect.ValueOf(v)
 	kind := value.Kind()
 
@@ -71,11 +71,11 @@ func CheckType(v interface{}) error {
 	return nil
 }
 
-// ReflectType takes a struct or a pointer to a struct to analyse and
-// builds a Type object that is returned.
+// Reflect takes a struct or a pointer to a struct to analyse and builds a Type
+// object that is returned.
 //
 // If an error is returned, the Type object will be empty.
-func ReflectType(v interface{}) (Type, error) {
+func Reflect(v interface{}) (Type, error) {
 	typ := Type{}
 
 	val := reflect.ValueOf(v)
@@ -86,7 +86,7 @@ func ReflectType(v interface{}) (Type, error) {
 		return typ, errors.New("jsonapi: value must represent a struct")
 	}
 
-	err := CheckType(val.Interface())
+	err := Check(val.Interface())
 	if err != nil {
 		return typ, fmt.Errorf("jsonapi: invalid type: %s", err)
 	}
@@ -139,6 +139,14 @@ func ReflectType(v interface{}) (Type, error) {
 	}
 
 	return typ, nil
+}
+
+func MustReflect(v interface{}) Type {
+	typ, err := Reflect(v)
+	if err != nil {
+		panic(err)
+	}
+	return typ
 }
 
 // IDAndType returns the ID and the type of the resource represented by v.

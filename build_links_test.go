@@ -11,7 +11,6 @@ func TestBuildSelfLink(t *testing.T) {
 
 	tests := []struct {
 		name           string
-		res            Resource
 		id             string
 		expectedString string
 	}{

@@ -10,7 +10,11 @@ branches:
 env:
   - GO111MODULE=on
 
+before_script:
+  - go install github.com/golangci/golangci-lint/cmd/golangci-lint
+
 script:
+  - golangci-lint run
   - go test -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success:

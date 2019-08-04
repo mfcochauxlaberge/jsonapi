@@ -833,7 +833,7 @@ func TestFilterResource(t *testing.T) {
 		for j := range test.rvals {
 			attrName := "attr" + strconv.Itoa(j)
 			ty, n := GetAttrType(fmt.Sprintf("%T", test.rvals[j]))
-			typ.AddAttr(
+			_ = typ.AddAttr(
 				Attr{
 					Name:     attrName,
 					Type:     ty,

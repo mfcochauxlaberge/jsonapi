@@ -123,10 +123,12 @@ type BelongsToFilter struct {
 	InverseName string
 }
 
-// NormalizePath builds and returns the URL as a string.
+// String returns a string representation of the URL where special characters
+// are escaped.
 //
-// It returns exactly the same string given the same URL and schema.
-func (u *URL) NormalizePath() string {
+// The URL is normalized, so it always returns exactly the same string given
+// the same URL.
+func (u *URL) String() string {
 	// Path
 	path := "/"
 	for _, p := range u.Fragments {
@@ -164,15 +166,12 @@ func (u *URL) NormalizePath() string {
 
 	// Pagination
 	if u.IsCol {
-		if u.Params.PageSize == 0 {
-			u.Params.PageSize = 10
+		if u.Params.PageNumber != 0 {
+			urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)))
 		}
-		urlParams = append(urlParams, "page%5Bsize%5D="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
-
-		if u.Params.PageNumber == 0 {
-			u.Params.PageNumber = 1
+		if u.Params.PageSize != 0 {
+			urlParams = append(urlParams, "page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)))
 		}
-		urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
 	// Sorting
@@ -195,9 +194,10 @@ func (u *URL) NormalizePath() string {
 	return path + params
 }
 
-// FullURL returns the full URL as a string.
-func (u *URL) FullURL() string {
-	url := u.NormalizePath()
-
-	return url
+// UnescapedString returns the same thing as String, but special characters
+// are not escaped.
+func (u *URL) UnescapedString() string {
+	str, _ := url.PathUnescape(u.String())
+	// TODO Can an error occur?
+	return str
 }
