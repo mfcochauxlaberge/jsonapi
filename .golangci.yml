@@ -1,0 +1,39 @@
+linters:
+  enable:
+    - deadcode
+    - dupl
+    - errcheck
+    - golint
+    - gosec
+    - gosimple
+    - govet
+    - ineffassign
+    - interfacer
+    - lll
+    - misspell
+    - nakedret
+    - prealloc
+    - scopelint
+    - staticcheck
+    - structcheck
+    - stylecheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - varcheck
+
+linters-settings:
+  lll:
+    line-length: 100
+    tab-width: 4
+
+issues:
+  exclude-rules:
+    - path: doc.go
+      linters:
+        - lll
+    
+    - source: ^func
+      linters:
+        - lll

@@ -18,17 +18,17 @@ func TestSoftCollection(t *testing.T) {
 
 	// Add type
 	typ := Type{Name: "thistype"}
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeInt,
 		Nullable: false,
 	})
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeString,
 		Nullable: true,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel1",
 		Type:         "othertype",
 		ToOne:        true,
@@ -36,7 +36,7 @@ func TestSoftCollection(t *testing.T) {
 		InverseType:  "thistype",
 		InverseToOne: true,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel3",
 		Type:         "othertype",
 		ToOne:        false,
@@ -50,7 +50,7 @@ func TestSoftCollection(t *testing.T) {
 	typcopy := copystructure.Must(copystructure.Copy(typ)).(Type)
 	sc.SetType(&typcopy)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Modify the SoftCollection's type and the local type
 	// at the same time and check whether they still are
@@ -68,12 +68,12 @@ func TestSoftCollection(t *testing.T) {
 		InverseType:  "thistype",
 		InverseToOne: false,
 	}
-	typ.AddAttr(attr3)
-	sc.AddAttr(attr3)
-	typ.AddRel(rel5)
-	sc.AddRel(rel5)
+	_ = typ.AddAttr(attr3)
+	_ = sc.AddAttr(attr3)
+	_ = typ.AddRel(rel5)
+	_ = sc.AddRel(rel5)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add a SoftResource with more fields than those
 	// specified in the SoftCollection.
@@ -84,7 +84,7 @@ func TestSoftCollection(t *testing.T) {
 		Nullable: true,
 	}
 	sr.AddAttr(attr4)
-	typ.AddAttr(attr4)
+	_ = typ.AddAttr(attr4)
 	rel7 := Rel{
 		Name:         "rel7",
 		Type:         "othertype",
@@ -94,11 +94,11 @@ func TestSoftCollection(t *testing.T) {
 		InverseToOne: true,
 	}
 	sr.AddRel(rel7)
-	typ.AddRel(rel7)
+	_ = typ.AddRel(rel7)
 
 	sc.Add(sr)
 
-	assert.Equal(t, sc.GetType(), &typ)
+	assert.Equal(t, sc.Type, &typ)
 
 	// Add more elements to the SoftCollection.
 	sr = &SoftResource{}
@@ -121,25 +121,25 @@ func TestSoftCollectionResource(t *testing.T) {
 	sc := &SoftCollection{}
 	sc.SetType(&Type{})
 
-	sc.GetType().Name = "type1"
-	sc.GetType().AddAttr(Attr{
+	sc.Type.Name = "type1"
+	_ = sc.Type.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	sc.GetType().AddAttr(Attr{
+	_ = sc.Type.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeInt,
 		Nullable: true,
 	})
-	sc.GetType().AddRel(Rel{
+	_ = sc.Type.AddRel(Rel{
 		Name:  "rel1",
 		Type:  "type2",
 		ToOne: true,
 	})
 
 	sr := &SoftResource{}
-	sr.SetType(sc.GetType())
+	sr.SetType(sc.Type)
 	sr.SetID("res1")
 	sr.Set("attr", "value1")
 	sc.Add(sr)
@@ -162,12 +162,12 @@ func TestSoftCollectionRange(t *testing.T) {
 	// Collection
 	col := SoftCollection{}
 	col.SetType(&Type{})
-	col.AddAttr(Attr{
+	_ = col.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	col.AddAttr(Attr{
+	_ = col.AddAttr(Attr{
 		Name:     "attr2",
 		Type:     AttrTypeInt,
 		Nullable: false,
@@ -230,7 +230,7 @@ func TestSoftCollectionRange(t *testing.T) {
 
 	for _, res := range resources {
 		sr := &SoftResource{}
-		sr.SetType(col.GetType())
+		sr.SetType(col.Type)
 		sr.SetID(res.id)
 		for field, val := range res.fields {
 			sr.Set(field, val)
@@ -390,7 +390,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	typ := &Type{Name: "type"}
 	for i, t := range attrs {
 		ti, null := GetAttrType(fmt.Sprintf("%T", t.vals[0]))
-		typ.AddAttr(Attr{
+		_ = typ.AddAttr(Attr{
 			Name:     "attr" + strconv.Itoa(i),
 			Type:     ti,
 			Nullable: null,
@@ -428,7 +428,7 @@ func TestSoftCollectionSort(t *testing.T) {
 	// Sorted IDs from the collection
 	ids := []string{}
 	for i := 0; i < sc.Len(); i++ {
-		ids = append(ids, sc.Elem(i).GetID())
+		ids = append(ids, sc.At(i).GetID())
 	}
 
 	expectedIDs := []string{
@@ -450,7 +450,7 @@ func TestSoftCollectionSort(t *testing.T) {
 
 	ids = []string{}
 	for i := 0; i < sc.Len(); i++ {
-		ids = append(ids, sc.Elem(i).GetID())
+		ids = append(ids, sc.At(i).GetID())
 	}
 
 	sort.Strings(expectedIDs)
@@ -461,5 +461,5 @@ func TestSoftCollectionMiscellaneous(t *testing.T) {
 	assert := assert.New(t)
 
 	sc := &SoftCollection{}
-	assert.Nil(sc.Elem(99), "nonexistent element")
+	assert.Nil(sc.At(99), "nonexistent element")
 }

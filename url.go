@@ -8,28 +8,6 @@ import (
 	"strconv"
 )
 
-// A URL stores all the information from a URL formatted for a JSON:API
-// request.
-//
-// The data structure allows to have more information than what the URL
-// itself stores.
-type URL struct {
-	// URL
-	Fragments []string // [users, u1, articles]
-	Route     string   // /users/:id/articles
-
-	// Data
-	IsCol           bool
-	ResType         string
-	ResID           string
-	RelKind         string
-	Rel             Rel
-	BelongsToFilter BelongsToFilter
-
-	// Params
-	Params *Params
-}
-
 // NewURL builds a URL from a SimpleURL and a schema for validating and
 // supplementing the object with extra information.
 func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
@@ -42,8 +20,10 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	url.Fragments = su.Fragments
 
 	// IsCol, ResType, ResID, RelKind, Rel, BelongsToFilter
-	var typ Type
-	var ok bool
+	var (
+		typ Type
+		ok  bool
+	)
 	if len(url.Fragments) == 0 {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
@@ -66,7 +46,11 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	if len(url.Fragments) >= 3 {
 		relName := url.Fragments[len(url.Fragments)-1]
 		if url.Rel, ok = typ.Rels[relName]; !ok {
-			return nil, NewErrUnknownRelationshipInPath(typ.Name, relName, su.Path())
+			return nil, NewErrUnknownRelationshipInPath(
+				typ.Name,
+				relName,
+				su.Path(),
+			)
 		}
 
 		url.IsCol = !url.Rel.ToOne
@@ -95,8 +79,8 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	return url, nil
 }
 
-// NewURLFromRaw parses rawurl to make a *url.URL before making and returning
-// a *URL.
+// NewURLFromRaw parses rawurl to make a *url.URL before making and returning a
+// *URL.
 func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	url, err := url.Parse(rawurl)
 	if err != nil {
@@ -111,22 +95,33 @@ func NewURLFromRaw(schema *Schema, rawurl string) (*URL, error) {
 	return NewURL(schema, su)
 }
 
-// A BelongsToFilter represents a parent resource, used to filter out
-// resources that are not children of the parent.
+// A URL stores all the information from a URL formatted for a JSON:API request.
 //
-// For example, in /articles/abc123/comments, the parent is the article
-// with the ID abc123.
-type BelongsToFilter struct {
-	Type        string
-	ID          string
-	Name        string
-	InverseName string
+// The data structure allows to have more information than what the URL itself
+// stores.
+type URL struct {
+	// URL
+	Fragments []string // [users, u1, articles]
+	Route     string   // /users/:id/articles
+
+	// Data
+	IsCol           bool
+	ResType         string
+	ResID           string
+	RelKind         string
+	Rel             Rel
+	BelongsToFilter BelongsToFilter
+
+	// Params
+	Params *Params
 }
 
-// NormalizePath builds and returns the URL as a string.
+// String returns a string representation of the URL where special characters
+// are escaped.
 //
-// It returns exactly the same string given the same URL and schema.
-func (u *URL) NormalizePath() string {
+// The URL is normalized, so it always returns exactly the same string given the
+// same URL.
+func (u *URL) String() string {
 	// Path
 	path := "/"
 	for _, p := range u.Fragments {
@@ -138,11 +133,16 @@ func (u *URL) NormalizePath() string {
 	urlParams := []string{}
 
 	// Fields
-	for n := range u.Params.Fields {
-		sort.Strings(u.Params.Fields[n])
+	fields := make([]string, 0, len(u.Params.Fields))
+	for key := range u.Params.Fields {
+		fields = append(fields, key)
+	}
+	sort.Strings(fields)
+	for _, typ := range fields {
+		sort.Strings(u.Params.Fields[typ])
 
-		param := "fields%5B" + n + "%5D="
-		for _, f := range u.Params.Fields[n] {
+		param := "fields%5B" + typ + "%5D="
+		for _, f := range u.Params.Fields[typ] {
 			param += f + "%2C"
 		}
 		param = param[:len(param)-3]
@@ -160,19 +160,24 @@ func (u *URL) NormalizePath() string {
 		}
 		param := "filter=" + string(mf)
 		urlParams = append(urlParams, param)
+	} else if u.Params.FilterLabel != "" {
+		urlParams = append(urlParams, "filter="+u.Params.FilterLabel)
 	}
 
 	// Pagination
 	if u.IsCol {
-		if u.Params.PageSize == 0 {
-			u.Params.PageSize = 10
+		if u.Params.PageNumber != 0 {
+			urlParams = append(
+				urlParams,
+				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
+			)
 		}
-		urlParams = append(urlParams, "page%5Bsize%5D="+strconv.FormatUint(uint64(u.Params.PageSize), 10))
-
-		if u.Params.PageNumber == 0 {
-			u.Params.PageNumber = 1
+		if u.Params.PageSize != 0 {
+			urlParams = append(
+				urlParams,
+				"page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)),
+			)
 		}
-		urlParams = append(urlParams, "page%5Bnumber%5D="+strconv.FormatUint(uint64(u.Params.PageNumber), 10))
 	}
 
 	// Sorting
@@ -195,9 +200,22 @@ func (u *URL) NormalizePath() string {
 	return path + params
 }
 
-// FullURL returns the full URL as a string.
-func (u *URL) FullURL() string {
-	url := u.NormalizePath()
+// UnescapedString returns the same thing as String, but special characters are
+// not escaped.
+func (u *URL) UnescapedString() string {
+	str, _ := url.PathUnescape(u.String())
+	// TODO Can an error occur?
+	return str
+}
 
-	return url
+// A BelongsToFilter represents a parent resource, used to filter out resources
+// that are not children of the parent.
+//
+// For example, in /articles/abc123/comments, the parent is the article with the
+// ID abc123.
+type BelongsToFilter struct {
+	Type        string
+	ID          string
+	Name        string
+	InverseName string
 }

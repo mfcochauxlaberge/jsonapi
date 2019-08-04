@@ -16,12 +16,12 @@ func TestSoftResource(t *testing.T) {
 
 	// NewSoftResource
 	typ := Type{Name: "type"}
-	typ.AddAttr(Attr{
+	_ = typ.AddAttr(Attr{
 		Name:     "attr1",
 		Type:     AttrTypeString,
 		Nullable: false,
 	})
-	typ.AddRel(Rel{
+	_ = typ.AddRel(Rel{
 		Name:         "rel1",
 		Type:         "type",
 		ToOne:        true,
@@ -42,12 +42,12 @@ func TestSoftResource(t *testing.T) {
 
 	// Attributes
 	attrs := map[string]Attr{
-		"attr1": Attr{
+		"attr1": {
 			Name:     "attr1",
 			Type:     AttrTypeString,
 			Nullable: false,
 		},
-		"attr2": Attr{
+		"attr2": {
 			Name:     "attr2",
 			Type:     AttrTypeString,
 			Nullable: true,
@@ -62,7 +62,7 @@ func TestSoftResource(t *testing.T) {
 
 	// Relationships
 	rels := map[string]Rel{
-		"rel1": Rel{
+		"rel1": {
 			Name:         "rel1",
 			Type:         "type",
 			ToOne:        true,
@@ -70,7 +70,7 @@ func TestSoftResource(t *testing.T) {
 			InverseType:  "type",
 			InverseToOne: true,
 		},
-		"rel2": Rel{
+		"rel2": {
 			Name:         "rel2",
 			Type:         "type",
 			ToOne:        false,

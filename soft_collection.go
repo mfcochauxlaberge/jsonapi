@@ -9,37 +9,33 @@ import (
 
 var _ Collection = (*SoftCollection)(nil)
 
-// SoftCollection is a collection of SoftResources where the type can
-// be changed for all elements at once by modifying the Type field.
+// SoftCollection is a collection of SoftResources where the type can be changed
+// for all elements at once by modifying the Type field.
 type SoftCollection struct {
-	typ  *Type
+	Type *Type
+
 	col  []*SoftResource
 	sort []string
 }
 
 // SetType sets the collection's type.
 func (s *SoftCollection) SetType(typ *Type) {
-	s.typ = typ
+	s.Type = typ
 }
 
 // GetType returns the collection's type.
-func (s *SoftCollection) GetType() *Type {
-	return s.typ
-}
-
-// Type returns the collection's type name.
-func (s *SoftCollection) Type() string {
-	return s.typ.Name
+func (s *SoftCollection) GetType() Type {
+	return *s.Type
 }
 
 // AddAttr adds an attribute to all of the resources in the collection.
 func (s *SoftCollection) AddAttr(attr Attr) error {
-	return s.typ.AddAttr(attr)
+	return s.Type.AddAttr(attr)
 }
 
 // AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
-	return s.typ.AddRel(rel)
+	return s.Type.AddRel(rel)
 
 }
 
@@ -48,8 +44,8 @@ func (s *SoftCollection) Len() int {
 	return len(s.col)
 }
 
-// Elem returns the element at index i.
-func (s *SoftCollection) Elem(i int) Resource {
+// At returns the element at index i.
+func (s *SoftCollection) At(i int) Resource {
 	if i >= 0 && i < len(s.col) {
 		return s.col[i]
 	}
@@ -72,7 +68,7 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 // given parameters.
 func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fields []string, pageSize uint, pageNumber uint) []Resource {
 	rangeCol := &SoftCollection{}
-	rangeCol.SetType(s.typ)
+	rangeCol.SetType(s.Type)
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -110,7 +106,7 @@ func (s *SoftCollection) Range(ids []string, filter *Filter, sort []string, fiel
 		rangeCol = &SoftCollection{}
 	} else {
 		page := &SoftCollection{}
-		page.SetType(s.typ)
+		page.SetType(s.Type)
 		for i := skip; i < len(rangeCol.col) && i < skip+int(pageSize); i++ {
 			page.Add(rangeCol.col[i])
 		}
@@ -132,7 +128,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// then it is added to the collection.
 	sr := &SoftResource{}
 	sr.id = r.GetID()
-	sr.Type = s.typ
+	sr.Type = s.Type
 
 	for _, attr := range r.Attrs() {
 		sr.AddAttr(attr)
@@ -165,8 +161,8 @@ func (s *SoftCollection) Remove(id string) {
 
 // UnmarshalJSON populates a SoftCollection from the given payload.
 //
-// Only the attributes and relationships defined in the SoftCollection's
-// Type field will be considered.
+// Only the attributes and relationships defined in the SoftCollection's Type
+// field will be considered.
 func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
 	// TODO Implement this method
 	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")
@@ -283,10 +279,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -298,10 +294,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -313,10 +309,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -328,10 +324,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -343,10 +339,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -358,10 +354,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -373,10 +369,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -388,10 +384,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -403,10 +399,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -418,10 +414,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -433,10 +429,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if *v == *p {
 				continue
@@ -448,10 +444,10 @@ func (s *SoftCollection) Less(i, j int) bool {
 				continue
 			}
 			if v == nil {
-				return true != inverse
+				return !inverse
 			}
 			if p == nil {
-				return false != inverse
+				return inverse
 			}
 			if v.Equal(*p) {
 				continue

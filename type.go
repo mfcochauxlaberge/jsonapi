@@ -25,8 +25,8 @@ const (
 	AttrTypeTime
 )
 
-// A Type stores all the necessary information about a type as represented
-// in the JSON:API specification.
+// A Type stores all the necessary information about a type as represented in
+// the JSON:API specification.
 type Type struct {
 	Name  string
 	Attrs map[string]Attr
@@ -145,8 +145,8 @@ func (r *Rel) Inverse() Rel {
 	}
 }
 
-// GetAttrType returns the attribute type as an int (see constants) and
-// a boolean that indicates whether the attribute can be null or not.
+// GetAttrType returns the attribute type as an int (see constants) and a
+// boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {
 	nullable := strings.HasPrefix(t, "*")
 	if nullable {
@@ -184,9 +184,9 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString return the name of the attribute type specified
-// by an int (see constants) and a boolean that indicates whether the
-// value can be null or not.
+// GetAttrTypeString return the name of the attribute type specified by an int
+// (see constants) and a boolean that indicates whether the value can be null or
+// not.
 func GetAttrTypeString(t int, nullable bool) string {
 	str := ""
 	switch t {
@@ -225,8 +225,8 @@ func GetAttrTypeString(t int, nullable bool) string {
 	return str
 }
 
-// GetZeroValue returns the zero value of the attribute type represented
-// by the specified int (see constants).
+// GetZeroValue returns the zero value of the attribute type represented by the
+// specified int (see constants).
 //
 // If null is true, the returned value is a nil pointer.
 func GetZeroValue(t int, null bool) interface{} {
@@ -312,4 +312,22 @@ func GetZeroValue(t int, null bool) interface{} {
 	default:
 		return nil
 	}
+}
+
+// CopyType deeply copies the given type and returns the result.
+func CopyType(typ Type) Type {
+	ctyp := Type{
+		Name:  typ.Name,
+		Attrs: map[string]Attr{},
+		Rels:  map[string]Rel{},
+	}
+
+	for name, attr := range typ.Attrs {
+		ctyp.Attrs[name] = attr
+	}
+	for name, rel := range typ.Rels {
+		ctyp.Rels[name] = rel
+	}
+
+	return ctyp
 }

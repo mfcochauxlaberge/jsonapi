@@ -7,10 +7,10 @@ import (
 	"strings"
 )
 
-// CheckType checks the given value and returns any error found.
+// Check checks the given value and returns any error found.
 //
-// If nil is returned, than the value can be safely used with this library.
-func CheckType(v interface{}) error {
+// If nil is returned, then the value can be safely used with this library.
+func Check(v interface{}) error {
 	value := reflect.ValueOf(v)
 	kind := value.Kind()
 
@@ -41,12 +41,26 @@ func CheckType(v interface{}) error {
 			isValid := false
 
 			switch sf.Type.String() {
-			case "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "bool", "time.Time", "*string", "*int", "*int8", "*int16", "*int32", "*int64", "*uint", "*uint8", "*uint16", "*uint32", "*uint64", "*bool", "*time.Time":
+			case
+				"string",
+				"int", "int8", "int16", "int32", "int64",
+				"uint", "uint8", "uint16", "uint32", "uint64",
+				"bool",
+				"time.Time",
+				"*string",
+				"*int", "*int8", "*int16", "*int32", "*int64",
+				"*uint", "*uint8", "*uint16", "*uint32", "*uint64",
+				"*bool",
+				"*time.Time":
 				isValid = true
 			}
 
 			if !isValid {
-				return fmt.Errorf("jsonapi: attribute %s of type %s is of unsupported type", sf.Name, resType)
+				return fmt.Errorf(
+					"jsonapi: attribute %s of type %s is of unsupported type",
+					sf.Name,
+					resType,
+				)
 			}
 		}
 	}
@@ -59,11 +73,19 @@ func CheckType(v interface{}) error {
 			s := strings.Split(sf.Tag.Get("api"), ",")
 
 			if len(s) < 2 || len(s) > 3 {
-				return fmt.Errorf("jsonapi: api tag of relationship %s of struct %s is invalid", sf.Name, value.Type().Name())
+				return fmt.Errorf(
+					"jsonapi: api tag of relationship %s of struct %s is invalid",
+					sf.Name,
+					value.Type().Name(),
+				)
 			}
 
 			if sf.Type.String() != "string" && sf.Type.String() != "[]string" {
-				return fmt.Errorf("jsonapi: relationship %s of type %s is not string or []string", sf.Name, resType)
+				return fmt.Errorf(
+					"jsonapi: relationship %s of type %s is not string or []string",
+					sf.Name,
+					resType,
+				)
 			}
 		}
 	}
@@ -71,11 +93,11 @@ func CheckType(v interface{}) error {
 	return nil
 }
 
-// ReflectType takes a struct or a pointer to a struct to analyse and
-// builds a Type object that is returned.
+// Reflect takes a struct or a pointer to a struct to analyse and builds a Type
+// object that is returned.
 //
 // If an error is returned, the Type object will be empty.
-func ReflectType(v interface{}) (Type, error) {
+func Reflect(v interface{}) (Type, error) {
 	typ := Type{}
 
 	val := reflect.ValueOf(v)
@@ -86,7 +108,7 @@ func ReflectType(v interface{}) (Type, error) {
 		return typ, errors.New("jsonapi: value must represent a struct")
 	}
 
-	err := CheckType(val.Interface())
+	err := Check(val.Interface())
 	if err != nil {
 		return typ, fmt.Errorf("jsonapi: invalid type: %s", err)
 	}
@@ -139,6 +161,16 @@ func ReflectType(v interface{}) (Type, error) {
 	}
 
 	return typ, nil
+}
+
+// MustReflect calls Reflect and returns the result, except that it panics if
+// the error is not nil.
+func MustReflect(v interface{}) Type {
+	typ, err := Reflect(v)
+	if err != nil {
+		panic(err)
+	}
+	return typ
 }
 
 // IDAndType returns the ID and the type of the resource represented by v.

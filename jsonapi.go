@@ -18,12 +18,20 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
-		data = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
+		data = marshalResource(
+			res, doc.PrePath,
+			url.Params.Fields[res.GetType().Name],
+			doc.RelData,
+		)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
+		data = marshalCollection(
+			col, doc.PrePath,
+			url.Params.Fields[col.GetType().Name],
+			doc.RelData,
+		)
 	} else if id, ok := doc.Data.(Identifier); ok {
-		// Identifer
+		// Identifier
 		data, err = json.Marshal(id)
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
@@ -47,7 +55,12 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if len(data) > 0 {
 		for key := range doc.Included {
 			typ := doc.Included[key].GetType().Name
-			raw := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
+			raw := marshalResource(
+				doc.Included[key],
+				doc.PrePath,
+				url.Params.Fields[typ],
+				doc.RelData,
+			)
 			rawm := json.RawMessage(raw)
 			inclusions = append(inclusions, &rawm)
 		}
@@ -72,7 +85,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"self": doc.PrePath + url.FullURL(),
+			"self": doc.PrePath + url.String(),
 		}
 	}
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
@@ -153,7 +166,6 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
-	// ID and type
 	mapPl["id"] = r.GetID()
 	mapPl["type"] = r.GetType().Name
 
@@ -268,9 +280,8 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 	}
 
 	for i := 0; i < c.Len(); i++ {
-		r := c.Elem(i)
-		var raw json.RawMessage
-		raw = marshalResource(r, prepath, fields, relData)
+		r := c.At(i)
+		raw := json.RawMessage(marshalResource(r, prepath, fields, relData))
 		raws = append(raws, &raw)
 	}
 

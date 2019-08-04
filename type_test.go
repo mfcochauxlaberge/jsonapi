@@ -260,3 +260,67 @@ func TestGetZeroValue(t *testing.T) {
 	assert.Equal(nil, GetZeroValue(AttrTypeInvalid, false))
 	assert.Equal(nil, GetZeroValue(999, false))
 }
+
+func TestCopyType(t *testing.T) {
+	assert := assert.New(t)
+
+	typ1 := Type{
+		Name: "type1",
+		Attrs: map[string]Attr{
+			"attr1": {
+				Name:     "attr1",
+				Type:     AttrTypeString,
+				Nullable: true,
+			},
+		},
+		Rels: map[string]Rel{
+			"rel1": {
+				Name:         "rel1",
+				Type:         "type2",
+				ToOne:        true,
+				InverseName:  "rel2",
+				InverseType:  "type1",
+				InverseToOne: false,
+			},
+		},
+	}
+
+	// Copy
+	typ2 := CopyType(typ1)
+
+	assert.Equal("type1", typ2.Name)
+	assert.Len(typ2.Attrs, 1)
+	assert.Equal("attr1", typ2.Attrs["attr1"].Name)
+	assert.Equal(AttrTypeString, typ2.Attrs["attr1"].Type)
+	assert.True(typ2.Attrs["attr1"].Nullable)
+	assert.Len(typ2.Rels, 1)
+	assert.Equal("rel1", typ2.Rels["rel1"].Name)
+	assert.Equal("type2", typ2.Rels["rel1"].Type)
+	assert.True(typ2.Rels["rel1"].ToOne)
+	assert.Equal("rel2", typ2.Rels["rel1"].InverseName)
+	assert.Equal("type1", typ2.Rels["rel1"].InverseType)
+	assert.False(typ2.Rels["rel1"].InverseToOne)
+
+	// Modify original (copy should not change)
+	typ1.Name = "type3"
+	typ1.Attrs["attr2"] = Attr{
+		Name: "attr2",
+		Type: AttrTypeInt,
+	}
+
+	assert.Equal("type1", typ2.Name)
+	assert.Len(typ2.Attrs, 1)
+
+	typ1.Name = "type1"
+	delete(typ1.Attrs, "attr2")
+
+	// Modify copy (original should not change)
+	typ2.Name = "type3"
+	typ2.Attrs["attr2"] = Attr{
+		Name: "attr2",
+		Type: AttrTypeInt,
+	}
+
+	assert.Equal("type1", typ1.Name)
+	assert.Len(typ1.Attrs, 1)
+}

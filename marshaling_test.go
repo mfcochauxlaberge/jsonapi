@@ -32,7 +32,7 @@ func TestMarshalResource(t *testing.T) {
 	}{
 		{
 			name: "resource with meta",
-			data: mocktypes1.Elem(0),
+			data: mocktypes1.At(0),
 			meta: map[string]interface{}{
 				"num":       42,
 				"timestamp": time.Date(2017, 1, 2, 3, 4, 5, 6, loc),
@@ -43,13 +43,13 @@ func TestMarshalResource(t *testing.T) {
 			payloadFile:   "resource-1",
 		}, {
 			name:          "resource with prepath",
-			data:          mocktypes2.Elem(1),
+			data:          mocktypes2.At(1),
 			prepath:       "https://example.org",
 			errorExpected: false,
 			payloadFile:   "resource-2",
 		}, {
 			name:          "resource with prepath and params",
-			data:          mocktypes2.Elem(1),
+			data:          mocktypes2.At(1),
 			prepath:       "https://example.org",
 			params:        "?fields[mocktypes2]=strptr,uintptr,int",
 			errorExpected: false,
@@ -80,14 +80,14 @@ func TestMarshalResource(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
@@ -108,7 +108,6 @@ func TestMarshalCollection(t *testing.T) {
 		prepath       string
 		params        string
 		meta          map[string]interface{}
-		jsonapi       map[string]interface{}
 		errorExpected bool
 		payloadFile   string
 	}{
@@ -145,8 +144,8 @@ func TestMarshalCollection(t *testing.T) {
 
 		doc.Data = test.data
 
-		resType := test.data.Type()
-		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, resType, test.params)
+		typ := test.data.GetType()
+		rawurl := fmt.Sprintf("%s/%s%s", test.prepath, typ.Name, test.params)
 
 		url, err := NewURLFromRaw(schema, rawurl)
 		assert.NoError(err, test.name)
@@ -161,14 +160,14 @@ func TestMarshalCollection(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 
@@ -297,14 +296,14 @@ func TestMarshalErrors(t *testing.T) {
 			var out bytes.Buffer
 
 			// Format the payload
-			json.Indent(&out, payload, "", "\t")
+			_ = json.Indent(&out, payload, "", "\t")
 			output := out.String()
 
 			// Retrieve the expected result from file
 			content, err := ioutil.ReadFile("testdata/" + test.payloadFile + ".json")
 			assert.NoError(err, test.name)
 			out.Reset()
-			json.Indent(&out, content, "", "\t")
+			_ = json.Indent(&out, content, "", "\t")
 			// Trim because otherwise there is an extra line at the end
 			expectedOutput := strings.TrimSpace(out.String())
 

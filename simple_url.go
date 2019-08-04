@@ -23,8 +23,8 @@ type SimpleURL struct {
 	FilterLabel  string
 	Filter       *Filter
 	SortingRules []string
-	PageSize     int
-	PageNumber   int
+	PageSize     uint
+	PageNumber   uint
 	Include      []string
 }
 
@@ -80,14 +80,14 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 			if err != nil {
 				return sURL, NewErrInvalidPageSizeParameter(values.Get(name))
 			}
-			sURL.PageSize = int(size)
+			sURL.PageSize = uint(size)
 		} else if name == "page[number]" {
 			// Page number
 			num, err := strconv.ParseUint(values.Get(name), 10, 64)
 			if err != nil {
 				return sURL, NewErrInvalidPageNumberParameter(values.Get(name))
 			}
-			sURL.PageNumber = int(num)
+			sURL.PageNumber = uint(num)
 		} else if name == "include" {
 			// Include
 			for _, include := range values[name] {
@@ -102,8 +102,8 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 	return sURL, nil
 }
 
-// Path returns the path only of the SimpleURL. It does not include any
-// query parameters.
+// Path returns the path only of the SimpleURL. It does not include any query
+// parameters.
 func (s *SimpleURL) Path() string {
 	return strings.Join(s.Fragments, "/")
 }
