@@ -76,7 +76,8 @@ func Equal(r1, r2 Resource) bool {
 			// TODO Fix the following condition one day, there should be a better
 			// way to do this. Basically, all nils (nil pointer, nil slice, etc)
 			// should be considered equal to a nil empty interface.
-			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" && fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
+			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" &&
+				fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
 				continue
 			}
 			return false

@@ -128,33 +128,37 @@ func (s *Schema) Check() []error {
 				))
 			}
 
-			// Inverse relationship (if relevant)
-			if rel.InverseName != "" {
-				// Is the inverse relationship type the same as its
-				// type name?
-				if rel.InverseType != typ.Name {
+			// Skip to next relationship here if there's no inverse
+			if rel.InverseName == "" {
+				continue
+			}
+
+			// Is the inverse relationship type the same as its
+			// type name?
+			if rel.InverseType != typ.Name {
+				errs = append(errs, fmt.Errorf(
+					"jsonapi: "+
+						"the inverse type of relationship %s should its type's name (%s, not %s)",
+					rel.Name,
+					typ.Name,
+					rel.InverseType,
+				))
+			} else {
+				// Do both relationships (current and inverse) point
+				// to each other?
+				var found bool
+				for _, invRel := range targetType.Rels {
+					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+						found = true
+					}
+				}
+				if !found {
 					errs = append(errs, fmt.Errorf(
-						"jsonapi: the inverse type of relationship %s should its type's name (%s, not %s)",
+						"jsonapi: "+
+							"relationship %s of type %s and its inverse do not point each other",
 						rel.Name,
 						typ.Name,
-						rel.InverseType,
 					))
-				} else {
-					// Do both relationships (current and inverse) point
-					// to each other?
-					var found bool
-					for _, invRel := range targetType.Rels {
-						if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
-							found = true
-						}
-					}
-					if !found {
-						errs = append(errs, fmt.Errorf(
-							"jsonapi: relationship %s of type %s and its inverse do not point each other",
-							rel.Name,
-							typ.Name,
-						))
-					}
 				}
 			}
 		}
