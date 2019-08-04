@@ -100,6 +100,17 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 					}
 				}
 			}
+			// Check for duplicates
+			for i := range params.Fields[t] {
+				for j := i + 1; j < len(params.Fields[t]); j++ {
+					if params.Fields[t][i] == params.Fields[t][j] {
+						return nil, NewErrDuplicateFieldInFieldsParameter(
+							typ.Name,
+							params.Fields[t][i],
+						)
+					}
+				}
+			}
 		}
 	}
 	for t := range params.Fields {
