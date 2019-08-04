@@ -103,27 +103,24 @@ func TestErrorConstructors(t *testing.T) {
 				e := NewErrMalformedFilterParameter("filter")
 				return e
 			}(),
-			expected: `
-				400 Bad Request: The filter parameter is not a string or a valid JSON object.
-			`,
+			expected: "400 Bad Request: " +
+				"The filter parameter is not a string or a valid JSON object.",
 		}, {
 			name: "NewErrInvalidPageNumberParameter",
 			err: func() Error {
 				e := NewErrInvalidPageNumberParameter("9")
 				return e
 			}(),
-			expected: `
-				400 Bad Request: The page number parameter is not positive integer (including 0).
-			`,
+			expected: "400 Bad Request: " +
+				"The page number parameter is not positive integer (including 0).",
 		}, {
 			name: "NewErrInvalidPageSizeParameter",
 			err: func() Error {
 				e := NewErrInvalidPageSizeParameter("9")
 				return e
 			}(),
-			expected: `
-				400 Bad Request: The page size parameter is not positive integer (including 0).
-			`,
+			expected: "400 Bad Request: " +
+				"The page size parameter is not positive integer (including 0).",
 		}, {
 			name: "NewErrUnknownFieldInBody",
 			err: func() Error {
