@@ -108,10 +108,9 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 
 	// Attrs and Rels
 	for typeName, fields := range params.Fields {
+		// This should always return a type since
+		// it is checked earlier.
 		typ := schema.GetType(typeName)
-		if typ.Name == "" {
-			return nil, NewErrUnknownTypeInURL(typeName)
-		}
 
 		params.Attrs[typeName] = []Attr{}
 		params.Rels[typeName] = []Rel{}
@@ -154,17 +153,8 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	} else if len(su.Fragments) >= 3 {
 		relName := su.Fragments[len(su.Fragments)-1]
 		typ := schema.GetType(su.Fragments[0])
-		var (
-			rel Rel
-			ok  bool
-		)
-		if rel, ok = typ.Rels[relName]; !ok {
-			return nil, NewErrUnknownRelationshipInPath(
-				typ.Name,
-				relName,
-				su.Path(),
-			)
-		}
+		// Checked earlier, assuming should be safe
+		rel := typ.Rels[relName]
 		isCol = !rel.ToOne
 	}
 	if isCol {
