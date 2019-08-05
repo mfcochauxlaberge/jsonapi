@@ -15,8 +15,14 @@ func (r RelTemp) Name() string {
 	var name string
 	if r.Type1 < r.Type2 {
 		name = r.Type1 + "_" + r.Name1 + "_" + r.Type2 + "_" + r.Name2
-	} else {
+	} else if r.Type1 > r.Type2 {
 		name = r.Type2 + "_" + r.Name2 + "_" + r.Type1 + "_" + r.Name1
+	} else {
+		if r.Name1 < r.Name2 {
+			name = r.Type1 + "_" + r.Name1 + "_" + r.Type2 + "_" + r.Name2
+		} else {
+			name = r.Type1 + "_" + r.Name2 + "_" + r.Type2 + "_" + r.Name1
+		}
 	}
 	return name
 }
