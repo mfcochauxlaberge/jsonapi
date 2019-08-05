@@ -10,7 +10,8 @@ import (
 //
 // Check can be used to validate the relationships between the types.
 type Schema struct {
-	Types []Type
+	Types    []Type
+	RelTemps map[string]RelTemp
 }
 
 // AddType adds a type to the schema.
