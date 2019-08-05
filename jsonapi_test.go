@@ -1,10 +1,74 @@
 package jsonapi_test
 
 import (
+	"fmt"
+	"testing"
 	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
+
+	"github.com/stretchr/testify/assert"
 )
+
+func TestMarshaling(t *testing.T) {
+	tests := []struct {
+		name   string
+		schema *Schema
+		col    Collection
+		url    string
+		// doc         *Document
+		expected    string
+		expectedErr error
+	}{
+		{
+			name:   "all zero",
+			schema: getEmptyBaseSchema(),
+			col:    getEmptyBaseCollection(),
+			url:    "/type1",
+			// doc:         &Document{},
+			expected:    "expected",
+			expectedErr: nil,
+		},
+	}
+
+	for _, test := range tests {
+		test := test
+		t.Run("aaa", func(t *testing.T) {
+			assert := assert.New(t)
+			_ = fmt.Sprintf("test: %+v\n", test)
+
+			url, err := NewURLFromRaw(test.schema, test.url)
+			assert.NoError(err)
+
+			doc := &Document{}
+
+			// Marshaling
+			payload, err := Marshal(doc, url)
+			assert.Equal(err, test.expectedErr)
+			assert.Equal(string(payload), test.expected)
+
+			// Unmarshaling
+			// doc2, err := Unmarshal(payload, url, test.schema)
+			// assert.NoError(err)
+			// assert.Equal(doc, doc2)
+		})
+	}
+}
+
+func getEmptyBaseSchema() *Schema {
+	schema := &Schema{}
+	return schema
+}
+
+func getBaseSchema() *Schema {
+	schema := &Schema{}
+	return schema
+}
+
+func getEmptyBaseCollection() Collection {
+	col := &SoftCollection{}
+	return col
+}
 
 var (
 	mocktypes1  Collection
