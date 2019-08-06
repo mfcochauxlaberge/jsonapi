@@ -1,7 +1,9 @@
 package jsonapi_test
 
 import (
-	"fmt"
+	"bytes"
+	"encoding/json"
+	"io/ioutil"
 	"testing"
 	"time"
 
@@ -11,63 +13,145 @@ import (
 )
 
 func TestMarshaling(t *testing.T) {
+	update := false
+
 	tests := []struct {
-		name   string
-		schema *Schema
-		col    Collection
-		url    string
-		// doc         *Document
-		expected    string
-		expectedErr error
+		name     string
+		schema   *Schema
+		col      Collection
+		url      string
+		expected string
 	}{
 		{
-			name:   "all zero",
-			schema: getEmptyBaseSchema(),
-			col:    getEmptyBaseCollection(),
-			url:    "/type1",
-			// doc:         &Document{},
-			expected:    "expected",
-			expectedErr: nil,
+			name:     "all zero",
+			schema:   getBaseSchema(),
+			col:      getEmptyBaseCollection(),
+			url:      "/type1",
+			expected: "expected",
 		},
 	}
 
 	for _, test := range tests {
 		test := test
-		t.Run("aaa", func(t *testing.T) {
+		t.Run(test.name, func(t *testing.T) {
 			assert := assert.New(t)
-			_ = fmt.Sprintf("test: %+v\n", test)
 
+			// URL
 			url, err := NewURLFromRaw(test.schema, test.url)
 			assert.NoError(err)
 
+			// Document
 			doc := &Document{}
 
 			// Marshaling
 			payload, err := Marshal(doc, url)
-			assert.Equal(err, test.expectedErr)
-			assert.Equal(string(payload), test.expected)
+			assert.NoError(err)
+
+			// Golden file
+			filename := "testdata/goldenfiles/temp.json"
+			if !update {
+				// Retrieve the expected result from file
+				expected, _ := ioutil.ReadFile(filename)
+				assert.NoError(err, test.name)
+				assert.JSONEq(string(expected), string(payload))
+			} else {
+				dst := &bytes.Buffer{}
+				err = json.Indent(dst, payload, "", "\t")
+				assert.NoError(err)
+				// TODO Figure out whether 0644 is okay or not.
+				err = ioutil.WriteFile(filename, dst.Bytes(), 0644)
+				assert.NoError(err)
+			}
 
 			// Unmarshaling
-			// doc2, err := Unmarshal(payload, url, test.schema)
-			// assert.NoError(err)
-			// assert.Equal(doc, doc2)
+			doc2, err := Unmarshal(payload, url, test.schema)
+			assert.NoError(err)
+			assert.Equal(doc, doc2)
 		})
 	}
 }
 
-func getEmptyBaseSchema() *Schema {
-	schema := &Schema{}
-	return schema
-}
-
 func getBaseSchema() *Schema {
 	schema := &Schema{}
+	_ = schema.AddType(MustReflect(type1{}))
+	_ = schema.AddType(MustReflect(type2{}))
+	_ = schema.AddType(MustReflect(type3{}))
+	if len(schema.Check()) > 0 {
+		panic("base schema for tests should be valid")
+	}
 	return schema
 }
 
 func getEmptyBaseCollection() Collection {
 	col := &SoftCollection{}
 	return col
+}
+
+// type1 is a fake struct that defines a JSON:API type for test purposes.
+type type1 struct {
+	ID string `json:"id" api:"type1"`
+
+	// Attributes
+	Str    string    `json:"str" api:"attr"`
+	Int    int       `json:"int" api:"attr"`
+	Int8   int8      `json:"int8" api:"attr"`
+	Int16  int16     `json:"int16" api:"attr"`
+	Int32  int32     `json:"int32" api:"attr"`
+	Int64  int64     `json:"int64" api:"attr"`
+	Uint   uint      `json:"uint" api:"attr"`
+	Uint8  uint8     `json:"uint8" api:"attr"`
+	Uint16 uint16    `json:"uint16" api:"attr"`
+	Uint32 uint32    `json:"uint32" api:"attr"`
+	Uint64 uint64    `json:"uint64" api:"attr"`
+	Bool   bool      `json:"bool" api:"attr"`
+	Time   time.Time `json:"time" api:"attr"`
+
+	// Relationships
+	To1      string   `json:"to-1" api:"rel,type2"`
+	To1From1 string   `json:"to-1-from-1" api:"rel,type2,to-1-from-1"`
+	To1FromX string   `json:"to-1-from-x" api:"rel,type2,to-x-from-1"`
+	ToX      []string `json:"to-x" api:"rel,type2"`
+	ToXFrom1 []string `json:"to-x-from-1" api:"rel,type2,to-1-from-x"`
+	ToXFromX []string `json:"to-x-from-x" api:"rel,type2,to-x-from-x"`
+}
+
+// type2 is a fake struct that defines a JSON:API type for test purposes.
+type type2 struct {
+	ID string `json:"id" api:"type2"`
+
+	// Attributes
+	StrPtr    *string    `json:"strptr" api:"attr"`
+	IntPtr    *int       `json:"intptr" api:"attr"`
+	Int8Ptr   *int8      `json:"int8ptr" api:"attr"`
+	Int16Ptr  *int16     `json:"int16ptr" api:"attr"`
+	Int32Ptr  *int32     `json:"int32ptr" api:"attr"`
+	Int64Ptr  *int64     `json:"int64ptr" api:"attr"`
+	UintPtr   *uint      `json:"uintptr" api:"attr"`
+	Uint8Ptr  *uint8     `json:"uint8ptr" api:"attr"`
+	Uint16Ptr *uint16    `json:"uint16ptr" api:"attr"`
+	Uint32Ptr *uint32    `json:"uint32ptr" api:"attr"`
+	Uint64Ptr *uint64    `json:"uint64ptr" api:"attr"`
+	BoolPtr   *bool      `json:"boolptr" api:"attr"`
+	TimePtr   *time.Time `json:"timeptr" api:"attr"`
+
+	// Relationships
+	To1From1 string   `json:"to-1-from-1" api:"rel,type1,to-1-from-1"`
+	To1FromX string   `json:"to-1-from-x" api:"rel,type1,to-x-from-1"`
+	ToXFrom1 []string `json:"to-x-from-1" api:"rel,type1,to-1-from-x"`
+	ToXFromX []string `json:"to-x-from-x" api:"rel,type1,to-x-from-x"`
+}
+
+// type3 is a fake struct that defines a JSON:API type for test purposes.
+type type3 struct {
+	ID string `json:"id" api:"type3"`
+
+	// Attributes
+	Attr1 string `json:"attr1" api:"attr"`
+	Attr2 int    `json:"attr2" api:"attr"`
+
+	// Relationships
+	Rel1 string   `json:"rel1" api:"rel,type1"`
+	Rel2 []string `json:"rel2" api:"rel,type1"`
 }
 
 var (
