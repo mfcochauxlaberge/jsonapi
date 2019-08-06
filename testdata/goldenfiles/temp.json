@@ -1,0 +1,9 @@
+{
+	"data": null,
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "/type1?fields%5Btype1%5D=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cto-1%2Cto-1-from-1%2Cto-1-from-x%2Cto-x%2Cto-x-from-1%2Cto-x-from-x%2Cuint%2Cuint16%2Cuint32%2Cuint64%2Cuint8\u0026sort=bool%2Cint%2Cint16%2Cint32%2Cint64%2Cint8%2Cstr%2Ctime%2Cuint%2Cuint16%2Cuint32%2Cuint64%2Cuint8%2Cid"
+	}
+}
