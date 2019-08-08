@@ -3,6 +3,7 @@ package jsonapi_test
 import (
 	"bytes"
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
 	"path/filepath"
 	"strconv"
@@ -15,28 +16,42 @@ import (
 )
 
 func TestMarshaling(t *testing.T) {
-	update := false
+	update := true
+	// update := false
 
 	// TODO Describe how this test suite works
 
 	// Schema
-	schema := getBaseSchema()
+	schema := getSchema()
 
 	// Scenarios
 	collections := []*SoftCollection{
-		getEmptyBaseCollection("type1"),
+		getEmptyType1Collection(),
+		getType1Collection(),
 	}
 
 	urls := []string{
 		"/type1",
 		"/type1/t1-1",
 		"/type1/t1-1/to-1",
+		"/type1/t1-1/to-x",
 		"/type1/t1-1/relationships/to-1",
+		"/type1/t1-1/relationships/to-x",
+		"/type1/t1-2",
+		"/type1/t1-2/to-1",
+		"/type1/t1-2/to-x",
+		"/type1/t1-2/relationships/to-1",
+		"/type1/t1-2/relationships/to-x",
+	}
+
+	params := []string{
+		"",
 	}
 
 	lengths := []int{
 		len(collections),
 		len(urls),
+		len(params),
 	}
 
 	// Test struct
@@ -50,6 +65,10 @@ func TestMarshaling(t *testing.T) {
 	counter := make([]int, len(lengths))
 	run := true
 	for run {
+		col := collections[counter[0]]
+		url := urls[counter[1]]
+		param := params[counter[2]]
+
 		// Add test
 		tests = append(tests, struct {
 			name   string
@@ -60,8 +79,8 @@ func TestMarshaling(t *testing.T) {
 			// TODO Give a different name to each test
 			name:   "some name",
 			schema: schema,
-			col:    collections[0],
-			url:    urls[counter[1]],
+			col:    col,
+			url:    url + param,
 		})
 
 		// Increment counter
@@ -72,9 +91,9 @@ func TestMarshaling(t *testing.T) {
 				if i == len(counter)-1 {
 					run = false
 					break
-				} else {
-					counter[i+1]++
 				}
+			} else {
+				break
 			}
 		}
 	}
@@ -88,6 +107,7 @@ func TestMarshaling(t *testing.T) {
 			// URL
 			url, err := NewURLFromRaw(test.schema, test.url)
 			assert.NoError(err)
+			fmt.Printf("URL: %s\n", url.UnescapedString())
 
 			// Data
 			var data interface{}
@@ -104,6 +124,7 @@ func TestMarshaling(t *testing.T) {
 			} else {
 				// If it's a resource
 				for i := 0; i < test.col.Len(); i++ {
+					// fmt.Printf("Comparing %s and %s...\n", test.col.At(i).GetID(), url.ResID)
 					if test.col.At(i).GetID() == url.ResID {
 						data = test.col.At(i)
 						break
@@ -146,24 +167,95 @@ func TestMarshaling(t *testing.T) {
 	}
 }
 
-func getBaseSchema() *Schema {
+func getSchema() *Schema {
 	schema := &Schema{}
 	_ = schema.AddType(MustReflect(type1{}))
 	_ = schema.AddType(MustReflect(type2{}))
-	_ = schema.AddType(MustReflect(type3{}))
+	// _ = schema.AddType(MustReflect(type3{}))
 	if len(schema.Check()) > 0 {
-		panic("base schema for tests should be valid")
+		panic(" schema for tests should be valid")
 	}
 	return schema
 }
 
-func getEmptyBaseCollection(t string) *SoftCollection {
-	schema := getBaseSchema()
-	typ := schema.GetType(t)
+func getEmptyType1Collection() *SoftCollection {
+	schema := getSchema()
+	typ := schema.GetType("type1")
 	col := &SoftCollection{
 		Type: &typ,
 	}
 	return col
+}
+
+func getType1Collection() *SoftCollection {
+	col := getEmptyType1Collection()
+	col.Add(Wrap(&type1{
+		ID: "t1-1",
+	}))
+	col.Add(Wrap(&type1{
+		ID:       "t1-2",
+		Str:      "str",
+		Int:      10,
+		Int8:     18,
+		Int16:    116,
+		Int32:    132,
+		Int64:    164,
+		Uint:     100,
+		Uint8:    108,
+		Uint16:   1016,
+		Uint32:   1032,
+		Uint64:   1064,
+		Bool:     true,
+		Time:     getTime(),
+		To1:      "",
+		To1From1: "t1-10",
+		To1FromX: "t1-11",
+		ToX:      []string{},
+		ToXFrom1: []string{"t1-12"},
+		ToXFromX: []string{"t1-13", "t1-14"},
+	}))
+	return col
+}
+
+func getEmptyType2Collection() *SoftCollection {
+	schema := getSchema()
+	typ := schema.GetType("type2")
+	col := &SoftCollection{
+		Type: &typ,
+	}
+	return col
+}
+func getType2Collection() *SoftCollection {
+	col := getEmptyType2Collection()
+	col.Add(Wrap(&type2{
+		ID: "t2-1",
+	}))
+	col.Add(Wrap(&type2{
+		ID:        "t2-2",
+		StrPtr:    ptr("str").(*string),
+		IntPtr:    ptr(10).(*int),
+		Int8Ptr:   ptr(18).(*int8),
+		Int16Ptr:  ptr(116).(*int16),
+		Int32Ptr:  ptr(132).(*int32),
+		Int64Ptr:  ptr(164).(*int64),
+		UintPtr:   ptr(100).(*uint),
+		Uint8Ptr:  ptr(108).(*uint8),
+		Uint16Ptr: ptr(1016).(*uint16),
+		Uint32Ptr: ptr(1032).(*uint32),
+		Uint64Ptr: ptr(1064).(*uint64),
+		BoolPtr:   ptr(true).(*bool),
+		TimePtr:   ptr(getTime()).(*time.Time),
+		To1From1:  "t1-10",
+		To1FromX:  "t1-11",
+		ToXFrom1:  []string{"t1-12"},
+		ToXFromX:  []string{"t1-13", "t2-14"},
+	}))
+	return col
+}
+
+func getTime() time.Time {
+	now, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
+	return now
 }
 
 // type1 is a fake struct that defines a JSON:API type for test purposes.
@@ -220,18 +312,18 @@ type type2 struct {
 	ToXFromX []string `json:"to-x-from-x" api:"rel,type1,to-x-from-x"`
 }
 
-// type3 is a fake struct that defines a JSON:API type for test purposes.
-type type3 struct {
-	ID string `json:"id" api:"type3"`
+// // type3 is a fake struct that defines a JSON:API type for test purposes.
+// type type3 struct {
+// 	ID string `json:"id" api:"type3"`
 
-	// Attributes
-	Attr1 string `json:"attr1" api:"attr"`
-	Attr2 int    `json:"attr2" api:"attr"`
+// 	// Attributes
+// 	Attr1 string `json:"attr1" api:"attr"`
+// 	Attr2 int    `json:"attr2" api:"attr"`
 
-	// Relationships
-	Rel1 string   `json:"rel1" api:"rel,type1"`
-	Rel2 []string `json:"rel2" api:"rel,type1"`
-}
+// 	// Relationships
+// 	Rel1 string   `json:"rel1" api:"rel,type1"`
+// 	Rel2 []string `json:"rel2" api:"rel,type1"`
+// }
 
 // var (
 // 	mocktypes1  Collection
