@@ -3,6 +3,7 @@ package jsonapi_test
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io/ioutil"
 	"path/filepath"
@@ -16,8 +17,10 @@ import (
 )
 
 func TestMarshaling(t *testing.T) {
-	update := true
-	// update := false
+	// Update flag
+	update := false
+	flag.BoolVar(&update, "update-golden-files", false, "update the golden files")
+	flag.Parse()
 
 	// TODO Describe how this test suite works
 
@@ -26,46 +29,31 @@ func TestMarshaling(t *testing.T) {
 
 	// Scenarios
 	collections := []*SoftCollection{
-		getEmptyType1Collection(),
-		getType1Collection(),
+		getmocktypeCollection(),
 	}
 
 	urls := []string{
-		"/type1",
-		"/type1/t1-1",
-		"/type1/t1-1/to-1",
-		"/type1/t1-1/to-x",
-		"/type1/t1-1/relationships/to-1",
-		"/type1/t1-1/relationships/to-x",
-		"/type1/t1-2",
-		"/type1/t1-2/to-1",
-		"/type1/t1-2/to-x",
-		"/type1/t1-2/relationships/to-1",
-		"/type1/t1-2/relationships/to-x",
+		"/mocktype",
+		"/mocktype/t1-1",
+		"/mocktype/t1-1/relationships/to-1",
+		"/mocktype/t1-1/relationships/to-x",
 	}
 
 	params := map[string][]string{
 		"fields": []string{
-			"?fields[type1]=",
-			"?fields[type1]=id",
-			"?fields[type1]=str,int,bool",
-			"?fields[type1]=to-1,to-x",
-			"?fields[type1]=str,int,to-1,to-x",
+			"?fields[mocktype]=id",
+			"?fields[mocktype]=str",
+			"?fields[mocktype]=to-1,to-x",
+			"?fields[mocktype]=str,int,to-1,to-x",
 		},
 		"sort": []string{
-			"",
-			"&sort=id",
 			"&sort=str,int,id",
-			"&sort=str,int,id,int8,bool,time",
 		},
 		"pagination": []string{
 			"",
 			"&page[size]=0&page[number]=0",
-			"&page[size]=10&page[number]=0",
-			"&page[size]=0&page[number]=10",
-			"&page[size]=10&page[number]=10",
+			"&page[size]=2&page[number]=0",
 			"&page[size]=1000&page[number]=0",
-			"&page[size]=100&page[number]=100",
 		},
 	}
 
@@ -149,7 +137,6 @@ func TestMarshaling(t *testing.T) {
 			} else {
 				// If it's a resource
 				for i := 0; i < test.col.Len(); i++ {
-					// fmt.Printf("Comparing %s and %s...\n", test.col.At(i).GetID(), url.ResID)
 					if test.col.At(i).GetID() == url.ResID {
 						data = test.col.At(i)
 						break
@@ -190,34 +177,34 @@ func TestMarshaling(t *testing.T) {
 			// assert.Equal(doc, doc2)
 		})
 	}
+
+	fmt.Printf("%d tests executed.\n", len(tests))
 }
 
 func getSchema() *Schema {
 	schema := &Schema{}
-	_ = schema.AddType(MustReflect(type1{}))
-	_ = schema.AddType(MustReflect(type2{}))
-	// _ = schema.AddType(MustReflect(type3{}))
+	_ = schema.AddType(MustReflect(mocktype{}))
 	if len(schema.Check()) > 0 {
 		panic(" schema for tests should be valid")
 	}
 	return schema
 }
 
-func getEmptyType1Collection() *SoftCollection {
+func getEmptymocktypeCollection() *SoftCollection {
 	schema := getSchema()
-	typ := schema.GetType("type1")
+	typ := schema.GetType("mocktype")
 	col := &SoftCollection{
 		Type: &typ,
 	}
 	return col
 }
 
-func getType1Collection() *SoftCollection {
-	col := getEmptyType1Collection()
-	col.Add(Wrap(&type1{
+func getmocktypeCollection() *SoftCollection {
+	col := getEmptymocktypeCollection()
+	col.Add(Wrap(&mocktype{
 		ID: "t1-1",
 	}))
-	col.Add(Wrap(&type1{
+	col.Add(Wrap(&mocktype{
 		ID:       "t1-2",
 		Str:      "str",
 		Int:      10,
@@ -242,50 +229,14 @@ func getType1Collection() *SoftCollection {
 	return col
 }
 
-func getEmptyType2Collection() *SoftCollection {
-	schema := getSchema()
-	typ := schema.GetType("type2")
-	col := &SoftCollection{
-		Type: &typ,
-	}
-	return col
-}
-func getType2Collection() *SoftCollection {
-	col := getEmptyType2Collection()
-	col.Add(Wrap(&type2{
-		ID: "t2-1",
-	}))
-	col.Add(Wrap(&type2{
-		ID:        "t2-2",
-		StrPtr:    ptr("str").(*string),
-		IntPtr:    ptr(10).(*int),
-		Int8Ptr:   ptr(18).(*int8),
-		Int16Ptr:  ptr(116).(*int16),
-		Int32Ptr:  ptr(132).(*int32),
-		Int64Ptr:  ptr(164).(*int64),
-		UintPtr:   ptr(100).(*uint),
-		Uint8Ptr:  ptr(108).(*uint8),
-		Uint16Ptr: ptr(1016).(*uint16),
-		Uint32Ptr: ptr(1032).(*uint32),
-		Uint64Ptr: ptr(1064).(*uint64),
-		BoolPtr:   ptr(true).(*bool),
-		TimePtr:   ptr(getTime()).(*time.Time),
-		To1From1:  "t1-10",
-		To1FromX:  "t1-11",
-		ToXFrom1:  []string{"t1-12"},
-		ToXFromX:  []string{"t1-13", "t2-14"},
-	}))
-	return col
-}
-
 func getTime() time.Time {
 	now, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
 	return now
 }
 
-// type1 is a fake struct that defines a JSON:API type for test purposes.
-type type1 struct {
-	ID string `json:"id" api:"type1"`
+// mocktype is a fake struct that defines a JSON:API type for test purposes.
+type mocktype struct {
+	ID string `json:"id" api:"mocktype"`
 
 	// Attributes
 	Str    string    `json:"str" api:"attr"`
@@ -303,49 +254,10 @@ type type1 struct {
 	Time   time.Time `json:"time" api:"attr"`
 
 	// Relationships
-	To1      string   `json:"to-1" api:"rel,type2"`
-	To1From1 string   `json:"to-1-from-1" api:"rel,type2,to-1-from-1"`
-	To1FromX string   `json:"to-1-from-x" api:"rel,type2,to-x-from-1"`
-	ToX      []string `json:"to-x" api:"rel,type2"`
-	ToXFrom1 []string `json:"to-x-from-1" api:"rel,type2,to-1-from-x"`
-	ToXFromX []string `json:"to-x-from-x" api:"rel,type2,to-x-from-x"`
+	To1      string   `json:"to-1" api:"rel,mocktype"`
+	To1From1 string   `json:"to-1-from-1" api:"rel,mocktype,to-1-from-1"`
+	To1FromX string   `json:"to-1-from-x" api:"rel,mocktype,to-x-from-1"`
+	ToX      []string `json:"to-x" api:"rel,mocktype"`
+	ToXFrom1 []string `json:"to-x-from-1" api:"rel,mocktype,to-1-from-x"`
+	ToXFromX []string `json:"to-x-from-x" api:"rel,mocktype,to-x-from-x"`
 }
-
-// type2 is a fake struct that defines a JSON:API type for test purposes.
-type type2 struct {
-	ID string `json:"id" api:"type2"`
-
-	// Attributes
-	StrPtr    *string    `json:"strptr" api:"attr"`
-	IntPtr    *int       `json:"intptr" api:"attr"`
-	Int8Ptr   *int8      `json:"int8ptr" api:"attr"`
-	Int16Ptr  *int16     `json:"int16ptr" api:"attr"`
-	Int32Ptr  *int32     `json:"int32ptr" api:"attr"`
-	Int64Ptr  *int64     `json:"int64ptr" api:"attr"`
-	UintPtr   *uint      `json:"uintptr" api:"attr"`
-	Uint8Ptr  *uint8     `json:"uint8ptr" api:"attr"`
-	Uint16Ptr *uint16    `json:"uint16ptr" api:"attr"`
-	Uint32Ptr *uint32    `json:"uint32ptr" api:"attr"`
-	Uint64Ptr *uint64    `json:"uint64ptr" api:"attr"`
-	BoolPtr   *bool      `json:"boolptr" api:"attr"`
-	TimePtr   *time.Time `json:"timeptr" api:"attr"`
-
-	// Relationships
-	To1From1 string   `json:"to-1-from-1" api:"rel,type1,to-1-from-1"`
-	To1FromX string   `json:"to-1-from-x" api:"rel,type1,to-x-from-1"`
-	ToXFrom1 []string `json:"to-x-from-1" api:"rel,type1,to-1-from-x"`
-	ToXFromX []string `json:"to-x-from-x" api:"rel,type1,to-x-from-x"`
-}
-
-// // type3 is a fake struct that defines a JSON:API type for test purposes.
-// type type3 struct {
-// 	ID string `json:"id" api:"type3"`
-
-// 	// Attributes
-// 	Attr1 string `json:"attr1" api:"attr"`
-// 	Attr2 int    `json:"attr2" api:"attr"`
-
-// 	// Relationships
-// 	Rel1 string   `json:"rel1" api:"rel,type1"`
-// 	Rel2 []string `json:"rel2" api:"rel,type1"`
-// }
