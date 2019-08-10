@@ -16,100 +16,93 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestMarshaling(t *testing.T) {
-	// Update flag
-	update := false
-	flag.BoolVar(&update, "update-golden-files", false, "update the golden files")
-	flag.Parse()
+var update = flag.Bool("update-golden-files", false, "update the golden files")
 
+func TestMarshaling(t *testing.T) {
 	// TODO Describe how this test suite works
 
-	// Schema
-	schema := getSchema()
+	// // Schema
+	// schema := getSchema()
 
-	// Scenarios
-	collections := []*SoftCollection{
-		getmocktypeCollection(),
-	}
+	// // Scenarios
+	// collections := []*SoftCollection{
+	// 	getmocktypeCollection(),
+	// }
 
-	urls := []string{
-		"/mocktype",
-		"/mocktype/t1-1",
-		"/mocktype/t1-1/relationships/to-1",
-		"/mocktype/t1-1/relationships/to-x",
-	}
+	// urls := []string{
+	// 	"/mocktype",
+	// 	"/mocktype" +
+	// 		"?fields[mocktype]=id" +
+	// 		"&sort=-str,id" +
+	// 		"&include=to-1,to-x-from-x",
+	// 	"/mocktype/t1-1",
+	// 	"/mocktype/t1-1" +
+	// 		"?fields[mocktype]=id" +
+	// 		"&include=to-1,to-x-from-x",
+	// 	"/mocktype/t1-1/relationships/to-1",
+	// 	"/mocktype/t1-1/relationships/to-x",
+	// }
 
-	params := map[string][]string{
-		"fields": []string{
-			"?fields[mocktype]=id",
-			"?fields[mocktype]=str",
-			"?fields[mocktype]=to-1,to-x",
-			"?fields[mocktype]=str,int,to-1,to-x",
-		},
-		"sort": []string{
-			"&sort=str,int,id",
-		},
-		"pagination": []string{
-			"",
-			"&page[size]=0&page[number]=0",
-			"&page[size]=2&page[number]=0",
-			"&page[size]=1000&page[number]=0",
-		},
-	}
+	// includes := []Resource{}
 
-	lengths := []int{
-		len(collections),
-		len(urls),
-		len(params["fields"]),
-		len(params["sort"]),
-		len(params["pagination"]),
-	}
+	// lengths := []int{
+	// 	len(collections),
+	// 	len(urls),
+	// }
 
 	// Test struct
 	tests := []struct {
 		name   string
 		schema *Schema
-		col    *SoftCollection
-		url    string
-	}{}
-
-	counter := make([]int, len(lengths))
-	run := true
-	for run {
-		col := collections[counter[0]]
-		fullURL := urls[counter[1]] +
-			params["fields"][counter[2]] +
-			params["sort"][counter[3]] +
-			params["pagination"][counter[4]]
-
-		// Add test
-		tests = append(tests, struct {
-			name   string
-			schema *Schema
-			col    *SoftCollection
-			url    string
-		}{
-			// TODO Give a different name to each test
-			name:   "some name",
-			schema: schema,
-			col:    col,
-			url:    fullURL,
-		})
-
-		// Increment counter
-		for i := 0; i < len(counter); i++ {
-			counter[i]++
-			if counter[i] == lengths[i] {
-				counter[i] = 0
-				if i == len(counter)-1 {
-					run = false
-					break
-				}
-			} else {
-				break
-			}
-		}
+		// col    *SoftCollection
+		doc *Document
+		url string
+	}{
+		{
+			name: "some name",
+			doc: &Document{
+				Data: Wrap(mocktype{
+					ID: "abc123",
+				}),
+			},
+			url: "/someurl?param=val&another=val2",
+		},
 	}
+
+	// counter := make([]int, len(lengths))
+	// run := true
+	// for run {
+	// 	col := collections[counter[0]]
+	// 	url := urls[counter[1]]
+
+	// 	// Add test
+	// 	tests = append(tests, struct {
+	// 		name   string
+	// 		schema *Schema
+	// 		col    *SoftCollection
+	// 		url    string
+	// 	}{
+	// 		// TODO Give a different name to each test
+	// 		name:   "some name",
+	// 		schema: schema,
+	// 		col:    col,
+	// 		url:    url,
+	// 	})
+
+	// 	// Increment counter
+	// 	for i := 0; i < len(counter); i++ {
+	// 		counter[i]++
+	// 		if counter[i] == lengths[i] {
+	// 			counter[i] = 0
+	// 			if i == len(counter)-1 {
+	// 				run = false
+	// 				break
+	// 			}
+	// 		} else {
+	// 			break
+	// 		}
+	// 	}
+	// }
 
 	for i := range tests {
 		i := i
@@ -123,40 +116,41 @@ func TestMarshaling(t *testing.T) {
 			fmt.Printf("URL: %s\n", url.UnescapedString())
 
 			// Data
-			var data interface{}
-			if url.IsCol {
-				// If it's a collection
-				page := test.col.Range(nil, nil, nil, nil, 1000, 0)
-				dataCol := &SoftCollection{
-					Type: test.col.Type,
-				}
-				for i := range page {
-					dataCol.Add(page[i])
-				}
-				data = dataCol
-			} else {
-				// If it's a resource
-				for i := 0; i < test.col.Len(); i++ {
-					if test.col.At(i).GetID() == url.ResID {
-						data = test.col.At(i)
-						break
-					}
-				}
-			}
+			// var data interface{}
+			// if url.IsCol {
+			// 	// If it's a collection
+			// 	page := test.col.Range(nil, nil, nil, nil, 1000, 0)
+			// 	dataCol := &SoftCollection{
+			// 		Type: test.col.Type,
+			// 	}
+			// 	for i := range page {
+			// 		dataCol.Add(page[i])
+			// 	}
+			// 	data = dataCol
+			// } else {
+			// 	// If it's a resource
+			// 	for i := 0; i < test.col.Len(); i++ {
+			// 		if test.col.At(i).GetID() == url.ResID {
+			// 			data = test.col.At(i)
+			// 			break
+			// 		}
+			// 	}
+			// }
 
 			// Document
-			doc := &Document{
-				Data: data,
-			}
+			// doc := &Document{
+			// 	Data: data,
+			// }
+			// // doc.
 
 			// Marshaling
-			payload, err := Marshal(doc, url)
+			payload, err := Marshal(test.doc, url)
 			assert.NoError(err)
 
 			// Golden file
-			filename := "test" + strconv.Itoa(i) + ".json"
+			filename := "test_" + strconv.Itoa(i) + ".json"
 			path := filepath.Join("testdata", "goldenfiles", filename)
-			if !update {
+			if !*update {
 				// Retrieve the expected result from file
 				expected, _ := ioutil.ReadFile(path)
 				assert.NoError(err, test.name)
@@ -219,12 +213,42 @@ func getmocktypeCollection() *SoftCollection {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
+		To1:      "t1-1",
+		To1From1: "t1-3",
+		To1FromX: "t1-3",
+		ToX:      []string{},
+		ToXFrom1: []string{"t1-4"},
+		ToXFromX: []string{"t1-3", "t1-4"},
+	}))
+	col.Add(Wrap(&mocktype{
+		ID:       "t1-3",
+		Str:      "çéàïû",
+		Int:      -10,
+		Int8:     -18,
+		Int16:    -116,
+		Int32:    -132,
+		Int64:    -164,
+		Bool:     false,
 		To1:      "",
-		To1From1: "t1-10",
-		To1FromX: "t1-11",
+		To1From1: "t1-1",
+		To1FromX: "",
+		ToX:      []string{},
+		ToXFrom1: []string{"t1-2", "t1-4"},
+		ToXFromX: []string{"t1-2", "t1-4"},
+	}))
+	col.Add(Wrap(&mocktype{
+		ID:       "t1-4",
+		Str:      "çéàïû",
+		To1:      "",
+		To1From1: "",
+		To1FromX: "t1-3",
 		ToX:      []string{},
 		ToXFrom1: []string{"t1-12"},
-		ToXFromX: []string{"t1-13", "t1-14"},
+		ToXFromX: []string{"t1-2", "t1-3"},
+	}))
+	col.Add(Wrap(&mocktype{
+		ID:  "t1-5",
+		Str: "漢語",
 	}))
 	return col
 }
