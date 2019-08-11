@@ -4,10 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"flag"
-	"fmt"
 	"io/ioutil"
 	"path/filepath"
-	"strconv"
+	"strings"
 	"testing"
 	"time"
 
@@ -21,185 +20,12 @@ var update = flag.Bool("update-golden-files", false, "update the golden files")
 func TestMarshaling(t *testing.T) {
 	// TODO Describe how this test suite works
 
-	// // Schema
-	// schema := getSchema()
-
-	// // Scenarios
-	// collections := []*SoftCollection{
-	// 	getmocktypeCollection(),
-	// }
-
-	// urls := []string{
-	// 	"/mocktype",
-	// 	"/mocktype" +
-	// 		"?fields[mocktype]=id" +
-	// 		"&sort=-str,id" +
-	// 		"&include=to-1,to-x-from-x",
-	// 	"/mocktype/t1-1",
-	// 	"/mocktype/t1-1" +
-	// 		"?fields[mocktype]=id" +
-	// 		"&include=to-1,to-x-from-x",
-	// 	"/mocktype/t1-1/relationships/to-1",
-	// 	"/mocktype/t1-1/relationships/to-x",
-	// }
-
-	// includes := []Resource{}
-
-	// lengths := []int{
-	// 	len(collections),
-	// 	len(urls),
-	// }
-
-	// Test struct
-	tests := []struct {
-		name   string
-		schema *Schema
-		// col    *SoftCollection
-		doc *Document
-		url string
-	}{
-		{
-			name: "some name",
-			doc: &Document{
-				Data: Wrap(mocktype{
-					ID: "abc123",
-				}),
-			},
-			url: "/someurl?param=val&another=val2",
-		},
-	}
-
-	// counter := make([]int, len(lengths))
-	// run := true
-	// for run {
-	// 	col := collections[counter[0]]
-	// 	url := urls[counter[1]]
-
-	// 	// Add test
-	// 	tests = append(tests, struct {
-	// 		name   string
-	// 		schema *Schema
-	// 		col    *SoftCollection
-	// 		url    string
-	// 	}{
-	// 		// TODO Give a different name to each test
-	// 		name:   "some name",
-	// 		schema: schema,
-	// 		col:    col,
-	// 		url:    url,
-	// 	})
-
-	// 	// Increment counter
-	// 	for i := 0; i < len(counter); i++ {
-	// 		counter[i]++
-	// 		if counter[i] == lengths[i] {
-	// 			counter[i] = 0
-	// 			if i == len(counter)-1 {
-	// 				run = false
-	// 				break
-	// 			}
-	// 		} else {
-	// 			break
-	// 		}
-	// 	}
-	// }
-
-	for i := range tests {
-		i := i
-		test := tests[i]
-		t.Run(test.name, func(t *testing.T) {
-			assert := assert.New(t)
-
-			// URL
-			url, err := NewURLFromRaw(test.schema, test.url)
-			assert.NoError(err)
-			fmt.Printf("URL: %s\n", url.UnescapedString())
-
-			// Data
-			// var data interface{}
-			// if url.IsCol {
-			// 	// If it's a collection
-			// 	page := test.col.Range(nil, nil, nil, nil, 1000, 0)
-			// 	dataCol := &SoftCollection{
-			// 		Type: test.col.Type,
-			// 	}
-			// 	for i := range page {
-			// 		dataCol.Add(page[i])
-			// 	}
-			// 	data = dataCol
-			// } else {
-			// 	// If it's a resource
-			// 	for i := 0; i < test.col.Len(); i++ {
-			// 		if test.col.At(i).GetID() == url.ResID {
-			// 			data = test.col.At(i)
-			// 			break
-			// 		}
-			// 	}
-			// }
-
-			// Document
-			// doc := &Document{
-			// 	Data: data,
-			// }
-			// // doc.
-
-			// Marshaling
-			payload, err := Marshal(test.doc, url)
-			assert.NoError(err)
-
-			// Golden file
-			filename := "test_" + strconv.Itoa(i) + ".json"
-			path := filepath.Join("testdata", "goldenfiles", filename)
-			if !*update {
-				// Retrieve the expected result from file
-				expected, _ := ioutil.ReadFile(path)
-				assert.NoError(err, test.name)
-				assert.JSONEq(string(expected), string(payload))
-			} else {
-				dst := &bytes.Buffer{}
-				err = json.Indent(dst, payload, "", "\t")
-				assert.NoError(err)
-				// TODO Figure out whether 0644 is okay or not.
-				err = ioutil.WriteFile(path, dst.Bytes(), 0644)
-				assert.NoError(err)
-			}
-
-			// Unmarshaling
-			// TODO
-			// doc2, err := Unmarshal(payload, url, test.schema)
-			// assert.NoError(err)
-			// assert.Equal(doc, doc2)
-		})
-	}
-
-	fmt.Printf("%d tests executed.\n", len(tests))
-}
-
-func getSchema() *Schema {
-	schema := &Schema{}
-	_ = schema.AddType(MustReflect(mocktype{}))
-	if len(schema.Check()) > 0 {
-		panic(" schema for tests should be valid")
-	}
-	return schema
-}
-
-func getEmptymocktypeCollection() *SoftCollection {
-	schema := getSchema()
-	typ := schema.GetType("mocktype")
-	col := &SoftCollection{
-		Type: &typ,
-	}
-	return col
-}
-
-func getmocktypeCollection() *SoftCollection {
-	col := getEmptymocktypeCollection()
+	// Setup
+	typ, _ := Reflect(mocktype{})
+	// schema := &Schema{Types: []Type{typ}}
+	col := SoftCollection{Type: &typ}
 	col.Add(Wrap(&mocktype{
-		ID: "t1-1",
-	}))
-	col.Add(Wrap(&mocktype{
-		ID:       "t1-2",
+		ID:       "id1",
 		Str:      "str",
 		Int:      10,
 		Int8:     18,
@@ -213,45 +39,304 @@ func getmocktypeCollection() *SoftCollection {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
-		To1:      "t1-1",
-		To1From1: "t1-3",
-		To1FromX: "t1-3",
-		ToX:      []string{},
-		ToXFrom1: []string{"t1-4"},
-		ToXFromX: []string{"t1-3", "t1-4"},
+		To1:      "id2",
+		To1From1: "id3",
+		To1FromX: "id3",
+		ToX:      []string{"id2", "id3"},
+		ToXFrom1: []string{"id4"},
+		ToXFromX: []string{"id3", "id4"},
 	}))
 	col.Add(Wrap(&mocktype{
-		ID:       "t1-3",
-		Str:      "çéàïû",
-		Int:      -10,
-		Int8:     -18,
-		Int16:    -116,
-		Int32:    -132,
-		Int64:    -164,
-		Bool:     false,
-		To1:      "",
-		To1From1: "t1-1",
-		To1FromX: "",
-		ToX:      []string{},
-		ToXFrom1: []string{"t1-2", "t1-4"},
-		ToXFromX: []string{"t1-2", "t1-4"},
+		ID:   "id2",
+		Str:  "漢語",
+		Int:  -42,
+		Time: time.Time{},
 	}))
-	col.Add(Wrap(&mocktype{
-		ID:       "t1-4",
-		Str:      "çéàïû",
-		To1:      "",
-		To1From1: "",
-		To1FromX: "t1-3",
-		ToX:      []string{},
-		ToXFrom1: []string{"t1-12"},
-		ToXFromX: []string{"t1-2", "t1-3"},
-	}))
-	col.Add(Wrap(&mocktype{
-		ID:  "t1-5",
-		Str: "漢語",
-	}))
-	return col
+	col.Add(Wrap(&mocktype{ID: "id3"}))
+
+	// Test struct
+	tests := []struct {
+		name   string
+		doc    *Document
+		fields []string
+	}{
+		{
+			name: "empty data",
+			doc: &Document{
+				PrePath: "https://example.org",
+			},
+		}, {
+			name: "empty collection",
+			doc: &Document{
+				Data: &SoftCollection{
+					Type: &Type{Name: "mocktype"},
+				},
+			},
+		}, {
+			name: "resource",
+			doc: &Document{
+				Data: col.At(0),
+			},
+		}, {
+			name: "collection",
+			doc: &Document{
+				Data:    col.Range(nil, nil, nil, []string{}, 10, 0),
+				PrePath: "https://example.org",
+			},
+			fields: []string{
+				"str", "uint64", "bool", "int", "time", "to-1", "to-x-from-1",
+			},
+		}, {
+			name: "meta",
+			doc: &Document{
+				Data: nil,
+				Meta: map[string]interface{}{
+					"f1": "漢語",
+					"f2": 42,
+					"f3": true,
+				},
+			},
+		}, {
+			name: "collection with inclusions",
+			doc: &Document{
+				Data: Wrap(&mocktype{
+					ID: "id1",
+				}),
+				Included: []Resource{
+					Wrap(&mocktype{
+						ID: "id2",
+					}),
+					Wrap(&mocktype{
+						ID: "id3",
+					}),
+					Wrap(&mocktype{
+						ID: "id4",
+					}),
+				},
+			},
+		}, {
+			name: "identifier",
+			doc: &Document{
+				Data: Identifier{
+					ID:   "id1",
+					Type: "mocktype",
+				},
+			},
+		}, {
+			name: "identifiers",
+			doc: &Document{
+				Data: Identifiers{
+					{
+						ID:   "id1",
+						Type: "mocktype",
+					}, {
+						ID:   "id2",
+						Type: "mocktype",
+					}, {
+						ID:   "id3",
+						Type: "mocktype",
+					},
+				},
+			},
+		}, {
+			name: "error",
+			doc: &Document{
+				Data: func() Error {
+					err := NewErrBadRequest("Bad Request", "This request is bad.")
+					err.ID = "00000000-0000-0000-0000-000000000000"
+					return err
+				}(),
+			},
+		}, {
+			name: "errors",
+			doc: &Document{
+				Data: func() []Error {
+					err1 := NewErrBadRequest("Bad Request", "This request is bad.")
+					err1.ID = "00000000-0000-0000-0000-000000000000"
+					err2 := NewErrBadRequest("Bad Request", "This request is really bad.")
+					err2.ID = "00000000-0000-0000-0000-000000000000"
+					return []Error{err1, err2}
+				}(),
+			},
+		},
+	}
+
+	for i := range tests {
+		i := i
+		test := tests[i]
+		t.Run(test.name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			// URL
+			url := &URL{
+				Fragments: []string{"fake", "path"},
+				Params: &Params{
+					Fields: map[string][]string{"mocktype": test.fields},
+				},
+			}
+
+			// Document
+			test.doc.RelData = map[string][]string{
+				"mocktype": []string{
+					"to-1", "to-x-from-1",
+				},
+			}
+
+			// Marshaling
+			payload, err := Marshal(test.doc, url)
+			assert.NoError(err)
+
+			// Golden file
+			filename := strings.Replace(test.name, " ", "_", -1) + ".json"
+			path := filepath.Join("testdata", "goldenfiles", "marshaling", filename)
+			if !*update {
+				// Retrieve the expected result from file
+				expected, _ := ioutil.ReadFile(path)
+				assert.NoError(err, test.name)
+				assert.JSONEq(string(expected), string(payload))
+			} else {
+				dst := &bytes.Buffer{}
+				err = json.Indent(dst, payload, "", "\t")
+				assert.NoError(err)
+				// TODO Figure out whether 0644 is okay or not.
+				err = ioutil.WriteFile(path, dst.Bytes(), 0644)
+				assert.NoError(err)
+			}
+		})
+	}
 }
+
+func TestUnmarshaling(t *testing.T) {
+	// Setup
+	typ, _ := Reflect(mocktype{})
+	schema := &Schema{Types: []Type{typ}}
+	col := SoftCollection{Type: &typ}
+	col.Add(Wrap(&mocktype{
+		ID:       "id1",
+		Str:      "str",
+		Int:      10,
+		Int8:     18,
+		Int16:    116,
+		Int32:    132,
+		Int64:    164,
+		Uint:     100,
+		Uint8:    108,
+		Uint16:   1016,
+		Uint32:   1032,
+		Uint64:   1064,
+		Bool:     true,
+		Time:     getTime(),
+		To1:      "id2",
+		To1From1: "id3",
+		To1FromX: "id3",
+		ToX:      []string{"id2", "id3"},
+		ToXFrom1: []string{"id4"},
+		ToXFromX: []string{"id3", "id4"},
+	}))
+	col.Add(Wrap(&mocktype{ID: "id2"}))
+	col.Add(Wrap(&mocktype{ID: "id3"}))
+
+	// Tests
+	t.Run("resource with inclusions", func(t *testing.T) {
+		assert := assert.New(t)
+
+		url, _ := NewURLFromRaw(
+			schema,
+			"/mocktype/id1",
+		)
+
+		doc := &Document{
+			Data: col.At(0),
+			Included: []Resource{
+				col.At(1),
+				col.At(2),
+			},
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		_, err = Unmarshal(payload, url, schema)
+		assert.NoError(err)
+		// TODO Make the assertion. At the time of writing, Unmarshaling
+		// does not work.
+	})
+
+	t.Run("identifier", func(t *testing.T) {
+		assert := assert.New(t)
+
+		url, _ := NewURLFromRaw(
+			schema,
+			"/mocktype/id1/relationships/to-1",
+		)
+
+		doc := &Document{
+			Data: Identifier{
+				ID:   "id2",
+				Type: "mocktype",
+			},
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		doc2, err := Unmarshal(payload, url, schema)
+		assert.NoError(err)
+		assert.Equal(doc.Data, doc2.Data)
+	})
+
+	t.Run("identifers", func(t *testing.T) {
+		assert := assert.New(t)
+
+		url, _ := NewURLFromRaw(
+			schema,
+			"/mocktype/id1/relationships/to-x",
+		)
+
+		doc := &Document{
+			Data: Identifiers{
+				Identifier{
+					ID:   "id2",
+					Type: "mocktype",
+				},
+				Identifier{
+					ID:   "id3",
+					Type: "mocktype",
+				},
+			},
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		doc2, err := Unmarshal(payload, url, schema)
+		assert.NoError(err)
+		assert.Equal(doc.Data, doc2.Data)
+	})
+}
+
+// func TestUnmarshalingInvalidPayloads(t *testing.T) {
+// 	assert := assert.New(t)
+
+// 	tests := []struct {
+// 		payload  string
+// 		expected string
+// 	}{
+// 		{
+// 			payload:  "invalid payload",
+// 			expected: "invalid character 'i' looking for beginning of value",
+// 		}, {
+// 			payload:  `{"data":"invaliddata"}`,
+// 			expected: "invalid character 'i' looking for beginning of value",
+// 		},
+// 	}
+
+// 	for _, test := range tests {
+// 		doc, err := Unmarshal([]byte(test.payload), nil, nil)
+// 		assert.EqualError(err, test.expected)
+// 		assert.Nil(doc)
+// 	}
+// }
 
 func getTime() time.Time {
 	now, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
