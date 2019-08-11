@@ -20,14 +20,16 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
 		data = marshalResource(
-			res, doc.PrePath,
+			res,
+			doc.PrePath,
 			url.Params.Fields[res.GetType().Name],
 			doc.RelData,
 		)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
 		data = marshalCollection(
-			col, doc.PrePath,
+			col,
+			doc.PrePath,
 			url.Params.Fields[col.GetType().Name],
 			doc.RelData,
 		)
