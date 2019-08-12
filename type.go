@@ -31,6 +31,8 @@ type Type struct {
 	Name  string
 	Attrs map[string]Attr
 	Rels  map[string]Rel
+
+	zero Resource
 }
 
 // AddAttr adds an attributes to the type.
@@ -114,6 +116,11 @@ func (t *Type) Fields() []string {
 	}
 	sort.Strings(fields)
 	return fields
+}
+
+// Instance ...
+func (t *Type) Instance() Resource {
+	return t.zero.Copy()
 }
 
 // Attr represents a resource attribute.
