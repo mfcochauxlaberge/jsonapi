@@ -105,7 +105,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 // Unmarshal reads a payload to build and return a document object.
 //
 // Both url and schema must not be nil.
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
+func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 	doc := &Document{}
 	ske := &payloadSkeleton{}
 
@@ -285,4 +285,18 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 		panic(fmt.Errorf("jsonapi: could not marshal collection: %s", err.Error()))
 	}
 	return pl
+}
+
+func unmarshalResource(src []byte, r Resource) error {
+	dst := map[string]json.RawMessage{}
+	err := json.Unmarshal(src, dst)
+	if err != nil {
+		return err
+	}
+
+	// Attributes
+
+	// Relationships
+
+	return nil
 }
