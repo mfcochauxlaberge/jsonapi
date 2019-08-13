@@ -27,12 +27,20 @@ const (
 
 // A Type stores all the necessary information about a type as represented in
 // the JSON:API specification.
+//
+// NewFunc stores a function that returns a new Resource of the type defined by
+// the object with all the fields and the ID set to their zero values. Users may
+// call the New method which returns the result of NewFunc if it is non-nil,
+// otherwise it returns a SoftResource based on the type.
+//
+// New makes sure NewFunc is not nil and then calls it, but does not use any
+// kind of locking in the process. Therefore, it is unsafe to set NewFunc and
+// call New concurrently.
 type Type struct {
-	Name  string
-	Attrs map[string]Attr
-	Rels  map[string]Rel
-
-	zero Resource
+	Name    string
+	Attrs   map[string]Attr
+	Rels    map[string]Rel
+	NewFunc func() Resource
 }
 
 // AddAttr adds an attributes to the type.
@@ -118,9 +126,12 @@ func (t *Type) Fields() []string {
 	return fields
 }
 
-// Instance ...
-func (t *Type) Instance() Resource {
-	return t.zero.Copy()
+// New ...
+func (t *Type) New() Resource {
+	if t.NewFunc != nil {
+		return t.NewFunc()
+	}
+	return &SoftResource{Type: t}
 }
 
 // Attr represents a resource attribute.
@@ -335,6 +346,8 @@ func CopyType(typ Type) Type {
 	for name, rel := range typ.Rels {
 		ctyp.Rels[name] = rel
 	}
+
+	ctyp.NewFunc = typ.NewFunc
 
 	return ctyp
 }
