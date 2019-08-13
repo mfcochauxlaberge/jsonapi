@@ -8,6 +8,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var _ Resource = (*SoftResource)(nil)
+
 func TestSoftResource(t *testing.T) {
 	sr := &SoftResource{}
 
