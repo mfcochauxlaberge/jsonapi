@@ -13,6 +13,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var _ Collection = (*SoftCollection)(nil)
+
 func TestSoftCollection(t *testing.T) {
 	sc := &SoftCollection{}
 

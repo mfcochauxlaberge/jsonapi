@@ -7,8 +7,6 @@ import (
 	"time"
 )
 
-var _ Collection = (*SoftCollection)(nil)
-
 // SoftCollection is a collection of SoftResources where the type can be changed
 // for all elements at once by modifying the Type field.
 type SoftCollection struct {

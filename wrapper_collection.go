@@ -2,8 +2,6 @@ package jsonapi
 
 import "encoding/json"
 
-var _ Collection = (*WrapperCollection)(nil)
-
 // WrapCollection returns a *WrapperCollection which implements the Collection
 // interface and holds resources of the type defined in r.
 func WrapCollection(r Resource) *WrapperCollection {
