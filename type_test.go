@@ -57,6 +57,24 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 }
 
+func TestTypeNewFunc(t *testing.T) {
+	assert := assert.New(t)
+
+	// NewFunc is nil
+	typ := &Type{}
+	assert.Equal(&SoftResource{Type: typ}, typ.New())
+
+	// NewFunc is not nil
+	typ = &Type{
+		NewFunc: func() Resource {
+			res := &SoftResource{}
+			res.SetID("abc123")
+			return res
+		},
+	}
+	assert.Equal("abc123", typ.New().GetID())
+}
+
 func TestInverseRel(t *testing.T) {
 	assert := assert.New(t)
 
