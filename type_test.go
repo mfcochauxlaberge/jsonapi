@@ -57,7 +57,7 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 }
 
-func TestNewFunc(t *testing.T) {
+func TestTypeNewFunc(t *testing.T) {
 	assert := assert.New(t)
 
 	// NewFunc is nil
