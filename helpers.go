@@ -97,11 +97,11 @@ func Check(v interface{}) error {
 	return nil
 }
 
-// Reflect takes a struct or a pointer to a struct to analyse and builds a Type
-// object that is returned.
+// BuildType takes a struct or a pointer to a struct to analyse and builds a
+// Type object that is returned.
 //
 // If an error is returned, the Type object will be empty.
-func Reflect(v interface{}) (Type, error) {
+func BuildType(v interface{}) (Type, error) {
 	typ := Type{}
 
 	val := reflect.ValueOf(v)
@@ -173,10 +173,10 @@ func Reflect(v interface{}) (Type, error) {
 	return typ, nil
 }
 
-// MustReflect calls Reflect and returns the result, except that it panics if
-// the error is not nil.
-func MustReflect(v interface{}) Type {
-	typ, err := Reflect(v)
+// MustBuildType calls BuildType and returns the result, except that it panics
+// if the error is not nil.
+func MustBuildType(v interface{}) Type {
+	typ, err := BuildType(v)
 	if err != nil {
 		panic(err)
 	}
