@@ -116,6 +116,41 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	}
 
 	// Data
+	if len(ske.Data) > 0 {
+		if ske.Data[0] == '{' {
+			// Resource
+			rske := resourceSkeleton{}
+			err = json.Unmarshal(ske.Data, &rske)
+			if err != nil {
+				return nil, err
+			}
+			typ := schema.GetType(rske.Type)
+			res := typ.New()
+			// TODO Populate the resource
+			doc.Data = res
+		} else if ske.Data[0] == '[' {
+			// Collection
+			cske := []resourceSkeleton{}
+			err = json.Unmarshal(ske.Data, &cske)
+			if err != nil {
+				return nil, err
+			}
+			if len(cske) == 0 {
+				doc.Data = &SoftCollection{}
+			}
+			for _, rske := range cske {
+				typ := schema.GetType(rske.Type)
+				if typ.Name == "" {
+					// TODO Handle error
+					return nil, nil
+				}
+				// TODO Populate each resource from the collection
+				_ = typ.New()
+			}
+		}
+	}
+
+	// Data
 	if !url.IsCol && url.RelKind == "" {
 		typ := schema.GetType(url.ResType)
 		res := &SoftResource{Type: &typ}
