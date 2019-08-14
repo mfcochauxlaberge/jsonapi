@@ -7,7 +7,11 @@ import (
 	"strings"
 )
 
-// Check checks the given value and returns any error found.
+// Check checks that the given value can be used with this library and returns
+// the first error it finds.
+//
+// It makes sure that the struct has an ID field of type string and that the api
+// key of the field tags are properly formatted.
 //
 // If nil is returned, then the value can be safely used with this library.
 func Check(v interface{}) error {
