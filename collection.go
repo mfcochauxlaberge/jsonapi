@@ -10,10 +10,10 @@ type Collection interface {
 	Len() int
 
 	// At returns the resource at index i.
-	At(i int) Resource
+	At(int) Resource
 
 	// Add adds a resource in the collection.
-	Add(r Resource)
+	Add(Resource)
 
 	// UnmarshalJSON unmarshals the bytes that represent a collection
 	// of resources into the struct that implements the interface.
