@@ -151,15 +151,17 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	}
 
 	// Data
-	if !url.IsCol && url.RelKind == "" {
-		typ := schema.GetType(url.ResType)
-		res := &SoftResource{Type: &typ}
-		err = json.Unmarshal(ske.Data, res)
-		if err != nil {
-			return nil, err
-		}
-		doc.Data = res
-	} else if url.RelKind == "self" {
+	// if !url.IsCol && url.RelKind == "" {
+	// 	typ := schema.GetType(url.ResType)
+	// 	res := &SoftResource{Type: &typ}
+	// 	err = json.Unmarshal(ske.Data, res)
+	// 	if err != nil {
+	// 		return nil, err
+	// 	}
+	// 	doc.Data = res
+	// } else
+	// Identifiers
+	if url.RelKind == "self" {
 		if !url.IsCol {
 			inc := Identifier{}
 			err = json.Unmarshal(ske.Data, &inc)
