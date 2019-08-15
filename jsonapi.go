@@ -126,7 +126,12 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 			}
 			typ := schema.GetType(rske.Type)
 			res := typ.New()
+
 			// TODO Populate the resource
+			for _, attr := range typ.Attrs {
+				res.Set(attr.Name, Convert(attr, rske[attr.Name]))
+			}
+
 			doc.Data = res
 		} else if ske.Data[0] == '[' {
 			// Collection
