@@ -206,7 +206,11 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 	}
 
 	if err != nil {
-		return nil, err
+		return nil, NewErrInvalidFieldValueInBody(
+			a.Name,
+			string(data),
+			GetAttrTypeString(a.Type, a.Nullable),
+		)
 	}
 
 	return v, nil
