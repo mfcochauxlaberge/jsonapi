@@ -75,6 +75,17 @@ func TestTypeNewFunc(t *testing.T) {
 	assert.Equal("abc123", typ.New().GetID())
 }
 
+func TestAttrUnmarshalToType(t *testing.T) {
+	assert := assert.New(t)
+
+	attr := Attr{}
+
+	attr.Type = AttrTypeString
+	val, err := attr.UnmarshalToType([]byte(`"string"`))
+	assert.NoError(err)
+	assert.Equal("string", val)
+}
+
 func TestInverseRel(t *testing.T) {
 	assert := assert.New(t)
 

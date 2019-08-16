@@ -1,8 +1,11 @@
 package jsonapi
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -139,6 +142,74 @@ type Attr struct {
 	Name     string
 	Type     int
 	Nullable bool
+}
+
+// UnmarshalToType ...
+func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
+	if a.Nullable && string(data) == "nil" {
+		return nil, nil
+	}
+
+	var (
+		v   interface{}
+		err error
+	)
+	switch a.Type {
+	case AttrTypeString:
+		var s string
+		err = json.Unmarshal(data, &s)
+		v = s
+	case AttrTypeInt:
+		v, err = strconv.Atoi(string(data))
+		v = v.(int)
+	case AttrTypeInt8:
+		v, err = strconv.Atoi(string(data))
+		v = int8(v.(int))
+	case AttrTypeInt16:
+		v, err = strconv.Atoi(string(data))
+		v = int16(v.(int))
+	case AttrTypeInt32:
+		v, err = strconv.Atoi(string(data))
+		v = int32(v.(int))
+	case AttrTypeInt64:
+		v, err = strconv.Atoi(string(data))
+		v = int64(v.(int))
+	case AttrTypeUint:
+		v, err = strconv.ParseUint(string(data), 10, 64)
+		v = uint(v.(uint64))
+	case AttrTypeUint8:
+		v, err = strconv.ParseUint(string(data), 10, 8)
+		v = uint8(v.(uint64))
+	case AttrTypeUint16:
+		v, err = strconv.ParseUint(string(data), 10, 16)
+		v = uint16(v.(uint64))
+	case AttrTypeUint32:
+		v, err = strconv.ParseUint(string(data), 10, 32)
+		v = uint32(v.(uint64))
+	case AttrTypeUint64:
+		v, err = strconv.ParseUint(string(data), 10, 64)
+		v = v.(uint64)
+	case AttrTypeBool:
+		if string(data) == "true" {
+			v = true
+		} else if string(data) == "false" {
+			v = false
+		} else {
+			err = errors.New("boolean is not true or false")
+		}
+	case AttrTypeTime:
+		var t time.Time
+		err = json.Unmarshal(data, &t)
+		v = t
+	default:
+		err = errors.New("attribute is of invalid or unknown type")
+	}
+
+	if err != nil {
+		return nil, err
+	}
+
+	return v, nil
 }
 
 // Rel represents a resource relationship.
