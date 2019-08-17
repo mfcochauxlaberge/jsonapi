@@ -119,52 +119,20 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	if len(ske.Data) > 0 {
 		if ske.Data[0] == '{' {
 			// Resource
-			rske := resourceSkeleton{}
-			err = json.Unmarshal(ske.Data, &rske)
+			res, err := unmarshalResource(ske.Data, schema)
 			if err != nil {
 				return nil, err
 			}
-			typ := schema.GetType(rske.Type)
-			res := typ.New()
-
-			// TODO Populate the resource
-			for _, attr := range typ.Attrs {
-				res.Set(attr.Name, Convert(attr, rske[attr.Name]))
-			}
-
 			doc.Data = res
 		} else if ske.Data[0] == '[' {
-			// Collection
-			cske := []resourceSkeleton{}
-			err = json.Unmarshal(ske.Data, &cske)
+			col, err := unmarshalCollection(ske.Data, schema)
 			if err != nil {
 				return nil, err
 			}
-			if len(cske) == 0 {
-				doc.Data = &SoftCollection{}
-			}
-			for _, rske := range cske {
-				typ := schema.GetType(rske.Type)
-				if typ.Name == "" {
-					// TODO Handle error
-					return nil, nil
-				}
-				// TODO Populate each resource from the collection
-				_ = typ.New()
-			}
+			doc.Data = col
 		}
 	}
 
-	// Data
-	// if !url.IsCol && url.RelKind == "" {
-	// 	typ := schema.GetType(url.ResType)
-	// 	res := &SoftResource{Type: &typ}
-	// 	err = json.Unmarshal(ske.Data, res)
-	// 	if err != nil {
-	// 		return nil, err
-	// 	}
-	// 	doc.Data = res
-	// } else
 	// Identifiers
 	if url.RelKind == "self" {
 		if !url.IsCol {
@@ -327,4 +295,72 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 		panic(fmt.Errorf("jsonapi: could not marshal collection: %s", err.Error()))
 	}
 	return pl
+}
+
+// unmarshalResource unmarshals a JSON-encoded payload into a Resource.
+func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
+	var rske resourceSkeleton
+	err := json.Unmarshal(data, &rske)
+	if err != nil {
+		return nil, err
+	}
+
+	typ := schema.GetType(rske.Type)
+	res := typ.New()
+
+	res.SetID(rske.ID)
+
+	for a, v := range rske.Attributes {
+		if attr, ok := typ.Attrs[a]; ok {
+			val, err := attr.UnmarshalToType(v)
+			if err != nil {
+				return nil, err
+			}
+			res.Set(attr.Name, val)
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, a)
+		}
+	}
+	for r, v := range rske.Relationships {
+		if rel, ok := typ.Rels[r]; ok {
+			if rel.ToOne {
+				var val string
+				err = json.Unmarshal(v, &val)
+			} else {
+				var val []string
+				err = json.Unmarshal(v, &val)
+			}
+			if err != nil {
+				return nil, NewErrInvalidFieldValueInBody(
+					rel.Name,
+					string(v),
+					typ.Name,
+				)
+			}
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, r)
+		}
+	}
+
+	return res, nil
+}
+
+// unmarshalCollection unmarshals a JSON-encoded payload into a Collection.
+func unmarshalCollection(data []byte, schema *Schema) (Collection, error) {
+	var cske []json.RawMessage
+	err := json.Unmarshal(data, &cske)
+	if err != nil {
+		return nil, err
+	}
+
+	col := &SoftCollection{}
+	for i := range cske {
+		res, err := unmarshalResource(cske[i], schema)
+		if err != nil {
+			return nil, err
+		}
+		col.Add(res)
+	}
+
+	return col, nil
 }
