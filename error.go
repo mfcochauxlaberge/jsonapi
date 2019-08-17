@@ -157,7 +157,7 @@ func NewErrInvalidFieldValueInBody(field string, badValue string, typ string) Er
 	e.Status = http.StatusBadRequest
 	e.Title = "Invalid field value in body"
 	e.Detail = "The field value is invalid for the expected type."
-	e.Meta["field"] = "field"
+	e.Meta["field"] = field
 	e.Meta["bad-value"] = badValue
 	e.Meta["type"] = typ
 
