@@ -9,8 +9,14 @@ type payloadSkeleton struct {
 }
 
 type resourceSkeleton struct {
-	ID            string                     `json:"id"`
-	Type          string                     `json:"type"`
-	Attributes    map[string]json.RawMessage `json:"attributes"`
-	Relationships map[string]json.RawMessage `json:"relationships"`
+	ID            string                          `json:"id"`
+	Type          string                          `json:"type"`
+	Attributes    map[string]json.RawMessage      `json:"attributes"`
+	Relationships map[string]relationshipSkeleton `json:"relationships"`
+}
+
+type relationshipSkeleton struct {
+	Data  json.RawMessage
+	Links map[string]json.RawMessage
+	Meta  map[string]json.RawMessage
 }

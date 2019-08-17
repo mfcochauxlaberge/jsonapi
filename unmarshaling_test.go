@@ -37,7 +37,8 @@ func TestUnmarshalResource(t *testing.T) {
 	assert.NoError(err)
 	pl1, err := Unmarshal(body1, url1, schema)
 	assert.NoError(err)
-	// dst1 := pl1.Data.(Resource)
+	dst1 := pl1.Data.(Resource)
+	assert.Equal("mt1", dst1.GetID())
 
 	// assert.HaveEqualAttributes(t, "same attribues", res1, dst1) TODO Fix test
 	assert.Equal(meta1, pl1.Meta, "same meta object")

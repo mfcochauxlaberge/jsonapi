@@ -323,17 +323,22 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	}
 	for r, v := range rske.Relationships {
 		if rel, ok := typ.Rels[r]; ok {
-			if rel.ToOne {
-				var val string
-				err = json.Unmarshal(v, &val)
-			} else {
-				var val []string
-				err = json.Unmarshal(v, &val)
+			if len(v.Data) > 0 {
+				if rel.ToOne {
+					var val string
+					err = json.Unmarshal(v.Data, &val)
+					res.SetToOne(rel.Name, val)
+				} else {
+					var val []string
+					err = json.Unmarshal(v.Data, &val)
+					res.SetToMany(rel.Name, val)
+				}
 			}
 			if err != nil {
+				fmt.Printf("error: %s\n", err)
 				return nil, NewErrInvalidFieldValueInBody(
 					rel.Name,
-					string(v),
+					string(v.Data),
 					typ.Name,
 				)
 			}
