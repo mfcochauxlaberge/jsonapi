@@ -156,7 +156,6 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	assert.True(ok)
 	assert.IsType(Error{}, err2)
 	assert.Nil(val)
-
 }
 
 func TestInverseRel(t *testing.T) {
