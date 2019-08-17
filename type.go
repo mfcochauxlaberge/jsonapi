@@ -158,49 +158,109 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 	case AttrTypeString:
 		var s string
 		err = json.Unmarshal(data, &s)
-		v = s
+		if a.Nullable {
+			v = &s
+		} else {
+			v = s
+		}
 	case AttrTypeInt:
 		v, err = strconv.Atoi(string(data))
-		v = v.(int)
+		if a.Nullable {
+			n := v.(int)
+			v = &n
+		} else {
+			v = v.(int)
+		}
 	case AttrTypeInt8:
 		v, err = strconv.Atoi(string(data))
-		v = int8(v.(int))
+		if a.Nullable {
+			n := int8(v.(int))
+			v = &n
+		} else {
+			v = int8(v.(int))
+		}
 	case AttrTypeInt16:
 		v, err = strconv.Atoi(string(data))
-		v = int16(v.(int))
+		if a.Nullable {
+			n := int16(v.(int))
+			v = &n
+		} else {
+			v = int16(v.(int))
+		}
 	case AttrTypeInt32:
 		v, err = strconv.Atoi(string(data))
-		v = int32(v.(int))
+		if a.Nullable {
+			n := int32(v.(int))
+			v = &n
+		} else {
+			v = int32(v.(int))
+		}
 	case AttrTypeInt64:
 		v, err = strconv.Atoi(string(data))
-		v = int64(v.(int))
+		if a.Nullable {
+			n := int64(v.(int))
+			v = &n
+		} else {
+			v = int64(v.(int))
+		}
 	case AttrTypeUint:
 		v, err = strconv.ParseUint(string(data), 10, 64)
-		v = uint(v.(uint64))
+		if a.Nullable {
+			n := uint(v.(uint64))
+			v = &n
+		} else {
+			v = uint(v.(uint64))
+		}
 	case AttrTypeUint8:
 		v, err = strconv.ParseUint(string(data), 10, 8)
-		v = uint8(v.(uint64))
+		if a.Nullable {
+			n := uint8(v.(uint64))
+			v = &n
+		} else {
+			v = uint8(v.(uint64))
+		}
 	case AttrTypeUint16:
 		v, err = strconv.ParseUint(string(data), 10, 16)
-		v = uint16(v.(uint64))
+		if a.Nullable {
+			n := uint16(v.(uint64))
+			v = &n
+		} else {
+			v = uint16(v.(uint64))
+		}
 	case AttrTypeUint32:
 		v, err = strconv.ParseUint(string(data), 10, 32)
-		v = uint32(v.(uint64))
+		if a.Nullable {
+			n := uint32(v.(uint64))
+			v = &n
+		} else {
+			v = uint32(v.(uint64))
+		}
 	case AttrTypeUint64:
 		v, err = strconv.ParseUint(string(data), 10, 64)
-		v = v.(uint64)
-	case AttrTypeBool:
-		if string(data) == "true" {
-			v = true
-		} else if string(data) == "false" {
-			v = false
+		if a.Nullable {
+			n := v.(uint64)
+			v = &n
 		} else {
+			v = v.(uint64)
+		}
+	case AttrTypeBool:
+		var b bool
+		if string(data) == "true" {
+			b = true
+		} else if string(data) != "false" {
 			err = errors.New("boolean is not true or false")
+		}
+		v = b
+		if a.Nullable {
+			v = &b
 		}
 	case AttrTypeTime:
 		var t time.Time
 		err = json.Unmarshal(data, &t)
 		v = t
+		if a.Nullable {
+			v = &t
+		}
 	default:
 		err = errors.New("attribute is of invalid or unknown type")
 	}
