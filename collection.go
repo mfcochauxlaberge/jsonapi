@@ -14,8 +14,4 @@ type Collection interface {
 
 	// Add adds a resource in the collection.
 	Add(Resource)
-
-	// UnmarshalJSON unmarshals the bytes that represent a collection
-	// of resources into the struct that implements the interface.
-	UnmarshalJSON([]byte) error
 }
