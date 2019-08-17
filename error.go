@@ -150,6 +150,20 @@ func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	return e
 }
 
+// NewErrInvalidFieldValueInBody (400) returns the corresponding error.
+func NewErrInvalidFieldValueInBody(field string, badValue string, typ string) Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Invalid field value in body"
+	e.Detail = "The field value is invalid for the expected type."
+	e.Meta["field"] = "field"
+	e.Meta["bad-value"] = badValue
+	e.Meta["type"] = typ
+
+	return e
+}
+
 // NewErrDuplicateFieldInFieldsParameter (400) returns the corresponding error.
 func NewErrDuplicateFieldInFieldsParameter(typ string, field string) Error {
 	e := NewError()
