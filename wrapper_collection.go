@@ -1,7 +1,5 @@
 package jsonapi
 
-import "encoding/json"
-
 // WrapCollection returns a *WrapperCollection which implements the Collection
 // interface and holds resources of the type defined in r.
 func WrapCollection(r Resource) *WrapperCollection {
@@ -56,27 +54,4 @@ func (wc *WrapperCollection) Add(r Resource) {
 	if wr, ok := r.(*Wrapper); ok {
 		wc.col = append(wc.col, wr)
 	}
-}
-
-// UnmarshalJSON populates the receiver with the resources represented in the
-// payload.
-func (wc *WrapperCollection) UnmarshalJSON(payload []byte) error {
-	var raws []json.RawMessage
-
-	err := json.Unmarshal(payload, &raws)
-	if err != nil {
-		return err
-	}
-
-	for _, raw := range raws {
-		r := wc.sample.New()
-		err = json.Unmarshal(raw, r)
-		if err != nil {
-			wc.col = nil
-			return err
-		}
-		wc.Add(r)
-	}
-
-	return nil
 }

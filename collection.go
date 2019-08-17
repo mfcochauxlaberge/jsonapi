@@ -14,8 +14,32 @@ type Collection interface {
 
 	// Add adds a resource in the collection.
 	Add(Resource)
+}
 
-	// UnmarshalJSON unmarshals the bytes that represent a collection
-	// of resources into the struct that implements the interface.
-	UnmarshalJSON([]byte) error
+// Resources is a slice of objects that implement the Resource interface. They
+// do not necessarily have the same type.
+type Resources []Resource
+
+// GetType returns a zero Type object because the collection does not represent
+// a particular type.
+func (r *Resources) GetType() Type {
+	return Type{}
+}
+
+// GetType returns the number of elements in r.
+func (r *Resources) Len() int {
+	return len(*r)
+}
+
+// GetType returns the number of elements in r.
+func (r *Resources) At(i int) Resource {
+	if i >= 0 && i < r.Len() {
+		return (*r)[i]
+	}
+	return nil
+}
+
+// GetType adds a Resource object to r.
+func (r *Resources) Add(res Resource) {
+	*r = append(*r, res)
 }

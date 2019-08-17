@@ -1,7 +1,6 @@
 package jsonapi
 
 import (
-	"errors"
 	"sort"
 	"strings"
 	"time"
@@ -155,15 +154,6 @@ func (s *SoftCollection) Remove(id string) {
 			return
 		}
 	}
-}
-
-// UnmarshalJSON populates a SoftCollection from the given payload.
-//
-// Only the attributes and relationships defined in the SoftCollection's Type
-// field will be considered.
-func (s *SoftCollection) UnmarshalJSON(payload []byte) error {
-	// TODO Implement this method
-	return errors.New("jsonapi: SoftCollection.UnmarshalJSON not yet implemented")
 }
 
 // Sort rearranges the order of the collection according the rules.
