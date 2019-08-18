@@ -21,7 +21,7 @@ func TestMarshaling(t *testing.T) {
 	// TODO Describe how this test suite works
 
 	// Setup
-	typ, _ := Reflect(mocktype{})
+	typ, _ := BuildType(mocktype{})
 	// schema := &Schema{Types: []Type{typ}}
 	col := SoftCollection{Type: &typ}
 	col.Add(Wrap(&mocktype{
@@ -208,7 +208,7 @@ func TestMarshaling(t *testing.T) {
 
 func TestUnmarshaling(t *testing.T) {
 	// Setup
-	typ, _ := Reflect(mocktype{})
+	typ, _ := BuildType(mocktype{})
 	schema := &Schema{Types: []Type{typ}}
 	col := SoftCollection{Type: &typ}
 	col.Add(Wrap(&mocktype{
@@ -256,7 +256,7 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		_, err = Unmarshal(payload, url, schema)
+		_, err = Unmarshal(payload, schema)
 		assert.NoError(err)
 		// TODO Make the assertion. At the time of writing, Unmarshaling
 		// does not work.
@@ -280,7 +280,7 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		doc2, err := Unmarshal(payload, url, schema)
+		doc2, err := Unmarshal(payload, schema)
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})
@@ -309,7 +309,7 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		doc2, err := Unmarshal(payload, url, schema)
+		doc2, err := Unmarshal(payload, schema)
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})

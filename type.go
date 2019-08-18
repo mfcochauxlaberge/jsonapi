@@ -1,8 +1,11 @@
 package jsonapi
 
 import (
+	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 )
@@ -27,10 +30,20 @@ const (
 
 // A Type stores all the necessary information about a type as represented in
 // the JSON:API specification.
+//
+// NewFunc stores a function that returns a new Resource of the type defined by
+// the object with all the fields and the ID set to their zero values. Users may
+// call the New method which returns the result of NewFunc if it is non-nil,
+// otherwise it returns a SoftResource based on the type.
+//
+// New makes sure NewFunc is not nil and then calls it, but does not use any
+// kind of locking in the process. Therefore, it is unsafe to set NewFunc and
+// call New concurrently.
 type Type struct {
-	Name  string
-	Attrs map[string]Attr
-	Rels  map[string]Rel
+	Name    string
+	Attrs   map[string]Attr
+	Rels    map[string]Rel
+	NewFunc func() Resource
 }
 
 // AddAttr adds an attributes to the type.
@@ -116,11 +129,151 @@ func (t *Type) Fields() []string {
 	return fields
 }
 
+// New ...
+func (t *Type) New() Resource {
+	if t.NewFunc != nil {
+		return t.NewFunc()
+	}
+	return &SoftResource{Type: t}
+}
+
 // Attr represents a resource attribute.
 type Attr struct {
 	Name     string
 	Type     int
 	Nullable bool
+}
+
+// UnmarshalToType ...
+func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
+	if a.Nullable && string(data) == "nil" {
+		return nil, nil
+	}
+
+	var (
+		v   interface{}
+		err error
+	)
+	switch a.Type {
+	case AttrTypeString:
+		var s string
+		err = json.Unmarshal(data, &s)
+		if a.Nullable {
+			v = &s
+		} else {
+			v = s
+		}
+	case AttrTypeInt:
+		v, err = strconv.Atoi(string(data))
+		if a.Nullable {
+			n := v.(int)
+			v = &n
+		} else {
+			v = v.(int)
+		}
+	case AttrTypeInt8:
+		v, err = strconv.Atoi(string(data))
+		if a.Nullable {
+			n := int8(v.(int))
+			v = &n
+		} else {
+			v = int8(v.(int))
+		}
+	case AttrTypeInt16:
+		v, err = strconv.Atoi(string(data))
+		if a.Nullable {
+			n := int16(v.(int))
+			v = &n
+		} else {
+			v = int16(v.(int))
+		}
+	case AttrTypeInt32:
+		v, err = strconv.Atoi(string(data))
+		if a.Nullable {
+			n := int32(v.(int))
+			v = &n
+		} else {
+			v = int32(v.(int))
+		}
+	case AttrTypeInt64:
+		v, err = strconv.Atoi(string(data))
+		if a.Nullable {
+			n := int64(v.(int))
+			v = &n
+		} else {
+			v = int64(v.(int))
+		}
+	case AttrTypeUint:
+		v, err = strconv.ParseUint(string(data), 10, 64)
+		if a.Nullable {
+			n := uint(v.(uint64))
+			v = &n
+		} else {
+			v = uint(v.(uint64))
+		}
+	case AttrTypeUint8:
+		v, err = strconv.ParseUint(string(data), 10, 8)
+		if a.Nullable {
+			n := uint8(v.(uint64))
+			v = &n
+		} else {
+			v = uint8(v.(uint64))
+		}
+	case AttrTypeUint16:
+		v, err = strconv.ParseUint(string(data), 10, 16)
+		if a.Nullable {
+			n := uint16(v.(uint64))
+			v = &n
+		} else {
+			v = uint16(v.(uint64))
+		}
+	case AttrTypeUint32:
+		v, err = strconv.ParseUint(string(data), 10, 32)
+		if a.Nullable {
+			n := uint32(v.(uint64))
+			v = &n
+		} else {
+			v = uint32(v.(uint64))
+		}
+	case AttrTypeUint64:
+		v, err = strconv.ParseUint(string(data), 10, 64)
+		if a.Nullable {
+			n := v.(uint64)
+			v = &n
+		} else {
+			v = v.(uint64)
+		}
+	case AttrTypeBool:
+		var b bool
+		if string(data) == "true" {
+			b = true
+		} else if string(data) != "false" {
+			err = errors.New("boolean is not true or false")
+		}
+		v = b
+		if a.Nullable {
+			v = &b
+		}
+	case AttrTypeTime:
+		var t time.Time
+		err = json.Unmarshal(data, &t)
+		v = t
+		if a.Nullable {
+			v = &t
+		}
+	default:
+		err = errors.New("attribute is of invalid or unknown type")
+	}
+
+	if err != nil {
+		return nil, NewErrInvalidFieldValueInBody(
+			a.Name,
+			string(data),
+			GetAttrTypeString(a.Type, a.Nullable),
+		)
+	}
+
+	return v, nil
 }
 
 // Rel represents a resource relationship.
@@ -328,6 +481,8 @@ func CopyType(typ Type) Type {
 	for name, rel := range typ.Rels {
 		ctyp.Rels[name] = rel
 	}
+
+	ctyp.NewFunc = typ.NewFunc
 
 	return ctyp
 }

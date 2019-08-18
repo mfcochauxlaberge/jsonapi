@@ -11,6 +11,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+var _ Resource = (*Wrapper)(nil)
+
 func TestWrap(t *testing.T) {
 	assert := assert.New(t)
 

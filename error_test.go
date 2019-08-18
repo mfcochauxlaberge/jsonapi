@@ -121,6 +121,14 @@ func TestErrorConstructors(t *testing.T) {
 			expected: "400 Bad Request: " +
 				"The page size parameter is not positive integer (including 0).",
 		}, {
+			name: "NewErrInvalidFieldValueInBody",
+			err: func() Error {
+				e := NewErrInvalidFieldValueInBody("field", "bad", "int")
+				return e
+			}(),
+			expected: "400 Bad Request: " +
+				"The field value is invalid for the expected type.",
+		}, {
 			name: "NewErrDuplicateFieldInFieldsParameter",
 			err: func() Error {
 				e := NewErrDuplicateFieldInFieldsParameter("type", "field")
@@ -128,6 +136,13 @@ func TestErrorConstructors(t *testing.T) {
 			}(),
 			expected: "400 Bad Request: " +
 				"The fields parameter contains the same field more than once.",
+		}, {
+			name: "NewErrMissingDataMember",
+			err: func() Error {
+				e := NewErrMissingDataMember()
+				return e
+			}(),
+			expected: "400 Bad Request: Missing data top-level member in payload.",
 		}, {
 			name: "NewErrUnknownFieldInBody",
 			err: func() Error {
