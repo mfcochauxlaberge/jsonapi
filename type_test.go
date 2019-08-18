@@ -59,6 +59,23 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 }
 
+func TestTypeEqual(t *testing.T) {
+	assert := assert.New(t)
+
+	// Two empty types
+	typ1 := Type{}
+	typ2 := Type{}
+	assert.True(typ1.Equal(typ2))
+
+	typ1.Name = "type1"
+	typ2.Name = "type1"
+	assert.True(typ1.Equal(typ2))
+
+	typ1.Name = "type1"
+	typ2.Name = "type2"
+	assert.False(typ1.Equal(typ2))
+}
+
 func TestTypeNewFunc(t *testing.T) {
 	assert := assert.New(t)
 
