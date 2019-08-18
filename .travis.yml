@@ -17,7 +17,7 @@ env:
 
 before_script:
   - go mod vendor
-  - 'curl -sfL \
+  - 'curl -sfL --with-ssl \
       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
       | sh -s v1.17.1'
 
