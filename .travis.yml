@@ -1,3 +1,4 @@
+dist: bionic
 language: go
 go:
   - 1.11.x
@@ -17,7 +18,7 @@ env:
 
 before_script:
   - go mod vendor
-  - 'curl -sfL --with-ssl \
+  - 'curl -sfL \
       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
       | sh -s v1.17.1'
 
