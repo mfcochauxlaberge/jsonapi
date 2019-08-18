@@ -71,7 +71,7 @@ func TestUnmarshalIdentifier(t *testing.T) {
 
 	body1, err := Marshal(doc1, url1)
 	assert.NoError(err)
-	pl1, err := Unmarshal(body1, url1, schema)
+	pl1, err := UnmarshalIdentifiers(body1, url1, schema)
 	assert.NoError(err)
 	dst1 := pl1.Data.(Identifier)
 
@@ -106,7 +106,7 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 	body1, err := Marshal(doc1, url1)
 	assert.NoError(err)
 
-	pl1, err := Unmarshal(body1, url1, schema)
+	pl1, err := UnmarshalIdentifiers(body1, url1, schema)
 	assert.NoError(err)
 
 	dst1 := pl1.Data.(Identifiers)

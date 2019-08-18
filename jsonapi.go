@@ -102,9 +102,9 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	return json.Marshal(plMap)
 }
 
-// Unmarshal reads a payload to build and return a document object.
+// Unmarshal reads a payload to build and return a Document object.
 //
-// Both url and schema must not be nil.
+// schema must not be nil.
 func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	doc := &Document{}
 	ske := &payloadSkeleton{}
@@ -131,25 +131,8 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 			}
 			doc.Data = col
 		}
-	}
-
-	// Identifiers
-	if url.RelKind == "self" {
-		if !url.IsCol {
-			inc := Identifier{}
-			err = json.Unmarshal(ske.Data, &inc)
-			if err != nil {
-				return nil, err
-			}
-			doc.Data = inc
-		} else {
-			incs := Identifiers{}
-			err = json.Unmarshal(ske.Data, &incs)
-			if err != nil {
-				return nil, err
-			}
-			doc.Data = incs
-		}
+	} else {
+		return nil, NewErrMissingDataMember()
 	}
 
 	// Included
@@ -173,6 +156,49 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 			}
 			doc.Included = append(doc.Included, res2)
 		}
+	}
+
+	// Meta
+	doc.Meta = ske.Meta
+
+	return doc, nil
+}
+
+// UnmarshalIdentifiers reads a payload where the main data is one or more
+// identifiers to build and return a Document object.
+//
+// The included top-level member is ignored.
+//
+// schema must not be nil.
+func UnmarshalIdentifiers(payload []byte, url *URL, schema *Schema) (*Document, error) {
+	doc := &Document{}
+	ske := &payloadSkeleton{}
+
+	// Unmarshal
+	err := json.Unmarshal(payload, ske)
+	if err != nil {
+		return nil, err
+	}
+
+	// Identifiers
+	if len(ske.Data) > 0 {
+		if ske.Data[0] == '{' {
+			inc := Identifier{}
+			err = json.Unmarshal(ske.Data, &inc)
+			if err != nil {
+				return nil, err
+			}
+			doc.Data = inc
+		} else if ske.Data[0] == '[' {
+			incs := Identifiers{}
+			err = json.Unmarshal(ske.Data, &incs)
+			if err != nil {
+				return nil, err
+			}
+			doc.Data = incs
+		}
+	} else {
+		return nil, NewErrMissingDataMember()
 	}
 
 	// Meta
