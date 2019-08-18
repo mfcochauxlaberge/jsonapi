@@ -72,38 +72,38 @@ func TestUnmarshalIdentifier(t *testing.T) {
 	assert.Equal(meta1, pl1.Meta, "same meta map")
 }
 
-func TestUnmarshalIdentifiers(t *testing.T) {
-	assert := assert.New(t)
+// func TestUnmarshalIdentifiers(t *testing.T) {
+// 	assert := assert.New(t)
 
-	schema := newMockSchema()
+// 	schema := newMockSchema()
 
-	ids1 := Identifiers{
-		Identifier{ID: "abc123", Type: "mocktypes1"},
-		Identifier{ID: "def456", Type: "mocktypes1"},
-		Identifier{ID: "ghi789", Type: "mocktypes1"},
-	}
+// 	ids1 := Identifiers{
+// 		Identifier{ID: "abc123", Type: "mocktypes1"},
+// 		Identifier{ID: "def456", Type: "mocktypes1"},
+// 		Identifier{ID: "ghi789", Type: "mocktypes1"},
+// 	}
 
-	url1, err := NewURLFromRaw(schema, "/mocktypes3/mt1/relationships/rel2")
-	assert.NoError(err)
+// 	url1, err := NewURLFromRaw(schema, "/mocktypes3/mt1/relationships/rel2")
+// 	assert.NoError(err)
 
-	meta1 := map[string]interface{}{
-		"str": "a string\\^ç\"",
-		"num": float64(42),
-		"b":   true,
-	}
+// 	meta1 := map[string]interface{}{
+// 		"str": "a string\\^ç\"",
+// 		"num": float64(42),
+// 		"b":   true,
+// 	}
 
-	doc1 := NewDocument()
-	doc1.Data = ids1
-	doc1.Meta = meta1
+// 	doc1 := NewDocument()
+// 	doc1.Data = ids1
+// 	doc1.Meta = meta1
 
-	body1, err := Marshal(doc1, url1)
-	assert.NoError(err)
+// 	body1, err := Marshal(doc1, url1)
+// 	assert.NoError(err)
 
-	pl1, err := Unmarshal(body1, url1, schema)
-	assert.NoError(err)
+// 	pl1, err := Unmarshal(body1, url1, schema)
+// 	assert.NoError(err)
 
-	dst1 := pl1.Data.(Identifiers)
+// 	dst1 := pl1.Data.(Identifiers)
 
-	assert.Equal(ids1, dst1, "same identifiers")
-	assert.Equal(meta1, pl1.Meta, "same meta map")
-}
+// 	assert.Equal(ids1, dst1, "same identifiers")
+// 	assert.Equal(meta1, pl1.Meta, "same meta map")
+// }
