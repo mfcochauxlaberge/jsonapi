@@ -17,7 +17,6 @@ env:
 
 before_script:
   - go mod vendor
-  - cd golangci-lint
   - 'curl -sfL \
       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh \
       | sh -s v1.17.1'
