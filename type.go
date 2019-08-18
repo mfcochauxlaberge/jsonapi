@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"reflect"
 	"sort"
 	"strconv"
 	"strings"
@@ -135,6 +136,11 @@ func (t *Type) New() Resource {
 		return t.NewFunc()
 	}
 	return &SoftResource{Type: t}
+}
+
+// Equal ...
+func (t Type) Equal(typ Type) bool {
+	return reflect.DeepEqual(t, typ)
 }
 
 // Attr represents a resource attribute.
