@@ -22,7 +22,7 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 
 	doc := &Document{}
 	if len(body) > 0 {
-		doc, err = Unmarshal(body, url, schema)
+		doc, err = Unmarshal(body, schema)
 		if err != nil {
 			return nil, err
 		}
