@@ -105,7 +105,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 // Unmarshal reads a payload to build and return a Document object.
 //
 // schema must not be nil.
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
+func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 	doc := &Document{}
 	ske := &payloadSkeleton{}
 
@@ -170,7 +170,7 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 // The included top-level member is ignored.
 //
 // schema must not be nil.
-func UnmarshalIdentifiers(payload []byte, url *URL, schema *Schema) (*Document, error) {
+func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
 	doc := &Document{}
 	ske := &payloadSkeleton{}
 
