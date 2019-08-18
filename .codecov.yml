@@ -1,2 +1,4 @@
 comment: off
-threshold: 1%
+coverage:
+  status:
+    threshold: 1%
