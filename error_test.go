@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"net/http"
+	"strconv"
 	"testing"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
@@ -44,7 +45,7 @@ func TestError(t *testing.T) {
 			name: "http status code",
 			err: func() Error {
 				e := NewError()
-				e.Status = http.StatusInternalServerError
+				e.Status = strconv.Itoa(http.StatusInternalServerError)
 				return e
 			}(),
 			expectedString: "500 Internal Server Error",
@@ -52,7 +53,7 @@ func TestError(t *testing.T) {
 			name: "http status code and title",
 			err: func() Error {
 				e := NewError()
-				e.Status = http.StatusInternalServerError
+				e.Status = strconv.Itoa(http.StatusInternalServerError)
 				e.Title = "Internal server error"
 				return e
 			}(),
@@ -61,7 +62,7 @@ func TestError(t *testing.T) {
 			name: "http status code and detail",
 			err: func() Error {
 				e := NewError()
-				e.Status = http.StatusInternalServerError
+				e.Status = strconv.Itoa(http.StatusInternalServerError)
 				e.Detail = "An internal server error occurred."
 				return e
 			}(),
