@@ -1,4 +1,6 @@
 comment: off
 coverage:
   status:
-    threshold: 1%
+    project:
+      default:
+        threshold: 1%
