@@ -9,8 +9,15 @@ import (
 
 // Range returns a subset of the collection arranged according to the given
 // parameters.
-func Range(c Collection, ids []string, filter *Filter, sort []string, pageSize uint, pageNumber uint) Collection {
-	rangeCol := sortedResources{}
+//
+// From collection c, only IDs from ids are considered. filter is applied if not
+// nil. The resources are sorted in the order defined by sort, which may contain
+// the names of some or all of the attributes. The result is split in pages of a
+// certain size (defined by size). The page at index num is returned.
+//
+// A non-nil Collection is always returned, but it can be empty.
+func Range(c Collection, ids []string, filter *Filter, sort []string, size uint, num uint) Collection {
+	col := sortedResources{}
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -18,22 +25,22 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, pageSize u
 			for _, id := range ids {
 				res := c.At(i)
 				if res.GetID() == id {
-					rangeCol.col = append(rangeCol.col, res)
+					col.col = append(col.col, res)
 				}
 			}
 		}
 	} else {
 		for i := 0; i < c.Len(); i++ {
-			rangeCol.col = append(rangeCol.col, c.At(i))
+			col.col = append(col.col, c.At(i))
 		}
 	}
 
 	// Filter
 	if filter != nil {
 		i := 0
-		for i < rangeCol.Len() {
-			if !filter.IsAllowed(rangeCol.col[i]) {
-				rangeCol.col = append(rangeCol.col[:i], rangeCol.col[i+1:]...)
+		for i < col.Len() {
+			if !filter.IsAllowed(col.col[i]) {
+				col.col = append(col.col[:i], col.col[i+1:]...)
 			} else {
 				i++
 			}
@@ -41,24 +48,18 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, pageSize u
 	}
 
 	// Sort
-	rangeCol.Sort(sort)
+	col.Sort(sort)
 
 	// Pagination
 	var page Resources
-	skip := int(pageNumber * pageSize)
-	if skip >= len(rangeCol.col) {
-		rangeCol = sortedResources{}
+	skip := int(num * size)
+	if skip >= len(col.col) {
+		col = sortedResources{}
 	} else {
-		for i := skip; i < len(rangeCol.col) && i < skip+int(pageSize); i++ {
-			page = append(page, rangeCol.col[i])
+		for i := skip; i < len(col.col) && i < skip+int(size); i++ {
+			page = append(page, col.col[i])
 		}
 	}
-
-	// Make the collection
-	// col := []Resource{}
-	// for _, rec := range rangeCol.col {
-	// 	col = append(col, rec)
-	// }
 
 	return &page
 }
