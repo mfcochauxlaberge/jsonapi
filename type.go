@@ -130,7 +130,10 @@ func (t *Type) Fields() []string {
 	return fields
 }
 
-// New ...
+// New calls the NewFunc field and returns the result Resource object.
+//
+// If NewFunc is nil, it returns a *SoftResource with its Type field set to the
+// value of the receiver.
 func (t *Type) New() Resource {
 	if t.NewFunc != nil {
 		return t.NewFunc()
@@ -138,7 +141,8 @@ func (t *Type) New() Resource {
 	return &SoftResource{Type: t}
 }
 
-// Equal ...
+// Equal returns true if both types have the same name, attributes,
+// relationships, and both have a nil NewFunc.
 func (t Type) Equal(typ Type) bool {
 	return reflect.DeepEqual(t, typ)
 }
