@@ -10,13 +10,10 @@ import (
 //
 // Both doc and url must not be nil.
 func Marshal(doc *Document, url *URL) ([]byte, error) {
-	// Data
-	var (
-		data   json.RawMessage
-		errors json.RawMessage
-		err    error
-	)
+	var err error
 
+	// Data
+	var data json.RawMessage
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
 		data = marshalResource(
@@ -39,14 +36,19 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
 		data, err = json.Marshal(ids)
-	} else if e, ok := doc.Data.(Error); ok {
-		// Error
-		errors, err = json.Marshal([]Error{e})
-	} else if es, ok := doc.Data.([]Error); ok {
-		// Errors
-		errors, err = json.Marshal(es)
 	} else {
-		data = []byte("null")
+		if url.IsCol {
+			data = []byte("[]")
+		} else {
+			data = []byte("null")
+		}
+	}
+
+	// Data
+	var errors json.RawMessage
+	if len(doc.Errors) > 0 {
+		// Errors
+		errors, err = json.Marshal(doc.Errors)
 	}
 
 	if err != nil {
@@ -106,7 +108,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 //
 // schema must not be nil.
 func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
-	doc := &Document{}
+	doc := NewDocument()
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -131,6 +133,8 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 			}
 			doc.Data = col
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
 	} else {
 		return nil, NewErrMissingDataMember()
 	}
@@ -171,7 +175,7 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 //
 // schema must not be nil.
 func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
-	doc := &Document{}
+	doc := NewDocument()
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -197,6 +201,8 @@ func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
 			}
 			doc.Data = incs
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
 	} else {
 		return nil, NewErrMissingDataMember()
 	}

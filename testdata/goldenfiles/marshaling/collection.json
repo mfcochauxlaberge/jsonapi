@@ -1,5 +1,33 @@
 {
-	"data": null,
+	"data": [
+		{
+			"attributes": {},
+			"id": "id1",
+			"links": {
+				"self": "https://example.org/mocktype/id1"
+			},
+			"relationships": {},
+			"type": "mocktype"
+		},
+		{
+			"attributes": {},
+			"id": "id2",
+			"links": {
+				"self": "https://example.org/mocktype/id2"
+			},
+			"relationships": {},
+			"type": "mocktype"
+		},
+		{
+			"attributes": {},
+			"id": "id3",
+			"links": {
+				"self": "https://example.org/mocktype/id3"
+			},
+			"relationships": {},
+			"type": "mocktype"
+		}
+	],
 	"jsonapi": {
 		"version": "1.0"
 	},

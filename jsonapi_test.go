@@ -22,8 +22,11 @@ func TestMarshaling(t *testing.T) {
 
 	// Setup
 	typ, _ := BuildType(mocktype{})
+	typ.NewFunc = func() Resource {
+		return Wrap(&mocktype{})
+	}
 	// schema := &Schema{Types: []Type{typ}}
-	col := SoftCollection{Type: &typ}
+	col := &Resources{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
 		Str:      "str",
@@ -68,19 +71,27 @@ func TestMarshaling(t *testing.T) {
 		}, {
 			name: "empty collection",
 			doc: &Document{
-				Data: &SoftCollection{
-					Type: &Type{Name: "mocktype"},
-				},
+				Data: &Resources{},
 			},
 		}, {
 			name: "resource",
 			doc: &Document{
 				Data: col.At(0),
+				RelData: map[string][]string{
+					"mocktype": []string{
+						"to-1", "to-x-from-1",
+					},
+				},
 			},
 		}, {
 			name: "collection",
 			doc: &Document{
-				Data:    col.Range(nil, nil, nil, []string{}, 10, 0),
+				Data: Range(col, nil, nil, []string{}, 10, 0),
+				RelData: map[string][]string{
+					"mocktype": []string{
+						"to-1", "to-x-from-1",
+					},
+				},
 				PrePath: "https://example.org",
 			},
 			fields: []string{
@@ -102,6 +113,11 @@ func TestMarshaling(t *testing.T) {
 				Data: Wrap(&mocktype{
 					ID: "id1",
 				}),
+				RelData: map[string][]string{
+					"mocktype": []string{
+						"to-1", "to-x-from-1",
+					},
+				},
 				Included: []Resource{
 					Wrap(&mocktype{
 						ID: "id2",
@@ -141,16 +157,16 @@ func TestMarshaling(t *testing.T) {
 		}, {
 			name: "error",
 			doc: &Document{
-				Data: func() Error {
+				Errors: func() []Error {
 					err := NewErrBadRequest("Bad Request", "This request is bad.")
 					err.ID = "00000000-0000-0000-0000-000000000000"
-					return err
+					return []Error{err}
 				}(),
 			},
 		}, {
 			name: "errors",
 			doc: &Document{
-				Data: func() []Error {
+				Errors: func() []Error {
 					err1 := NewErrBadRequest("Bad Request", "This request is bad.")
 					err1.ID = "00000000-0000-0000-0000-000000000000"
 					err2 := NewErrBadRequest("Bad Request", "This request is really bad.")
@@ -174,12 +190,8 @@ func TestMarshaling(t *testing.T) {
 					Fields: map[string][]string{"mocktype": test.fields},
 				},
 			}
-
-			// Document
-			test.doc.RelData = map[string][]string{
-				"mocktype": []string{
-					"to-1", "to-x-from-1",
-				},
+			if _, ok := test.doc.Data.(Collection); ok {
+				url.IsCol = true
 			}
 
 			// Marshaling
