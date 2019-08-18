@@ -7,16 +7,10 @@ branches:
   only:
     - master
 
-cache:
-  directories:
-    - vendor/
-    - bin/
-
 env:
   - GO111MODULE=on
 
 before_script:
-  - go mod vendor
   - 'curl -sfL
       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
       | sh -s v1.17.1'
