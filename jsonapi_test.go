@@ -280,7 +280,7 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		doc2, err := Unmarshal(payload, schema)
+		doc2, err := UnmarshalIdentifiers(payload, schema)
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})
@@ -309,7 +309,7 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		doc2, err := Unmarshal(payload, schema)
+		doc2, err := UnmarshalIdentifiers(payload, schema)
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})
