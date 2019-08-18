@@ -1,0 +1,9 @@
+{
+	"data": null,
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "https://example.org/fake/path?fields%5Bmocktype%5D=bool%2Cint%2Cstr%2Ctime%2Cto-1%2Cto-x-from-1%2Cuint64"
+	}
+}

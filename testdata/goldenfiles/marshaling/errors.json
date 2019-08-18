@@ -1,0 +1,22 @@
+{
+	"errors": [
+		{
+			"detail": "This request is bad.",
+			"id": "00000000-0000-0000-0000-000000000000",
+			"status": "400",
+			"title": "Bad Request"
+		},
+		{
+			"detail": "This request is really bad.",
+			"id": "00000000-0000-0000-0000-000000000000",
+			"status": "400",
+			"title": "Bad Request"
+		}
+	],
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "/fake/path?fields%5Bmocktype%"
+	}
+}
