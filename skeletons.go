@@ -16,7 +16,12 @@ type resourceSkeleton struct {
 }
 
 type relationshipSkeleton struct {
-	Data  json.RawMessage
-	Links map[string]json.RawMessage
-	Meta  map[string]json.RawMessage
+	Data  json.RawMessage            `json:"data"`
+	Links map[string]json.RawMessage `json:"links"`
+	Meta  map[string]json.RawMessage `json:"meta"`
+}
+
+type identifierSkeleton struct {
+	ID   string `json:"id"`
+	Type string `json:"type"`
 }

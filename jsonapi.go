@@ -325,17 +325,20 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 		if rel, ok := typ.Rels[r]; ok {
 			if len(v.Data) > 0 {
 				if rel.ToOne {
-					var val string
-					err = json.Unmarshal(v.Data, &val)
-					res.SetToOne(rel.Name, val)
+					var iden identifierSkeleton
+					err = json.Unmarshal(v.Data, &iden)
+					res.SetToOne(rel.Name, iden.ID)
 				} else {
-					var val []string
-					err = json.Unmarshal(v.Data, &val)
-					res.SetToMany(rel.Name, val)
+					var idens []identifierSkeleton
+					err = json.Unmarshal(v.Data, &idens)
+					ids := make([]string, len(idens))
+					for i := range idens {
+						ids[i] = idens[i].ID
+					}
+					res.SetToMany(rel.Name, ids)
 				}
 			}
 			if err != nil {
-				fmt.Printf("error: %s\n", err)
 				return nil, NewErrInvalidFieldValueInBody(
 					rel.Name,
 					string(v.Data),

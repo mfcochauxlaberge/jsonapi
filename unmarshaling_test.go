@@ -32,13 +32,19 @@ func TestUnmarshalResource(t *testing.T) {
 	doc1 := NewDocument()
 	doc1.Data = res1
 	doc1.Meta = meta1
+	doc1.RelData["mocktypes3"] = []string{"rel1", "rel2"}
 
 	body1, err := Marshal(doc1, url1)
 	assert.NoError(err)
+
 	pl1, err := Unmarshal(body1, url1, schema)
 	assert.NoError(err)
+
 	dst1 := pl1.Data.(Resource)
 	assert.Equal("mt1", dst1.GetID())
+	assert.Equal("mt2", dst1.GetToOne("rel1"))
+	assert.Contains(dst1.GetToMany("rel2"), "mt3")
+	assert.Contains(dst1.GetToMany("rel2"), "mt4")
 
 	// assert.HaveEqualAttributes(t, "same attribues", res1, dst1) TODO Fix test
 	assert.Equal(meta1, pl1.Meta, "same meta object")
