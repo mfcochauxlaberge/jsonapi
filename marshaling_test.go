@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 	"testing"
 	"time"
 
@@ -287,7 +288,7 @@ func TestMarshalErrors(t *testing.T) {
 				e1 := NewError()
 
 				e1.Code = "somecode"
-				e1.Status = http.StatusInternalServerError
+				e1.Status = strconv.Itoa(http.StatusInternalServerError)
 				e1.Title = "Error"
 				e1.Detail = "An error occurred."
 				e1.Links["about"] = "https://example.org/errors/about"
