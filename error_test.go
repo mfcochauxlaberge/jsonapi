@@ -137,6 +137,13 @@ func TestErrorConstructors(t *testing.T) {
 			expected: "400 Bad Request: " +
 				"The fields parameter contains the same field more than once.",
 		}, {
+			name: "NewErrMissingDataMember",
+			err: func() Error {
+				e := NewErrMissingDataMember()
+				return e
+			}(),
+			expected: "400 Bad Request: Missing data top-level member in payload.",
+		}, {
 			name: "NewErrUnknownFieldInBody",
 			err: func() Error {
 				e := NewErrUnknownFieldInBody("type", "field")

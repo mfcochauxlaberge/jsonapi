@@ -177,6 +177,17 @@ func NewErrDuplicateFieldInFieldsParameter(typ string, field string) Error {
 	return e
 }
 
+// NewErrMissingDataMember (400) returns the corresponding error.
+func NewErrMissingDataMember() Error {
+	e := NewError()
+
+	e.Status = http.StatusBadRequest
+	e.Title = "Missing data member"
+	e.Detail = "Missing data top-level member in payload."
+
+	return e
+}
+
 // NewErrUnknownFieldInBody (400) returns the corresponding error.
 func NewErrUnknownFieldInBody(typ, field string) Error {
 	e := NewError()
