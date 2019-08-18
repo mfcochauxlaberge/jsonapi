@@ -7,10 +7,15 @@ branches:
   only:
     - master
 
+cache:
+  directories:
+    - vendor/
+
 env:
   - GO111MODULE=on
 
 before_script:
+  - go mod vendor
   - go install github.com/golangci/golangci-lint/cmd/golangci-lint
 
 script:
