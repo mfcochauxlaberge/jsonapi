@@ -27,7 +27,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 		data = marshalCollection(
 			col,
 			doc.PrePath,
-			url.Params.Fields[col.GetType().Name],
+			url.Params.Fields,
 			doc.RelData,
 		)
 	} else if id, ok := doc.Data.(Identifier); ok {
@@ -36,12 +36,8 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
 		data, err = json.Marshal(ids)
-	} else {
-		if url.IsCol {
-			data = []byte("[]")
-		} else {
-			data = []byte("null")
-		}
+	} else if len(doc.Errors) == 0 {
+		data = []byte("null")
 	}
 
 	// Data
@@ -132,6 +128,9 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 				return nil, err
 			}
 			doc.Data = col
+		} else {
+			// TODO Not exactly the right error
+			return nil, NewErrMissingDataMember()
 		}
 	} else if len(ske.Errors) > 0 {
 		doc.Errors = ske.Errors
@@ -153,7 +152,7 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 
 		for i, inc2 := range incs {
 			typ := schema.GetType(inc2.Type)
-			res2 := &SoftResource{Type: &typ}
+			res2 := typ.New()
 			err = json.Unmarshal(ske.Included[i], res2)
 			if err != nil {
 				return nil, err
@@ -309,7 +308,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 }
 
 // marshalCollection marshals a Collection into a JSON-encoded payload.
-func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) []byte {
+func marshalCollection(c Collection, prepath string, fields map[string][]string, relData map[string][]string) []byte {
 	var raws []*json.RawMessage
 
 	if c.Len() == 0 {
@@ -318,7 +317,9 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 
 	for i := 0; i < c.Len(); i++ {
 		r := c.At(i)
-		raw := json.RawMessage(marshalResource(r, prepath, fields, relData))
+		raw := json.RawMessage(
+			marshalResource(r, prepath, fields[r.GetType().Name], relData),
+		)
 		raws = append(raws, &raw)
 	}
 

@@ -25,7 +25,6 @@ func TestMarshaling(t *testing.T) {
 	typ.NewFunc = func() Resource {
 		return Wrap(&mocktype{})
 	}
-	// schema := &Schema{Types: []Type{typ}}
 	col := &Resources{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
@@ -64,12 +63,12 @@ func TestMarshaling(t *testing.T) {
 		fields []string
 	}{
 		{
-			name: "empty data",
+			name: "empty_data",
 			doc: &Document{
 				PrePath: "https://example.org",
 			},
 		}, {
-			name: "empty collection",
+			name: "empty_collection",
 			doc: &Document{
 				Data: &Resources{},
 			},
@@ -108,7 +107,7 @@ func TestMarshaling(t *testing.T) {
 				},
 			},
 		}, {
-			name: "collection with inclusions",
+			name: "collection_with_inclusions",
 			doc: &Document{
 				Data: Wrap(&mocktype{
 					ID: "id1",
@@ -221,8 +220,11 @@ func TestMarshaling(t *testing.T) {
 func TestUnmarshaling(t *testing.T) {
 	// Setup
 	typ, _ := BuildType(mocktype{})
+	typ.NewFunc = func() Resource {
+		return Wrap(&mocktype{})
+	}
 	schema := &Schema{Types: []Type{typ}}
-	col := SoftCollection{Type: &typ}
+	col := Resources{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
 		Str:      "str",
@@ -259,6 +261,9 @@ func TestUnmarshaling(t *testing.T) {
 
 		doc := &Document{
 			Data: col.At(0),
+			RelData: map[string][]string{
+				"mocktype": typ.Fields(),
+			},
 			Included: []Resource{
 				col.At(1),
 				col.At(2),
@@ -268,8 +273,9 @@ func TestUnmarshaling(t *testing.T) {
 		payload, err := Marshal(doc, url)
 		assert.NoError(err)
 
-		_, err = Unmarshal(payload, schema)
+		doc2, err := Unmarshal(payload, schema)
 		assert.NoError(err)
+		assert.True(Equal(doc.Data.(Resource), doc2.Data.(Resource)))
 		// TODO Make the assertion. At the time of writing, Unmarshaling
 		// does not work.
 	})
@@ -327,28 +333,28 @@ func TestUnmarshaling(t *testing.T) {
 	})
 }
 
-// func TestUnmarshalingInvalidPayloads(t *testing.T) {
-// 	assert := assert.New(t)
+func TestUnmarshalingInvalidPayloads(t *testing.T) {
+	assert := assert.New(t)
 
-// 	tests := []struct {
-// 		payload  string
-// 		expected string
-// 	}{
-// 		{
-// 			payload:  "invalid payload",
-// 			expected: "invalid character 'i' looking for beginning of value",
-// 		}, {
-// 			payload:  `{"data":"invaliddata"}`,
-// 			expected: "invalid character 'i' looking for beginning of value",
-// 		},
-// 	}
+	tests := []struct {
+		payload  string
+		expected string
+	}{
+		{
+			payload:  "invalid payload",
+			expected: "invalid character 'i' looking for beginning of value",
+		}, {
+			payload:  `{"data":"invaliddata"}`,
+			expected: "400 Bad Request: Missing data top-level member in payload.",
+		},
+	}
 
-// 	for _, test := range tests {
-// 		doc, err := Unmarshal([]byte(test.payload), nil, nil)
-// 		assert.EqualError(err, test.expected)
-// 		assert.Nil(doc)
-// 	}
-// }
+	for _, test := range tests {
+		doc, err := Unmarshal([]byte(test.payload), nil)
+		assert.EqualError(err, test.expected)
+		assert.Nil(doc)
+	}
+}
 
 func getTime() time.Time {
 	now, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
