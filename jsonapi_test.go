@@ -61,14 +61,15 @@ func TestMarshaling(t *testing.T) {
 		name   string
 		doc    *Document
 		fields []string
+		err    string
 	}{
 		{
-			name: "empty_data",
+			name: "empty data",
 			doc: &Document{
 				PrePath: "https://example.org",
 			},
 		}, {
-			name: "empty_collection",
+			name: "empty collection",
 			doc: &Document{
 				Data: &Resources{},
 			},
@@ -107,7 +108,7 @@ func TestMarshaling(t *testing.T) {
 				},
 			},
 		}, {
-			name: "collection_with_inclusions",
+			name: "collection with inclusions",
 			doc: &Document{
 				Data: Wrap(&mocktype{
 					ID: "id1",
@@ -213,6 +214,85 @@ func TestMarshaling(t *testing.T) {
 				err = ioutil.WriteFile(path, dst.Bytes(), 0644)
 				assert.NoError(err)
 			}
+		})
+	}
+}
+
+func TestMarshalingInvalidDocuments(t *testing.T) {
+	// TODO Describe how this test suite works
+
+	// Setup
+	typ, _ := BuildType(mocktype{})
+	typ.NewFunc = func() Resource {
+		return Wrap(&mocktype{})
+	}
+	col := &Resources{}
+	col.Add(Wrap(&mocktype{
+		ID:       "id1",
+		Str:      "str",
+		Int:      10,
+		Int8:     18,
+		Int16:    116,
+		Int32:    132,
+		Int64:    164,
+		Uint:     100,
+		Uint8:    108,
+		Uint16:   1016,
+		Uint32:   1032,
+		Uint64:   1064,
+		Bool:     true,
+		Time:     getTime(),
+		To1:      "id2",
+		To1From1: "id3",
+		To1FromX: "id3",
+		ToX:      []string{"id2", "id3"},
+		ToXFrom1: []string{"id4"},
+		ToXFromX: []string{"id3", "id4"},
+	}))
+	col.Add(Wrap(&mocktype{
+		ID:   "id2",
+		Str:  "漢語",
+		Int:  -42,
+		Time: time.Time{},
+	}))
+	col.Add(Wrap(&mocktype{ID: "id3"}))
+
+	// Test struct
+	tests := []struct {
+		name   string
+		doc    *Document
+		fields []string
+		err    string
+	}{
+		{
+			name: "invalid data",
+			doc: &Document{
+				Data: "just a string",
+			},
+			err: "data contains an unknown type",
+		},
+	}
+
+	for i := range tests {
+		i := i
+		test := tests[i]
+		t.Run(test.name, func(t *testing.T) {
+			assert := assert.New(t)
+
+			// URL
+			url := &URL{
+				Fragments: []string{"fake", "path"},
+				Params: &Params{
+					Fields: map[string][]string{"mocktype": test.fields},
+				},
+			}
+			if _, ok := test.doc.Data.(Collection); ok {
+				url.IsCol = true
+			}
+
+			// Marshaling
+			_, err := Marshal(test.doc, url)
+			assert.EqualError(err, test.err)
 		})
 	}
 }

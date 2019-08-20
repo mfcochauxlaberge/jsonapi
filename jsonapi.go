@@ -2,6 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"sort"
 )
@@ -36,6 +37,8 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
 		data, err = json.Marshal(ids)
+	} else if doc.Data != nil {
+		err = errors.New("data contains an unknown type")
 	} else if len(doc.Errors) == 0 {
 		data = []byte("null")
 	}
