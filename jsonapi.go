@@ -131,6 +131,8 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 				return nil, err
 			}
 			doc.Data = col
+		} else if string(ske.Data) == "null" {
+			doc.Data = nil
 		} else {
 			// TODO Not exactly the right error
 			return nil, NewErrMissingDataMember()
@@ -153,14 +155,12 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 			incs = append(incs, inc)
 		}
 
-		for i, inc2 := range incs {
-			typ := schema.GetType(inc2.Type)
-			res2 := typ.New()
-			err = json.Unmarshal(ske.Included[i], res2)
+		for i := range incs {
+			res, err := unmarshalResource(ske.Included[i], schema)
 			if err != nil {
 				return nil, err
 			}
-			doc.Included = append(doc.Included, res2)
+			doc.Included = append(doc.Included, res)
 		}
 	}
 
@@ -338,7 +338,10 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	var rske resourceSkeleton
 	err := json.Unmarshal(data, &rske)
 	if err != nil {
-		return nil, err
+		return nil, NewErrBadRequest(
+			"Invalid JSON",
+			"The provided JSON body could not be read.",
+		)
 	}
 
 	typ := schema.GetType(rske.Type)

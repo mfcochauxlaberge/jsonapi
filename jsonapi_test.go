@@ -61,7 +61,6 @@ func TestMarshaling(t *testing.T) {
 		name   string
 		doc    *Document
 		fields []string
-		err    string
 	}{
 		{
 			name: "empty data",
@@ -334,10 +333,7 @@ func TestUnmarshaling(t *testing.T) {
 	t.Run("resource with inclusions", func(t *testing.T) {
 		assert := assert.New(t)
 
-		url, _ := NewURLFromRaw(
-			schema,
-			"/mocktype/id1",
-		)
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1")
 
 		doc := &Document{
 			Data: col.At(0),
@@ -356,17 +352,43 @@ func TestUnmarshaling(t *testing.T) {
 		doc2, err := Unmarshal(payload, schema)
 		assert.NoError(err)
 		assert.True(Equal(doc.Data.(Resource), doc2.Data.(Resource)))
-		// TODO Make the assertion. At the time of writing, Unmarshaling
-		// does not work.
+		// TODO Make all the necessary assertions.
+	})
+
+	t.Run("collection with inclusions", func(t *testing.T) {
+		assert := assert.New(t)
+
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1")
+
+		doc := &Document{
+			Data: &col,
+			RelData: map[string][]string{
+				"mocktype": typ.Fields(),
+			},
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		doc2, err := Unmarshal(payload, schema)
+		assert.NoError(err)
+		assert.IsType(&col, doc.Data)
+		assert.IsType(&col, doc2.Data)
+		if col, ok := doc.Data.(Collection); ok {
+			if col2, ok := doc2.Data.(Collection); ok {
+				assert.Equal(col.Len(), col2.Len())
+				for j := 0; j < col.Len(); j++ {
+					assert.True(Equal(col.At(j), col2.At(j)))
+				}
+			}
+		}
+		// TODO Make all the necessary assertions.
 	})
 
 	t.Run("identifier", func(t *testing.T) {
 		assert := assert.New(t)
 
-		url, _ := NewURLFromRaw(
-			schema,
-			"/mocktype/id1/relationships/to-1",
-		)
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-1")
 
 		doc := &Document{
 			Data: Identifier{
@@ -386,10 +408,7 @@ func TestUnmarshaling(t *testing.T) {
 	t.Run("identifers", func(t *testing.T) {
 		assert := assert.New(t)
 
-		url, _ := NewURLFromRaw(
-			schema,
-			"/mocktype/id1/relationships/to-x",
-		)
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-x")
 
 		doc := &Document{
 			Data: Identifiers{
@@ -411,29 +430,113 @@ func TestUnmarshaling(t *testing.T) {
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})
-}
 
-func TestUnmarshalingInvalidPayloads(t *testing.T) {
-	assert := assert.New(t)
+	t.Run("errors (Unmarshal)", func(t *testing.T) {
+		assert := assert.New(t)
 
-	tests := []struct {
-		payload  string
-		expected string
-	}{
-		{
-			payload:  "invalid payload",
-			expected: "invalid character 'i' looking for beginning of value",
-		}, {
-			payload:  `{"data":"invaliddata"}`,
-			expected: "400 Bad Request: Missing data top-level member in payload.",
-		},
-	}
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-x")
 
-	for _, test := range tests {
-		doc, err := Unmarshal([]byte(test.payload), nil)
-		assert.EqualError(err, test.expected)
-		assert.Nil(doc)
-	}
+		doc := &Document{
+			Errors: func() []Error {
+				err := NewErrBadRequest("Bad Request", "This request is bad.")
+				err.ID = "00000000-0000-0000-0000-000000000000"
+				return []Error{err}
+			}(),
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		doc2, err := Unmarshal(payload, schema)
+		assert.NoError(err)
+		assert.Equal(doc.Data, doc2.Data)
+	})
+
+	t.Run("errors (UnmarshalIdentifers)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-x")
+
+		doc := &Document{
+			Errors: func() []Error {
+				err := NewErrBadRequest("Bad Request", "This request is bad.")
+				err.ID = "00000000-0000-0000-0000-000000000000"
+				return []Error{err}
+			}(),
+		}
+
+		payload, err := Marshal(doc, url)
+		assert.NoError(err)
+
+		doc2, err := UnmarshalIdentifiers(payload, schema)
+		assert.NoError(err)
+		assert.Equal(doc.Data, doc2.Data)
+	})
+
+	t.Run("invalid payloads (Unmarshal)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		tests := []struct {
+			payload  string
+			expected string
+		}{
+			{
+				payload:  `invalid payload`,
+				expected: "invalid character 'i' looking for beginning of value",
+			}, {
+				payload:  `{"data":"invaliddata"}`,
+				expected: "400 Bad Request: Missing data top-level member in payload.",
+			}, {
+				payload:  `{"data":{"id":true}}`,
+				expected: "400 Bad Request: The provided JSON body could not be read.",
+			}, {
+				payload:  `{"data":[{"id":true}]}`,
+				expected: "400 Bad Request: The provided JSON body could not be read.",
+			}, {
+				payload:  `{"jsonapi":{"key":"data/errors missing"}}`,
+				expected: "400 Bad Request: Missing data top-level member in payload.",
+			}, {
+				payload: `{"data":null,"included":[{"id":true}]}`,
+				expected: "json: " +
+					"cannot unmarshal bool into Go struct field Identifier.id of type string",
+			}, {
+				payload:  `{"data":null,"included":[{"attributes":true}]}`,
+				expected: "400 Bad Request: The provided JSON body could not be read.",
+			},
+		}
+
+		for _, test := range tests {
+			doc, err := Unmarshal([]byte(test.payload), nil)
+			assert.EqualError(err, test.expected)
+			assert.Nil(doc)
+		}
+	})
+
+	t.Run("invalid payloads (UnmarshalIdentifiers)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		tests := []struct {
+			payload  string
+			expected string
+		}{
+			{
+				payload:  `{invalid json}`,
+				expected: "invalid character 'i' looking for beginning of object key string",
+			}, {
+				payload:  `{"jsonapi":{}}`,
+				expected: "400 Bad Request: Missing data top-level member in payload.",
+			}, {
+				payload:  `{"jsonapi":{"key":"data/errors missing"}}`,
+				expected: "400 Bad Request: Missing data top-level member in payload.",
+			},
+		}
+
+		for _, test := range tests {
+			doc, err := UnmarshalIdentifiers([]byte(test.payload), nil)
+			assert.EqualError(err, test.expected)
+			assert.Nil(doc)
+		}
+	})
 }
 
 func getTime() time.Time {
