@@ -115,8 +115,12 @@ func Equal(r1, r2 Resource) bool {
 				return false
 			}
 		} else {
-			if !reflect.DeepEqual(r1.GetToMany(rel1.Name), r2.GetToMany(rel2.Name)) {
-				return false
+			v1 := r1.GetToMany(rel1.Name)
+			v2 := r2.GetToMany(rel2.Name)
+			if len(v1) != 0 || len(v2) != 0 {
+				if !reflect.DeepEqual(v1, v2) {
+					return false
+				}
 			}
 		}
 	}
