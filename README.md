@@ -33,7 +33,7 @@ The simplest way to start using jsonapi is to use the Marshal and Unmarshal func
 
 ```
 func Marshal(doc *Document, url *URL) ([]byte, error)
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error)
+func Unmarshal(payload []byte, schema *Schema) (*Document, error)
 ```
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.
