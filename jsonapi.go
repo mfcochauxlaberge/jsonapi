@@ -3,7 +3,6 @@ package jsonapi
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	"sort"
 )
 
@@ -303,10 +302,8 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath), // TODO
 	}
 
-	pl, err := json.Marshal(mapPl)
-	if err != nil {
-		panic(fmt.Errorf("jsonapi: could not marshal resource: %s", err.Error()))
-	}
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(mapPl)
 	return pl
 }
 
@@ -326,10 +323,8 @@ func marshalCollection(c Collection, prepath string, fields map[string][]string,
 		raws = append(raws, &raw)
 	}
 
-	pl, err := json.Marshal(raws)
-	if err != nil {
-		panic(fmt.Errorf("jsonapi: could not marshal collection: %s", err.Error()))
-	}
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(raws)
 	return pl
 }
 

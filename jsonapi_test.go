@@ -502,11 +502,17 @@ func TestUnmarshaling(t *testing.T) {
 			}, {
 				payload:  `{"data":null,"included":[{"attributes":true}]}`,
 				expected: "400 Bad Request: The provided JSON body could not be read.",
+			}, {
+				payload:  `{"data":{"id":"abc","type":"mocktype","attributes":{"nonexistent":1}}}`,
+				expected: "400 Bad Request: nonexistent is not a known field.",
+			}, {
+				payload:  `{"data":{"id":"abc","type":"mocktype","attributes":{"int8":"abc"}}}`,
+				expected: "400 Bad Request: The field value is invalid for the expected type.",
 			},
 		}
 
 		for _, test := range tests {
-			doc, err := Unmarshal([]byte(test.payload), nil)
+			doc, err := Unmarshal([]byte(test.payload), schema)
 			assert.EqualError(err, test.expected)
 			assert.Nil(doc)
 		}
@@ -528,6 +534,14 @@ func TestUnmarshaling(t *testing.T) {
 			}, {
 				payload:  `{"jsonapi":{"key":"data/errors missing"}}`,
 				expected: "400 Bad Request: Missing data top-level member in payload.",
+			}, {
+				payload: `{"data":{"id":["invalid"]}}`,
+				expected: "json: " +
+					"cannot unmarshal array into Go struct field Identifier.id of type string",
+			}, {
+				payload: `{"data":[{"id":["invalid"]}]}`,
+				expected: "json: " +
+					"cannot unmarshal array into Go struct field Identifier.id of type string",
 			},
 		}
 
