@@ -1,0 +1,9 @@
+{
+	"data": [],
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "/fake/path?fields%5Bmocktype%"
+	}
+}

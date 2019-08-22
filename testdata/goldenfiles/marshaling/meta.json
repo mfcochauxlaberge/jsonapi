@@ -1,0 +1,14 @@
+{
+	"data": null,
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "/fake/path?fields%5Bmocktype%"
+	},
+	"meta": {
+		"f1": "漢語",
+		"f2": 42,
+		"f3": true
+	}
+}

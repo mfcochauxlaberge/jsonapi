@@ -2,7 +2,7 @@ package jsonapi
 
 import (
 	"encoding/json"
-	"fmt"
+	"errors"
 	"sort"
 )
 
@@ -10,13 +10,10 @@ import (
 //
 // Both doc and url must not be nil.
 func Marshal(doc *Document, url *URL) ([]byte, error) {
-	// Data
-	var (
-		data   json.RawMessage
-		errors json.RawMessage
-		err    error
-	)
+	var err error
 
+	// Data
+	var data json.RawMessage
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
 		data = marshalResource(
@@ -30,7 +27,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 		data = marshalCollection(
 			col,
 			doc.PrePath,
-			url.Params.Fields[col.GetType().Name],
+			url.Params.Fields,
 			doc.RelData,
 		)
 	} else if id, ok := doc.Data.(Identifier); ok {
@@ -39,14 +36,17 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
 		data, err = json.Marshal(ids)
-	} else if e, ok := doc.Data.(Error); ok {
-		// Error
-		errors, err = json.Marshal([]Error{e})
-	} else if es, ok := doc.Data.([]Error); ok {
-		// Errors
-		errors, err = json.Marshal(es)
-	} else {
+	} else if doc.Data != nil {
+		err = errors.New("data contains an unknown type")
+	} else if len(doc.Errors) == 0 {
 		data = []byte("null")
+	}
+
+	// Data
+	var errors json.RawMessage
+	if len(doc.Errors) > 0 {
+		// Errors
+		errors, err = json.Marshal(doc.Errors)
 	}
 
 	if err != nil {
@@ -106,7 +106,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 //
 // schema must not be nil.
 func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
-	doc := &Document{}
+	doc := NewDocument()
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -130,7 +130,14 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 				return nil, err
 			}
 			doc.Data = col
+		} else if string(ske.Data) == "null" {
+			doc.Data = nil
+		} else {
+			// TODO Not exactly the right error
+			return nil, NewErrMissingDataMember()
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
 	} else {
 		return nil, NewErrMissingDataMember()
 	}
@@ -147,14 +154,12 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 			incs = append(incs, inc)
 		}
 
-		for i, inc2 := range incs {
-			typ := schema.GetType(inc2.Type)
-			res2 := &SoftResource{Type: &typ}
-			err = json.Unmarshal(ske.Included[i], res2)
+		for i := range incs {
+			res, err := unmarshalResource(ske.Included[i], schema)
 			if err != nil {
 				return nil, err
 			}
-			doc.Included = append(doc.Included, res2)
+			doc.Included = append(doc.Included, res)
 		}
 	}
 
@@ -171,7 +176,7 @@ func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
 //
 // schema must not be nil.
 func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
-	doc := &Document{}
+	doc := NewDocument()
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -197,6 +202,8 @@ func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
 			}
 			doc.Data = incs
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
 	} else {
 		return nil, NewErrMissingDataMember()
 	}
@@ -295,15 +302,13 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath), // TODO
 	}
 
-	pl, err := json.Marshal(mapPl)
-	if err != nil {
-		panic(fmt.Errorf("jsonapi: could not marshal resource: %s", err.Error()))
-	}
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(mapPl)
 	return pl
 }
 
 // marshalCollection marshals a Collection into a JSON-encoded payload.
-func marshalCollection(c Collection, prepath string, fields []string, relData map[string][]string) []byte {
+func marshalCollection(c Collection, prepath string, fields map[string][]string, relData map[string][]string) []byte {
 	var raws []*json.RawMessage
 
 	if c.Len() == 0 {
@@ -312,14 +317,14 @@ func marshalCollection(c Collection, prepath string, fields []string, relData ma
 
 	for i := 0; i < c.Len(); i++ {
 		r := c.At(i)
-		raw := json.RawMessage(marshalResource(r, prepath, fields, relData))
+		raw := json.RawMessage(
+			marshalResource(r, prepath, fields[r.GetType().Name], relData),
+		)
 		raws = append(raws, &raw)
 	}
 
-	pl, err := json.Marshal(raws)
-	if err != nil {
-		panic(fmt.Errorf("jsonapi: could not marshal collection: %s", err.Error()))
-	}
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(raws)
 	return pl
 }
 
@@ -328,7 +333,10 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	var rske resourceSkeleton
 	err := json.Unmarshal(data, &rske)
 	if err != nil {
-		return nil, err
+		return nil, NewErrBadRequest(
+			"Invalid JSON",
+			"The provided JSON body could not be read.",
+		)
 	}
 
 	typ := schema.GetType(rske.Type)
