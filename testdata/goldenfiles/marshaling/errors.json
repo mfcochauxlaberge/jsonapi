@@ -1,19 +1,22 @@
 {
 	"errors": [
 		{
-			"detail": "name cannot be empty.",
+			"detail": "This request is bad.",
 			"id": "00000000-0000-0000-0000-000000000000",
 			"status": "400",
-			"title": "Invalid attribute"
+			"title": "Bad Request"
 		},
 		{
-			"detail": "age cannot be negative.",
+			"detail": "This request is really bad.",
 			"id": "00000000-0000-0000-0000-000000000000",
 			"status": "400",
-			"title": "Invalid attribute"
+			"title": "Bad Request"
 		}
 	],
 	"jsonapi": {
 		"version": "1.0"
+	},
+	"links": {
+		"self": "/fake/path?fields%5Bmocktype%"
 	}
 }

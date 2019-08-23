@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strconv"
 
 	"github.com/google/uuid"
 )
@@ -12,7 +13,7 @@ import (
 type Error struct {
 	ID     string                 `json:"id"`
 	Code   string                 `json:"code"`
-	Status int                    `json:"status"`
+	Status string                 `json:"status"`
 	Title  string                 `json:"title"`
 	Detail string                 `json:"detail"`
 	Links  map[string]string      `json:"links"`
@@ -25,7 +26,7 @@ func NewError() Error {
 	err := Error{
 		ID:     uuid.New().String(),
 		Code:   "",
-		Status: 0,
+		Status: "",
 		Title:  "",
 		Detail: "",
 		Links:  map[string]string{},
@@ -41,15 +42,16 @@ func NewError() Error {
 // If the error does note contain a valid error status code, it returns an empty
 // string.
 func (e Error) Error() string {
-	fullName := http.StatusText(e.Status)
+	statusCode, _ := strconv.Atoi(e.Status)
+	fullName := http.StatusText(statusCode)
 
-	if fullName != "" && e.Status >= 400 && e.Status <= 599 {
+	if fullName != "" && e.Status != "" {
 		if e.Detail != "" {
-			return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Detail)
+			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Detail)
 		} else if e.Title != "" {
-			return fmt.Sprintf("%d %s: %s", e.Status, fullName, e.Title)
+			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Title)
 		} else {
-			return fmt.Sprintf("%d %s", e.Status, fullName)
+			return fmt.Sprintf("%s %s", e.Status, fullName)
 		}
 	}
 
@@ -73,8 +75,8 @@ func (e Error) MarshalJSON() ([]byte, error) {
 		m["code"] = e.Code
 	}
 
-	if e.Status >= 400 && e.Status <= 599 {
-		m["status"] = fmt.Sprintf("%d", e.Status)
+	if e.Status != "" {
+		m["status"] = e.Status
 	}
 
 	if e.Title != "" {
@@ -104,7 +106,7 @@ func (e Error) MarshalJSON() ([]byte, error) {
 func NewErrBadRequest(title, detail string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = title
 	e.Detail = detail
 
@@ -115,7 +117,7 @@ func NewErrBadRequest(title, detail string) Error {
 func NewErrMalformedFilterParameter(badFitler string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Malformed filter parameter"
 	e.Detail = "The filter parameter is not a string or a valid JSON object."
 	e.Source["parameter"] = "filter"
@@ -128,7 +130,7 @@ func NewErrMalformedFilterParameter(badFitler string) Error {
 func NewErrInvalidPageNumberParameter(badPageNumber string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Invalid page number parameter"
 	e.Detail = "The page number parameter is not positive integer (including 0)."
 	e.Source["parameter"] = "page[number]"
@@ -141,7 +143,7 @@ func NewErrInvalidPageNumberParameter(badPageNumber string) Error {
 func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Invalid page size parameter"
 	e.Detail = "The page size parameter is not positive integer (including 0)."
 	e.Source["parameter"] = "page[size]"
@@ -150,11 +152,25 @@ func NewErrInvalidPageSizeParameter(badPageSize string) Error {
 	return e
 }
 
+// NewErrInvalidFieldValueInBody (400) returns the corresponding error.
+func NewErrInvalidFieldValueInBody(field string, badValue string, typ string) Error {
+	e := NewError()
+
+	e.Status = strconv.Itoa(http.StatusBadRequest)
+	e.Title = "Invalid field value in body"
+	e.Detail = "The field value is invalid for the expected type."
+	e.Meta["field"] = field
+	e.Meta["bad-value"] = badValue
+	e.Meta["type"] = typ
+
+	return e
+}
+
 // NewErrDuplicateFieldInFieldsParameter (400) returns the corresponding error.
 func NewErrDuplicateFieldInFieldsParameter(typ string, field string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Duplicate field"
 	e.Detail = "The fields parameter contains the same field more than once."
 	e.Source["parameter"] = "fields[" + typ + "]"
@@ -163,11 +179,22 @@ func NewErrDuplicateFieldInFieldsParameter(typ string, field string) Error {
 	return e
 }
 
+// NewErrMissingDataMember (400) returns the corresponding error.
+func NewErrMissingDataMember() Error {
+	e := NewError()
+
+	e.Status = strconv.Itoa(http.StatusBadRequest)
+	e.Title = "Missing data member"
+	e.Detail = "Missing data top-level member in payload."
+
+	return e
+}
+
 // NewErrUnknownFieldInBody (400) returns the corresponding error.
 func NewErrUnknownFieldInBody(typ, field string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in body"
 	e.Detail = fmt.Sprintf("%s is not a known field.", field)
 	e.Source["pointer"] = "" // TODO
@@ -181,7 +208,7 @@ func NewErrUnknownFieldInBody(typ, field string) Error {
 func NewErrUnknownFieldInURL(field string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in URL"
 	e.Detail = fmt.Sprintf("%s is not a known field.", field)
 	e.Meta["unknown-field"] = field
@@ -197,7 +224,7 @@ func NewErrUnknownFieldInURL(field string) Error {
 func NewErrUnknownParameter(param string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown parameter"
 	e.Detail = fmt.Sprintf("%s is not a known parameter.", param)
 	e.Source["parameter"] = param
@@ -210,7 +237,7 @@ func NewErrUnknownParameter(param string) Error {
 func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown relationship"
 	e.Detail = fmt.Sprintf("%s is not a relationship of %s.", rel, typ)
 	e.Meta["unknown-relationship"] = rel
@@ -224,7 +251,7 @@ func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
 func NewErrUnknownTypeInURL(typ string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown type in URL"
 	e.Detail = fmt.Sprintf("%s is not a known type.", typ)
 	e.Meta["unknown-type"] = typ
@@ -236,7 +263,7 @@ func NewErrUnknownTypeInURL(typ string) Error {
 func NewErrUnknownFieldInFilterParameter(field string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in filter parameter"
 	e.Detail = fmt.Sprintf("%s is not a known field.", field)
 	e.Source["parameter"] = "filter"
@@ -249,7 +276,7 @@ func NewErrUnknownFieldInFilterParameter(field string) Error {
 func NewErrUnknownOperatorInFilterParameter(op string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown operator in filter parameter"
 	e.Detail = fmt.Sprintf("%s is not a known operator.", op)
 	e.Source["parameter"] = "filter"
@@ -262,7 +289,7 @@ func NewErrUnknownOperatorInFilterParameter(op string) Error {
 func NewErrInvalidValueInFilterParameter(val, kind string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown value in filter parameter"
 	e.Detail = fmt.Sprintf("%s is not a known value.", val)
 	e.Source["parameter"] = "filter"
@@ -275,7 +302,7 @@ func NewErrInvalidValueInFilterParameter(val, kind string) Error {
 func NewErrUnknownCollationInFilterParameter(col string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown collation in filter parameter"
 	e.Detail = fmt.Sprintf("%s is not a known collation.", col)
 	e.Source["parameter"] = "filter"
@@ -288,7 +315,7 @@ func NewErrUnknownCollationInFilterParameter(col string) Error {
 func NewErrUnknownFilterParameterLabel(label string) Error {
 	e := NewError()
 
-	e.Status = http.StatusBadRequest
+	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown label in filter parameter"
 	e.Detail = fmt.Sprintf("%s is not a known filter query label.", label)
 	e.Source["parameter"] = "filter"
@@ -301,7 +328,7 @@ func NewErrUnknownFilterParameterLabel(label string) Error {
 func NewErrUnauthorized() Error {
 	e := NewError()
 
-	e.Status = http.StatusUnauthorized
+	e.Status = strconv.Itoa(http.StatusUnauthorized)
 	e.Title = "Unauthorized"
 	e.Detail = "Authentification is required to perform this request."
 
@@ -312,7 +339,7 @@ func NewErrUnauthorized() Error {
 func NewErrForbidden() Error {
 	e := NewError()
 
-	e.Status = http.StatusForbidden
+	e.Status = strconv.Itoa(http.StatusForbidden)
 	e.Title = "Forbidden"
 	e.Detail = "Permission is required to perform this request."
 
@@ -323,7 +350,7 @@ func NewErrForbidden() Error {
 func NewErrNotFound() Error {
 	e := NewError()
 
-	e.Status = http.StatusNotFound
+	e.Status = strconv.Itoa(http.StatusNotFound)
 	e.Title = "Not found"
 	e.Detail = "The URI does not exist."
 
@@ -334,7 +361,7 @@ func NewErrNotFound() Error {
 func NewErrPayloadTooLarge() Error {
 	e := NewError()
 
-	e.Status = http.StatusRequestEntityTooLarge
+	e.Status = strconv.Itoa(http.StatusRequestEntityTooLarge)
 	e.Title = "Payload too large"
 	e.Detail = "That's what she said."
 
@@ -345,7 +372,7 @@ func NewErrPayloadTooLarge() Error {
 func NewErrRequestURITooLong() Error {
 	e := NewError()
 
-	e.Status = http.StatusRequestURITooLong
+	e.Status = strconv.Itoa(http.StatusRequestURITooLong)
 	e.Title = "URI too long"
 
 	return e
@@ -355,7 +382,7 @@ func NewErrRequestURITooLong() Error {
 func NewErrUnsupportedMediaType() Error {
 	e := NewError()
 
-	e.Status = http.StatusUnsupportedMediaType
+	e.Status = strconv.Itoa(http.StatusUnsupportedMediaType)
 	e.Title = "Unsupported media type"
 
 	return e
@@ -365,7 +392,7 @@ func NewErrUnsupportedMediaType() Error {
 func NewErrTooManyRequests() Error {
 	e := NewError()
 
-	e.Status = http.StatusTooManyRequests
+	e.Status = strconv.Itoa(http.StatusTooManyRequests)
 	e.Title = "Too many requests"
 
 	return e
@@ -375,7 +402,7 @@ func NewErrTooManyRequests() Error {
 func NewErrRequestHeaderFieldsTooLarge() Error {
 	e := NewError()
 
-	e.Status = http.StatusRequestHeaderFieldsTooLarge
+	e.Status = strconv.Itoa(http.StatusRequestHeaderFieldsTooLarge)
 	e.Title = "Header fields too large"
 
 	return e
@@ -385,7 +412,7 @@ func NewErrRequestHeaderFieldsTooLarge() Error {
 func NewErrInternalServerError() Error {
 	e := NewError()
 
-	e.Status = http.StatusInternalServerError
+	e.Status = strconv.Itoa(http.StatusInternalServerError)
 	e.Title = "Internal server error"
 
 	return e
@@ -395,7 +422,7 @@ func NewErrInternalServerError() Error {
 func NewErrServiceUnavailable() Error {
 	e := NewError()
 
-	e.Status = http.StatusServiceUnavailable
+	e.Status = strconv.Itoa(http.StatusServiceUnavailable)
 	e.Title = "Service unavailable"
 
 	return e
@@ -405,7 +432,7 @@ func NewErrServiceUnavailable() Error {
 func NewErrNotImplemented() Error {
 	e := NewError()
 
-	e.Status = http.StatusNotImplemented
+	e.Status = strconv.Itoa(http.StatusNotImplemented)
 	e.Title = "Not Implemented"
 
 	return e

@@ -1,6 +1,8 @@
 package jsonapi_test
 
 import (
+	"encoding/json"
+	"fmt"
 	"testing"
 	"time"
 
@@ -55,6 +57,122 @@ func TestType(t *testing.T) {
 	// Add invalid relationship (name already used)
 	err = typ.AddRel(Rel{Name: "rel1", Type: "type1"})
 	assert.Error(err)
+}
+
+func TestTypeEqual(t *testing.T) {
+	assert := assert.New(t)
+
+	// Two empty types
+	typ1 := Type{}
+	typ2 := Type{}
+	assert.True(typ1.Equal(typ2))
+
+	typ1.Name = "type1"
+	typ2.Name = "type1"
+	assert.True(typ1.Equal(typ2))
+
+	typ1.Name = "type1"
+	typ2.Name = "type2"
+	assert.False(typ1.Equal(typ2))
+}
+
+func TestTypeNewFunc(t *testing.T) {
+	assert := assert.New(t)
+
+	// NewFunc is nil
+	typ := &Type{}
+	assert.Equal(&SoftResource{Type: typ}, typ.New())
+
+	// NewFunc is not nil
+	typ = &Type{
+		NewFunc: func() Resource {
+			res := &SoftResource{}
+			res.SetID("abc123")
+			return res
+		},
+	}
+	assert.Equal("abc123", typ.New().GetID())
+}
+
+func TestAttrUnmarshalToType(t *testing.T) {
+	assert := assert.New(t)
+
+	var (
+		vstr    = "str"
+		vint    = int(1)
+		vint8   = int8(8)
+		vint16  = int16(16)
+		vint32  = int32(32)
+		vint64  = int64(64)
+		vuint   = uint(1)
+		vuint8  = uint8(8)
+		vuint16 = uint16(16)
+		vuint32 = uint32(32)
+		vuint64 = uint64(64)
+		vbool   = true
+	)
+
+	tests := []struct {
+		val interface{}
+	}{
+		{val: "str"},        // string
+		{val: 1},            // int
+		{val: int8(8)},      // int8
+		{val: int16(16)},    // int16
+		{val: int32(32)},    // int32
+		{val: int64(64)},    // int64
+		{val: uint(1)},      // uint
+		{val: uint8(8)},     // uint8
+		{val: uint16(16)},   // uint16
+		{val: uint32(32)},   // uint32
+		{val: uint64(64)},   // uint64
+		{val: true},         // bool
+		{val: time.Time{}},  // time
+		{val: &vstr},        // *string
+		{val: &vint},        // *int
+		{val: &vint8},       // *int8
+		{val: &vint16},      // *int16
+		{val: &vint32},      // *int32
+		{val: &vint64},      // *int64
+		{val: &vuint},       // *uint
+		{val: &vuint8},      // *uint8
+		{val: &vuint16},     // *uint16
+		{val: &vuint32},     // *uint32
+		{val: &vuint64},     // *uint64
+		{val: &vbool},       // *bool
+		{val: &time.Time{}}, // *time
+	}
+
+	attr := Attr{}
+
+	for _, test := range tests {
+		attr.Type, attr.Nullable = GetAttrType(fmt.Sprintf("%T", test.val))
+		p, _ := json.Marshal(test.val)
+		val, err := attr.UnmarshalToType(p)
+		assert.NoError(err)
+		assert.Equal(test.val, val)
+		assert.Equal(fmt.Sprintf("%T", test.val), fmt.Sprintf("%T", val))
+	}
+
+	// Nil value
+	attr.Nullable = true
+	val, err := attr.UnmarshalToType([]byte("nil"))
+	assert.NoError(err)
+	assert.Nil(val)
+
+	// False value
+	attr.Type = AttrTypeBool
+	val, err = attr.UnmarshalToType([]byte("nottrue"))
+	assert.Error(err)
+	assert.Nil(val)
+
+	// Invalid attribute type
+	attr.Type = AttrTypeInvalid
+	val, err = attr.UnmarshalToType([]byte("invalid"))
+	err2, ok := err.(Error)
+	assert.True(ok)
+	assert.IsType(Error{}, err2)
+	assert.Nil(val)
 }
 
 func TestInverseRel(t *testing.T) {

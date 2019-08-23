@@ -6,8 +6,6 @@ import (
 	"github.com/mitchellh/copystructure"
 )
 
-var _ Resource = (*SoftResource)(nil)
-
 // SoftResource represents a resource whose type is defined by an internal field
 // of type *Type.
 //
