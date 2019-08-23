@@ -6,51 +6,29 @@ import (
 	"github.com/mitchellh/copystructure"
 )
 
-var _ Resource = (*SoftResource)(nil)
-
-// NewSoftResource returns a new SoftResource with the given type.
-//
-// It is also populated with values from vals.
-func NewSoftResource(typ Type, vals map[string]interface{}) *SoftResource {
-	res := &SoftResource{}
-	res.typ = &typ
-
-	for _, attr := range typ.Attrs {
-		if val, ok := vals[attr.Name]; ok {
-			res.Set(attr.Name, val)
-		}
-	}
-	for _, rel := range typ.Rels {
-		if val, ok := vals[rel.Name]; ok {
-			res.Set(rel.Name, val)
-		}
-	}
-
-	return res
-}
-
-// SoftResource represents a resource whose type is defined by an internal
-// field of type *Type.
+// SoftResource represents a resource whose type is defined by an internal field
+// of type *Type.
 //
 // Changing the type automatically changes the resource's attributes and
 // relationships. When a field is added, its value is the zero value of the
 // field's type.
 type SoftResource struct {
+	Type *Type
+
 	id   string
-	typ  *Type
 	data map[string]interface{}
 }
 
 // Attrs returns the resource's attributes.
 func (sr *SoftResource) Attrs() map[string]Attr {
 	sr.check()
-	return sr.typ.Attrs
+	return sr.Type.Attrs
 }
 
 // Rels returns the resource's relationships.
 func (sr *SoftResource) Rels() map[string]Rel {
 	sr.check()
-	return sr.typ.Rels
+	return sr.Type.Rels
 }
 
 // AddAttr adds an attribute.
@@ -61,7 +39,7 @@ func (sr *SoftResource) AddAttr(attr Attr) {
 			return
 		}
 	}
-	sr.typ.Attrs[attr.Name] = attr
+	sr.Type.Attrs[attr.Name] = attr
 }
 
 // AddRel adds a relationship.
@@ -72,34 +50,34 @@ func (sr *SoftResource) AddRel(rel Rel) {
 			return
 		}
 	}
-	sr.typ.Rels[rel.Name] = rel
+	sr.Type.Rels[rel.Name] = rel
 }
 
 // RemoveField removes a field.
 func (sr *SoftResource) RemoveField(field string) {
 	sr.check()
-	delete(sr.typ.Attrs, field)
-	delete(sr.typ.Rels, field)
+	delete(sr.Type.Attrs, field)
+	delete(sr.Type.Rels, field)
 }
 
 // Attr returns the attribute named after key.
 func (sr *SoftResource) Attr(key string) Attr {
 	sr.check()
-	return sr.typ.Attrs[key]
+	return sr.Type.Attrs[key]
 }
 
 // Rel returns the relationship named after key.
 func (sr *SoftResource) Rel(key string) Rel {
 	sr.check()
-	return sr.typ.Rels[key]
+	return sr.Type.Rels[key]
 }
 
-// New returns a new resource (of type SoftResource) with the same type
-// but without the values.
+// New returns a new resource (of type SoftResource) with the same type but
+// without the values.
 func (sr *SoftResource) New() Resource {
 	sr.check()
 	return &SoftResource{
-		typ: copystructure.Must(copystructure.Copy(sr.typ)).(*Type),
+		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
 	}
 }
 
@@ -112,19 +90,19 @@ func (sr *SoftResource) GetID() string {
 // GetType returns the resource's type.
 func (sr *SoftResource) GetType() Type {
 	sr.check()
-	return *sr.typ
+	return *sr.Type
 }
 
 // Get returns the value associated to the field named after key.
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	if attr, ok := sr.typ.Attrs[key]; ok {
+	if attr, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
-		return GetZeroValue(attr.Type, attr.Null)
+		return GetZeroValue(attr.Type, attr.Nullable)
 	}
-	if rel, ok := sr.typ.Rels[key]; ok {
+	if rel, ok := sr.Type.Rels[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
@@ -145,17 +123,17 @@ func (sr *SoftResource) SetID(id string) {
 // SetType ...
 func (sr *SoftResource) SetType(typ *Type) {
 	sr.check()
-	sr.typ = typ
+	sr.Type = typ
 }
 
 // Set sets the value associated to the field named key to v.
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
-	if attr, ok := sr.typ.Attrs[key]; ok {
-		if GetAttrTypeString(attr.Type, attr.Null) == fmt.Sprintf("%T", v) {
+	if attr, ok := sr.Type.Attrs[key]; ok {
+		if GetAttrTypeString(attr.Type, attr.Nullable) == fmt.Sprintf("%T", v) {
 			sr.data[key] = v
-		} else if v == nil && attr.Null {
-			sr.data[key] = GetZeroValue(attr.Type, attr.Null)
+		} else if v == nil && attr.Nullable {
+			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
 		}
 	}
 }
@@ -163,7 +141,7 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 // GetToOne returns the value associated to the relationship named after key.
 func (sr *SoftResource) GetToOne(key string) string {
 	sr.check()
-	if _, ok := sr.typ.Rels[key]; ok {
+	if _, ok := sr.Type.Rels[key]; ok {
 		return sr.data[key].(string)
 	}
 	return ""
@@ -172,7 +150,7 @@ func (sr *SoftResource) GetToOne(key string) string {
 // GetToMany returns the value associated to the relationship named after key.
 func (sr *SoftResource) GetToMany(key string) []string {
 	sr.check()
-	if _, ok := sr.typ.Rels[key]; ok {
+	if _, ok := sr.Type.Rels[key]; ok {
 		return sr.data[key].([]string)
 	}
 	return []string{}
@@ -181,7 +159,7 @@ func (sr *SoftResource) GetToMany(key string) []string {
 // SetToOne sets the relationship named after key to rel.
 func (sr *SoftResource) SetToOne(key string, v string) {
 	sr.check()
-	if rel, ok := sr.typ.Rels[key]; ok && rel.ToOne {
+	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
 		sr.data[key] = v
 	}
 }
@@ -189,7 +167,7 @@ func (sr *SoftResource) SetToOne(key string, v string) {
 // SetToMany sets the relationship named after key to rel.
 func (sr *SoftResource) SetToMany(key string, v []string) {
 	sr.check()
-	if rel, ok := sr.typ.Rels[key]; ok && !rel.ToOne {
+	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
 		sr.data[key] = v
 	}
 }
@@ -204,8 +182,8 @@ func (sr *SoftResource) Validate() []error {
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 	return &SoftResource{
+		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
 		id:   sr.id,
-		typ:  copystructure.Must(copystructure.Copy(sr.typ)).(*Type),
 		data: copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
 	}
 }
@@ -218,40 +196,40 @@ func (sr *SoftResource) UnmarshalJSON(payload []byte) error {
 }
 
 func (sr *SoftResource) fields() []string {
-	fields := make([]string, 0, len(sr.typ.Attrs)+len(sr.typ.Rels))
-	for i := range sr.typ.Attrs {
-		fields = append(fields, sr.typ.Attrs[i].Name)
+	fields := make([]string, 0, len(sr.Type.Attrs)+len(sr.Type.Rels))
+	for i := range sr.Type.Attrs {
+		fields = append(fields, sr.Type.Attrs[i].Name)
 	}
-	for i := range sr.typ.Rels {
-		fields = append(fields, sr.typ.Rels[i].Name)
+	for i := range sr.Type.Rels {
+		fields = append(fields, sr.Type.Rels[i].Name)
 	}
 	return fields
 }
 
 func (sr *SoftResource) check() {
-	if sr.typ == nil {
-		sr.typ = &Type{}
+	if sr.Type == nil {
+		sr.Type = &Type{}
 	}
-	if sr.typ.Attrs == nil {
-		sr.typ.Attrs = map[string]Attr{}
+	if sr.Type.Attrs == nil {
+		sr.Type.Attrs = map[string]Attr{}
 	}
-	if sr.typ.Rels == nil {
-		sr.typ.Rels = map[string]Rel{}
+	if sr.Type.Rels == nil {
+		sr.Type.Rels = map[string]Rel{}
 	}
 	if sr.data == nil {
 		sr.data = map[string]interface{}{}
 	}
 
-	for i := range sr.typ.Attrs {
-		n := sr.typ.Attrs[i].Name
+	for i := range sr.Type.Attrs {
+		n := sr.Type.Attrs[i].Name
 		if _, ok := sr.data[n]; !ok {
-			sr.data[n] = GetZeroValue(sr.typ.Attrs[i].Type, sr.typ.Attrs[i].Null)
+			sr.data[n] = GetZeroValue(sr.Type.Attrs[i].Type, sr.Type.Attrs[i].Nullable)
 		}
 	}
-	for i := range sr.typ.Rels {
-		n := sr.typ.Rels[i].Name
+	for i := range sr.Type.Rels {
+		n := sr.Type.Rels[i].Name
 		if _, ok := sr.data[n]; !ok {
-			if sr.typ.Rels[i].ToOne {
+			if sr.Type.Rels[i].ToOne {
 				sr.data[n] = ""
 			} else {
 				sr.data[n] = []string{}

@@ -8,45 +8,37 @@ import (
 
 // A Resource is an element of a collection.
 type Resource interface {
+	// Creation
+	New() Resource
+	Copy() Resource
+
 	// Structure
 	Attrs() map[string]Attr
 	Rels() map[string]Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
-	New() Resource
 
 	// Read
 	GetID() string
 	GetType() Type
 	Get(key string) interface{}
+	GetToOne(key string) string
+	GetToMany(key string) []string
 
 	// Update
 	SetID(id string)
 	Set(key string, val interface{})
-
-	// Read relationship
-	GetToOne(key string) string
-	GetToMany(key string) []string
-
-	// Update relationship
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
 
 	// Validate
 	Validate() []error
-
-	// Copy
-	Copy() Resource
-
-	// JSON
-	UnmarshalJSON(payload []byte) error
 }
 
 // Equal reports whether r1 and r2 are equal.
 //
-// Two resources are equal if their types are equal, all the attributes
-// are equal (same type and same value), and all the relationstips are
-// equal.
+// Two resources are equal if their types are equal, all the attributes are
+// equal (same type and same value), and all the relationstips are equal.
 //
 // IDs are ignored.
 func Equal(r1, r2 Resource) bool {
@@ -83,7 +75,8 @@ func Equal(r1, r2 Resource) bool {
 			// TODO Fix the following condition one day, there should be a better
 			// way to do this. Basically, all nils (nil pointer, nil slice, etc)
 			// should be considered equal to a nil empty interface.
-			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" && fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
+			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" &&
+				fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
 				continue
 			}
 			return false
@@ -99,7 +92,7 @@ func Equal(r1, r2 Resource) bool {
 	sort.Slice(r1Rels, func(i, j int) bool {
 		return r1Rels[i].Name < r1Rels[j].Name
 	})
-	rels = r1.Rels()
+	rels = r2.Rels()
 	r2Rels := make([]Rel, 0, len(rels))
 	for name := range rels {
 		r2Rels = append(r2Rels, rels[name])
@@ -122,8 +115,12 @@ func Equal(r1, r2 Resource) bool {
 				return false
 			}
 		} else {
-			if !reflect.DeepEqual(r1.GetToMany(rel1.Name), r2.GetToMany(rel2.Name)) {
-				return false
+			v1 := r1.GetToMany(rel1.Name)
+			v2 := r2.GetToMany(rel2.Name)
+			if len(v1) != 0 || len(v2) != 0 {
+				if !reflect.DeepEqual(v1, v2) {
+					return false
+				}
 			}
 		}
 	}

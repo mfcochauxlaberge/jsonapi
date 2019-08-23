@@ -39,8 +39,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -56,8 +56,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -73,8 +73,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -90,8 +90,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -107,8 +107,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -156,8 +156,8 @@ func TestSimpleURL(t *testing.T) {
 				FilterLabel:  "label",
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: nil,
@@ -174,8 +174,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: NewErrInvalidPageSizeParameter("-1"),
@@ -192,8 +192,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: NewErrInvalidPageNumberParameter("-1"),
@@ -210,8 +210,8 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				PageSize:     10,
-				PageNumber:   1,
+				PageSize:     0,
+				PageNumber:   0,
 				Include:      []string{},
 			},
 			expectedError: NewErrUnknownParameter("unknownparam"),
@@ -239,4 +239,14 @@ func TestSimpleURL(t *testing.T) {
 		assert.Equal(test.expectedURL, url, test.name)
 		assert.Equal(test.expectedError, err, test.name)
 	}
+}
+
+func TestSimpleURLPath(t *testing.T) {
+	assert := assert.New(t)
+
+	su := &SimpleURL{Fragments: []string{}}
+	assert.Equal("", su.Path())
+
+	su = &SimpleURL{Fragments: []string{"a", "b", "c"}}
+	assert.Equal("a/b/c", su.Path())
 }

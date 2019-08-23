@@ -10,7 +10,13 @@ branches:
 env:
   - GO111MODULE=on
 
+before_script:
+  - 'curl -sfL
+      https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
+      | sh -s v1.17.1'
+
 script:
+  - ./bin/golangci-lint run
   - go test -race -coverprofile=coverage.txt -covermode=atomic
 
 after_success:

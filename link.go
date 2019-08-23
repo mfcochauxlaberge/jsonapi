@@ -13,7 +13,17 @@ type Link struct {
 // MarshalJSON builds the JSON representation of a Link object.
 func (l Link) MarshalJSON() ([]byte, error) {
 	if len(l.Meta) > 0 {
-		return json.Marshal(l)
+		var err error
+		m := map[string]json.RawMessage{}
+		m["href"], err = json.Marshal(l.HRef)
+		if err != nil {
+			return []byte{}, err
+		}
+		m["meta"], err = json.Marshal(l.Meta)
+		if err != nil {
+			return []byte{}, err
+		}
+		return json.Marshal(m)
 	}
 
 	return json.Marshal(l.HRef)

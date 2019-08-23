@@ -695,10 +695,10 @@ func TestFilterResource(t *testing.T) {
 		typ := &Type{Name: "type"}
 		ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Attrs = map[string]Attr{
-			"attr": Attr{
-				Name: "attr",
-				Type: ty,
-				Null: n,
+			"attr": {
+				Name:     "attr",
+				Type:     ty,
+				Nullable: n,
 			},
 		}
 
@@ -714,7 +714,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, filter),
+			filter.IsAllowed(res),
 			fmt.Sprintf("%v %s %v should be %v", test.rval, test.op, test.cval, test.expected),
 		)
 	}
@@ -761,7 +761,7 @@ func TestFilterResource(t *testing.T) {
 		}
 		// ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Rels = map[string]Rel{
-			"rel": Rel{
+			"rel": {
 				Name:  "rel",
 				Type:  "type",
 				ToOne: toOne,
@@ -784,7 +784,7 @@ func TestFilterResource(t *testing.T) {
 
 		assert.Equal(
 			test.expected,
-			FilterResource(res, filter),
+			filter.IsAllowed(res),
 			fmt.Sprintf("%v %s %v should be %v", test.cval, test.op, test.rval, test.expected),
 		)
 	}
@@ -833,11 +833,11 @@ func TestFilterResource(t *testing.T) {
 		for j := range test.rvals {
 			attrName := "attr" + strconv.Itoa(j)
 			ty, n := GetAttrType(fmt.Sprintf("%T", test.rvals[j]))
-			typ.AddAttr(
+			_ = typ.AddAttr(
 				Attr{
-					Name: attrName,
-					Type: ty,
-					Null: n,
+					Name:     attrName,
+					Type:     ty,
+					Nullable: n,
 				},
 			)
 
@@ -856,7 +856,7 @@ func TestFilterResource(t *testing.T) {
 
 		filter.Op = "and"
 		// filter = marshalUnmarshalFilter(t, filter)
-		result := FilterResource(res, filter)
+		result := filter.IsAllowed(res)
 		assert.Equal(
 			test.expectedAnd,
 			result,
@@ -865,7 +865,7 @@ func TestFilterResource(t *testing.T) {
 
 		filter.Op = "or"
 		// filter = marshalUnmarshalFilter(t, filter)
-		result = FilterResource(res, filter)
+		result = filter.IsAllowed(res)
 		assert.Equal(
 			test.expectedOr,
 			result,
@@ -926,7 +926,11 @@ func TestFilterMarshaling(t *testing.T) {
 			data, err := json.Marshal(&cdt)
 			assert.NoError(err, test.name)
 
-			assert.Equal(makeOneLineNoSpaces(test.query), makeOneLineNoSpaces(string(data)), test.name)
+			assert.Equal(
+				makeOneLineNoSpaces(test.query),
+				makeOneLineNoSpaces(string(data)),
+				test.name,
+			)
 		}
 	}
 
@@ -942,91 +946,6 @@ func TestFilterMarshaling(t *testing.T) {
 		Val: "",
 	})
 	assert.Equal(false, err != nil, "empty operation and value") // TODO
-}
-
-func ptr(v interface{}) interface{} {
-	switch c := v.(type) {
-	// String
-	case string:
-		return &c
-	// Integers
-	case int:
-		return &c
-	case int8:
-		return &c
-	case int16:
-		return &c
-	case int32:
-		return &c
-	case int64:
-		return &c
-	case uint:
-		return &c
-	case uint8:
-		return &c
-	case uint16:
-		return &c
-	case uint32:
-		return &c
-	case uint64:
-		return &c
-	// Bool
-	case bool:
-		return &c
-	// time.Time
-	case time.Time:
-		return &c
-	}
-	return nil
-}
-
-func nilptr(t string) interface{} {
-	switch t {
-	// String
-	case "string":
-		var p *string
-		return p
-	// Integers
-	case "int":
-		var p *int
-		return p
-	case "int8":
-		var p *int8
-		return p
-	case "int16":
-		var p *int16
-		return p
-	case "int32":
-		var p *int32
-		return p
-	case "int64":
-		var p *int64
-		return p
-	case "uint":
-		var p *uint
-		return p
-	case "uint8":
-		var p *uint8
-		return p
-	case "uint16":
-		var p *uint16
-		return p
-	case "uint32":
-		var p *uint32
-		return p
-	case "uint64":
-		var p *uint64
-		return p
-	// Bool
-	case "bool":
-		var p *bool
-		return p
-	// time.Time
-	case "time.Time":
-		var p *time.Time
-		return p
-	}
-	return nil
 }
 
 // func marshalUnmarshalFilter(t *testing.T, f *Filter) *Filter {

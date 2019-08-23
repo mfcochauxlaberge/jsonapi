@@ -3,40 +3,50 @@ package jsonapi
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
-	"reflect"
-	"strings"
+	"sort"
 )
 
 // Marshal marshals a document according to the JSON:API speficication.
 //
 // Both doc and url must not be nil.
 func Marshal(doc *Document, url *URL) ([]byte, error) {
-	// Data
-	var data json.RawMessage
-	var errors json.RawMessage
 	var err error
 
+	// Data
+	var data json.RawMessage
 	if res, ok := doc.Data.(Resource); ok {
 		// Resource
-		data, err = marshalResource(res, doc.PrePath, url.Params.Fields[res.GetType().Name], doc.RelData)
+		data = marshalResource(
+			res,
+			doc.PrePath,
+			url.Params.Fields[res.GetType().Name],
+			doc.RelData,
+		)
 	} else if col, ok := doc.Data.(Collection); ok {
 		// Collection
-		data, err = marshalCollection(col, doc.PrePath, url.Params.Fields[col.Type()], doc.RelData)
+		data = marshalCollection(
+			col,
+			doc.PrePath,
+			url.Params.Fields,
+			doc.RelData,
+		)
 	} else if id, ok := doc.Data.(Identifier); ok {
-		// Identifer
+		// Identifier
 		data, err = json.Marshal(id)
 	} else if ids, ok := doc.Data.(Identifiers); ok {
 		// Identifiers
 		data, err = json.Marshal(ids)
-	} else if e, ok := doc.Data.(Error); ok {
-		// Error
-		errors, err = json.Marshal([]Error{e})
-	} else if es, ok := doc.Data.([]Error); ok {
-		// Errors
-		errors, err = json.Marshal(es)
-	} else {
+	} else if doc.Data != nil {
+		err = errors.New("data contains an unknown type")
+	} else if len(doc.Errors) == 0 {
 		data = []byte("null")
+	}
+
+	// Data
+	var errors json.RawMessage
+	if len(doc.Errors) > 0 {
+		// Errors
+		errors, err = json.Marshal(doc.Errors)
 	}
 
 	if err != nil {
@@ -44,16 +54,24 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	}
 
 	// Included
-	inclusions := []*json.RawMessage{}
-	if len(data) > 0 {
-		for key := range doc.Included {
-			typ := doc.Included[key].GetType().Name
-			raw, err := marshalResource(doc.Included[key], doc.PrePath, url.Params.Fields[typ], doc.RelData)
-			if err != nil {
-				return []byte{}, err
+	var inclusions []*json.RawMessage
+	if len(doc.Included) > 0 {
+		sort.Slice(doc.Included, func(i, j int) bool {
+			return doc.Included[i].GetID() < doc.Included[j].GetID()
+		})
+
+		if len(data) > 0 {
+			for key := range doc.Included {
+				typ := doc.Included[key].GetType().Name
+				raw := marshalResource(
+					doc.Included[key],
+					doc.PrePath,
+					url.Params.Fields[typ],
+					doc.RelData,
+				)
+				rawm := json.RawMessage(raw)
+				inclusions = append(inclusions, &rawm)
 			}
-			rawm := json.RawMessage(raw)
-			inclusions = append(inclusions, &rawm)
 		}
 	}
 
@@ -76,7 +94,7 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 
 	if url != nil {
 		plMap["links"] = map[string]string{
-			"self": doc.PrePath + url.FullURL(),
+			"self": doc.PrePath + url.String(),
 		}
 	}
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
@@ -84,11 +102,11 @@ func Marshal(doc *Document, url *URL) ([]byte, error) {
 	return json.Marshal(plMap)
 }
 
-// Unmarshal reads a payload to build and return a document object.
+// Unmarshal reads a payload to build and return a Document object.
 //
-// Both url and schema must not be nil.
-func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
-	doc := &Document{}
+// schema must not be nil.
+func Unmarshal(payload []byte, schema *Schema) (*Document, error) {
+	doc := NewDocument()
 	ske := &payloadSkeleton{}
 
 	// Unmarshal
@@ -98,29 +116,30 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	}
 
 	// Data
-	if !url.IsCol && url.RelKind == "" {
-		res := schema.GetResource(url.ResType)
-		err = json.Unmarshal(ske.Data, res)
-		if err != nil {
-			return nil, err
-		}
-		doc.Data = res
-	} else if url.RelKind == "self" {
-		if !url.IsCol {
-			inc := Identifier{}
-			err = json.Unmarshal(ske.Data, &inc)
+	if len(ske.Data) > 0 {
+		if ske.Data[0] == '{' {
+			// Resource
+			res, err := unmarshalResource(ske.Data, schema)
 			if err != nil {
 				return nil, err
 			}
-			doc.Data = inc
+			doc.Data = res
+		} else if ske.Data[0] == '[' {
+			col, err := unmarshalCollection(ske.Data, schema)
+			if err != nil {
+				return nil, err
+			}
+			doc.Data = col
+		} else if string(ske.Data) == "null" {
+			doc.Data = nil
 		} else {
-			incs := Identifiers{}
-			err = json.Unmarshal(ske.Data, &incs)
-			if err != nil {
-				return nil, err
-			}
-			doc.Data = incs
+			// TODO Not exactly the right error
+			return nil, NewErrMissingDataMember()
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
+	} else {
+		return nil, NewErrMissingDataMember()
 	}
 
 	// Included
@@ -135,13 +154,12 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 			incs = append(incs, inc)
 		}
 
-		for i, inc2 := range incs {
-			res2 := schema.GetResource(inc2.Type)
-			err = json.Unmarshal(ske.Included[i], res2)
+		for i := range incs {
+			res, err := unmarshalResource(ske.Included[i], schema)
 			if err != nil {
 				return nil, err
 			}
-			doc.Included[inc2.Type+" "+inc2.ID] = res2
+			doc.Included = append(doc.Included, res)
 		}
 	}
 
@@ -151,100 +169,240 @@ func Unmarshal(payload []byte, url *URL, schema *Schema) (*Document, error) {
 	return doc, nil
 }
 
-// CheckType checks the given value and returns any error found.
+// UnmarshalIdentifiers reads a payload where the main data is one or more
+// identifiers to build and return a Document object.
 //
-// If nil is returned, than the value can be safely used with this library.
-func CheckType(v interface{}) error {
-	value := reflect.ValueOf(v)
-	kind := value.Kind()
+// The included top-level member is ignored.
+//
+// schema must not be nil.
+func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
+	doc := NewDocument()
+	ske := &payloadSkeleton{}
 
-	// Check wether it's a struct
-	if kind != reflect.Struct {
-		return errors.New("jsonapi: not a struct")
+	// Unmarshal
+	err := json.Unmarshal(payload, ske)
+	if err != nil {
+		return nil, err
 	}
 
-	// Check ID field
-	var (
-		idField reflect.StructField
-		ok      bool
-	)
-	if idField, ok = value.Type().FieldByName("ID"); !ok {
-		return errors.New("jsonapi: struct doesn't have an ID field")
-	}
-
-	resType := idField.Tag.Get("api")
-	if resType == "" {
-		return errors.New("jsonapi: ID field's api tag is empty")
-	}
-
-	// Check attributes
-	for i := 0; i < value.NumField(); i++ {
-		sf := value.Type().Field(i)
-
-		if sf.Tag.Get("api") == "attr" {
-			isValid := false
-
-			switch sf.Type.String() {
-			case "string", "int", "int8", "int16", "int32", "int64", "uint", "uint8", "uint16", "uint32", "uint64", "bool", "time.Time", "*string", "*int", "*int8", "*int16", "*int32", "*int64", "*uint", "*uint8", "*uint16", "*uint32", "*uint64", "*bool", "*time.Time":
-				isValid = true
+	// Identifiers
+	if len(ske.Data) > 0 {
+		if ske.Data[0] == '{' {
+			inc := Identifier{}
+			err = json.Unmarshal(ske.Data, &inc)
+			if err != nil {
+				return nil, err
 			}
-
-			if !isValid {
-				return fmt.Errorf("jsonapi: attribute %s of type %s is of unsupported type", sf.Name, resType)
+			doc.Data = inc
+		} else if ske.Data[0] == '[' {
+			incs := Identifiers{}
+			err = json.Unmarshal(ske.Data, &incs)
+			if err != nil {
+				return nil, err
 			}
+			doc.Data = incs
 		}
+	} else if len(ske.Errors) > 0 {
+		doc.Errors = ske.Errors
+	} else {
+		return nil, NewErrMissingDataMember()
 	}
 
-	// Check relationships
-	for i := 0; i < value.NumField(); i++ {
-		sf := value.Type().Field(i)
+	// Meta
+	doc.Meta = ske.Meta
 
-		if strings.HasPrefix(sf.Tag.Get("api"), "rel,") {
-			s := strings.Split(sf.Tag.Get("api"), ",")
-
-			if len(s) < 2 || len(s) > 3 {
-				return fmt.Errorf("jsonapi: api tag of relationship %s of struct %s is invalid", sf.Name, value.Type().Name())
-			}
-
-			if sf.Type.String() != "string" && sf.Type.String() != "[]string" {
-				return fmt.Errorf("jsonapi: relationship %s of type %s is not string or []string", sf.Name, resType)
-			}
-		}
-	}
-
-	return nil
+	return doc, nil
 }
 
-// IDAndType returns the ID and the type of the resource represented by v.
-//
-// Two empty strings are returned if v is not recognized as a resource.
-// CheckType can be used to check the validity of a struct.
-func IDAndType(v interface{}) (string, string) {
-	switch nv := v.(type) {
-	case Resource:
-		return nv.GetID(), nv.GetType().Name
-	}
+// marshalResource marshals a Resource into a JSON-encoded payload.
+func marshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
+	mapPl := map[string]interface{}{}
 
-	val := reflect.ValueOf(v)
+	mapPl["id"] = r.GetID()
+	mapPl["type"] = r.GetType().Name
 
-	// Allows pointers to structs
-	if val.Kind() == reflect.Ptr {
-		val = val.Elem()
-	}
-
-	if val.Kind() == reflect.Struct {
-		idF := val.FieldByName("ID")
-
-		if !idF.IsValid() {
-			return "", ""
-		}
-
-		idSF, _ := val.Type().FieldByName("ID")
-
-		if idF.Kind() == reflect.String {
-			return idF.String(), idSF.Tag.Get("api")
+	// Attributes
+	attrs := map[string]interface{}{}
+	for _, attr := range r.Attrs() {
+		for _, field := range fields {
+			if field == attr.Name {
+				attrs[attr.Name] = r.Get(attr.Name)
+				break
+			}
 		}
 	}
+	mapPl["attributes"] = attrs
 
-	return "", ""
+	// Relationships
+	rels := map[string]*json.RawMessage{}
+	for _, rel := range r.Rels() {
+		include := false
+		for _, field := range fields {
+			if field == rel.Name {
+				include = true
+				break
+			}
+		}
+
+		if include {
+			var raw json.RawMessage
+
+			if rel.ToOne {
+				s := map[string]map[string]string{
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
+				}
+
+				for _, n := range relData[r.GetType().Name] {
+					if n == rel.Name {
+						id := r.GetToOne(rel.Name)
+						if id != "" {
+							s["data"] = map[string]string{
+								"id":   r.GetToOne(rel.Name),
+								"type": rel.Type,
+							}
+						} else {
+							s["data"] = nil
+						}
+						break
+					}
+				}
+
+				raw, _ = json.Marshal(s)
+				rels[rel.Name] = &raw
+			} else {
+				s := map[string]interface{}{
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
+				}
+
+				for _, n := range relData[r.GetType().Name] {
+					if n == rel.Name {
+						data := []map[string]string{}
+						ids := r.GetToMany(rel.Name)
+						sort.Strings(ids)
+						for _, id := range ids {
+							data = append(data, map[string]string{
+								"id":   id,
+								"type": rel.Type,
+							})
+						}
+						s["data"] = data
+						break
+					}
+				}
+
+				raw, _ = json.Marshal(s)
+				rels[rel.Name] = &raw
+			}
+		}
+	}
+	mapPl["relationships"] = rels
+
+	// Links
+	mapPl["links"] = map[string]string{
+		"self": buildSelfLink(r, prepath), // TODO
+	}
+
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(mapPl)
+	return pl
+}
+
+// marshalCollection marshals a Collection into a JSON-encoded payload.
+func marshalCollection(c Collection, prepath string, fields map[string][]string, relData map[string][]string) []byte {
+	var raws []*json.RawMessage
+
+	if c.Len() == 0 {
+		return []byte("[]")
+	}
+
+	for i := 0; i < c.Len(); i++ {
+		r := c.At(i)
+		raw := json.RawMessage(
+			marshalResource(r, prepath, fields[r.GetType().Name], relData),
+		)
+		raws = append(raws, &raw)
+	}
+
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(raws)
+	return pl
+}
+
+// unmarshalResource unmarshals a JSON-encoded payload into a Resource.
+func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
+	var rske resourceSkeleton
+	err := json.Unmarshal(data, &rske)
+	if err != nil {
+		return nil, NewErrBadRequest(
+			"Invalid JSON",
+			"The provided JSON body could not be read.",
+		)
+	}
+
+	typ := schema.GetType(rske.Type)
+	res := typ.New()
+
+	res.SetID(rske.ID)
+
+	for a, v := range rske.Attributes {
+		if attr, ok := typ.Attrs[a]; ok {
+			val, err := attr.UnmarshalToType(v)
+			if err != nil {
+				return nil, err
+			}
+			res.Set(attr.Name, val)
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, a)
+		}
+	}
+	for r, v := range rske.Relationships {
+		if rel, ok := typ.Rels[r]; ok {
+			if len(v.Data) > 0 {
+				if rel.ToOne {
+					var iden identifierSkeleton
+					err = json.Unmarshal(v.Data, &iden)
+					res.SetToOne(rel.Name, iden.ID)
+				} else {
+					var idens []identifierSkeleton
+					err = json.Unmarshal(v.Data, &idens)
+					ids := make([]string, len(idens))
+					for i := range idens {
+						ids[i] = idens[i].ID
+					}
+					res.SetToMany(rel.Name, ids)
+				}
+			}
+			if err != nil {
+				return nil, NewErrInvalidFieldValueInBody(
+					rel.Name,
+					string(v.Data),
+					typ.Name,
+				)
+			}
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, r)
+		}
+	}
+
+	return res, nil
+}
+
+// unmarshalCollection unmarshals a JSON-encoded payload into a Collection.
+func unmarshalCollection(data []byte, schema *Schema) (Collection, error) {
+	var cske []json.RawMessage
+	err := json.Unmarshal(data, &cske)
+	if err != nil {
+		return nil, err
+	}
+
+	col := &Resources{}
+	for i := range cske {
+		res, err := unmarshalResource(cske[i], schema)
+		if err != nil {
+			return nil, err
+		}
+		col.Add(res)
+	}
+
+	return col, nil
 }

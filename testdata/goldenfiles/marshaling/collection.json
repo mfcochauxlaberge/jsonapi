@@ -1,0 +1,108 @@
+{
+	"data": [
+		{
+			"attributes": {
+				"bool": true,
+				"int": 10,
+				"str": "str",
+				"time": "2013-06-24T22:03:34.8276Z",
+				"uint64": 1064
+			},
+			"id": "id1",
+			"links": {
+				"self": "https://example.org/mocktype/id1"
+			},
+			"relationships": {
+				"to-1": {
+					"data": {
+						"id": "id2",
+						"type": "mocktype"
+					},
+					"links": {
+						"related": "https://example.org/mocktype/id1/to-1",
+						"self": "https://example.org/mocktype/id1/relationships/to-1"
+					}
+				},
+				"to-x-from-1": {
+					"data": [
+						{
+							"id": "id4",
+							"type": "mocktype"
+						}
+					],
+					"links": {
+						"related": "https://example.org/mocktype/id1/to-x-from-1",
+						"self": "https://example.org/mocktype/id1/relationships/to-x-from-1"
+					}
+				}
+			},
+			"type": "mocktype"
+		},
+		{
+			"attributes": {
+				"bool": false,
+				"int": -42,
+				"str": "漢語",
+				"time": "0001-01-01T00:00:00Z",
+				"uint64": 0
+			},
+			"id": "id2",
+			"links": {
+				"self": "https://example.org/mocktype/id2"
+			},
+			"relationships": {
+				"to-1": {
+					"data": null,
+					"links": {
+						"related": "https://example.org/mocktype/id2/to-1",
+						"self": "https://example.org/mocktype/id2/relationships/to-1"
+					}
+				},
+				"to-x-from-1": {
+					"data": [],
+					"links": {
+						"related": "https://example.org/mocktype/id2/to-x-from-1",
+						"self": "https://example.org/mocktype/id2/relationships/to-x-from-1"
+					}
+				}
+			},
+			"type": "mocktype"
+		},
+		{
+			"attributes": {
+				"bool": false,
+				"int": 0,
+				"str": "",
+				"time": "0001-01-01T00:00:00Z",
+				"uint64": 0
+			},
+			"id": "id3",
+			"links": {
+				"self": "https://example.org/mocktype/id3"
+			},
+			"relationships": {
+				"to-1": {
+					"data": null,
+					"links": {
+						"related": "https://example.org/mocktype/id3/to-1",
+						"self": "https://example.org/mocktype/id3/relationships/to-1"
+					}
+				},
+				"to-x-from-1": {
+					"data": [],
+					"links": {
+						"related": "https://example.org/mocktype/id3/to-x-from-1",
+						"self": "https://example.org/mocktype/id3/relationships/to-x-from-1"
+					}
+				}
+			},
+			"type": "mocktype"
+		}
+	],
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"self": "https://example.org/fake/path?fields%5Bmocktype%5D=bool%2Cint%2Cstr%2Ctime%2Cto-1%2Cto-x-from-1%2Cuint64"
+	}
+}
