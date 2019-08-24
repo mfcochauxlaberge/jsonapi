@@ -3,6 +3,7 @@ package jsonapi
 import (
 	"errors"
 	"fmt"
+	"sort"
 )
 
 // A Schema contains a list of types. It makes sure that all types are valid and
@@ -11,6 +12,21 @@ import (
 // Check can be used to validate the relationships between the types.
 type Schema struct {
 	Types []Type
+
+	// Rels stores the relationships found in the schema's types. For
+	// two-way relationships, only one is chosen to be part of this
+	// map. The chosen one is the one that comes first when sorting
+	// both relationships in alphabetical order using the type name
+	// first and then the relationship name.
+	//
+	// For example, a type called Directory has a Parent relationship
+	// and a Children relationship. Both relationships have the same
+	// type (Directory), so now the name is used for sorting. Children
+	// comes before Parent, so the relationship Children from type
+	// Directory is stored here. The other one is not stored to avoid
+	// duplication (the information is already accessible through the
+	// inverse relationship).
+	rels map[string]Rel
 }
 
 // AddType adds a type to the schema.
@@ -79,6 +95,26 @@ func (s *Schema) RemoveRel(typ string, rel string) {
 			s.Types[i].RemoveRel(rel)
 		}
 	}
+}
+
+// Rels returns all the relationships from the schema's types. For two-way
+// relationships (two types where each has a relationship pointing to the other
+// type), only one of the two relationships will appear in the list.
+func (s *Schema) Rels() []Rel {
+	s.buildRels()
+
+	rels := []Rel{}
+	for _, rel := range s.rels {
+		rels = append(rels, rel)
+	}
+
+	sort.Slice(rels, func(i, j int) bool {
+		name1 := rels[i].InverseType + rels[i].Name
+		name2 := rels[j].InverseType + rels[j].Name
+		return name1 < name2
+	})
+
+	return rels
 }
 
 // HasType returns a boolean indicating whether a type has the specified
@@ -165,4 +201,26 @@ func (s *Schema) Check() []error {
 	}
 
 	return errs
+}
+
+// buildRels ...
+func (s *Schema) buildRels() {
+	s.rels = map[string]Rel{}
+
+	for _, typ := range s.Types {
+		for _, rel := range typ.Rels {
+			relName := rel.InverseType + "_" + rel.Name
+			if rel.InverseName == "" {
+				s.rels[relName] = rel
+			} else {
+				inv := rel.Inverse()
+				invName := inv.InverseType + "_" + inv.Name
+				if relName < invName {
+					s.rels[relName] = rel
+				} else {
+					s.rels[invName] = inv
+				}
+			}
+		}
+	}
 }
