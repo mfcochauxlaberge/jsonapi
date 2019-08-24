@@ -77,9 +77,7 @@ func TestMarshaling(t *testing.T) {
 			doc: &Document{
 				Data: col.At(0),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
 			},
 		}, {
@@ -87,9 +85,7 @@ func TestMarshaling(t *testing.T) {
 			doc: &Document{
 				Data: Range(col, nil, nil, []string{}, 10, 0),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
 				PrePath: "https://example.org",
 			},
@@ -113,9 +109,7 @@ func TestMarshaling(t *testing.T) {
 					ID: "id1",
 				}),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
 				Included: []Resource{
 					Wrap(&mocktype{

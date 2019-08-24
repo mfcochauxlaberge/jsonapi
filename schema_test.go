@@ -172,7 +172,7 @@ func TestSchemaRels(t *testing.T) {
 	users := Type{
 		Name: "users",
 		Rels: map[string]Rel{
-			"posts": Rel{
+			"posts": {
 				Name:         "posts",
 				Type:         "messages",
 				ToOne:        false,
@@ -180,7 +180,7 @@ func TestSchemaRels(t *testing.T) {
 				InverseType:  "users",
 				InverseToOne: true,
 			},
-			"favorites": Rel{
+			"favorites": {
 				Name:         "favorites",
 				Type:         "messages",
 				ToOne:        false,
@@ -195,7 +195,7 @@ func TestSchemaRels(t *testing.T) {
 	messages := Type{
 		Name: "messages",
 		Rels: map[string]Rel{
-			"author": Rel{
+			"author": {
 				Name:         "author",
 				Type:         "users",
 				ToOne:        true,
