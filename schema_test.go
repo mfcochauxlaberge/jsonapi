@@ -163,3 +163,52 @@ func TestSchemaCheck(t *testing.T) {
 		"jsonapi: relationship rel2 of type type2 and its inverse do not point each other",
 	)
 }
+
+func TestSchemaRels(t *testing.T) {
+	assert := assert.New(t)
+
+	schema := &Schema{}
+
+	users := Type{
+		Name: "users",
+		Rels: map[string]Rel{
+			"posts": Rel{
+				Name:         "posts",
+				Type:         "messages",
+				ToOne:        false,
+				InverseName:  "author",
+				InverseType:  "users",
+				InverseToOne: true,
+			},
+			"favorites": Rel{
+				Name:         "favorites",
+				Type:         "messages",
+				ToOne:        false,
+				InverseName:  "",
+				InverseType:  "users",
+				InverseToOne: false,
+			},
+		},
+	}
+	_ = schema.AddType(users)
+
+	messages := Type{
+		Name: "messages",
+		Rels: map[string]Rel{
+			"author": Rel{
+				Name:         "author",
+				Type:         "users",
+				ToOne:        true,
+				InverseName:  "posts",
+				InverseType:  "messages",
+				InverseToOne: false,
+			},
+		},
+	}
+	_ = schema.AddType(messages)
+
+	rels := schema.Rels()
+	assert.Len(rels, 2)
+	assert.Equal(messages.Rels["author"], rels[0])
+	assert.Equal(users.Rels["favorites"], rels[1])
+}
