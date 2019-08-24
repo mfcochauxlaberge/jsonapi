@@ -11,7 +11,21 @@ import (
 // Check can be used to validate the relationships between the types.
 type Schema struct {
 	Types []Type
-	Rels  map[string]Rel
+
+	// Rels stores the relationships found in the schema's types. For
+	// two-way relationships, only one is chosen to be part of this
+	// map. The chosen one is the one that comes first when sorting
+	// both relationships in alphabetical order using the type name
+	// first and then the relationship name.
+	//
+	// For example, a type called Directory has a Parent relationship
+	// and a Children relationship. Both relationships have the same
+	// type (Directory), so now the name is used for sorting. Children
+	// comes before Parent, so the relationship Children from type
+	// Directory is stored here. The other one is not stored to avoid
+	// duplication (the information is already accessible through the
+	// inverse relationship).
+	Rels map[string]Rel
 }
 
 // AddType adds a type to the schema.
