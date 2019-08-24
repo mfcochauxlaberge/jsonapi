@@ -5,8 +5,8 @@ import (
 	"fmt"
 )
 
-// A Schema contains a list of types. It makes sure that each type is valid and
-// unique.
+// A Schema contains a list of types. It makes sure that all types are valid and
+// their relationships are consistent.
 //
 // Check can be used to validate the relationships between the types.
 type Schema struct {
