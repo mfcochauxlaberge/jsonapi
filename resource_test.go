@@ -118,26 +118,26 @@ func TestEqual(t *testing.T) {
 	}
 	for _, rel := range typ.Rels {
 		if rel.ToOne {
-			sr1.SetToOne(rel.Name, mt11.GetToOne(rel.Name))
+			sr1.SetToOne(rel.FromName, mt11.GetToOne(rel.FromName))
 		} else {
-			sr1.SetToMany(rel.Name, mt11.GetToMany(rel.Name))
+			sr1.SetToMany(rel.FromName, mt11.GetToMany(rel.FromName))
 		}
 	}
 	sr1.RemoveField("to-one")
 	assert.False(Equal(mt11, sr1), "different number of relationships")
 
 	sr1.AddRel(Rel{
-		Name:  "to-one",
-		Type:  "mocktypes2",
-		ToOne: false,
+		FromName: "to-one",
+		Type:     "mocktypes2",
+		ToOne:    false,
 	})
 	assert.False(Equal(mt11, sr1), "different to-one property")
 
 	sr1.RemoveField("to-one")
 	sr1.AddRel(Rel{
-		Name:  "to-one",
-		Type:  "mocktypes2",
-		ToOne: true,
+		FromName: "to-one",
+		Type:     "mocktypes2",
+		ToOne:    true,
 	})
 	sr1.SetToOne("to-one", "b")
 	assert.False(Equal(mt11, sr1), "different relationship value (to-one)")

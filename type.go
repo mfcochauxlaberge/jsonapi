@@ -85,7 +85,7 @@ func (t *Type) RemoveAttr(attr string) {
 // AddRel adds a relationship to the type.
 func (t *Type) AddRel(rel Rel) error {
 	// Validation
-	if rel.Name == "" {
+	if rel.FromName == "" {
 		return fmt.Errorf("jsonapi: relationship name is empty")
 	}
 	if rel.Type == "" {
@@ -94,15 +94,15 @@ func (t *Type) AddRel(rel Rel) error {
 
 	// Make sure the name isn't already used
 	for i := range t.Rels {
-		if t.Rels[i].Name == rel.Name {
-			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.Name)
+		if t.Rels[i].FromName == rel.FromName {
+			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.FromName)
 		}
 	}
 
 	if t.Rels == nil {
 		t.Rels = map[string]Rel{}
 	}
-	t.Rels[rel.Name] = rel
+	t.Rels[rel.FromName] = rel
 
 	return nil
 }
@@ -110,7 +110,7 @@ func (t *Type) AddRel(rel Rel) error {
 // RemoveRel removes a relationship from the type if it exists.
 func (t *Type) RemoveRel(rel string) {
 	for i := range t.Rels {
-		if t.Rels[i].Name == rel {
+		if t.Rels[i].FromName == rel {
 			delete(t.Rels, rel)
 		}
 	}
@@ -124,7 +124,7 @@ func (t *Type) Fields() []string {
 		fields = append(fields, t.Attrs[i].Name)
 	}
 	for i := range t.Rels {
-		fields = append(fields, t.Rels[i].Name)
+		fields = append(fields, t.Rels[i].FromName)
 	}
 	sort.Strings(fields)
 	return fields
@@ -288,7 +288,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 
 // Rel represents a resource relationship.
 type Rel struct {
-	Name         string
+	FromName     string
 	Type         string
 	ToOne        bool
 	InverseName  string
@@ -299,10 +299,10 @@ type Rel struct {
 // Inverse returns the inverse relationship of r.
 func (r *Rel) Inverse() Rel {
 	return Rel{
-		Name:         r.InverseName,
+		FromName:     r.InverseName,
 		Type:         r.InverseType,
 		ToOne:        r.InverseToOne,
-		InverseName:  r.Name,
+		InverseName:  r.FromName,
 		InverseType:  r.Type,
 		InverseToOne: r.ToOne,
 	}

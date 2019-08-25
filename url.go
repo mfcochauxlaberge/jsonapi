@@ -58,7 +58,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		url.BelongsToFilter = BelongsToFilter{
 			Type:        url.Fragments[0],
 			ID:          url.Fragments[1],
-			Name:        url.Rel.Name,
+			Name:        url.Rel.FromName,
 			InverseName: url.Rel.InverseName,
 		}
 

@@ -113,7 +113,7 @@ func TestParseURL(t *testing.T) {
 				ResType: "mocktypes2",
 				RelKind: "related",
 				Rel: Rel{
-					Name:         "to-one",
+					FromName:     "to-one",
 					Type:         "mocktypes2",
 					ToOne:        true,
 					InverseName:  "",
@@ -141,7 +141,7 @@ func TestParseURL(t *testing.T) {
 				ResType: "mocktypes2",
 				RelKind: "self",
 				Rel: Rel{
-					Name:         "to-many-from-one",
+					FromName:     "to-many-from-one",
 					Type:         "mocktypes2",
 					ToOne:        false,
 					InverseName:  "to-one-from-many",
@@ -168,7 +168,7 @@ func TestParseURL(t *testing.T) {
 				ResType: "mocktypes2",
 				RelKind: "self",
 				Rel: Rel{
-					Name:         "to-many-from-one",
+					FromName:     "to-many-from-one",
 					Type:         "mocktypes2",
 					ToOne:        false,
 					InverseName:  "to-one-from-many",
@@ -198,7 +198,7 @@ func TestParseURL(t *testing.T) {
 				ResType: "mocktypes2",
 				RelKind: "self",
 				Rel: Rel{
-					Name:         "to-many-from-one",
+					FromName:     "to-many-from-one",
 					Type:         "mocktypes2",
 					ToOne:        false,
 					InverseName:  "to-one-from-many",

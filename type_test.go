@@ -25,8 +25,8 @@ func TestType(t *testing.T) {
 	err := typ.AddAttr(attr1)
 	assert.NoError(err)
 	rel1 := Rel{
-		Name: "rel1",
-		Type: "type1",
+		FromName: "rel1",
+		Type:     "type1",
 	}
 	err = typ.AddRel(rel1)
 	assert.NoError(err)
@@ -51,11 +51,11 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 
 	// Add invalid relationship (empty type)
-	err = typ.AddRel(Rel{Name: "invalid"})
+	err = typ.AddRel(Rel{FromName: "invalid"})
 	assert.Error(err)
 
 	// Add invalid relationship (name already used)
-	err = typ.AddRel(Rel{Name: "rel1", Type: "type1"})
+	err = typ.AddRel(Rel{FromName: "rel1", Type: "type1"})
 	assert.Error(err)
 }
 
@@ -179,7 +179,7 @@ func TestInverseRel(t *testing.T) {
 	assert := assert.New(t)
 
 	rel := Rel{
-		Name:         "rel1",
+		FromName:     "rel1",
 		Type:         "type2",
 		ToOne:        true,
 		InverseName:  "rel2",
@@ -189,7 +189,7 @@ func TestInverseRel(t *testing.T) {
 
 	invRel := rel.Inverse()
 
-	assert.Equal("rel2", invRel.Name)
+	assert.Equal("rel2", invRel.FromName)
 	assert.Equal("type1", invRel.Type)
 	assert.Equal(false, invRel.ToOne)
 	assert.Equal("rel1", invRel.InverseName)
@@ -393,7 +393,7 @@ func TestCopyType(t *testing.T) {
 		},
 		Rels: map[string]Rel{
 			"rel1": {
-				Name:         "rel1",
+				FromName:     "rel1",
 				Type:         "type2",
 				ToOne:        true,
 				InverseName:  "rel2",
@@ -412,7 +412,7 @@ func TestCopyType(t *testing.T) {
 	assert.Equal(AttrTypeString, typ2.Attrs["attr1"].Type)
 	assert.True(typ2.Attrs["attr1"].Nullable)
 	assert.Len(typ2.Rels, 1)
-	assert.Equal("rel1", typ2.Rels["rel1"].Name)
+	assert.Equal("rel1", typ2.Rels["rel1"].FromName)
 	assert.Equal("type2", typ2.Rels["rel1"].Type)
 	assert.True(typ2.Rels["rel1"].ToOne)
 	assert.Equal("rel2", typ2.Rels["rel1"].InverseName)
