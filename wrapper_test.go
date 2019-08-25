@@ -75,12 +75,12 @@ func TestWrapper(t *testing.T) {
 	// Get relationships
 	rel := wrap1.Rel("to-one")
 	assert.Equal(Rel{
-		FromName:     "to-one",
-		ToType:       "mocktypes2",
-		ToOne:        true,
-		InverseName:  "",
-		InverseType:  "mocktypes1",
-		InverseToOne: false,
+		FromName: "to-one",
+		ToType:   "mocktypes2",
+		ToOne:    true,
+		ToName:   "",
+		FromType: "mocktypes1",
+		FromOne:  false,
 	}, rel, "get relationship (to-one)")
 	assert.Equal(Rel{}, wrap1.Rel("nonexistent"), "get non-existent relationship")
 

@@ -179,12 +179,12 @@ func TestInverseRel(t *testing.T) {
 	assert := assert.New(t)
 
 	rel := Rel{
-		FromName:     "rel1",
-		InverseType:  "type1",
-		ToOne:        true,
-		InverseName:  "rel2",
-		ToType:       "type2",
-		InverseToOne: false,
+		FromName: "rel1",
+		FromType: "type1",
+		ToOne:    true,
+		ToName:   "rel2",
+		ToType:   "type2",
+		FromOne:  false,
 	}
 
 	invRel := rel.Inverse()
@@ -192,9 +192,9 @@ func TestInverseRel(t *testing.T) {
 	assert.Equal("rel2", invRel.FromName)
 	assert.Equal("type1", invRel.ToType)
 	assert.Equal(false, invRel.ToOne)
-	assert.Equal("rel1", invRel.InverseName)
-	assert.Equal("type2", invRel.InverseType)
-	assert.Equal(true, invRel.InverseToOne)
+	assert.Equal("rel1", invRel.ToName)
+	assert.Equal("type2", invRel.FromType)
+	assert.Equal(true, invRel.FromOne)
 }
 
 func TestGetAttrType(t *testing.T) {
@@ -393,12 +393,12 @@ func TestCopyType(t *testing.T) {
 		},
 		Rels: map[string]Rel{
 			"rel1": {
-				FromName:     "rel1",
-				InverseType:  "type1",
-				ToOne:        true,
-				InverseName:  "rel2",
-				ToType:       "type2",
-				InverseToOne: false,
+				FromName: "rel1",
+				FromType: "type1",
+				ToOne:    true,
+				ToName:   "rel2",
+				ToType:   "type2",
+				FromOne:  false,
 			},
 		},
 	}
@@ -415,9 +415,9 @@ func TestCopyType(t *testing.T) {
 	assert.Equal("rel1", typ2.Rels["rel1"].FromName)
 	assert.Equal("type2", typ2.Rels["rel1"].ToType)
 	assert.True(typ2.Rels["rel1"].ToOne)
-	assert.Equal("rel2", typ2.Rels["rel1"].InverseName)
-	assert.Equal("type1", typ2.Rels["rel1"].InverseType)
-	assert.False(typ2.Rels["rel1"].InverseToOne)
+	assert.Equal("rel2", typ2.Rels["rel1"].ToName)
+	assert.Equal("type1", typ2.Rels["rel1"].FromType)
+	assert.False(typ2.Rels["rel1"].FromOne)
 
 	// Modify original (copy should not change)
 	typ1.Name = "type3"

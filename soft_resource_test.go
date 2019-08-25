@@ -24,12 +24,12 @@ func TestSoftResource(t *testing.T) {
 		Nullable: false,
 	})
 	_ = typ.AddRel(Rel{
-		FromName:     "rel1",
-		InverseType:  "type",
-		ToOne:        true,
-		InverseName:  "rel1",
-		ToType:       "type",
-		InverseToOne: true,
+		FromName: "rel1",
+		FromType: "type",
+		ToOne:    true,
+		ToName:   "rel1",
+		ToType:   "type",
+		FromOne:  true,
 	})
 	sr = &SoftResource{Type: &typ}
 	// TODO assert.Equal(t, &typ, sr.typ)
@@ -65,20 +65,20 @@ func TestSoftResource(t *testing.T) {
 	// Relationships
 	rels := map[string]Rel{
 		"rel1": {
-			FromName:     "rel1",
-			InverseType:  "type",
-			ToOne:        true,
-			InverseName:  "rel1",
-			ToType:       "type",
-			InverseToOne: true,
+			FromName: "rel1",
+			FromType: "type",
+			ToOne:    true,
+			ToName:   "rel1",
+			ToType:   "type",
+			FromOne:  true,
 		},
 		"rel2": {
-			FromName:     "rel2",
-			InverseType:  "type",
-			ToOne:        false,
-			InverseName:  "rel1",
-			ToType:       "type",
-			InverseToOne: true,
+			FromName: "rel2",
+			FromType: "type",
+			ToOne:    false,
+			ToName:   "rel1",
+			ToType:   "type",
+			FromOne:  true,
 		},
 	}
 	for _, rel := range rels {

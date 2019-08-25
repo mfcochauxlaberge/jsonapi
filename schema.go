@@ -109,8 +109,8 @@ func (s *Schema) Rels() []Rel {
 	}
 
 	sort.Slice(rels, func(i, j int) bool {
-		name1 := rels[i].InverseType + rels[i].FromName
-		name2 := rels[j].InverseType + rels[j].FromName
+		name1 := rels[i].FromType + rels[i].FromName
+		name2 := rels[j].FromType + rels[j].FromName
 		return name1 < name2
 	})
 
@@ -165,26 +165,26 @@ func (s *Schema) Check() []error {
 			}
 
 			// Skip to next relationship here if there's no inverse
-			if rel.InverseName == "" {
+			if rel.ToName == "" {
 				continue
 			}
 
 			// Is the inverse relationship type the same as its
 			// type name?
-			if rel.InverseType != typ.Name {
+			if rel.FromType != typ.Name {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: "+
 						"the inverse type of relationship %s should its type's name (%s, not %s)",
 					rel.FromName,
 					typ.Name,
-					rel.InverseType,
+					rel.FromType,
 				))
 			} else {
 				// Do both relationships (current and inverse) point
 				// to each other?
 				var found bool
 				for _, invRel := range targetType.Rels {
-					if rel.FromName == invRel.InverseName && rel.InverseName == invRel.FromName {
+					if rel.FromName == invRel.ToName && rel.ToName == invRel.FromName {
 						found = true
 					}
 				}
@@ -209,12 +209,12 @@ func (s *Schema) buildRels() {
 
 	for _, typ := range s.Types {
 		for _, rel := range typ.Rels {
-			relName := rel.InverseType + "_" + rel.FromName
-			if rel.InverseName == "" {
+			relName := rel.FromType + "_" + rel.FromName
+			if rel.ToName == "" {
 				s.rels[relName] = rel
 			} else {
 				inv := rel.Inverse()
-				invName := inv.InverseType + "_" + inv.FromName
+				invName := inv.FromType + "_" + inv.FromName
 				if relName < invName {
 					s.rels[relName] = rel
 				} else {

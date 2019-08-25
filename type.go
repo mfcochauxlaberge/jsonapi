@@ -288,23 +288,23 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 
 // Rel represents a resource relationship.
 type Rel struct {
-	FromName     string
-	ToType       string
-	ToOne        bool
-	InverseName  string
-	InverseType  string
-	InverseToOne bool
+	FromType string
+	FromName string
+	ToOne    bool
+	ToType   string
+	ToName   string
+	FromOne  bool
 }
 
 // Inverse returns the inverse relationship of r.
 func (r *Rel) Inverse() Rel {
 	return Rel{
-		FromName:     r.InverseName,
-		ToType:       r.InverseType,
-		ToOne:        r.InverseToOne,
-		InverseName:  r.FromName,
-		InverseType:  r.ToType,
-		InverseToOne: r.ToOne,
+		FromType: r.ToType,
+		FromName: r.ToName,
+		ToOne:    r.FromOne,
+		ToType:   r.FromType,
+		ToName:   r.FromName,
+		FromOne:  r.ToOne,
 	}
 }
 
