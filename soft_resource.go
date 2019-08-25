@@ -188,13 +188,6 @@ func (sr *SoftResource) Copy() Resource {
 	}
 }
 
-// UnmarshalJSON parses the payload and populates a SoftResource.
-func (sr *SoftResource) UnmarshalJSON(payload []byte) error {
-	sr.check()
-	// TODO
-	return nil
-}
-
 func (sr *SoftResource) fields() []string {
 	fields := make([]string, 0, len(sr.Type.Attrs)+len(sr.Type.Rels))
 	for i := range sr.Type.Attrs {
