@@ -158,7 +158,7 @@ func (s *Schema) Check() []error {
 			// Does the relationship point to a type that exists?
 			if targetType = s.GetType(rel.ToType); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
-					"jsonapi: the target type of relationship %s of type %s does not exist",
+					"jsonapi: field ToType of relationship %s of type %s does not exist",
 					rel.FromName,
 					typ.Name,
 				))
@@ -174,7 +174,7 @@ func (s *Schema) Check() []error {
 			if rel.FromType != typ.Name {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: "+
-						"the inverse type of relationship %s should its type's name (%s, not %s)",
+						"field FromType of relationship %s must be its type's name (%s, not %s)",
 					rel.FromName,
 					typ.Name,
 					rel.FromType,

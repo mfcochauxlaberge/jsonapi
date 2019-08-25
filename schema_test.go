@@ -152,11 +152,11 @@ func TestSchemaCheck(t *testing.T) {
 	assert.Len(errs, 3)
 	assert.Contains(
 		errsStr,
-		"jsonapi: the target type of relationship rel2-invalid of type type1 does not exist",
+		"jsonapi: field ToType of relationship rel2-invalid of type type1 does not exist",
 	)
 	assert.Contains(
 		errsStr,
-		"jsonapi: the inverse type of relationship rel1 should its type's name (type2, not type1)",
+		"jsonapi: field FromType of relationship rel1 must be its type's name (type2, not type1)",
 	)
 	assert.Contains(
 		errsStr,
