@@ -156,8 +156,8 @@ func BuildType(v interface{}) (Type, error) {
 		if relTag[0] == "rel" {
 			typ.Rels[jsonTag] = Rel{
 				FromName:    jsonTag,
-				Type:        relTag[1],
 				ToOne:       toOne,
+				ToType:      relTag[1],
 				InverseName: invName,
 				InverseType: typ.Name,
 			}

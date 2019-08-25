@@ -128,16 +128,16 @@ func TestEqual(t *testing.T) {
 
 	sr1.AddRel(Rel{
 		FromName: "to-one",
-		Type:     "mocktypes2",
 		ToOne:    false,
+		ToType:   "mocktypes2",
 	})
 	assert.False(Equal(mt11, sr1), "different to-one property")
 
 	sr1.RemoveField("to-one")
 	sr1.AddRel(Rel{
 		FromName: "to-one",
-		Type:     "mocktypes2",
 		ToOne:    true,
+		ToType:   "mocktypes2",
 	})
 	sr1.SetToOne("to-one", "b")
 	assert.False(Equal(mt11, sr1), "different relationship value (to-one)")

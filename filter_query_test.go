@@ -763,8 +763,8 @@ func TestFilterResource(t *testing.T) {
 		typ.Rels = map[string]Rel{
 			"rel": {
 				FromName: "rel",
-				Type:     "type",
 				ToOne:    toOne,
+				ToType:   "type",
 			},
 		}
 

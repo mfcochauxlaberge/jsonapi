@@ -76,7 +76,7 @@ func TestWrapper(t *testing.T) {
 	rel := wrap1.Rel("to-one")
 	assert.Equal(Rel{
 		FromName:     "to-one",
-		Type:         "mocktypes2",
+		ToType:       "mocktypes2",
 		ToOne:        true,
 		InverseName:  "",
 		InverseType:  "mocktypes1",

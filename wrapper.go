@@ -85,7 +85,7 @@ func Wrap(v interface{}) *Wrapper {
 		if relTag[0] == "rel" {
 			w.rels[jsonTag] = Rel{
 				FromName:    jsonTag,
-				Type:        relTag[1],
+				ToType:      relTag[1],
 				ToOne:       toOne,
 				InverseName: invName,
 				InverseType: w.typ,

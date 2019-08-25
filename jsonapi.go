@@ -258,7 +258,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 						if id != "" {
 							s["data"] = map[string]string{
 								"id":   r.GetToOne(rel.FromName),
-								"type": rel.Type,
+								"type": rel.ToType,
 							}
 						} else {
 							s["data"] = nil
@@ -282,7 +282,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 						for _, id := range ids {
 							data = append(data, map[string]string{
 								"id":   id,
-								"type": rel.Type,
+								"type": rel.ToType,
 							})
 						}
 						s["data"] = data

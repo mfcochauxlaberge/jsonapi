@@ -25,10 +25,10 @@ func TestSoftResource(t *testing.T) {
 	})
 	_ = typ.AddRel(Rel{
 		FromName:     "rel1",
-		Type:         "type",
+		InverseType:  "type",
 		ToOne:        true,
 		InverseName:  "rel1",
-		InverseType:  "type",
+		ToType:       "type",
 		InverseToOne: true,
 	})
 	sr = &SoftResource{Type: &typ}
@@ -66,18 +66,18 @@ func TestSoftResource(t *testing.T) {
 	rels := map[string]Rel{
 		"rel1": {
 			FromName:     "rel1",
-			Type:         "type",
+			InverseType:  "type",
 			ToOne:        true,
 			InverseName:  "rel1",
-			InverseType:  "type",
+			ToType:       "type",
 			InverseToOne: true,
 		},
 		"rel2": {
 			FromName:     "rel2",
-			Type:         "type",
+			InverseType:  "type",
 			ToOne:        false,
 			InverseName:  "rel1",
-			InverseType:  "type",
+			ToType:       "type",
 			InverseToOne: true,
 		},
 	}

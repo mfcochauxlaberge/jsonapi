@@ -156,7 +156,7 @@ func (s *Schema) Check() []error {
 			var targetType Type
 
 			// Does the relationship point to a type that exists?
-			if targetType = s.GetType(rel.Type); targetType.Name == "" {
+			if targetType = s.GetType(rel.ToType); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: the target type of relationship %s of type %s does not exist",
 					rel.FromName,

@@ -88,7 +88,7 @@ func (t *Type) AddRel(rel Rel) error {
 	if rel.FromName == "" {
 		return fmt.Errorf("jsonapi: relationship name is empty")
 	}
-	if rel.Type == "" {
+	if rel.ToType == "" {
 		return fmt.Errorf("jsonapi: relationship type is empty")
 	}
 
@@ -289,7 +289,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 // Rel represents a resource relationship.
 type Rel struct {
 	FromName     string
-	Type         string
+	ToType       string
 	ToOne        bool
 	InverseName  string
 	InverseType  string
@@ -300,10 +300,10 @@ type Rel struct {
 func (r *Rel) Inverse() Rel {
 	return Rel{
 		FromName:     r.InverseName,
-		Type:         r.InverseType,
+		ToType:       r.InverseType,
 		ToOne:        r.InverseToOne,
 		InverseName:  r.FromName,
-		InverseType:  r.Type,
+		InverseType:  r.ToType,
 		InverseToOne: r.ToOne,
 	}
 }
