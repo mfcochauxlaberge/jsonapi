@@ -84,11 +84,11 @@ func Wrap(v interface{}) *Wrapper {
 
 		if relTag[0] == "rel" {
 			w.rels[jsonTag] = Rel{
-				Name:        jsonTag,
-				Type:        relTag[1],
-				ToOne:       toOne,
-				InverseName: invName,
-				InverseType: w.typ,
+				FromName: jsonTag,
+				ToType:   relTag[1],
+				ToOne:    toOne,
+				ToName:   invName,
+				FromType: w.typ,
 			}
 		}
 	}
@@ -124,7 +124,7 @@ func (w *Wrapper) Attr(key string) Attr {
 // Rel returns the relationship that corresponds to the given key.
 func (w *Wrapper) Rel(key string) Rel {
 	for _, rel := range w.rels {
-		if rel.Name == key {
+		if rel.FromName == key {
 			return rel
 		}
 	}
@@ -293,9 +293,9 @@ func (w *Wrapper) Copy() Resource {
 	// Relationships
 	for _, rel := range w.Rels() {
 		if rel.ToOne {
-			nw.SetToOne(rel.Name, w.GetToOne(rel.Name))
+			nw.SetToOne(rel.FromName, w.GetToOne(rel.FromName))
 		} else {
-			nw.SetToMany(rel.Name, w.GetToMany(rel.Name))
+			nw.SetToMany(rel.FromName, w.GetToMany(rel.FromName))
 		}
 	}
 

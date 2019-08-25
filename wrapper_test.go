@@ -75,12 +75,12 @@ func TestWrapper(t *testing.T) {
 	// Get relationships
 	rel := wrap1.Rel("to-one")
 	assert.Equal(Rel{
-		Name:         "to-one",
-		Type:         "mocktypes2",
-		ToOne:        true,
-		InverseName:  "",
-		InverseType:  "mocktypes1",
-		InverseToOne: false,
+		FromName: "to-one",
+		ToType:   "mocktypes2",
+		ToOne:    true,
+		ToName:   "",
+		FromType: "mocktypes1",
+		FromOne:  false,
 	}, rel, "get relationship (to-one)")
 	assert.Equal(Rel{}, wrap1.Rel("nonexistent"), "get non-existent relationship")
 
@@ -180,7 +180,7 @@ func TestWrapper(t *testing.T) {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
 
 	// Copy
@@ -189,7 +189,7 @@ func TestWrapper(t *testing.T) {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
 
 	wrap3.Set("str", "another string")
