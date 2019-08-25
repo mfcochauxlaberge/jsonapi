@@ -46,11 +46,11 @@ func (sr *SoftResource) AddAttr(attr Attr) {
 func (sr *SoftResource) AddRel(rel Rel) {
 	sr.check()
 	for _, name := range sr.fields() {
-		if name == rel.FromName {
+		if name == rel.Name {
 			return
 		}
 	}
-	sr.Type.Rels[rel.FromName] = rel
+	sr.Type.Rels[rel.Name] = rel
 }
 
 // RemoveField removes a field.
@@ -201,7 +201,7 @@ func (sr *SoftResource) fields() []string {
 		fields = append(fields, sr.Type.Attrs[i].Name)
 	}
 	for i := range sr.Type.Rels {
-		fields = append(fields, sr.Type.Rels[i].FromName)
+		fields = append(fields, sr.Type.Rels[i].Name)
 	}
 	return fields
 }
@@ -227,7 +227,7 @@ func (sr *SoftResource) check() {
 		}
 	}
 	for i := range sr.Type.Rels {
-		n := sr.Type.Rels[i].FromName
+		n := sr.Type.Rels[i].Name
 		if _, ok := sr.data[n]; !ok {
 			if sr.Type.Rels[i].ToOne {
 				sr.data[n] = ""

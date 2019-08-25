@@ -68,9 +68,9 @@ func TestSchemaTypes(t *testing.T) {
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
 	rel := Rel{
-		FromName: "rel1",
-		FromType: "type1",
-		ToOne:    true,
+		Name:  "rel1",
+		Type:  "type1",
+		ToOne: true,
 	}
 	err = schema.AddRel("type1", rel)
 	assert.NoError(err)
@@ -83,13 +83,13 @@ func TestSchemaTypes(t *testing.T) {
 	// Add an invalid relationship (no name)
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
-	err = schema.AddRel("type1", Rel{FromName: ""})
+	err = schema.AddRel("type1", Rel{Name: ""})
 	assert.Error(err)
 
 	// Add an invalid relationship (type does not exist)
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
-	err = schema.AddRel("type2", Rel{FromName: "rel1"})
+	err = schema.AddRel("type2", Rel{Name: "rel1"})
 	assert.Error(err)
 }
 
@@ -103,16 +103,16 @@ func TestSchemaCheck(t *testing.T) {
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
 			"rel1": {
-				FromName: "rel1",
-				FromType: "type2",
+				Name: "rel1",
+				Type: "type2",
 			},
 			"rel2": {
-				FromName: "rel2-invalid",
-				FromType: "nonexistent",
+				Name: "rel2-invalid",
+				Type: "nonexistent",
 			},
 			"rel3": {
-				FromName: "rel3",
-				FromType: "type1",
+				Name: "rel3",
+				Type: "type1",
 			},
 		},
 	}
@@ -124,16 +124,16 @@ func TestSchemaCheck(t *testing.T) {
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
 			"rel1": {
-				FromName: "rel1",
-				FromType: "type1",
-				ToName:   "rel1",
-				ToType:   "type1",
+				Name:        "rel1",
+				Type:        "type1",
+				InverseName: "rel1",
+				InverseType: "type1",
 			},
 			"rel2": {
-				FromName: "rel2",
-				FromType: "type1",
-				ToName:   "rel3",
-				ToType:   "type2",
+				Name:        "rel2",
+				Type:        "type1",
+				InverseName: "rel3",
+				InverseType: "type2",
 			},
 		},
 	}
@@ -173,20 +173,20 @@ func TestSchemaRels(t *testing.T) {
 		Name: "users",
 		Rels: map[string]Rel{
 			"posts": {
-				FromName: "posts",
-				FromType: "messages",
-				ToOne:    false,
-				ToName:   "author",
-				ToType:   "users",
-				FromOne:  true,
+				Name:         "posts",
+				Type:         "messages",
+				ToOne:        false,
+				InverseName:  "author",
+				InverseType:  "users",
+				InverseToOne: true,
 			},
 			"favorites": {
-				FromName: "favorites",
-				FromType: "messages",
-				ToOne:    false,
-				ToName:   "",
-				ToType:   "users",
-				FromOne:  false,
+				Name:         "favorites",
+				Type:         "messages",
+				ToOne:        false,
+				InverseName:  "",
+				InverseType:  "users",
+				InverseToOne: false,
 			},
 		},
 	}
@@ -196,12 +196,12 @@ func TestSchemaRels(t *testing.T) {
 		Name: "messages",
 		Rels: map[string]Rel{
 			"author": {
-				FromName: "author",
-				FromType: "users",
-				ToOne:    true,
-				ToName:   "posts",
-				ToType:   "messages",
-				FromOne:  false,
+				Name:         "author",
+				Type:         "users",
+				ToOne:        true,
+				InverseName:  "posts",
+				InverseType:  "messages",
+				InverseToOne: false,
 			},
 		},
 	}

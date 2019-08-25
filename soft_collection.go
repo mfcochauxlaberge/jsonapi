@@ -70,9 +70,9 @@ func (s *SoftCollection) Add(r Resource) {
 	for _, rel := range r.Rels() {
 		sr.AddRel(rel)
 		if rel.ToOne {
-			sr.SetToOne(rel.FromName, r.GetToOne(rel.FromName))
+			sr.SetToOne(rel.Name, r.GetToOne(rel.Name))
 		} else {
-			sr.SetToMany(rel.FromName, r.GetToMany(rel.FromName))
+			sr.SetToMany(rel.Name, r.GetToMany(rel.Name))
 		}
 	}
 

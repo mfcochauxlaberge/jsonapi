@@ -54,12 +54,12 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		}
 
 		url.IsCol = !url.Rel.ToOne
-		url.ResType = url.Rel.FromType
+		url.ResType = url.Rel.Type
 		url.BelongsToFilter = BelongsToFilter{
 			Type:        url.Fragments[0],
 			ID:          url.Fragments[1],
-			Name:        url.Rel.FromName,
-			ToName: url.Rel.ToName,
+			Name:        url.Rel.Name,
+			InverseName: url.Rel.InverseName,
 		}
 
 		if len(url.Fragments) == 3 {
@@ -217,5 +217,5 @@ type BelongsToFilter struct {
 	Type        string
 	ID          string
 	Name        string
-	ToName string
+	InverseName string
 }

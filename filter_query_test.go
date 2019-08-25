@@ -762,9 +762,9 @@ func TestFilterResource(t *testing.T) {
 		// ty, n := GetAttrType(fmt.Sprintf("%T", test.rval))
 		typ.Rels = map[string]Rel{
 			"rel": {
-				ToName: "rel",
-				ToType: "type",
-				ToOne:  toOne,
+				Name:  "rel",
+				Type:  "type",
+				ToOne: toOne,
 			},
 		}
 

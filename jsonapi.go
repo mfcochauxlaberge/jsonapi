@@ -238,7 +238,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 	for _, rel := range r.Rels() {
 		include := false
 		for _, field := range fields {
-			if field == rel.FromName {
+			if field == rel.Name {
 				include = true
 				break
 			}
@@ -249,16 +249,16 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 
 			if rel.ToOne {
 				s := map[string]map[string]string{
-					"links": buildRelationshipLinks(r, prepath, rel.FromName),
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
 				}
 
 				for _, n := range relData[r.GetType().Name] {
-					if n == rel.FromName {
-						id := r.GetToOne(rel.FromName)
+					if n == rel.Name {
+						id := r.GetToOne(rel.Name)
 						if id != "" {
 							s["data"] = map[string]string{
-								"id":   r.GetToOne(rel.FromName),
-								"type": rel.FromType,
+								"id":   r.GetToOne(rel.Name),
+								"type": rel.Type,
 							}
 						} else {
 							s["data"] = nil
@@ -268,21 +268,21 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 				}
 
 				raw, _ = json.Marshal(s)
-				rels[rel.FromName] = &raw
+				rels[rel.Name] = &raw
 			} else {
 				s := map[string]interface{}{
-					"links": buildRelationshipLinks(r, prepath, rel.FromName),
+					"links": buildRelationshipLinks(r, prepath, rel.Name),
 				}
 
 				for _, n := range relData[r.GetType().Name] {
-					if n == rel.FromName {
+					if n == rel.Name {
 						data := []map[string]string{}
-						ids := r.GetToMany(rel.FromName)
+						ids := r.GetToMany(rel.Name)
 						sort.Strings(ids)
 						for _, id := range ids {
 							data = append(data, map[string]string{
 								"id":   id,
-								"type": rel.FromType,
+								"type": rel.Type,
 							})
 						}
 						s["data"] = data
@@ -291,7 +291,7 @@ func marshalResource(r Resource, prepath string, fields []string, relData map[st
 				}
 
 				raw, _ = json.Marshal(s)
-				rels[rel.FromName] = &raw
+				rels[rel.Name] = &raw
 			}
 		}
 	}
@@ -361,7 +361,7 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 				if rel.ToOne {
 					var iden identifierSkeleton
 					err = json.Unmarshal(v.Data, &iden)
-					res.SetToOne(rel.FromName, iden.ID)
+					res.SetToOne(rel.Name, iden.ID)
 				} else {
 					var idens []identifierSkeleton
 					err = json.Unmarshal(v.Data, &idens)
@@ -369,12 +369,12 @@ func unmarshalResource(data []byte, schema *Schema) (Resource, error) {
 					for i := range idens {
 						ids[i] = idens[i].ID
 					}
-					res.SetToMany(rel.FromName, ids)
+					res.SetToMany(rel.Name, ids)
 				}
 			}
 			if err != nil {
 				return nil, NewErrInvalidFieldValueInBody(
-					rel.FromName,
+					rel.Name,
 					string(v.Data),
 					typ.Name,
 				)

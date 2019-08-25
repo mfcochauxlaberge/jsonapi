@@ -85,24 +85,24 @@ func (t *Type) RemoveAttr(attr string) {
 // AddRel adds a relationship to the type.
 func (t *Type) AddRel(rel Rel) error {
 	// Validation
-	if rel.FromName == "" {
+	if rel.Name == "" {
 		return fmt.Errorf("jsonapi: relationship name is empty")
 	}
-	if rel.FromType == "" {
+	if rel.Type == "" {
 		return fmt.Errorf("jsonapi: relationship type is empty")
 	}
 
 	// Make sure the name isn't already used
 	for i := range t.Rels {
-		if t.Rels[i].FromName == rel.FromName {
-			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.FromName)
+		if t.Rels[i].Name == rel.Name {
+			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.Name)
 		}
 	}
 
 	if t.Rels == nil {
 		t.Rels = map[string]Rel{}
 	}
-	t.Rels[rel.FromName] = rel
+	t.Rels[rel.Name] = rel
 
 	return nil
 }
@@ -110,7 +110,7 @@ func (t *Type) AddRel(rel Rel) error {
 // RemoveRel removes a relationship from the type if it exists.
 func (t *Type) RemoveRel(rel string) {
 	for i := range t.Rels {
-		if t.Rels[i].FromName == rel {
+		if t.Rels[i].Name == rel {
 			delete(t.Rels, rel)
 		}
 	}
@@ -124,7 +124,7 @@ func (t *Type) Fields() []string {
 		fields = append(fields, t.Attrs[i].Name)
 	}
 	for i := range t.Rels {
-		fields = append(fields, t.Rels[i].FromName)
+		fields = append(fields, t.Rels[i].Name)
 	}
 	sort.Strings(fields)
 	return fields
@@ -288,29 +288,23 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 
 // Rel represents a resource relationship.
 type Rel struct {
-	// Source
-	FromName string
-	FromType string
-	ToOne    bool
-
-	// Destination
-	// If ToName is empty, it is a one-way
-	// relationship. If it is not empty, it
-	// is two-way.
-	ToName  string
-	ToType  string
-	FromOne bool
+	Name         string
+	Type         string
+	ToOne        bool
+	InverseName  string
+	InverseType  string
+	InverseToOne bool
 }
 
 // Inverse returns the inverse relationship of r.
 func (r *Rel) Inverse() Rel {
 	return Rel{
-		FromName: r.ToName,
-		FromType: r.ToType,
-		ToOne:    r.FromOne,
-		ToName:   r.FromName,
-		ToType:   r.FromType,
-		FromOne:  r.ToOne,
+		Name:         r.InverseName,
+		Type:         r.InverseType,
+		ToOne:        r.InverseToOne,
+		InverseName:  r.Name,
+		InverseType:  r.Type,
+		InverseToOne: r.ToOne,
 	}
 }
 

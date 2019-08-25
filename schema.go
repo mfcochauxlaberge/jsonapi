@@ -109,8 +109,8 @@ func (s *Schema) Rels() []Rel {
 	}
 
 	sort.Slice(rels, func(i, j int) bool {
-		name1 := rels[i].ToType + rels[i].FromName
-		name2 := rels[j].ToType + rels[j].FromName
+		name1 := rels[i].InverseType + rels[i].Name
+		name2 := rels[j].InverseType + rels[j].Name
 		return name1 < name2
 	})
 
@@ -156,35 +156,35 @@ func (s *Schema) Check() []error {
 			var targetType Type
 
 			// Does the relationship point to a type that exists?
-			if targetType = s.GetType(rel.FromType); targetType.Name == "" {
+			if targetType = s.GetType(rel.Type); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: the target type of relationship %s of type %s does not exist",
-					rel.FromName,
+					rel.Name,
 					typ.Name,
 				))
 			}
 
 			// Skip to next relationship here if there's no inverse
-			if rel.ToName == "" {
+			if rel.InverseName == "" {
 				continue
 			}
 
 			// Is the inverse relationship type the same as its
 			// type name?
-			if rel.ToType != typ.Name {
+			if rel.InverseType != typ.Name {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: "+
 						"the inverse type of relationship %s should its type's name (%s, not %s)",
-					rel.FromName,
+					rel.Name,
 					typ.Name,
-					rel.ToType,
+					rel.InverseType,
 				))
 			} else {
 				// Do both relationships (current and inverse) point
 				// to each other?
 				var found bool
 				for _, invRel := range targetType.Rels {
-					if rel.FromName == invRel.ToName && rel.ToName == invRel.FromName {
+					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
 						found = true
 					}
 				}
@@ -192,7 +192,7 @@ func (s *Schema) Check() []error {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: "+
 							"relationship %s of type %s and its inverse do not point each other",
-						rel.FromName,
+						rel.Name,
 						typ.Name,
 					))
 				}
@@ -209,12 +209,12 @@ func (s *Schema) buildRels() {
 
 	for _, typ := range s.Types {
 		for _, rel := range typ.Rels {
-			relName := rel.ToType + "_" + rel.FromName
-			if rel.ToName == "" {
+			relName := rel.InverseType + "_" + rel.Name
+			if rel.InverseName == "" {
 				s.rels[relName] = rel
 			} else {
 				inv := rel.Inverse()
-				invName := inv.ToType + "_" + inv.FromName
+				invName := inv.InverseType + "_" + inv.Name
 				if relName < invName {
 					s.rels[relName] = rel
 				} else {
