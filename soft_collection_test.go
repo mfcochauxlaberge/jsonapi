@@ -27,20 +27,20 @@ func TestSoftCollection(t *testing.T) {
 		Nullable: true,
 	})
 	_ = typ.AddRel(Rel{
-		Name:         "rel1",
-		Type:         "othertype",
-		ToOne:        true,
-		InverseName:  "rel2",
-		InverseType:  "thistype",
-		InverseToOne: true,
+		FromName: "rel1",
+		FromType: "othertype",
+		ToOne:    true,
+		ToName:   "rel2",
+		ToType:   "thistype",
+		FromOne:  true,
 	})
 	_ = typ.AddRel(Rel{
-		Name:         "rel3",
-		Type:         "othertype",
-		ToOne:        false,
-		InverseName:  "rel4",
-		InverseType:  "thistype",
-		InverseToOne: true,
+		FromName: "rel3",
+		FromType: "othertype",
+		ToOne:    false,
+		ToName:   "rel4",
+		ToType:   "thistype",
+		FromOne:  true,
 	})
 
 	// Make a copy so that modifying the original typ
@@ -59,12 +59,12 @@ func TestSoftCollection(t *testing.T) {
 		Nullable: false,
 	}
 	rel5 := Rel{
-		Name:         "rel5",
-		Type:         "othertype",
-		ToOne:        true,
-		InverseName:  "rel6",
-		InverseType:  "thistype",
-		InverseToOne: false,
+		FromName: "rel5",
+		FromType: "othertype",
+		ToOne:    true,
+		ToName:   "rel6",
+		ToType:   "thistype",
+		FromOne:  false,
 	}
 	_ = typ.AddAttr(attr3)
 	_ = sc.AddAttr(attr3)
@@ -84,12 +84,12 @@ func TestSoftCollection(t *testing.T) {
 	sr.AddAttr(attr4)
 	_ = typ.AddAttr(attr4)
 	rel7 := Rel{
-		Name:         "rel7",
-		Type:         "othertype",
-		ToOne:        true,
-		InverseName:  "rel8",
-		InverseType:  "thirdtype",
-		InverseToOne: true,
+		FromName: "rel7",
+		FromType: "othertype",
+		ToOne:    true,
+		ToName:   "rel8",
+		ToType:   "thirdtype",
+		FromOne:  true,
 	}
 	sr.AddRel(rel7)
 	_ = typ.AddRel(rel7)
@@ -131,9 +131,9 @@ func TestSoftCollectionResource(t *testing.T) {
 		Nullable: true,
 	})
 	_ = sc.Type.AddRel(Rel{
-		Name:  "rel1",
-		Type:  "type2",
-		ToOne: true,
+		FromName: "rel1",
+		FromType: "type2",
+		ToOne:    true,
 	})
 
 	sr := &SoftResource{}
