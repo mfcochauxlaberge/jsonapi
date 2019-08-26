@@ -308,6 +308,19 @@ func (r *Rel) Inverse() Rel {
 	}
 }
 
+// Normalize inverts the relationship if necessary in order to have it in the
+// right direction and returns the result.
+//
+// This is the form stored in Schema.Rels.
+func (r *Rel) Normalize() Rel {
+	from := r.FromType + r.FromName
+	to := r.ToType + r.ToName
+	if from < to {
+		return *r
+	}
+	return r.Inverse()
+}
+
 // GetAttrType returns the attribute type as an int (see constants) and a
 // boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {

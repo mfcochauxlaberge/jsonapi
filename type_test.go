@@ -197,6 +197,38 @@ func TestInverseRel(t *testing.T) {
 	assert.Equal(true, invRel.FromOne)
 }
 
+func TestRelNormalize(t *testing.T) {
+	assert := assert.New(t)
+
+	rel := Rel{
+		FromName: "rel2",
+		FromType: "type2",
+		ToOne:    false,
+		ToName:   "rel1",
+		ToType:   "type1",
+		FromOne:  true,
+	}
+
+	// Normalize should return the inverse because
+	// type1 comes before type2 alphabetically.
+	norm := rel.Normalize()
+	assert.Equal("type1", norm.FromType)
+	assert.Equal("rel1", norm.FromName)
+	assert.Equal(true, norm.ToOne)
+	assert.Equal("type2", norm.ToType)
+	assert.Equal("rel2", norm.ToName)
+	assert.Equal(false, norm.FromOne)
+
+	// Normalize again, but it should stay the same.
+	norm = norm.Normalize()
+	assert.Equal("type1", norm.FromType)
+	assert.Equal("rel1", norm.FromName)
+	assert.Equal(true, norm.ToOne)
+	assert.Equal("type2", norm.ToType)
+	assert.Equal("rel2", norm.ToName)
+	assert.Equal(false, norm.FromOne)
+}
+
 func TestGetAttrType(t *testing.T) {
 	assert := assert.New(t)
 
