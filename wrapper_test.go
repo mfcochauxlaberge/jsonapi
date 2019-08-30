@@ -25,6 +25,14 @@ func TestWrap(t *testing.T) {
 		_ = Wrap(&str)
 	}, "panic when not a pointer to a struct")
 
+	assert.NotPanics(func() {
+		_ = Wrap(&mocktype{})
+	}, "don't panic when a valid struct")
+
+	assert.NotPanics(func() {
+		_ = Wrap(mocktype{})
+	}, "don't panic when a pointer to a valid struct")
+
 	assert.Panics(func() {
 		s := time.Now()
 		_ = Wrap(&s)
