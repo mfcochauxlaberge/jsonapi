@@ -149,6 +149,7 @@ func TestRange(t *testing.T) {
 		"range of IDs (3)",
 	)
 }
+
 func TestSortResources(t *testing.T) {
 	assert := assert.New(t)
 
