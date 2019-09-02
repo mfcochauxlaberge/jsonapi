@@ -154,7 +154,8 @@ type Attr struct {
 	Nullable bool
 }
 
-// UnmarshalToType ...
+// UnmarshalToType unmarshals the data into a value of the type represented by
+// the attribute and returns it.
 func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 	if a.Nullable && string(data) == "nil" {
 		return nil, nil
