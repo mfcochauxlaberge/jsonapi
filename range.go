@@ -110,19 +110,12 @@ func (s sortedResources) Less(i, j int) bool {
 			panic("cannot compare two resources of different types")
 		}
 
-		attr, ok := typ.Attrs[r]
-		if !ok {
+		if _, ok := typ.Attrs[r]; !ok {
 			panic("cannot sort on a unknown attribute")
 		}
 
 		v := s.col[i].Get(r)
-		if v == nil {
-			v = GetZeroValue(attr.Type, attr.Nullable)
-		}
 		v2 := s.col[j].Get(r)
-		if v2 == nil {
-			v2 = GetZeroValue(attr.Type, attr.Nullable)
-		}
 
 		if fmt.Sprintf("%T", v) != fmt.Sprintf("%T", v2) {
 			panic("cannot compare two values of different types")
