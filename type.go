@@ -142,8 +142,10 @@ func (t *Type) New() Resource {
 }
 
 // Equal returns true if both types have the same name, attributes,
-// relationships, and both have a nil NewFunc.
+// relationships. NewFunc is ignored.
 func (t Type) Equal(typ Type) bool {
+	t.NewFunc = nil
+	typ.NewFunc = nil
 	return reflect.DeepEqual(t, typ)
 }
 

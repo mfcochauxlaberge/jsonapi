@@ -74,6 +74,18 @@ func TestTypeEqual(t *testing.T) {
 	typ1.Name = "type1"
 	typ2.Name = "type2"
 	assert.False(typ1.Equal(typ2))
+
+	// Make sure NewFunc is ignored.
+	typ1.Name = "type1"
+	typ1.NewFunc = func() Resource {
+		return nil
+	}
+	typ2.Name = "type1"
+	typ2.NewFunc = func() Resource {
+		return &SoftResource{}
+	}
+	assert.True(typ1.Equal(typ2))
+
 }
 
 func TestTypeNewFunc(t *testing.T) {
