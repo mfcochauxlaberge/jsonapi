@@ -250,3 +250,125 @@ func TestWrapperSet(t *testing.T) {
 		}
 	}
 }
+
+func TestWrapperGetAndSetErrors(t *testing.T) {
+	assert := assert.New(t)
+
+	mt := &mocktype{}
+	wrap := Wrap(mt)
+
+	// Get on empty field name
+	assert.Panics(func() {
+		_ = wrap.Get("")
+	})
+
+	// Get on unknown field name
+	assert.Panics(func() {
+		_ = wrap.Get("unknown")
+	})
+
+	// Set on empty field name
+	assert.Panics(func() {
+		wrap.Set("", "")
+	})
+
+	// Set on unknown field name
+	assert.Panics(func() {
+		wrap.Set("unknown", "")
+	})
+
+	// Set with value of wrong type
+	assert.Panics(func() {
+		wrap.Set("str", 42)
+	})
+
+	// GetToOne on empty field name
+	assert.Panics(func() {
+		_ = wrap.GetToOne("")
+	})
+
+	// GetToOne on unknown field name
+	assert.Panics(func() {
+		_ = wrap.GetToOne("unknown")
+	})
+
+	// GetToOne on attribute
+	assert.Panics(func() {
+		_ = wrap.GetToOne("str")
+	})
+
+	// GetToOne on to-many relationship
+	assert.Panics(func() {
+		_ = wrap.GetToOne("to-x")
+	})
+
+	// GetToMany on empty field name
+	assert.Panics(func() {
+		_ = wrap.GetToMany("")
+	})
+
+	// GetToMany on unknown field name
+	assert.Panics(func() {
+		_ = wrap.GetToMany("unknown")
+	})
+
+	// GetToMany on attribute
+	assert.Panics(func() {
+		_ = wrap.GetToMany("str")
+	})
+
+	// GetToMany on to-one relationship
+	assert.Panics(func() {
+		_ = wrap.GetToMany("to-1")
+	})
+
+	// SetToOne on empty field name
+	assert.Panics(func() {
+		wrap.SetToOne("", "id")
+	})
+
+	// SetToOne on unknown field name
+	assert.Panics(func() {
+		wrap.SetToOne("unknown", "id")
+	})
+
+	// SetToOne on attribute
+	assert.Panics(func() {
+		wrap.SetToOne("str", "id")
+	})
+
+	// SetToOne on to-many relationship
+	assert.Panics(func() {
+		wrap.SetToOne("to-x", "id")
+	})
+
+	// SetToMany on empty field name
+	assert.Panics(func() {
+		wrap.SetToMany("", []string{"id"})
+	})
+
+	// SetToMany on unknown field name
+	assert.Panics(func() {
+		wrap.SetToMany("unknown", []string{"id"})
+	})
+
+	// SetToMany on attribute
+	assert.Panics(func() {
+		wrap.SetToMany("str", []string{"id"})
+	})
+
+	// SetToMany on to-one relationship
+	assert.Panics(func() {
+		wrap.SetToMany("to-1", []string{"id"})
+	})
+}
+
+func TestWrapperValidate(t *testing.T) {
+	assert := assert.New(t)
+
+	// TODO Implement this test when the implementation
+	// of Wrapper.Validate is done.
+	wrap := Wrap(mocktype{})
+	errs := wrap.Validate()
+	assert.Nil(errs)
+}
