@@ -61,7 +61,7 @@ func (t *Type) AddAttr(attr Attr) error {
 	// Make sure the name isn't already used
 	for i := range t.Attrs {
 		if t.Attrs[i].Name == attr.Name {
-			return fmt.Errorf("jsonapi: attribute name %s is already used", attr.Name)
+			return fmt.Errorf("jsonapi: attribute name %q is already used", attr.Name)
 		}
 	}
 
@@ -95,7 +95,7 @@ func (t *Type) AddRel(rel Rel) error {
 	// Make sure the name isn't already used
 	for i := range t.Rels {
 		if t.Rels[i].FromName == rel.FromName {
-			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.FromName)
+			return fmt.Errorf("jsonapi: relationship name %q is already used", rel.FromName)
 		}
 	}
 

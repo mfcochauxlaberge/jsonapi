@@ -498,7 +498,7 @@ func TestUnmarshaling(t *testing.T) {
 				expected: "400 Bad Request: The provided JSON body could not be read.",
 			}, {
 				payload:  `{"data":{"id":"1","type":"mocktype","attributes":{"nonexistent":1}}}`,
-				expected: "400 Bad Request: nonexistent is not a known field.",
+				expected: "400 Bad Request: \"nonexistent\" is not a known field.",
 			}, {
 				payload:  `{"data":{"id":"1","type":"mocktype","attributes":{"int8":"abc"}}}`,
 				expected: "400 Bad Request: The field value is invalid for the expected type.",
@@ -527,7 +527,7 @@ func TestUnmarshaling(t *testing.T) {
 						}
 					}
 				}`,
-				expected: "400 Bad Request: wrong is not a known field.",
+				expected: "400 Bad Request: \"wrong\" is not a known field.",
 			},
 		}
 

@@ -196,7 +196,7 @@ func NewErrUnknownFieldInBody(typ, field string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in body"
-	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Detail = fmt.Sprintf("%q is not a known field.", field)
 	e.Source["pointer"] = "" // TODO
 	e.Meta["unknown-field"] = field
 	e.Meta["type"] = typ
@@ -210,7 +210,7 @@ func NewErrUnknownFieldInURL(field string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in URL"
-	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Detail = fmt.Sprintf("%q is not a known field.", field)
 	e.Meta["unknown-field"] = field
 	// TODO
 	// if param == "filter" {
@@ -226,7 +226,7 @@ func NewErrUnknownParameter(param string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown parameter"
-	e.Detail = fmt.Sprintf("%s is not a known parameter.", param)
+	e.Detail = fmt.Sprintf("%q is not a known parameter.", param)
 	e.Source["parameter"] = param
 	e.Meta["unknown-parameter"] = param
 
@@ -239,7 +239,7 @@ func NewErrUnknownRelationshipInPath(typ, rel, path string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown relationship"
-	e.Detail = fmt.Sprintf("%s is not a relationship of %s.", rel, typ)
+	e.Detail = fmt.Sprintf("%q is not a relationship of %q.", rel, typ)
 	e.Meta["unknown-relationship"] = rel
 	e.Meta["type"] = typ
 	e.Meta["path"] = path
@@ -253,7 +253,7 @@ func NewErrUnknownTypeInURL(typ string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown type in URL"
-	e.Detail = fmt.Sprintf("%s is not a known type.", typ)
+	e.Detail = fmt.Sprintf("%q is not a known type.", typ)
 	e.Meta["unknown-type"] = typ
 
 	return e
@@ -265,7 +265,7 @@ func NewErrUnknownFieldInFilterParameter(field string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown field in filter parameter"
-	e.Detail = fmt.Sprintf("%s is not a known field.", field)
+	e.Detail = fmt.Sprintf("%q is not a known field.", field)
 	e.Source["parameter"] = "filter"
 	e.Meta["unknown-field"] = field
 
@@ -278,7 +278,7 @@ func NewErrUnknownOperatorInFilterParameter(op string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown operator in filter parameter"
-	e.Detail = fmt.Sprintf("%s is not a known operator.", op)
+	e.Detail = fmt.Sprintf("%q is not a known operator.", op)
 	e.Source["parameter"] = "filter"
 	e.Meta["unknown-operator"] = op
 
@@ -291,7 +291,7 @@ func NewErrInvalidValueInFilterParameter(val, kind string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown value in filter parameter"
-	e.Detail = fmt.Sprintf("%s is not a known value.", val)
+	e.Detail = fmt.Sprintf("%q is not a known value.", val)
 	e.Source["parameter"] = "filter"
 	e.Meta["invalid-value"] = val
 
@@ -304,7 +304,7 @@ func NewErrUnknownCollationInFilterParameter(col string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown collation in filter parameter"
-	e.Detail = fmt.Sprintf("%s is not a known collation.", col)
+	e.Detail = fmt.Sprintf("%q is not a known collation.", col)
 	e.Source["parameter"] = "filter"
 	e.Meta["unknown-collation"] = col
 
@@ -317,7 +317,7 @@ func NewErrUnknownFilterParameterLabel(label string) Error {
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)
 	e.Title = "Unknown label in filter parameter"
-	e.Detail = fmt.Sprintf("%s is not a known filter query label.", label)
+	e.Detail = fmt.Sprintf("%q is not a known filter query label.", label)
 	e.Source["parameter"] = "filter"
 	e.Meta["unknown-label"] = label
 

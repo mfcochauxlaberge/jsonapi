@@ -39,7 +39,7 @@ func (s *Schema) AddType(typ Type) error {
 	// Make sure the name isn't already used
 	for i := range s.Types {
 		if s.Types[i].Name == typ.Name {
-			return fmt.Errorf("jsonapi: type name %s is already used", typ.Name)
+			return fmt.Errorf("jsonapi: type name %q is already used", typ.Name)
 		}
 	}
 
@@ -65,7 +65,7 @@ func (s *Schema) AddAttr(typ string, attr Attr) error {
 		}
 	}
 
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+	return fmt.Errorf("jsonapi: type %q does not exist", typ)
 }
 
 // RemoveAttr removes an attribute from the specified type.
@@ -85,7 +85,7 @@ func (s *Schema) AddRel(typ string, rel Rel) error {
 		}
 	}
 
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+	return fmt.Errorf("jsonapi: type %q does not exist", typ)
 }
 
 // RemoveRel removes a relationship from the specified type.
@@ -158,7 +158,7 @@ func (s *Schema) Check() []error {
 			// Does the relationship point to a type that exists?
 			if targetType = s.GetType(rel.ToType); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
-					"jsonapi: field ToType of relationship %s of type %s does not exist",
+					"jsonapi: field ToType of relationship %q of type %q does not exist",
 					rel.FromName,
 					typ.Name,
 				))
@@ -174,7 +174,7 @@ func (s *Schema) Check() []error {
 			if rel.FromType != typ.Name {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: "+
-						"field FromType of relationship %s must be its type's name (%s, not %s)",
+						"field FromType of relationship %q must be its type's name (%q, not %q)",
 					rel.FromName,
 					typ.Name,
 					rel.FromType,
@@ -191,7 +191,7 @@ func (s *Schema) Check() []error {
 				if !found {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: "+
-							"relationship %s of type %s and its inverse do not point each other",
+							"relationship %q of type %q and its inverse do not point each other",
 						rel.FromName,
 						typ.Name,
 					))

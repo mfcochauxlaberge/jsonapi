@@ -20,19 +20,19 @@ func TestCheck(t *testing.T) {
 	err = Check(invalidAttributeType{})
 	assert.EqualError(
 		err,
-		"jsonapi: attribute Attr of type typename is of unsupported type",
+		"jsonapi: attribute \"Attr\" of type \"typename\" is of unsupported type",
 	)
 
 	err = Check(invalidRelAPITag{})
 	assert.EqualError(
 		err,
-		"jsonapi: api tag of relationship Rel of struct invalidRelAPITag is invalid",
+		"jsonapi: api tag of relationship \"Rel\" of struct \"invalidRelAPITag\" is invalid",
 	)
 
 	err = Check(invalidReType{})
 	assert.EqualError(
 		err,
-		"jsonapi: relationship Rel of type typename is not string or []string",
+		"jsonapi: relationship \"Rel\" of type \"typename\" is not string or []string",
 	)
 }
 

@@ -61,7 +61,7 @@ func Check(v interface{}) error {
 
 			if !isValid {
 				return fmt.Errorf(
-					"jsonapi: attribute %s of type %s is of unsupported type",
+					"jsonapi: attribute %q of type %q is of unsupported type",
 					sf.Name,
 					resType,
 				)
@@ -78,7 +78,7 @@ func Check(v interface{}) error {
 
 			if len(s) < 2 || len(s) > 3 {
 				return fmt.Errorf(
-					"jsonapi: api tag of relationship %s of struct %s is invalid",
+					"jsonapi: api tag of relationship %q of struct %q is invalid",
 					sf.Name,
 					value.Type().Name(),
 				)
@@ -86,7 +86,7 @@ func Check(v interface{}) error {
 
 			if sf.Type.String() != "string" && sf.Type.String() != "[]string" {
 				return fmt.Errorf(
-					"jsonapi: relationship %s of type %s is not string or []string",
+					"jsonapi: relationship %q of type %q is not string or []string",
 					sf.Name,
 					resType,
 				)
@@ -114,7 +114,7 @@ func BuildType(v interface{}) (Type, error) {
 
 	err := Check(val.Interface())
 	if err != nil {
-		return typ, fmt.Errorf("jsonapi: invalid type: %s", err)
+		return typ, fmt.Errorf("jsonapi: invalid type: %q", err)
 	}
 
 	// ID and type
