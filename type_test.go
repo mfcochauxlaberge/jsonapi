@@ -86,6 +86,7 @@ func TestTypeEqual(t *testing.T) {
 	}
 	assert.True(typ1.Equal(typ2))
 
+	// TODO Add tests with attributes and relationships.
 }
 
 func TestTypeNewFunc(t *testing.T) {
