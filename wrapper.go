@@ -181,7 +181,7 @@ func (w *Wrapper) GetToOne(key string) string {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "string" {
@@ -207,7 +207,7 @@ func (w *Wrapper) GetToMany(key string) []string {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "[]string" {
@@ -233,7 +233,7 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "string" {
@@ -260,7 +260,7 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "[]string" {
