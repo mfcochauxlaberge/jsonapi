@@ -160,7 +160,7 @@ func (w *Wrapper) GetType() Type {
 
 // Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
-	return w.getAttr(key, "")
+	return w.getAttr(key)
 }
 
 // SetID sets the ID of the wrapped resource.
@@ -309,16 +309,12 @@ func (w *Wrapper) Copy() Resource {
 
 // Private methods
 
-func (w *Wrapper) getAttr(key string, t string) interface{} {
+func (w *Wrapper) getAttr(key string) interface{} {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") && sf.Tag.Get("api") == "attr" {
-			if t != field.Type().String() && t != "" {
-				panic(fmt.Sprintf("jsonapi: attribute %s is not of type %s", key, field.Type()))
-			}
-
 			if strings.HasPrefix(field.Type().String(), "*") && field.IsNil() {
 				return nil
 			}
