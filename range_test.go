@@ -331,4 +331,52 @@ func TestSortResources(t *testing.T) {
 
 	sort.Strings(expectedIDs)
 	assert.Equal(expectedIDs, ids, "sort by ID")
+
+	// Sort collection with different types
+	sr1 := &SoftResource{}
+	sr1.SetID("sr1")
+	col1 := &Resources{Wrap(mocktype{}), sr1}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"field", "id"}, 100, 0)
+	})
+
+	// Sort collection with unknown attribute
+	col1 = &Resources{
+		Wrap(mocktype{}),
+		Wrap(mocktype{}),
+	}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"unknown", "id"}, 100, 0)
+	})
+
+	// Sort collection with attribute of different type
+	col1 = &Resources{
+		&SoftResource{
+			Type: &Type{
+				Name: "type",
+				Attrs: map[string]Attr{
+					"samename": Attr{
+						Name:     "samename",
+						Type:     AttrTypeString,
+						Nullable: false,
+					},
+				},
+			},
+		},
+		&SoftResource{
+			Type: &Type{
+				Name: "type",
+				Attrs: map[string]Attr{
+					"samename": Attr{
+						Name:     "samename",
+						Type:     AttrTypeString,
+						Nullable: true,
+					},
+				},
+			},
+		},
+	}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"samename", "id"}, 100, 0)
+	})
 }
