@@ -92,6 +92,10 @@ func nilptr(t string) interface{} {
 	case "time.Time":
 		var p *time.Time
 		return p
+	// []byte
+	case "[]uint8":
+		var p *[]byte
+		return p
 	}
 	return nil
 }

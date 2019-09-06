@@ -367,7 +367,7 @@ func GetAttrType(t string) (int, bool) {
 		return AttrTypeBool, nullable
 	case "time.Time":
 		return AttrTypeTime, nullable
-	case "[]byte":
+	case "[]uint8":
 		return AttrTypeBytes, nullable
 	default:
 		return AttrTypeInvalid, false
@@ -407,7 +407,7 @@ func GetAttrTypeString(t int, nullable bool) string {
 	case AttrTypeTime:
 		str = "time.Time"
 	case AttrTypeBytes:
-		str = "[]byte"
+		str = "[]uint8"
 	default:
 		str = ""
 	}
