@@ -440,7 +440,7 @@ func TestGetZeroValue(t *testing.T) {
 	assert.Equal(nilptr("uint64"), GetZeroValue(AttrTypeUint64, true))
 	assert.Equal(nilptr("bool"), GetZeroValue(AttrTypeBool, true))
 	assert.Equal(nilptr("time.Time"), GetZeroValue(AttrTypeTime, true))
-	assert.Equal(nilptr("[]uint8"), GetZeroValue(AttrTypeBytes, true))
+	assert.Equal(nilptr("[]byte"), GetZeroValue(AttrTypeBytes, true))
 	assert.Equal(nil, GetZeroValue(AttrTypeInvalid, false))
 	assert.Equal(nil, GetZeroValue(999, false))
 }
