@@ -303,15 +303,15 @@ func TestSortResources(t *testing.T) {
 	}
 
 	expectedIDs := []string{
-		"id0", "id3", "id6", "id9", "id12", "id15", "id16", "id18", "id26",
-		"id30", "id31", "id33", "id41", "id45", "id46", "id48", "id56", "id60",
-		"id61", "id63", "id71", "id75", "id10", "id13", "id14", "id17", "id19",
-		"id22", "id24", "id27", "id29", "id32", "id34", "id37", "id39", "id42",
-		"id44", "id47", "id49", "id52", "id54", "id57", "id59", "id62", "id64",
-		"id65", "id66", "id67", "id68", "id69", "id72", "id74", "id76", "id78",
-		"id79", "id77", "id73", "id70", "id58", "id55", "id53", "id51", "id50",
-		"id43", "id40", "id38", "id36", "id35", "id28", "id25", "id23", "id21",
-		"id20", "id11", "id8", "id7", "id5", "id4", "id2", "id1",
+		"id0", "id3", "id6", "id9", "id12", "id10", "id75", "id74", "id73",
+		"id76", "id77", "id72", "id78", "id71", "id14", "id15", "id16", "id17",
+		"id18", "id19", "id20", "id21", "id22", "id23", "id24", "id25", "id26",
+		"id27", "id28", "id29", "id30", "id31", "id32", "id33", "id34", "id35",
+		"id36", "id37", "id38", "id39", "id69", "id41", "id42", "id43", "id44",
+		"id45", "id46", "id47", "id48", "id49", "id50", "id51", "id52", "id53",
+		"id54", "id55", "id56", "id57", "id58", "id59", "id60", "id61", "id62",
+		"id63", "id64", "id65", "id66", "id67", "id68", "id40", "id70", "id79",
+		"id13", "id11", "id8", "id7", "id5", "id4", "id2", "id1",
 	}
 	assert.Equal(expectedIDs, ids, fmt.Sprintf("sort with rules: %v", rules))
 
