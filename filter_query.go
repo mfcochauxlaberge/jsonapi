@@ -468,12 +468,3 @@ func checkIn(id string, ids []string) bool {
 	}
 	return false
 }
-
-// func checkInBytes(b byte, bs []byte) bool {
-// 	for i := range bs {
-// 		if b == bs[i] {
-// 			return true
-// 		}
-// 	}
-// 	return false
-// }
