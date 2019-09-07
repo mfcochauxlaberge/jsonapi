@@ -27,6 +27,7 @@ const (
 	AttrTypeUint64
 	AttrTypeBool
 	AttrTypeTime
+	AttrTypeBytes
 )
 
 // A Type stores all the necessary information about a type as represented in
@@ -274,6 +275,17 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		if a.Nullable {
 			v = &t
 		}
+	case AttrTypeBytes:
+		s := make([]byte, len(data))
+		err := json.Unmarshal(data, &s)
+		if err != nil {
+			panic(err)
+		}
+		if a.Nullable {
+			v = &s
+		} else {
+			v = s
+		}
 	default:
 		err = errors.New("attribute is of invalid or unknown type")
 	}
@@ -358,6 +370,8 @@ func GetAttrType(t string) (int, bool) {
 		return AttrTypeBool, nullable
 	case "time.Time":
 		return AttrTypeTime, nullable
+	case "[]uint8":
+		return AttrTypeBytes, nullable
 	default:
 		return AttrTypeInvalid, false
 	}
@@ -395,6 +409,8 @@ func GetAttrTypeString(t int, nullable bool) string {
 		str = "bool"
 	case AttrTypeTime:
 		str = "time.Time"
+	case AttrTypeBytes:
+		str = "[]uint8"
 	default:
 		str = ""
 	}
@@ -488,6 +504,12 @@ func GetZeroValue(t int, null bool) interface{} {
 			return np
 		}
 		return time.Time{}
+	case AttrTypeBytes:
+		if null {
+			var np *[]byte
+			return np
+		}
+		return []byte{}
 	default:
 		return nil
 	}

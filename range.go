@@ -197,6 +197,18 @@ func (s sortedResources) Less(i, j int) bool {
 				continue
 			}
 			return v.Before(v2.(time.Time)) != inverse
+		case []byte:
+			s2 := v2.([]byte)
+			for i := 0; i < len(v) && i < len(s2); i++ {
+				if v[i] == s2[i] {
+					continue
+				}
+				return v[i] < s2[i] != inverse
+			}
+			if len(v) == len(s2) {
+				continue
+			}
+			return len(v) < len(s2) != inverse
 		case *string:
 			v2 := v2.(*string)
 			if v == v2 {
