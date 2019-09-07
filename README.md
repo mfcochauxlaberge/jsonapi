@@ -90,6 +90,8 @@ time.Time
 *[]byte
 ```
 
+Using a pointer allows the field to be nil.
+
 #### Relationship
 
 Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a slice of strings. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In the following example, our Article struct defines a relationship named author of type users:
