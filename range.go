@@ -205,6 +205,9 @@ func (s sortedResources) Less(i, j int) bool {
 				}
 				return v[i] < s2[i] != inverse
 			}
+			if len(v) == len(s2) {
+				continue
+			}
 			return len(v) < len(s2) != inverse
 		case *string:
 			v2 := v2.(*string)
