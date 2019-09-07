@@ -41,6 +41,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: "bbb", op: ">=", cval: "aaa", expected: true},
 		{rval: "bbb", op: ">=", cval: "bbb", expected: true},
 		{rval: "bbb", op: ">=", cval: "ccc", expected: false},
+		{rval: "aaa", op: "invalid", cval: "aaa", expected: false},
 
 		// int
 		{rval: 1, op: "=", cval: 0, expected: false},
@@ -59,6 +60,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: 1, op: ">=", cval: 0, expected: true},
 		{rval: 1, op: ">=", cval: 1, expected: true},
 		{rval: 1, op: ">=", cval: 3, expected: false},
+		{rval: 0, op: "invalid", cval: 0, expected: false},
 
 		// int8
 		{rval: int8(1), op: "=", cval: int8(0), expected: false},
@@ -77,6 +79,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: int8(1), op: ">=", cval: int8(0), expected: true},
 		{rval: int8(1), op: ">=", cval: int8(1), expected: true},
 		{rval: int8(1), op: ">=", cval: int8(2), expected: false},
+		{rval: int8(0), op: "invalid", cval: int8(0), expected: false},
 
 		// int16
 		{rval: int16(1), op: "=", cval: int16(0), expected: false},
@@ -95,6 +98,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: int16(1), op: ">=", cval: int16(0), expected: true},
 		{rval: int16(1), op: ">=", cval: int16(1), expected: true},
 		{rval: int16(1), op: ">=", cval: int16(2), expected: false},
+		{rval: int16(0), op: "invalid", cval: int16(0), expected: false},
 
 		// int32
 		{rval: int32(1), op: "=", cval: int32(0), expected: false},
@@ -113,6 +117,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: int32(1), op: ">=", cval: int32(0), expected: true},
 		{rval: int32(1), op: ">=", cval: int32(1), expected: true},
 		{rval: int32(1), op: ">=", cval: int32(2), expected: false},
+		{rval: int32(0), op: "invalid", cval: int32(0), expected: false},
 
 		// int64
 		{rval: int64(1), op: "=", cval: int64(0), expected: false},
@@ -131,6 +136,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: int64(1), op: ">=", cval: int64(0), expected: true},
 		{rval: int64(1), op: ">=", cval: int64(1), expected: true},
 		{rval: int64(1), op: ">=", cval: int64(2), expected: false},
+		{rval: int64(0), op: "invalid", cval: int64(0), expected: false},
 
 		// uint
 		{rval: uint(1), op: "=", cval: uint(0), expected: false},
@@ -149,6 +155,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: uint(1), op: ">=", cval: uint(0), expected: true},
 		{rval: uint(1), op: ">=", cval: uint(1), expected: true},
 		{rval: uint(1), op: ">=", cval: uint(2), expected: false},
+		{rval: uint(0), op: "invalid", cval: uint(0), expected: false},
 
 		// uint8
 		{rval: uint8(1), op: "=", cval: uint8(0), expected: false},
@@ -167,6 +174,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: uint8(1), op: ">=", cval: uint8(0), expected: true},
 		{rval: uint8(1), op: ">=", cval: uint8(1), expected: true},
 		{rval: uint8(1), op: ">=", cval: uint8(2), expected: false},
+		{rval: uint8(0), op: "invalid", cval: uint8(0), expected: false},
 
 		// uint16
 		{rval: uint16(1), op: "=", cval: uint16(0), expected: false},
@@ -185,6 +193,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: uint16(1), op: ">=", cval: uint16(0), expected: true},
 		{rval: uint16(1), op: ">=", cval: uint16(1), expected: true},
 		{rval: uint16(1), op: ">=", cval: uint16(2), expected: false},
+		{rval: uint16(0), op: "invalid", cval: uint16(0), expected: false},
 
 		// uint32
 		{rval: uint32(1), op: "=", cval: uint32(0), expected: false},
@@ -203,6 +212,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: uint32(1), op: ">=", cval: uint32(0), expected: true},
 		{rval: uint32(1), op: ">=", cval: uint32(1), expected: true},
 		{rval: uint32(1), op: ">=", cval: uint32(2), expected: false},
+		{rval: uint32(0), op: "invalid", cval: uint32(0), expected: false},
 
 		// uint64
 		{rval: uint64(1), op: "=", cval: uint64(0), expected: false},
@@ -221,12 +231,14 @@ func TestFilterResource(t *testing.T) {
 		{rval: uint64(1), op: ">=", cval: uint64(0), expected: true},
 		{rval: uint64(1), op: ">=", cval: uint64(1), expected: true},
 		{rval: uint64(1), op: ">=", cval: uint64(2), expected: false},
+		{rval: uint64(0), op: "invalid", cval: uint64(0), expected: false},
 
 		// bool
 		{rval: true, op: "=", cval: true, expected: true},
 		{rval: true, op: "=", cval: false, expected: false},
 		{rval: true, op: "!=", cval: true, expected: false},
 		{rval: true, op: "!=", cval: false, expected: true},
+		{rval: true, op: "invalid", cval: true, expected: false},
 
 		// time.Time
 		{rval: now, op: "=", cval: now.Add(-time.Second), expected: false},
@@ -245,6 +257,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: now, op: ">=", cval: now.Add(-time.Second), expected: true},
 		{rval: now, op: ">=", cval: now, expected: true},
 		{rval: now, op: ">=", cval: now.Add(time.Second), expected: false},
+		{rval: now, op: "invalid", cval: now, expected: false},
 
 		// []byte
 		{rval: []byte{1}, op: "=", cval: []byte{0}, expected: false},
@@ -279,6 +292,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: []byte{0, 1}, op: ">=", cval: []byte{0, 0}, expected: true},
 		{rval: []byte{0, 1}, op: ">=", cval: []byte{0, 1}, expected: true},
 		{rval: []byte{0, 1}, op: ">=", cval: []byte{0, 2}, expected: false},
+		{rval: []byte{0, 0}, op: "invalid", cval: []byte{0, 0}, expected: false},
 
 		// *string
 		{rval: nilptr("string"), op: "=", cval: nilptr("string"), expected: true},
