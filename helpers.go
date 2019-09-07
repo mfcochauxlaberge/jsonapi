@@ -51,11 +51,13 @@ func Check(v interface{}) error {
 				"uint", "uint8", "uint16", "uint32", "uint64",
 				"bool",
 				"time.Time",
+				"[]uint8",
 				"*string",
 				"*int", "*int8", "*int16", "*int32", "*int64",
 				"*uint", "*uint8", "*uint16", "*uint32", "*uint64",
 				"*bool",
-				"*time.Time":
+				"*time.Time",
+				"*[]uint8":
 				isValid = true
 			}
 

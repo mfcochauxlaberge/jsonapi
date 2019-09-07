@@ -140,6 +140,8 @@ func checkVal(op string, rval, cval interface{}) bool {
 		return checkBool(op, rval.(bool), cval.(bool))
 	case time.Time:
 		return checkTime(op, rval.(time.Time), cval.(time.Time))
+	case []byte:
+		return checkBytes(op, rval.([]byte), cval.([]byte))
 	case *string:
 		if rval.(*string) == nil || cval.(*string) == nil {
 			if op == "=" {
@@ -281,6 +283,17 @@ func checkVal(op string, rval, cval interface{}) bool {
 			}
 		}
 		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
+	case *[]byte:
+		if rval.(*[]byte) == nil || cval.(*[]byte) == nil {
+			if op == "=" {
+				return rval.(*[]byte) == cval.(*[]byte)
+			} else if op == "!=" {
+				return rval.(*[]byte) != cval.(*[]byte)
+			} else {
+				return false
+			}
+		}
+		return checkBytes(op, *rval.(*[]byte), *cval.(*[]byte))
 	case []string:
 		return checkSlice(op, rval.([]string), cval.([]string))
 	default:
@@ -375,6 +388,55 @@ func checkTime(op string, rval, cval time.Time) bool {
 	}
 }
 
+func checkBytes(op string, rval, cval []byte) bool {
+	switch op {
+	case "=":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] != cval[i] {
+				return false
+			}
+		}
+		return len(rval) == len(cval)
+	case "!=":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] != cval[i] {
+				return true
+			}
+		}
+		return len(rval) != len(cval)
+	case "<":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] < cval[i] {
+				return true
+			}
+		}
+		return len(rval) < len(cval)
+	case "<=":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] > cval[i] {
+				return false
+			}
+		}
+		return len(rval) <= len(cval)
+	case ">":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] > cval[i] {
+				return true
+			}
+		}
+		return len(rval) > len(cval)
+	case ">=":
+		for i := 0; i < len(rval) && i < len(cval); i++ {
+			if rval[i] < cval[i] {
+				return false
+			}
+		}
+		return len(rval) >= len(cval)
+	default:
+		return false
+	}
+}
+
 func checkSlice(op string, rval, cval []string) bool {
 	equal := false
 	if len(rval) == len(cval) {
@@ -406,3 +468,12 @@ func checkIn(id string, ids []string) bool {
 	}
 	return false
 }
+
+// func checkInBytes(b byte, bs []byte) bool {
+// 	for i := range bs {
+// 		if b == bs[i] {
+// 			return true
+// 		}
+// 	}
+// 	return false
+// }

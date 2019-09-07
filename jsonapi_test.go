@@ -41,6 +41,7 @@ func TestMarshaling(t *testing.T) {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
+		Bytes:    []byte{1, 2, 3},
 		To1:      "id2",
 		To1From1: "id3",
 		To1FromX: "id3",
@@ -49,10 +50,11 @@ func TestMarshaling(t *testing.T) {
 		ToXFromX: []string{"id3", "id4"},
 	}))
 	col.Add(Wrap(&mocktype{
-		ID:   "id2",
-		Str:  "漢語",
-		Int:  -42,
-		Time: time.Time{},
+		ID:    "id2",
+		Str:   "漢語",
+		Int:   -42,
+		Time:  time.Time{},
+		Bytes: []byte{},
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
 
@@ -313,6 +315,7 @@ func TestUnmarshaling(t *testing.T) {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
+		Bytes:    []byte{1, 2, 3},
 		To1:      "id2",
 		To1From1: "id3",
 		To1FromX: "id3",
@@ -596,6 +599,7 @@ type mocktype struct {
 	Uint64 uint64    `json:"uint64" api:"attr"`
 	Bool   bool      `json:"bool" api:"attr"`
 	Time   time.Time `json:"time" api:"attr"`
+	Bytes  []byte    `json:"bytes" api:"attr"`
 
 	// Relationships
 	To1      string   `json:"to-1" api:"rel,mocktype"`
