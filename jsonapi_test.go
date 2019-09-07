@@ -82,6 +82,10 @@ func TestMarshaling(t *testing.T) {
 					"mocktype": {"to-1", "to-x-from-1"},
 				},
 			},
+			fields: []string{
+				"str", "uint64", "bool", "int", "time", "bytes", "to-1",
+				"to-x-from-1",
+			},
 		}, {
 			name: "collection",
 			doc: &Document{
