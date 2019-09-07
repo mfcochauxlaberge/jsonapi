@@ -248,6 +248,9 @@ func TestSortResources(t *testing.T) {
 		{vals: [2]interface{}{ptr(now), ptr(now.Add(time.Second))}},
 		{vals: [2]interface{}{nilptr("[]byte"), nilptr("[]byte")}},
 		{vals: [2]interface{}{nilptr("[]byte"), ptr([]byte{0})}},
+		{vals: [2]interface{}{ptr([]byte{0}), nilptr("[]byte")}},
+		{vals: [2]interface{}{ptr([]byte{0}), ptr([]byte{0})}},
+		{vals: [2]interface{}{nilptr("[]byte"), ptr([]byte{1})}},
 	}
 
 	// Add attributes to type
@@ -303,15 +306,16 @@ func TestSortResources(t *testing.T) {
 	}
 
 	expectedIDs := []string{
-		"id0", "id3", "id6", "id9", "id12", "id10", "id75", "id74", "id73",
-		"id76", "id77", "id72", "id78", "id71", "id14", "id15", "id16", "id17",
+		"id0", "id3", "id6", "id9", "id12", "id10", "id77", "id76", "id75",
+		"id78", "id79", "id74", "id80", "id73", "id14", "id15", "id16", "id17",
 		"id18", "id19", "id20", "id21", "id22", "id23", "id24", "id25", "id26",
 		"id27", "id28", "id29", "id30", "id31", "id32", "id33", "id34", "id35",
-		"id36", "id37", "id38", "id39", "id69", "id41", "id42", "id43", "id44",
+		"id36", "id37", "id38", "id39", "id40", "id71", "id42", "id43", "id44",
 		"id45", "id46", "id47", "id48", "id49", "id50", "id51", "id52", "id53",
 		"id54", "id55", "id56", "id57", "id58", "id59", "id60", "id61", "id62",
-		"id63", "id64", "id65", "id66", "id67", "id68", "id40", "id70", "id79",
-		"id13", "id11", "id8", "id7", "id5", "id4", "id2", "id1",
+		"id63", "id64", "id65", "id66", "id67", "id68", "id69", "id70", "id41",
+		"id72", "id81", "id13", "id11", "id8", "id7", "id5", "id4", "id2",
+		"id1",
 	}
 	assert.Equal(expectedIDs, ids, fmt.Sprintf("sort with rules: %v", rules))
 
