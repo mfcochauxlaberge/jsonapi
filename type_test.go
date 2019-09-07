@@ -128,48 +128,41 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	tests := []struct {
 		val interface{}
 	}{
-		{val: "str"},             // string
-		{val: 1},                 // int
-		{val: int8(8)},           // int8
-		{val: int16(16)},         // int16
-		{val: int32(32)},         // int32
-		{val: int64(64)},         // int64
-		{val: uint(1)},           // uint
-		{val: uint8(8)},          // uint8
-		{val: uint16(16)},        // uint16
-		{val: uint32(32)},        // uint32
-		{val: uint64(64)},        // uint64
-		{val: true},              // bool
-		{val: time.Time{}},       // time
-		{val: []byte{'a', 'b'}},  // []byte
-		{val: &vstr},             // *string
-		{val: &vint},             // *int
-		{val: &vint8},            // *int8
-		{val: &vint16},           // *int16
-		{val: &vint32},           // *int32
-		{val: &vint64},           // *int64
-		{val: &vuint},            // *uint
-		{val: &vuint8},           // *uint8
-		{val: &vuint16},          // *uint16
-		{val: &vuint32},          // *uint32
-		{val: &vuint64},          // *uint64
-		{val: &vbool},            // *bool
-		{val: &time.Time{}},      // *time
-		{val: &[]byte{'a', 'b'}}, // *[]byte
+		{val: "str"},            // string
+		{val: 1},                // int
+		{val: int8(8)},          // int8
+		{val: int16(16)},        // int16
+		{val: int32(32)},        // int32
+		{val: int64(64)},        // int64
+		{val: uint(1)},          // uint
+		{val: uint8(8)},         // uint8
+		{val: uint16(16)},       // uint16
+		{val: uint32(32)},       // uint32
+		{val: uint64(64)},       // uint64
+		{val: true},             // bool
+		{val: time.Time{}},      // time
+		{val: []byte{1, 2, 3}},  // []byte
+		{val: &vstr},            // *string
+		{val: &vint},            // *int
+		{val: &vint8},           // *int8
+		{val: &vint16},          // *int16
+		{val: &vint32},          // *int32
+		{val: &vint64},          // *int64
+		{val: &vuint},           // *uint
+		{val: &vuint8},          // *uint8
+		{val: &vuint16},         // *uint16
+		{val: &vuint32},         // *uint32
+		{val: &vuint64},         // *uint64
+		{val: &vbool},           // *bool
+		{val: &time.Time{}},     // *time
+		{val: &[]byte{1, 2, 3}}, // *[]byte
 	}
 
 	attr := Attr{}
 
 	for _, test := range tests {
 		attr.Type, attr.Nullable = GetAttrType(fmt.Sprintf("%T", test.val))
-		var p []byte
-		if v, ok := test.val.([]byte); ok {
-			p = v
-		} else if v, ok := test.val.(*[]byte); ok {
-			p = *v
-		} else {
-			p, _ = json.Marshal(test.val)
-		}
+		p, _ := json.Marshal(test.val)
 		val, err := attr.UnmarshalToType(p)
 		assert.NoError(err)
 		assert.Equal(test.val, val)
@@ -187,6 +180,14 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	val, err = attr.UnmarshalToType([]byte("nottrue"))
 	assert.Error(err)
 	assert.Nil(val)
+
+	// Invalid slide of bytes
+	attr.Type = AttrTypeBytes
+	assert.Panics(func() {
+		_, _ = attr.UnmarshalToType([]byte("invalid"))
+	})
+	// assert.Error(err)
+	// assert.Nil(val)
 
 	// Invalid attribute type
 	attr.Type = AttrTypeInvalid

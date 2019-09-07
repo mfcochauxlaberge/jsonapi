@@ -277,7 +277,10 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeBytes:
 		s := make([]byte, len(data))
-		_ = copy(s, data)
+		err := json.Unmarshal(data, &s)
+		if err != nil {
+			panic(err)
+		}
 		if a.Nullable {
 			v = &s
 		} else {
