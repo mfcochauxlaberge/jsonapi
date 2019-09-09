@@ -102,15 +102,6 @@ func (sr *SoftResource) Get(key string) interface{} {
 		}
 		return GetZeroValue(attr.Type, attr.Nullable)
 	}
-	if rel, ok := sr.Type.Rels[key]; ok {
-		if v, ok := sr.data[key]; ok {
-			return v
-		}
-		if rel.ToOne {
-			return ""
-		}
-		return []string{}
-	}
 	return nil
 }
 
