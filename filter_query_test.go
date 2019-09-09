@@ -994,6 +994,65 @@ func TestFilterMarshaling(t *testing.T) {
 				Col:   "col",
 			},
 			expectedError: false,
+		}, {
+			name: "and & or",
+			query: `{
+				"f": "field",
+				"o": "or",
+				"v": [
+					{
+						"f": "field",
+						"o": "=",
+						"v": 10
+					},
+					{
+						"f": "field",
+						"o": "and",
+						"v": [
+							{
+								"f": "field",
+								"o": ">=",
+								"v": 20
+							},
+							{
+								"f": "field",
+								"o": "<=",
+								"v": 30
+							}
+						]
+					}
+				]
+			}`,
+			expectedFilter: Filter{
+				Field: "",
+				Op:    "or",
+				Val: []*Filter{
+					&Filter{
+						Field: "field",
+						Op:    "=",
+						Val:   10,
+					},
+					&Filter{
+						Field: "",
+						Op:    "and",
+						Val: []*Filter{
+							&Filter{
+								Col:   "col",
+								Field: "field",
+								Op:    ">=",
+								Val:   20,
+							},
+							&Filter{
+								Col:   "col",
+								Field: "field",
+								Op:    "<=",
+								Val:   30,
+							},
+						},
+					},
+				},
+			},
+			expectedError: false,
 		},
 	}
 
