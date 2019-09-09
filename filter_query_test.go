@@ -975,13 +975,11 @@ func TestFilterMarshaling(t *testing.T) {
 			name:          "empty",
 			query:         ``,
 			expectedError: true,
-		},
-		{
+		}, {
 			name:          "null value",
 			query:         `{"v":null}`,
 			expectedError: false, // TODO
-		},
-		{
+		}, {
 			name: "standard values",
 			query: `{
 				"c": "col",
