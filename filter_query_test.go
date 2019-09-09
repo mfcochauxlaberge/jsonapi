@@ -1032,13 +1032,3 @@ func TestFilterMarshaling(t *testing.T) {
 	})
 	assert.Equal(false, err != nil, "empty operation and value") // TODO
 }
-
-// func marshalUnmarshalFilter(t *testing.T, f *Filter) *Filter {
-// 	payload, err := json.MarshalIndent(f, "", "\t")
-// 	assert.NoError(t, err)
-// 	var f2 Filter
-// 	err = json.Unmarshal(payload, &f2)
-// 	assert.NoError(t, err)
-// 	assert.NotNil(t, f2)
-// 	return &f2
-// }
