@@ -1,7 +1,7 @@
 # jsonapi
 
 <div align="center" style="text-align: center;">
-  <img src="logo.png" height="120">
+  <img src="assets/logo.png" height="120">
   <br>
   <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
     <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
