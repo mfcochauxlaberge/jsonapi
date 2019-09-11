@@ -12,6 +12,9 @@
   <a href="https://codecov.io/gh/mfcochauxlaberge/jsonapi">
     <img src="https://codecov.io/gh/mfcochauxlaberge/jsonapi/branch/master/graph/badge.svg">
   </a>
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
+    <img src="https://img.shields.io/badge/go%20version-go1.11%2B-red">
+  </a>
   <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://godoc.org/github.com/golang/gddo?status.svg">
   </a>
@@ -26,6 +29,10 @@ The official specification can be found at [jsonapi.org/format](http://jsonapi.o
 ## State
 
 The library is in **beta** and its API is subject to change until v1 is released.
+
+## Requirements
+
+The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
 
 ## Quick start
 
