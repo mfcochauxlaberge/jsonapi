@@ -125,7 +125,41 @@ func TestSoftResource(t *testing.T) {
 	assert.Equal(t, "id1", sr.GetToOne("rel1"))
 	assert.Equal(t, []string{"id1", "id2"}, sr.GetToMany("rel2"))
 
+	// Set a nullable attribute to nil
+	_ = sr.Type.AddAttr(Attr{
+		Name:     "nullable-str",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	assert.Nil(t, sr.Get("nullable-str"))
+	str := "abc"
+	sr.Set("nullable-str", &str)
+	assert.Equal(t, &str, sr.Get("nullable-str"))
+	sr.Set("nullable-str", nil)
+	assert.Nil(t, sr.Get("nullable-str"))
+	assert.Equal(t, (*string)(nil), sr.Get("nullable-str"))
+
 	// Copy
 	sr2 := sr.Copy()
 	assert.Equal(t, true, Equal(sr, sr2))
+}
+
+func TestSoftResourceNew(t *testing.T) {
+	assert := assert.New(t)
+
+	typ, _ := BuildType(mocktype{})
+	sr := &SoftResource{}
+	sr.Type = &typ
+
+	// Modify the SoftResource object
+	sr.SetID("id")
+	sr.Set("str", "abc123")
+	sr.Set("int", 42)
+
+	nsr := sr.New()
+
+	// The new
+	assert.Equal("", nsr.GetID())
+	assert.Equal("", nsr.Get("str"))
+	assert.Equal(0, nsr.Get("int"))
 }

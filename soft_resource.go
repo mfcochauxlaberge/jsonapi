@@ -96,20 +96,10 @@ func (sr *SoftResource) GetType() Type {
 // Get returns the value associated to the field named after key.
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	if attr, ok := sr.Type.Attrs[key]; ok {
+	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
-		return GetZeroValue(attr.Type, attr.Nullable)
-	}
-	if rel, ok := sr.Type.Rels[key]; ok {
-		if v, ok := sr.data[key]; ok {
-			return v
-		}
-		if rel.ToOne {
-			return ""
-		}
-		return []string{}
 	}
 	return nil
 }
