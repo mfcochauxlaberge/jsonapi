@@ -10,7 +10,7 @@
     <img src="https://goreportcard.com/badge/github.com/mfcochauxlaberge/jsonapi">
   </a>
   <a href="https://codecov.io/gh/mfcochauxlaberge/jsonapi">
-    <img src="https://codecov.io/gh/mfcochauxlaberge/jsonapi/branch/master/graph/badge.svg">
+    <img src="https://img.shields.io/codecov/c/github/mfcochauxlaberge/jsonapi">
   </a>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
     <img src="https://img.shields.io/badge/go%20version-go1.11%2B-red">
