@@ -19,6 +19,9 @@
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
     <img src="https://img.shields.io/github/v/release/mfcochauxlaberge/jsonapi?include_prereleases&sort=semver">
   </a>
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/LICENSE">
+    <img src="https://img.shields.io/github/license/mfcochauxlaberge/jsonapi?color=a33">
+  </a>
   <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://godoc.org/github.com/golang/gddo?status.svg">
   </a>
