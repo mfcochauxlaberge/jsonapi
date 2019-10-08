@@ -146,7 +146,7 @@ Take a look at the `SoftCollection` struct for a similar concept applied to an e
 
 From a raw string that represents a URL, it is possible that create a `SimpleURL` which contains the information stored in the URL in a structure that is easier to handle.
 
-It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which contains additional information taken from the schema. `NewURL` returns a error if the URL does not respect the schema.
+It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which contains additional information taken from the schema. `NewURL` returns an error if the URL does not respect the schema.
 
 ## Documentation
 
