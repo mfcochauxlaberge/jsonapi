@@ -45,7 +45,7 @@ The supported versions of Go are the latest patch releases of every minor releas
 
 The simplest way to start using jsonapi is to use the Marshal and Unmarshal functions.
 
-```
+```go
 func Marshal(doc *Document, url *URL) ([]byte, error)
 func Unmarshal(payload []byte, schema *Schema) (*Document, error)
 ```
@@ -70,7 +70,7 @@ A JSON:API type is generally defined with a struct.
 
 There needs to be an ID field of type string. The `api` tag represents the name of the type.
 
-```
+```go
 type User struct {
   ID string `json:"id" api:"users"` // ID is mandatory and the api tag sets the type
 
@@ -89,7 +89,7 @@ Other fields with the `api` tag (`attr` or `rel`) can be added as attributes or 
 
 Attributes can be of the following types:
 
-```
+```go
 string
 int, int8, int16, int32, int64
 uint, uint8, uint16, uint32, uint64
@@ -110,7 +110,7 @@ Using a pointer allows the field to be nil.
 
 Relationships can be a bit tricky. To-one relationships are defined with a string and to-many relationships are defined with a slice of strings. They contain the IDs of the related resources. The api tag has to take the form of "rel,xxx[,yyy]" where yyy is optional. xxx is the type of the relationship and yyy is the name of the inverse relationship when dealing with a two-way relationship. In the following example, our Article struct defines a relationship named author of type users:
 
-```
+```go
 Author string `json:"author" api:"rel,users,articles"`
 ```
 
@@ -118,7 +118,7 @@ Author string `json:"author" api:"rel,users,articles"`
 
 A struct can be wrapped using the `Wrap` function which returns a pointer to a `Wrapper`. A `Wrapper` implements the `Resource` interface and can be used with this library. Modifying a Wrapper will modify the underlying struct. The resource's type is defined from reflecting on the struct.
 
-```
+```go
 user := User{}
 wrap := Wrap(&user)
 wrap.Set("name", "Mike")
@@ -130,7 +130,7 @@ fmt.Printf(user.Name) // Output: Mike
 
 A SoftResource is a struct whose type (name, attributes, and relationships) can be modified indefinitely just like its values. When an attribute or a relationship is added, the new value is the zero value of the field type. For example, if you add an attribute named `my-attribute` of type string, then `softresource.Get("my-attribute")` will return an empty string.
 
-```
+```go
 sr := SoftResource{}
 sr.AddAttr(Attr{
   Name: "attr",
