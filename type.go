@@ -27,6 +27,7 @@ const (
 	AttrTypeUint64
 	AttrTypeBool
 	AttrTypeTime
+	AttrTypeBytes
 )
 
 // A Type stores all the necessary information about a type as represented in
@@ -61,7 +62,7 @@ func (t *Type) AddAttr(attr Attr) error {
 	// Make sure the name isn't already used
 	for i := range t.Attrs {
 		if t.Attrs[i].Name == attr.Name {
-			return fmt.Errorf("jsonapi: attribute name %s is already used", attr.Name)
+			return fmt.Errorf("jsonapi: attribute name %q is already used", attr.Name)
 		}
 	}
 
@@ -85,24 +86,24 @@ func (t *Type) RemoveAttr(attr string) {
 // AddRel adds a relationship to the type.
 func (t *Type) AddRel(rel Rel) error {
 	// Validation
-	if rel.Name == "" {
+	if rel.FromName == "" {
 		return fmt.Errorf("jsonapi: relationship name is empty")
 	}
-	if rel.Type == "" {
+	if rel.ToType == "" {
 		return fmt.Errorf("jsonapi: relationship type is empty")
 	}
 
 	// Make sure the name isn't already used
 	for i := range t.Rels {
-		if t.Rels[i].Name == rel.Name {
-			return fmt.Errorf("jsonapi: relationship name %s is already used", rel.Name)
+		if t.Rels[i].FromName == rel.FromName {
+			return fmt.Errorf("jsonapi: relationship name %q is already used", rel.FromName)
 		}
 	}
 
 	if t.Rels == nil {
 		t.Rels = map[string]Rel{}
 	}
-	t.Rels[rel.Name] = rel
+	t.Rels[rel.FromName] = rel
 
 	return nil
 }
@@ -110,7 +111,7 @@ func (t *Type) AddRel(rel Rel) error {
 // RemoveRel removes a relationship from the type if it exists.
 func (t *Type) RemoveRel(rel string) {
 	for i := range t.Rels {
-		if t.Rels[i].Name == rel {
+		if t.Rels[i].FromName == rel {
 			delete(t.Rels, rel)
 		}
 	}
@@ -124,7 +125,7 @@ func (t *Type) Fields() []string {
 		fields = append(fields, t.Attrs[i].Name)
 	}
 	for i := range t.Rels {
-		fields = append(fields, t.Rels[i].Name)
+		fields = append(fields, t.Rels[i].FromName)
 	}
 	sort.Strings(fields)
 	return fields
@@ -142,8 +143,10 @@ func (t *Type) New() Resource {
 }
 
 // Equal returns true if both types have the same name, attributes,
-// relationships, and both have a nil NewFunc.
+// relationships. NewFunc is ignored.
 func (t Type) Equal(typ Type) bool {
+	t.NewFunc = nil
+	typ.NewFunc = nil
 	return reflect.DeepEqual(t, typ)
 }
 
@@ -154,7 +157,8 @@ type Attr struct {
 	Nullable bool
 }
 
-// UnmarshalToType ...
+// UnmarshalToType unmarshals the data into a value of the type represented by
+// the attribute and returns it.
 func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 	if a.Nullable && string(data) == "nil" {
 		return nil, nil
@@ -271,6 +275,17 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		if a.Nullable {
 			v = &t
 		}
+	case AttrTypeBytes:
+		s := make([]byte, len(data))
+		err := json.Unmarshal(data, &s)
+		if err != nil {
+			panic(err)
+		}
+		if a.Nullable {
+			v = &s
+		} else {
+			v = s
+		}
 	default:
 		err = errors.New("attribute is of invalid or unknown type")
 	}
@@ -288,24 +303,37 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 
 // Rel represents a resource relationship.
 type Rel struct {
-	Name         string
-	Type         string
-	ToOne        bool
-	InverseName  string
-	InverseType  string
-	InverseToOne bool
+	FromType string
+	FromName string
+	ToOne    bool
+	ToType   string
+	ToName   string
+	FromOne  bool
 }
 
 // Inverse returns the inverse relationship of r.
 func (r *Rel) Inverse() Rel {
 	return Rel{
-		Name:         r.InverseName,
-		Type:         r.InverseType,
-		ToOne:        r.InverseToOne,
-		InverseName:  r.Name,
-		InverseType:  r.Type,
-		InverseToOne: r.ToOne,
+		FromType: r.ToType,
+		FromName: r.ToName,
+		ToOne:    r.FromOne,
+		ToType:   r.FromType,
+		ToName:   r.FromName,
+		FromOne:  r.ToOne,
 	}
+}
+
+// Normalize inverts the relationship if necessary in order to have it in the
+// right direction and returns the result.
+//
+// This is the form stored in Schema.Rels.
+func (r *Rel) Normalize() Rel {
+	from := r.FromType + r.FromName
+	to := r.ToType + r.ToName
+	if from < to {
+		return *r
+	}
+	return r.Inverse()
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
@@ -342,6 +370,8 @@ func GetAttrType(t string) (int, bool) {
 		return AttrTypeBool, nullable
 	case "time.Time":
 		return AttrTypeTime, nullable
+	case "[]uint8":
+		return AttrTypeBytes, nullable
 	default:
 		return AttrTypeInvalid, false
 	}
@@ -379,6 +409,8 @@ func GetAttrTypeString(t int, nullable bool) string {
 		str = "bool"
 	case AttrTypeTime:
 		str = "time.Time"
+	case AttrTypeBytes:
+		str = "[]uint8"
 	default:
 		str = ""
 	}
@@ -472,6 +504,12 @@ func GetZeroValue(t int, null bool) interface{} {
 			return np
 		}
 		return time.Time{}
+	case AttrTypeBytes:
+		if null {
+			var np *[]byte
+			return np
+		}
+		return []byte{}
 	default:
 		return nil
 	}

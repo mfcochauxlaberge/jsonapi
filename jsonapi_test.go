@@ -41,6 +41,7 @@ func TestMarshaling(t *testing.T) {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
+		Bytes:    []byte{1, 2, 3},
 		To1:      "id2",
 		To1From1: "id3",
 		To1FromX: "id3",
@@ -49,10 +50,11 @@ func TestMarshaling(t *testing.T) {
 		ToXFromX: []string{"id3", "id4"},
 	}))
 	col.Add(Wrap(&mocktype{
-		ID:   "id2",
-		Str:  "漢語",
-		Int:  -42,
-		Time: time.Time{},
+		ID:    "id2",
+		Str:   "漢語",
+		Int:   -42,
+		Time:  time.Time{},
+		Bytes: []byte{},
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
 
@@ -77,19 +79,19 @@ func TestMarshaling(t *testing.T) {
 			doc: &Document{
 				Data: col.At(0),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
+			},
+			fields: []string{
+				"str", "uint64", "bool", "int", "time", "bytes", "to-1",
+				"to-x-from-1",
 			},
 		}, {
 			name: "collection",
 			doc: &Document{
 				Data: Range(col, nil, nil, []string{}, 10, 0),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
 				PrePath: "https://example.org",
 			},
@@ -113,9 +115,7 @@ func TestMarshaling(t *testing.T) {
 					ID: "id1",
 				}),
 				RelData: map[string][]string{
-					"mocktype": []string{
-						"to-1", "to-x-from-1",
-					},
+					"mocktype": {"to-1", "to-x-from-1"},
 				},
 				Included: []Resource{
 					Wrap(&mocktype{
@@ -319,6 +319,7 @@ func TestUnmarshaling(t *testing.T) {
 		Uint64:   1064,
 		Bool:     true,
 		Time:     getTime(),
+		Bytes:    []byte{1, 2, 3},
 		To1:      "id2",
 		To1From1: "id3",
 		To1FromX: "id3",
@@ -504,7 +505,7 @@ func TestUnmarshaling(t *testing.T) {
 				expected: "400 Bad Request: The provided JSON body could not be read.",
 			}, {
 				payload:  `{"data":{"id":"1","type":"mocktype","attributes":{"nonexistent":1}}}`,
-				expected: "400 Bad Request: nonexistent is not a known field.",
+				expected: "400 Bad Request: \"nonexistent\" is not a known field.",
 			}, {
 				payload:  `{"data":{"id":"1","type":"mocktype","attributes":{"int8":"abc"}}}`,
 				expected: "400 Bad Request: The field value is invalid for the expected type.",
@@ -533,7 +534,7 @@ func TestUnmarshaling(t *testing.T) {
 						}
 					}
 				}`,
-				expected: "400 Bad Request: wrong is not a known field.",
+				expected: "400 Bad Request: \"wrong\" is not a known field.",
 			},
 		}
 
@@ -602,6 +603,7 @@ type mocktype struct {
 	Uint64 uint64    `json:"uint64" api:"attr"`
 	Bool   bool      `json:"bool" api:"attr"`
 	Time   time.Time `json:"time" api:"attr"`
+	Bytes  []byte    `json:"bytes" api:"attr"`
 
 	// Relationships
 	To1      string   `json:"to-1" api:"rel,mocktype"`

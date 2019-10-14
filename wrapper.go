@@ -24,17 +24,22 @@ type Wrapper struct {
 
 // Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
 // can be used as a Resource to handle the given value.
+//
+// If v is not a pointer, the changes applied to the Wrapper object won't affect
+// the underlying object (which will be a new instance of v's type).
 func Wrap(v interface{}) *Wrapper {
 	val := reflect.ValueOf(v)
 
 	if val.Kind() != reflect.Ptr {
-		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+		if val.Kind() != reflect.Struct {
+			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+		}
+		val = reflect.New(val.Type())
+	} else {
+		if val.Elem().Kind() != reflect.Struct {
+			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+		}
 	}
-
-	if val.Elem().Kind() != reflect.Struct {
-		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
-	}
-
 	val = val.Elem()
 
 	err := Check(val.Interface())
@@ -84,11 +89,11 @@ func Wrap(v interface{}) *Wrapper {
 
 		if relTag[0] == "rel" {
 			w.rels[jsonTag] = Rel{
-				Name:        jsonTag,
-				Type:        relTag[1],
-				ToOne:       toOne,
-				InverseName: invName,
-				InverseType: w.typ,
+				FromName: jsonTag,
+				ToType:   relTag[1],
+				ToOne:    toOne,
+				ToName:   invName,
+				FromType: w.typ,
 			}
 		}
 	}
@@ -124,7 +129,7 @@ func (w *Wrapper) Attr(key string) Attr {
 // Rel returns the relationship that corresponds to the given key.
 func (w *Wrapper) Rel(key string) Rel {
 	for _, rel := range w.rels {
-		if rel.Name == key {
+		if rel.FromName == key {
 			return rel
 		}
 	}
@@ -155,7 +160,7 @@ func (w *Wrapper) GetType() Type {
 
 // Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
-	return w.getAttr(key, "")
+	return w.getAttr(key)
 }
 
 // SetID sets the ID of the wrapped resource.
@@ -176,11 +181,11 @@ func (w *Wrapper) GetToOne(key string) string {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "string" {
-				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to one'", key))
+				panic(fmt.Sprintf("jsonapi: relationship %q is not 'to one'", key))
 			}
 
 			return field.String()
@@ -191,7 +196,7 @@ func (w *Wrapper) GetToOne(key string) string {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // GetToMany returns the value associated with the relationship named after key.
@@ -202,11 +207,11 @@ func (w *Wrapper) GetToMany(key string) []string {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "[]string" {
-				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to many'", key))
+				panic(fmt.Sprintf("jsonapi: relationship %q is not 'to many'", key))
 			}
 
 			return field.Interface().([]string)
@@ -217,7 +222,7 @@ func (w *Wrapper) GetToMany(key string) []string {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // SetToOne sets the value associated to the relationship named after key.
@@ -228,11 +233,11 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "string" {
-				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to one'", key))
+				panic(fmt.Sprintf("jsonapi: relationship %q is not 'to one'", key))
 			}
 
 			field.SetString(rel)
@@ -244,7 +249,7 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // SetToMany sets the value associated to the relationship named after key.
@@ -255,11 +260,11 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 
 		if key == sf.Tag.Get("json") {
 			if strings.Split(sf.Tag.Get("api"), ",")[0] != "rel" {
-				break
+				panic(fmt.Sprintf("jsonapi: field %q is not a relationship", key))
 			}
 
 			if field.Type().String() != "[]string" {
-				panic(fmt.Sprintf("jsonapi: relationship %s is not 'to many'", key))
+				panic(fmt.Sprintf("jsonapi: relationship %q is not 'to many'", key))
 			}
 
 			field.Set(reflect.ValueOf(rels))
@@ -271,7 +276,7 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Sprintf("jsonapi: relationship %s does not exist", key))
+	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // Validate returns any errors found in the wrapped resource.
@@ -293,9 +298,9 @@ func (w *Wrapper) Copy() Resource {
 	// Relationships
 	for _, rel := range w.Rels() {
 		if rel.ToOne {
-			nw.SetToOne(rel.Name, w.GetToOne(rel.Name))
+			nw.SetToOne(rel.FromName, w.GetToOne(rel.FromName))
 		} else {
-			nw.SetToMany(rel.Name, w.GetToMany(rel.Name))
+			nw.SetToMany(rel.FromName, w.GetToMany(rel.FromName))
 		}
 	}
 
@@ -304,16 +309,12 @@ func (w *Wrapper) Copy() Resource {
 
 // Private methods
 
-func (w *Wrapper) getAttr(key string, t string) interface{} {
+func (w *Wrapper) getAttr(key string) interface{} {
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
 
 		if key == sf.Tag.Get("json") && sf.Tag.Get("api") == "attr" {
-			if t != field.Type().String() && t != "" {
-				panic(fmt.Sprintf("jsonapi: attribute %s is not of type %s", key, field.Type()))
-			}
-
 			if strings.HasPrefix(field.Type().String(), "*") && field.IsNil() {
 				return nil
 			}
@@ -326,7 +327,7 @@ func (w *Wrapper) getAttr(key string, t string) interface{} {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Sprintf("jsonapi: attribute %s does not exist", key))
+	panic(fmt.Sprintf("jsonapi: attribute %q does not exist", key))
 }
 
 func (w *Wrapper) setAttr(key string, v interface{}) {
@@ -357,5 +358,5 @@ func (w *Wrapper) setAttr(key string, v interface{}) {
 		panic("jsonapi: key is empty")
 	}
 
-	panic(fmt.Errorf("jsonapi: attribute %s does not exist", key))
+	panic(fmt.Errorf("jsonapi: attribute %q does not exist", key))
 }

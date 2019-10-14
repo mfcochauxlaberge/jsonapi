@@ -149,6 +149,7 @@ func TestRange(t *testing.T) {
 		"range of IDs (3)",
 	)
 }
+
 func TestSortResources(t *testing.T) {
 	assert := assert.New(t)
 
@@ -179,6 +180,8 @@ func TestSortResources(t *testing.T) {
 		{vals: [2]interface{}{uint64(0), uint64(1)}},
 		{vals: [2]interface{}{false, true}},
 		{vals: [2]interface{}{now, now.Add(time.Second)}},
+		{vals: [2]interface{}{[]byte{0}, []byte{1}}},
+		{vals: [2]interface{}{[]byte{0}, []byte{0, 1}}},
 		// nullable
 		{vals: [2]interface{}{nilptr("string"), nilptr("string")}},
 		{vals: [2]interface{}{nilptr("string"), ptr("a")}},
@@ -242,8 +245,14 @@ func TestSortResources(t *testing.T) {
 		{vals: [2]interface{}{ptr(false), ptr(true)}},
 		{vals: [2]interface{}{nilptr("time.Time"), nilptr("time.Time")}},
 		{vals: [2]interface{}{nilptr("time.Time"), ptr(now)}},
+		{vals: [2]interface{}{ptr(now), nilptr("time.Time")}},
 		{vals: [2]interface{}{ptr(now), ptr(now)}},
 		{vals: [2]interface{}{ptr(now), ptr(now.Add(time.Second))}},
+		{vals: [2]interface{}{nilptr("[]byte"), nilptr("[]byte")}},
+		{vals: [2]interface{}{nilptr("[]byte"), ptr([]byte{0})}},
+		{vals: [2]interface{}{ptr([]byte{0}), nilptr("[]byte")}},
+		{vals: [2]interface{}{ptr([]byte{0}), ptr([]byte{0})}},
+		{vals: [2]interface{}{nilptr("[]byte"), ptr([]byte{1})}},
 	}
 
 	// Add attributes to type
@@ -299,16 +308,16 @@ func TestSortResources(t *testing.T) {
 	}
 
 	expectedIDs := []string{
-		"id0", "id3", "id6", "id9", "id12", "id20", "id24", "id25", "id27",
-		"id35", "id39", "id40", "id42", "id50", "id54", "id55", "id57",
-		"id69", "id70", "id72", "id10", "id13", "id16", "id18", "id21",
-		"id23", "id26", "id28", "id31", "id33", "id36", "id38", "id41",
-		"id43", "id46", "id48", "id51", "id53", "id56", "id58", "id61",
-		"id63", "id64", "id65", "id66", "id67", "id68", "id71", "id73",
-		"id75", "id76", "id74", "id62", "id60", "id59", "id52", "id49",
-		"id47", "id45", "id44", "id37", "id34", "id32", "id30", "id29",
-		"id22", "id19", "id17", "id15", "id14", "id11", "id8", "id7", "id5",
-		"id4", "id2", "id1",
+		"id0", "id3", "id6", "id9", "id12", "id17", "id21", "id22", "id24",
+		"id32", "id36", "id37", "id39", "id47", "id51", "id52", "id54", "id62",
+		"id77", "id10", "id15", "id18", "id20", "id23", "id25", "id28", "id30",
+		"id33", "id35", "id38", "id40", "id43", "id45", "id48", "id50", "id53",
+		"id55", "id58", "id60", "id63", "id65", "id66", "id67", "id68", "id69",
+		"id70", "id73", "id75", "id78", "id80", "id81", "id82", "id83", "id84",
+		"id79", "id76", "id74", "id72", "id71", "id64", "id61", "id59", "id57",
+		"id56", "id49", "id46", "id44", "id42", "id41", "id34", "id31", "id29",
+		"id27", "id26", "id19", "id16", "id14", "id13", "id11", "id8", "id7",
+		"id5", "id4", "id2", "id1",
 	}
 	assert.Equal(expectedIDs, ids, fmt.Sprintf("sort with rules: %v", rules))
 
@@ -330,4 +339,52 @@ func TestSortResources(t *testing.T) {
 
 	sort.Strings(expectedIDs)
 	assert.Equal(expectedIDs, ids, "sort by ID")
+
+	// Sort collection with different types
+	sr1 := &SoftResource{}
+	sr1.SetID("sr1")
+	col1 := &Resources{Wrap(mocktype{}), sr1}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"field", "id"}, 100, 0)
+	})
+
+	// Sort collection with unknown attribute
+	col1 = &Resources{
+		Wrap(mocktype{}),
+		Wrap(mocktype{}),
+	}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"unknown", "id"}, 100, 0)
+	})
+
+	// Sort collection with attribute of different type
+	col1 = &Resources{
+		&SoftResource{
+			Type: &Type{
+				Name: "type",
+				Attrs: map[string]Attr{
+					"samename": Attr{
+						Name:     "samename",
+						Type:     AttrTypeString,
+						Nullable: false,
+					},
+				},
+			},
+		},
+		&SoftResource{
+			Type: &Type{
+				Name: "type",
+				Attrs: map[string]Attr{
+					"samename": Attr{
+						Name:     "samename",
+						Type:     AttrTypeString,
+						Nullable: true,
+					},
+				},
+			},
+		},
+	}
+	assert.Panics(func() {
+		_ = Range(col1, nil, nil, []string{"samename", "id"}, 100, 0)
+	})
 }

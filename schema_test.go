@@ -68,9 +68,9 @@ func TestSchemaTypes(t *testing.T) {
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
 	rel := Rel{
-		Name:  "rel1",
-		Type:  "type1",
-		ToOne: true,
+		FromName: "rel1",
+		ToOne:    true,
+		ToType:   "type1",
 	}
 	err = schema.AddRel("type1", rel)
 	assert.NoError(err)
@@ -83,13 +83,13 @@ func TestSchemaTypes(t *testing.T) {
 	// Add an invalid relationship (no name)
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
-	err = schema.AddRel("type1", Rel{Name: ""})
+	err = schema.AddRel("type1", Rel{FromName: ""})
 	assert.Error(err)
 
 	// Add an invalid relationship (type does not exist)
 	schema = &Schema{}
 	_ = schema.AddType(Type{Name: "type1"})
-	err = schema.AddRel("type2", Rel{Name: "rel1"})
+	err = schema.AddRel("type2", Rel{FromName: "rel1"})
 	assert.Error(err)
 }
 
@@ -103,16 +103,16 @@ func TestSchemaCheck(t *testing.T) {
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
 			"rel1": {
-				Name: "rel1",
-				Type: "type2",
+				FromName: "rel1",
+				ToType:   "type2",
 			},
 			"rel2": {
-				Name: "rel2-invalid",
-				Type: "nonexistent",
+				FromName: "rel2-invalid",
+				ToType:   "nonexistent",
 			},
 			"rel3": {
-				Name: "rel3",
-				Type: "type1",
+				FromName: "rel3",
+				ToType:   "type1",
 			},
 		},
 	}
@@ -124,16 +124,16 @@ func TestSchemaCheck(t *testing.T) {
 		Attrs: map[string]Attr{},
 		Rels: map[string]Rel{
 			"rel1": {
-				Name:        "rel1",
-				Type:        "type1",
-				InverseName: "rel1",
-				InverseType: "type1",
+				FromName: "rel1",
+				FromType: "type1",
+				ToName:   "rel1",
+				ToType:   "type1",
 			},
 			"rel2": {
-				Name:        "rel2",
-				Type:        "type1",
-				InverseName: "rel3",
-				InverseType: "type2",
+				FromName: "rel2",
+				FromType: "type2",
+				ToName:   "rel3",
+				ToType:   "type1",
 			},
 		},
 	}
@@ -152,15 +152,16 @@ func TestSchemaCheck(t *testing.T) {
 	assert.Len(errs, 3)
 	assert.Contains(
 		errsStr,
-		"jsonapi: the target type of relationship rel2-invalid of type type1 does not exist",
+		"jsonapi: field ToType of relationship \"rel2-invalid\" of type \"type1\" does not exist",
 	)
 	assert.Contains(
 		errsStr,
-		"jsonapi: the inverse type of relationship rel1 should its type's name (type2, not type1)",
+		"jsonapi: field FromType of relationship \"rel1\" "+
+			"must be its type's name (\"type2\", not \"type1\")",
 	)
 	assert.Contains(
 		errsStr,
-		"jsonapi: relationship rel2 of type type2 and its inverse do not point each other",
+		"jsonapi: relationship \"rel2\" of type \"type2\" and its inverse do not point each other",
 	)
 }
 
@@ -172,21 +173,21 @@ func TestSchemaRels(t *testing.T) {
 	users := Type{
 		Name: "users",
 		Rels: map[string]Rel{
-			"posts": Rel{
-				Name:         "posts",
-				Type:         "messages",
-				ToOne:        false,
-				InverseName:  "author",
-				InverseType:  "users",
-				InverseToOne: true,
+			"posts": {
+				FromName: "posts",
+				FromType: "users",
+				ToOne:    false,
+				ToName:   "author",
+				ToType:   "messages",
+				FromOne:  true,
 			},
-			"favorites": Rel{
-				Name:         "favorites",
-				Type:         "messages",
-				ToOne:        false,
-				InverseName:  "",
-				InverseType:  "users",
-				InverseToOne: false,
+			"favorites": {
+				FromName: "favorites",
+				FromType: "users",
+				ToOne:    false,
+				ToName:   "",
+				ToType:   "messages",
+				FromOne:  false,
 			},
 		},
 	}
@@ -195,13 +196,13 @@ func TestSchemaRels(t *testing.T) {
 	messages := Type{
 		Name: "messages",
 		Rels: map[string]Rel{
-			"author": Rel{
-				Name:         "author",
-				Type:         "users",
-				ToOne:        true,
-				InverseName:  "posts",
-				InverseType:  "messages",
-				InverseToOne: false,
+			"author": {
+				FromName: "author",
+				FromType: "messages",
+				ToOne:    true,
+				ToName:   "posts",
+				ToType:   "users",
+				FromOne:  false,
 			},
 		},
 	}

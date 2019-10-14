@@ -90,7 +90,7 @@ func Equal(r1, r2 Resource) bool {
 		r1Rels = append(r1Rels, rels[name])
 	}
 	sort.Slice(r1Rels, func(i, j int) bool {
-		return r1Rels[i].Name < r1Rels[j].Name
+		return r1Rels[i].FromName < r1Rels[j].FromName
 	})
 	rels = r2.Rels()
 	r2Rels := make([]Rel, 0, len(rels))
@@ -98,7 +98,7 @@ func Equal(r1, r2 Resource) bool {
 		r2Rels = append(r2Rels, rels[name])
 	}
 	sort.Slice(r2Rels, func(i, j int) bool {
-		return r2Rels[i].Name < r2Rels[j].Name
+		return r2Rels[i].FromName < r2Rels[j].FromName
 	})
 
 	if len(r1Rels) != len(r2Rels) {
@@ -111,12 +111,12 @@ func Equal(r1, r2 Resource) bool {
 			return false
 		}
 		if rel1.ToOne {
-			if r1.GetToOne(rel1.Name) != r2.GetToOne(rel2.Name) {
+			if r1.GetToOne(rel1.FromName) != r2.GetToOne(rel2.FromName) {
 				return false
 			}
 		} else {
-			v1 := r1.GetToMany(rel1.Name)
-			v2 := r2.GetToMany(rel2.Name)
+			v1 := r1.GetToMany(rel1.FromName)
+			v2 := r2.GetToMany(rel2.FromName)
 			if len(v1) != 0 || len(v2) != 0 {
 				if !reflect.DeepEqual(v1, v2) {
 					return false
