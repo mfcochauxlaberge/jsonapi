@@ -43,6 +43,9 @@ func ptr(v interface{}) interface{} {
 	// time.Time
 	case time.Time:
 		return &c
+	// []byte
+	case []byte:
+		return &c
 	}
 	return nil
 }
@@ -91,6 +94,10 @@ func nilptr(t string) interface{} {
 	// time.Time
 	case "time.Time":
 		var p *time.Time
+		return p
+	// []byte
+	case "[]byte":
+		var p *[]byte
 		return p
 	}
 	return nil

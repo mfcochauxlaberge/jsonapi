@@ -25,6 +25,14 @@ func TestWrap(t *testing.T) {
 		_ = Wrap(&str)
 	}, "panic when not a pointer to a struct")
 
+	assert.NotPanics(func() {
+		_ = Wrap(&mocktype{})
+	}, "don't panic when a valid struct")
+
+	assert.NotPanics(func() {
+		_ = Wrap(mocktype{})
+	}, "don't panic when a pointer to a valid struct")
+
 	assert.Panics(func() {
 		s := time.Now()
 		_ = Wrap(&s)
@@ -75,12 +83,12 @@ func TestWrapper(t *testing.T) {
 	// Get relationships
 	rel := wrap1.Rel("to-one")
 	assert.Equal(Rel{
-		Name:         "to-one",
-		Type:         "mocktypes2",
-		ToOne:        true,
-		InverseName:  "",
-		InverseType:  "mocktypes1",
-		InverseToOne: false,
+		FromName: "to-one",
+		ToType:   "mocktypes2",
+		ToOne:    true,
+		ToName:   "",
+		FromType: "mocktypes1",
+		FromOne:  false,
 	}, rel, "get relationship (to-one)")
 	assert.Equal(Rel{}, wrap1.Rel("nonexistent"), "get non-existent relationship")
 
@@ -180,7 +188,7 @@ func TestWrapper(t *testing.T) {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
 
 	// Copy
@@ -189,7 +197,7 @@ func TestWrapper(t *testing.T) {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.Name), wrap3.Rel(rel.Name), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
 
 	wrap3.Set("str", "another string")
@@ -241,4 +249,126 @@ func TestWrapperSet(t *testing.T) {
 			assert.EqualValues(test.val, res1.Get(test.field))
 		}
 	}
+}
+
+func TestWrapperGetAndSetErrors(t *testing.T) {
+	assert := assert.New(t)
+
+	mt := &mocktype{}
+	wrap := Wrap(mt)
+
+	// Get on empty field name
+	assert.Panics(func() {
+		_ = wrap.Get("")
+	})
+
+	// Get on unknown field name
+	assert.Panics(func() {
+		_ = wrap.Get("unknown")
+	})
+
+	// Set on empty field name
+	assert.Panics(func() {
+		wrap.Set("", "")
+	})
+
+	// Set on unknown field name
+	assert.Panics(func() {
+		wrap.Set("unknown", "")
+	})
+
+	// Set with value of wrong type
+	assert.Panics(func() {
+		wrap.Set("str", 42)
+	})
+
+	// GetToOne on empty field name
+	assert.Panics(func() {
+		_ = wrap.GetToOne("")
+	})
+
+	// GetToOne on unknown field name
+	assert.Panics(func() {
+		_ = wrap.GetToOne("unknown")
+	})
+
+	// GetToOne on attribute
+	assert.Panics(func() {
+		_ = wrap.GetToOne("str")
+	})
+
+	// GetToOne on to-many relationship
+	assert.Panics(func() {
+		_ = wrap.GetToOne("to-x")
+	})
+
+	// GetToMany on empty field name
+	assert.Panics(func() {
+		_ = wrap.GetToMany("")
+	})
+
+	// GetToMany on unknown field name
+	assert.Panics(func() {
+		_ = wrap.GetToMany("unknown")
+	})
+
+	// GetToMany on attribute
+	assert.Panics(func() {
+		_ = wrap.GetToMany("str")
+	})
+
+	// GetToMany on to-one relationship
+	assert.Panics(func() {
+		_ = wrap.GetToMany("to-1")
+	})
+
+	// SetToOne on empty field name
+	assert.Panics(func() {
+		wrap.SetToOne("", "id")
+	})
+
+	// SetToOne on unknown field name
+	assert.Panics(func() {
+		wrap.SetToOne("unknown", "id")
+	})
+
+	// SetToOne on attribute
+	assert.Panics(func() {
+		wrap.SetToOne("str", "id")
+	})
+
+	// SetToOne on to-many relationship
+	assert.Panics(func() {
+		wrap.SetToOne("to-x", "id")
+	})
+
+	// SetToMany on empty field name
+	assert.Panics(func() {
+		wrap.SetToMany("", []string{"id"})
+	})
+
+	// SetToMany on unknown field name
+	assert.Panics(func() {
+		wrap.SetToMany("unknown", []string{"id"})
+	})
+
+	// SetToMany on attribute
+	assert.Panics(func() {
+		wrap.SetToMany("str", []string{"id"})
+	})
+
+	// SetToMany on to-one relationship
+	assert.Panics(func() {
+		wrap.SetToMany("to-1", []string{"id"})
+	})
+}
+
+func TestWrapperValidate(t *testing.T) {
+	assert := assert.New(t)
+
+	// TODO Implement this test when the implementation
+	// of Wrapper.Validate is done.
+	wrap := Wrap(mocktype{})
+	errs := wrap.Validate()
+	assert.Nil(errs)
 }

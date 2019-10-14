@@ -46,11 +46,11 @@ func (sr *SoftResource) AddAttr(attr Attr) {
 func (sr *SoftResource) AddRel(rel Rel) {
 	sr.check()
 	for _, name := range sr.fields() {
-		if name == rel.Name {
+		if name == rel.FromName {
 			return
 		}
 	}
-	sr.Type.Rels[rel.Name] = rel
+	sr.Type.Rels[rel.FromName] = rel
 }
 
 // RemoveField removes a field.
@@ -96,20 +96,10 @@ func (sr *SoftResource) GetType() Type {
 // Get returns the value associated to the field named after key.
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
-	if attr, ok := sr.Type.Attrs[key]; ok {
+	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
-		return GetZeroValue(attr.Type, attr.Nullable)
-	}
-	if rel, ok := sr.Type.Rels[key]; ok {
-		if v, ok := sr.data[key]; ok {
-			return v
-		}
-		if rel.ToOne {
-			return ""
-		}
-		return []string{}
 	}
 	return nil
 }
@@ -188,20 +178,13 @@ func (sr *SoftResource) Copy() Resource {
 	}
 }
 
-// UnmarshalJSON parses the payload and populates a SoftResource.
-func (sr *SoftResource) UnmarshalJSON(payload []byte) error {
-	sr.check()
-	// TODO
-	return nil
-}
-
 func (sr *SoftResource) fields() []string {
 	fields := make([]string, 0, len(sr.Type.Attrs)+len(sr.Type.Rels))
 	for i := range sr.Type.Attrs {
 		fields = append(fields, sr.Type.Attrs[i].Name)
 	}
 	for i := range sr.Type.Rels {
-		fields = append(fields, sr.Type.Rels[i].Name)
+		fields = append(fields, sr.Type.Rels[i].FromName)
 	}
 	return fields
 }
@@ -227,7 +210,7 @@ func (sr *SoftResource) check() {
 		}
 	}
 	for i := range sr.Type.Rels {
-		n := sr.Type.Rels[i].Name
+		n := sr.Type.Rels[i].FromName
 		if _, ok := sr.data[n]; !ok {
 			if sr.Type.Rels[i].ToOne {
 				sr.data[n] = ""

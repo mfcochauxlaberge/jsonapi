@@ -150,70 +150,70 @@ func TestErrorConstructors(t *testing.T) {
 				e := NewErrUnknownFieldInBody("type", "field")
 				return e
 			}(),
-			expected: "400 Bad Request: field is not a known field.",
+			expected: "400 Bad Request: \"field\" is not a known field.",
 		}, {
 			name: "NewErrUnknownFieldInURL",
 			err: func() Error {
 				e := NewErrUnknownFieldInURL("field")
 				return e
 			}(),
-			expected: "400 Bad Request: field is not a known field.",
+			expected: "400 Bad Request: \"field\" is not a known field.",
 		}, {
 			name: "NewErrUnknownParameter",
 			err: func() Error {
 				e := NewErrUnknownParameter("param")
 				return e
 			}(),
-			expected: "400 Bad Request: param is not a known parameter.",
+			expected: "400 Bad Request: \"param\" is not a known parameter.",
 		}, {
 			name: "NewErrUnknownRelationshipInPath",
 			err: func() Error {
 				e := NewErrUnknownRelationshipInPath("type", "rel", "path")
 				return e
 			}(),
-			expected: "400 Bad Request: rel is not a relationship of type.",
+			expected: "400 Bad Request: \"rel\" is not a relationship of \"type\".",
 		}, {
 			name: "NewErrUnknownTypeInURL",
 			err: func() Error {
 				e := NewErrUnknownTypeInURL("type")
 				return e
 			}(),
-			expected: "400 Bad Request: type is not a known type.",
+			expected: "400 Bad Request: \"type\" is not a known type.",
 		}, {
 			name: "NewErrUnknownFieldInFilterParameter",
 			err: func() Error {
 				e := NewErrUnknownFieldInFilterParameter("field")
 				return e
 			}(),
-			expected: "400 Bad Request: field is not a known field.",
+			expected: "400 Bad Request: \"field\" is not a known field.",
 		}, {
 			name: "NewErrUnknownOperatorInFilterParameter",
 			err: func() Error {
 				e := NewErrUnknownOperatorInFilterParameter("=>")
 				return e
 			}(),
-			expected: "400 Bad Request: => is not a known operator.",
+			expected: "400 Bad Request: \"=>\" is not a known operator.",
 		}, {
 			name: "NewErrInvalidValueInFilterParameter",
 			err: func() Error {
 				e := NewErrInvalidValueInFilterParameter("value", "string")
 				return e
 			}(),
-			expected: "400 Bad Request: value is not a known value.",
+			expected: "400 Bad Request: \"value\" is not a known value.",
 		}, {
 			name: "NewErrUnknownCollationInFilterParameter",
 			err: func() Error {
 				e := NewErrUnknownCollationInFilterParameter("collation")
 				return e
 			}(),
-			expected: "400 Bad Request: collation is not a known collation.",
+			expected: "400 Bad Request: \"collation\" is not a known collation.",
 		}, {
 			name: "NewErrUnknownFilterParameterLabel",
 			err: func() Error {
 				e := NewErrUnknownFilterParameterLabel("label")
 				return e
 			}(),
-			expected: "400 Bad Request: label is not a known filter query label.",
+			expected: "400 Bad Request: \"label\" is not a known filter query label.",
 		}, {
 			name: "NewErrUnauthorized",
 			err: func() Error {

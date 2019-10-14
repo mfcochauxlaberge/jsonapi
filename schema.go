@@ -3,14 +3,30 @@ package jsonapi
 import (
 	"errors"
 	"fmt"
+	"sort"
 )
 
-// A Schema contains a list of types. It makes sure that each type is valid and
-// unique.
+// A Schema contains a list of types. It makes sure that all types are valid and
+// their relationships are consistent.
 //
 // Check can be used to validate the relationships between the types.
 type Schema struct {
 	Types []Type
+
+	// Rels stores the relationships found in the schema's types. For
+	// two-way relationships, only one is chosen to be part of this
+	// map. The chosen one is the one that comes first when sorting
+	// both relationships in alphabetical order using the type name
+	// first and then the relationship name.
+	//
+	// For example, a type called Directory has a Parent relationship
+	// and a Children relationship. Both relationships have the same
+	// type (Directory), so now the name is used for sorting. Children
+	// comes before Parent, so the relationship Children from type
+	// Directory is stored here. The other one is not stored to avoid
+	// duplication (the information is already accessible through the
+	// inverse relationship).
+	rels map[string]Rel
 }
 
 // AddType adds a type to the schema.
@@ -23,7 +39,7 @@ func (s *Schema) AddType(typ Type) error {
 	// Make sure the name isn't already used
 	for i := range s.Types {
 		if s.Types[i].Name == typ.Name {
-			return fmt.Errorf("jsonapi: type name %s is already used", typ.Name)
+			return fmt.Errorf("jsonapi: type name %q is already used", typ.Name)
 		}
 	}
 
@@ -49,7 +65,7 @@ func (s *Schema) AddAttr(typ string, attr Attr) error {
 		}
 	}
 
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+	return fmt.Errorf("jsonapi: type %q does not exist", typ)
 }
 
 // RemoveAttr removes an attribute from the specified type.
@@ -69,7 +85,7 @@ func (s *Schema) AddRel(typ string, rel Rel) error {
 		}
 	}
 
-	return fmt.Errorf("jsonapi: type %s does not exist", typ)
+	return fmt.Errorf("jsonapi: type %q does not exist", typ)
 }
 
 // RemoveRel removes a relationship from the specified type.
@@ -79,6 +95,26 @@ func (s *Schema) RemoveRel(typ string, rel string) {
 			s.Types[i].RemoveRel(rel)
 		}
 	}
+}
+
+// Rels returns all the relationships from the schema's types. For two-way
+// relationships (two types where each has a relationship pointing to the other
+// type), only one of the two relationships will appear in the list.
+func (s *Schema) Rels() []Rel {
+	s.buildRels()
+
+	rels := []Rel{}
+	for _, rel := range s.rels {
+		rels = append(rels, rel)
+	}
+
+	sort.Slice(rels, func(i, j int) bool {
+		name1 := rels[i].FromType + rels[i].FromName
+		name2 := rels[j].FromType + rels[j].FromName
+		return name1 < name2
+	})
+
+	return rels
 }
 
 // HasType returns a boolean indicating whether a type has the specified
@@ -120,43 +156,43 @@ func (s *Schema) Check() []error {
 			var targetType Type
 
 			// Does the relationship point to a type that exists?
-			if targetType = s.GetType(rel.Type); targetType.Name == "" {
+			if targetType = s.GetType(rel.ToType); targetType.Name == "" {
 				errs = append(errs, fmt.Errorf(
-					"jsonapi: the target type of relationship %s of type %s does not exist",
-					rel.Name,
+					"jsonapi: field ToType of relationship %q of type %q does not exist",
+					rel.FromName,
 					typ.Name,
 				))
 			}
 
 			// Skip to next relationship here if there's no inverse
-			if rel.InverseName == "" {
+			if rel.ToName == "" {
 				continue
 			}
 
 			// Is the inverse relationship type the same as its
 			// type name?
-			if rel.InverseType != typ.Name {
+			if rel.FromType != typ.Name {
 				errs = append(errs, fmt.Errorf(
 					"jsonapi: "+
-						"the inverse type of relationship %s should its type's name (%s, not %s)",
-					rel.Name,
+						"field FromType of relationship %q must be its type's name (%q, not %q)",
+					rel.FromName,
 					typ.Name,
-					rel.InverseType,
+					rel.FromType,
 				))
 			} else {
 				// Do both relationships (current and inverse) point
 				// to each other?
 				var found bool
 				for _, invRel := range targetType.Rels {
-					if rel.Name == invRel.InverseName && rel.InverseName == invRel.Name {
+					if rel.FromName == invRel.ToName && rel.ToName == invRel.FromName {
 						found = true
 					}
 				}
 				if !found {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: "+
-							"relationship %s of type %s and its inverse do not point each other",
-						rel.Name,
+							"relationship %q of type %q and its inverse do not point each other",
+						rel.FromName,
 						typ.Name,
 					))
 				}
@@ -165,4 +201,26 @@ func (s *Schema) Check() []error {
 	}
 
 	return errs
+}
+
+// buildRels ...
+func (s *Schema) buildRels() {
+	s.rels = map[string]Rel{}
+
+	for _, typ := range s.Types {
+		for _, rel := range typ.Rels {
+			relName := rel.FromType + "_" + rel.FromName
+			if rel.ToName == "" {
+				s.rels[relName] = rel
+			} else {
+				inv := rel.Inverse()
+				invName := inv.FromType + "_" + inv.FromName
+				if relName < invName {
+					s.rels[relName] = rel
+				} else {
+					s.rels[invName] = inv
+				}
+			}
+		}
+	}
 }

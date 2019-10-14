@@ -25,8 +25,8 @@ func TestType(t *testing.T) {
 	err := typ.AddAttr(attr1)
 	assert.NoError(err)
 	rel1 := Rel{
-		Name: "rel1",
-		Type: "type1",
+		FromName: "rel1",
+		ToType:   "type1",
 	}
 	err = typ.AddRel(rel1)
 	assert.NoError(err)
@@ -51,11 +51,11 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 
 	// Add invalid relationship (empty type)
-	err = typ.AddRel(Rel{Name: "invalid"})
+	err = typ.AddRel(Rel{FromName: "invalid"})
 	assert.Error(err)
 
 	// Add invalid relationship (name already used)
-	err = typ.AddRel(Rel{Name: "rel1", Type: "type1"})
+	err = typ.AddRel(Rel{FromName: "rel1", ToType: "type1"})
 	assert.Error(err)
 }
 
@@ -74,6 +74,19 @@ func TestTypeEqual(t *testing.T) {
 	typ1.Name = "type1"
 	typ2.Name = "type2"
 	assert.False(typ1.Equal(typ2))
+
+	// Make sure NewFunc is ignored.
+	typ1.Name = "type1"
+	typ1.NewFunc = func() Resource {
+		return nil
+	}
+	typ2.Name = "type1"
+	typ2.NewFunc = func() Resource {
+		return &SoftResource{}
+	}
+	assert.True(typ1.Equal(typ2))
+
+	// TODO Add tests with attributes and relationships.
 }
 
 func TestTypeNewFunc(t *testing.T) {
@@ -115,32 +128,34 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	tests := []struct {
 		val interface{}
 	}{
-		{val: "str"},        // string
-		{val: 1},            // int
-		{val: int8(8)},      // int8
-		{val: int16(16)},    // int16
-		{val: int32(32)},    // int32
-		{val: int64(64)},    // int64
-		{val: uint(1)},      // uint
-		{val: uint8(8)},     // uint8
-		{val: uint16(16)},   // uint16
-		{val: uint32(32)},   // uint32
-		{val: uint64(64)},   // uint64
-		{val: true},         // bool
-		{val: time.Time{}},  // time
-		{val: &vstr},        // *string
-		{val: &vint},        // *int
-		{val: &vint8},       // *int8
-		{val: &vint16},      // *int16
-		{val: &vint32},      // *int32
-		{val: &vint64},      // *int64
-		{val: &vuint},       // *uint
-		{val: &vuint8},      // *uint8
-		{val: &vuint16},     // *uint16
-		{val: &vuint32},     // *uint32
-		{val: &vuint64},     // *uint64
-		{val: &vbool},       // *bool
-		{val: &time.Time{}}, // *time
+		{val: "str"},            // string
+		{val: 1},                // int
+		{val: int8(8)},          // int8
+		{val: int16(16)},        // int16
+		{val: int32(32)},        // int32
+		{val: int64(64)},        // int64
+		{val: uint(1)},          // uint
+		{val: uint8(8)},         // uint8
+		{val: uint16(16)},       // uint16
+		{val: uint32(32)},       // uint32
+		{val: uint64(64)},       // uint64
+		{val: true},             // bool
+		{val: time.Time{}},      // time
+		{val: []byte{1, 2, 3}},  // []byte
+		{val: &vstr},            // *string
+		{val: &vint},            // *int
+		{val: &vint8},           // *int8
+		{val: &vint16},          // *int16
+		{val: &vint32},          // *int32
+		{val: &vint64},          // *int64
+		{val: &vuint},           // *uint
+		{val: &vuint8},          // *uint8
+		{val: &vuint16},         // *uint16
+		{val: &vuint32},         // *uint32
+		{val: &vuint64},         // *uint64
+		{val: &vbool},           // *bool
+		{val: &time.Time{}},     // *time
+		{val: &[]byte{1, 2, 3}}, // *[]byte
 	}
 
 	attr := Attr{}
@@ -166,6 +181,14 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	assert.Error(err)
 	assert.Nil(val)
 
+	// Invalid slide of bytes
+	attr.Type = AttrTypeBytes
+	assert.Panics(func() {
+		_, _ = attr.UnmarshalToType([]byte("invalid"))
+	})
+	// assert.Error(err)
+	// assert.Nil(val)
+
 	// Invalid attribute type
 	attr.Type = AttrTypeInvalid
 	val, err = attr.UnmarshalToType([]byte("invalid"))
@@ -179,22 +202,54 @@ func TestInverseRel(t *testing.T) {
 	assert := assert.New(t)
 
 	rel := Rel{
-		Name:         "rel1",
-		Type:         "type2",
-		ToOne:        true,
-		InverseName:  "rel2",
-		InverseType:  "type1",
-		InverseToOne: false,
+		FromName: "rel1",
+		FromType: "type1",
+		ToOne:    true,
+		ToName:   "rel2",
+		ToType:   "type2",
+		FromOne:  false,
 	}
 
 	invRel := rel.Inverse()
 
-	assert.Equal("rel2", invRel.Name)
-	assert.Equal("type1", invRel.Type)
+	assert.Equal("rel2", invRel.FromName)
+	assert.Equal("type1", invRel.ToType)
 	assert.Equal(false, invRel.ToOne)
-	assert.Equal("rel1", invRel.InverseName)
-	assert.Equal("type2", invRel.InverseType)
-	assert.Equal(true, invRel.InverseToOne)
+	assert.Equal("rel1", invRel.ToName)
+	assert.Equal("type2", invRel.FromType)
+	assert.Equal(true, invRel.FromOne)
+}
+
+func TestRelNormalize(t *testing.T) {
+	assert := assert.New(t)
+
+	rel := Rel{
+		FromName: "rel2",
+		FromType: "type2",
+		ToOne:    false,
+		ToName:   "rel1",
+		ToType:   "type1",
+		FromOne:  true,
+	}
+
+	// Normalize should return the inverse because
+	// type1 comes before type2 alphabetically.
+	norm := rel.Normalize()
+	assert.Equal("type1", norm.FromType)
+	assert.Equal("rel1", norm.FromName)
+	assert.Equal(true, norm.ToOne)
+	assert.Equal("type2", norm.ToType)
+	assert.Equal("rel2", norm.ToName)
+	assert.Equal(false, norm.FromOne)
+
+	// Normalize again, but it should stay the same.
+	norm = norm.Normalize()
+	assert.Equal("type1", norm.FromType)
+	assert.Equal("rel1", norm.FromName)
+	assert.Equal(true, norm.ToOne)
+	assert.Equal("type2", norm.ToType)
+	assert.Equal("rel2", norm.ToName)
+	assert.Equal(false, norm.FromOne)
 }
 
 func TestGetAttrType(t *testing.T) {
@@ -252,6 +307,10 @@ func TestGetAttrType(t *testing.T) {
 	assert.Equal(AttrTypeTime, typ)
 	assert.False(nullable)
 
+	typ, nullable = GetAttrType("[]uint8")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.False(nullable)
+
 	typ, nullable = GetAttrType("*string")
 	assert.Equal(AttrTypeString, typ)
 	assert.True(nullable)
@@ -304,6 +363,10 @@ func TestGetAttrType(t *testing.T) {
 	assert.Equal(AttrTypeTime, typ)
 	assert.True(nullable)
 
+	typ, nullable = GetAttrType("*[]uint8")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.True(nullable)
+
 	typ, nullable = GetAttrType("invalid")
 	assert.Equal(AttrTypeInvalid, typ)
 	assert.False(nullable)
@@ -329,6 +392,7 @@ func TestGetAttrTypeString(t *testing.T) {
 	assert.Equal("uint64", GetAttrTypeString(AttrTypeUint64, false))
 	assert.Equal("bool", GetAttrTypeString(AttrTypeBool, false))
 	assert.Equal("time.Time", GetAttrTypeString(AttrTypeTime, false))
+	assert.Equal("[]uint8", GetAttrTypeString(AttrTypeBytes, false))
 	assert.Equal("*string", GetAttrTypeString(AttrTypeString, true))
 	assert.Equal("*int", GetAttrTypeString(AttrTypeInt, true))
 	assert.Equal("*int8", GetAttrTypeString(AttrTypeInt8, true))
@@ -342,6 +406,7 @@ func TestGetAttrTypeString(t *testing.T) {
 	assert.Equal("*uint64", GetAttrTypeString(AttrTypeUint64, true))
 	assert.Equal("*bool", GetAttrTypeString(AttrTypeBool, true))
 	assert.Equal("*time.Time", GetAttrTypeString(AttrTypeTime, true))
+	assert.Equal("*[]uint8", GetAttrTypeString(AttrTypeBytes, true))
 	assert.Equal("", GetAttrTypeString(AttrTypeInvalid, false))
 	assert.Equal("", GetAttrTypeString(999, false))
 }
@@ -362,6 +427,7 @@ func TestGetZeroValue(t *testing.T) {
 	assert.Equal(uint64(0), GetZeroValue(AttrTypeUint64, false))
 	assert.Equal(false, GetZeroValue(AttrTypeBool, false))
 	assert.Equal(time.Time{}, GetZeroValue(AttrTypeTime, false))
+	assert.Equal([]byte{}, GetZeroValue(AttrTypeBytes, false))
 	assert.Equal(nilptr("string"), GetZeroValue(AttrTypeString, true))
 	assert.Equal(nilptr("int"), GetZeroValue(AttrTypeInt, true))
 	assert.Equal(nilptr("int8"), GetZeroValue(AttrTypeInt8, true))
@@ -375,6 +441,7 @@ func TestGetZeroValue(t *testing.T) {
 	assert.Equal(nilptr("uint64"), GetZeroValue(AttrTypeUint64, true))
 	assert.Equal(nilptr("bool"), GetZeroValue(AttrTypeBool, true))
 	assert.Equal(nilptr("time.Time"), GetZeroValue(AttrTypeTime, true))
+	assert.Equal(nilptr("[]byte"), GetZeroValue(AttrTypeBytes, true))
 	assert.Equal(nil, GetZeroValue(AttrTypeInvalid, false))
 	assert.Equal(nil, GetZeroValue(999, false))
 }
@@ -393,12 +460,12 @@ func TestCopyType(t *testing.T) {
 		},
 		Rels: map[string]Rel{
 			"rel1": {
-				Name:         "rel1",
-				Type:         "type2",
-				ToOne:        true,
-				InverseName:  "rel2",
-				InverseType:  "type1",
-				InverseToOne: false,
+				FromName: "rel1",
+				FromType: "type1",
+				ToOne:    true,
+				ToName:   "rel2",
+				ToType:   "type2",
+				FromOne:  false,
 			},
 		},
 	}
@@ -412,12 +479,12 @@ func TestCopyType(t *testing.T) {
 	assert.Equal(AttrTypeString, typ2.Attrs["attr1"].Type)
 	assert.True(typ2.Attrs["attr1"].Nullable)
 	assert.Len(typ2.Rels, 1)
-	assert.Equal("rel1", typ2.Rels["rel1"].Name)
-	assert.Equal("type2", typ2.Rels["rel1"].Type)
+	assert.Equal("rel1", typ2.Rels["rel1"].FromName)
+	assert.Equal("type2", typ2.Rels["rel1"].ToType)
 	assert.True(typ2.Rels["rel1"].ToOne)
-	assert.Equal("rel2", typ2.Rels["rel1"].InverseName)
-	assert.Equal("type1", typ2.Rels["rel1"].InverseType)
-	assert.False(typ2.Rels["rel1"].InverseToOne)
+	assert.Equal("rel2", typ2.Rels["rel1"].ToName)
+	assert.Equal("type1", typ2.Rels["rel1"].FromType)
+	assert.False(typ2.Rels["rel1"].FromOne)
 
 	// Modify original (copy should not change)
 	typ1.Name = "type3"
