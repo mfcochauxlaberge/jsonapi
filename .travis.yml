@@ -4,6 +4,10 @@ go:
   - 1.12.x
   - 1.13.x
 
+arch:
+  - amd64
+  - arm64
+
 branches:
   only:
     - master
