@@ -1030,23 +1030,21 @@ func TestFilterMarshaling(t *testing.T) {
 					&Filter{
 						Field: "field",
 						Op:    "=",
-						Val:   10,
+						Val:   float64(10),
 					},
 					&Filter{
 						Field: "",
 						Op:    "and",
 						Val: []*Filter{
 							&Filter{
-								Col:   "col",
 								Field: "field",
 								Op:    ">=",
-								Val:   20,
+								Val:   float64(20),
 							},
 							&Filter{
-								Col:   "col",
 								Field: "field",
 								Op:    "<=",
-								Val:   30,
+								Val:   float64(30),
 							},
 						},
 					},
