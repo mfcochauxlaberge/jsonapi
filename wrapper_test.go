@@ -362,13 +362,3 @@ func TestWrapperGetAndSetErrors(t *testing.T) {
 		wrap.SetToMany("to-1", []string{"id"})
 	})
 }
-
-func TestWrapperValidate(t *testing.T) {
-	assert := assert.New(t)
-
-	// TODO Implement this test when the implementation
-	// of Wrapper.Validate is done.
-	wrap := Wrap(mocktype{})
-	errs := wrap.Validate()
-	assert.Nil(errs)
-}

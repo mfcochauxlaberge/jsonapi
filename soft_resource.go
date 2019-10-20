@@ -162,12 +162,6 @@ func (sr *SoftResource) SetToMany(key string, v []string) {
 	}
 }
 
-// Validate returns validation errors found in the resource.
-func (sr *SoftResource) Validate() []error {
-	sr.check()
-	return []error{}
-}
-
 // Copy return a new SoftResource object with the same type and values.
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
