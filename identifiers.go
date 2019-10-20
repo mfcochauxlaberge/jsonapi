@@ -1,7 +1,5 @@
 package jsonapi
 
-import "encoding/json"
-
 // NewIdentifiers returns an Identifiers object.
 //
 // t is the type of the identifiers. ids is the set of IDs.
@@ -36,13 +34,4 @@ func (i Identifiers) IDs() []string {
 type Identifier struct {
 	ID   string `json:"id"`
 	Type string `json:"type"`
-}
-
-// MarshalIdentifiers builds a json.RawMessage object from the given IDs.
-//
-// TODO Implement the function.
-func MarshalIdentifiers(ids []string, toOne bool) json.RawMessage {
-	raw := ""
-
-	return []byte(raw)
 }
