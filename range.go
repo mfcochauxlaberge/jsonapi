@@ -1,7 +1,6 @@
 package jsonapi
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 	"time"
@@ -103,23 +102,8 @@ func (s sortedResources) Less(i, j int) bool {
 			return s.col[i].GetID() < s.col[j].GetID() != inverse
 		}
 
-		// Check type
-		typ := s.col.At(i).GetType()
-		typ2 := s.col.At(j).GetType()
-		if !typ.Equal(typ2) {
-			panic("cannot compare two resources of different types")
-		}
-
-		if _, ok := typ.Attrs[r]; !ok {
-			panic("cannot sort on a unknown attribute")
-		}
-
 		v := s.col[i].Get(r)
 		v2 := s.col[j].Get(r)
-
-		if fmt.Sprintf("%T", v) != fmt.Sprintf("%T", v2) {
-			panic("cannot compare two values of different types")
-		}
 
 		// Here we return true if v < v2.
 		// The "!= inverse" part acts as a XOR operation so that

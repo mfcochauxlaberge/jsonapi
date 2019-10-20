@@ -279,11 +279,6 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
-// Validate returns any errors found in the wrapped resource.
-func (w *Wrapper) Validate() []error {
-	return nil
-}
-
 // Copy makes a copy of the wrapped resource and returns it.
 //
 // The returned value's concrete type is also a Wrapper.
