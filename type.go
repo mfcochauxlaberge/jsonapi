@@ -377,9 +377,8 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString return the name of the attribute type specified by an int
-// (see constants) and a boolean that indicates whether the value can be null or
-// not.
+// GetAttrTypeString returns the name of the attribute type specified by t (see
+// constants) and nullable.
 func GetAttrTypeString(t int, nullable bool) string {
 	str := ""
 	switch t {
