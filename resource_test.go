@@ -106,12 +106,12 @@ func TestEqual(t *testing.T) {
 	assert.False(Equal(mt11, mt13), "different resources (same type)")
 	assert.False(Equal(mt11, mt21), "different types")
 
-	typ := CopyType(mt11.GetType())
+	typ := mt11.GetType().Copy()
 	sr1 := &SoftResource{Type: &typ}
 	sr1.RemoveField("str")
 	assert.False(Equal(mt11, sr1), "different number of attributes")
 
-	typ = CopyType(mt11.GetType())
+	typ = mt11.GetType().Copy()
 	sr1 = &SoftResource{Type: &typ}
 	for _, attr := range typ.Attrs {
 		sr1.Set(attr.Name, mt11.Get(attr.Name))

@@ -30,9 +30,6 @@ type Resource interface {
 	Set(key string, val interface{})
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
-
-	// Validate
-	Validate() []error
 }
 
 // Equal reports whether r1 and r2 are equal.

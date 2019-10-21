@@ -93,6 +93,16 @@ func TestSoftCollection(t *testing.T) {
 	}
 	sr.AddRel(rel7)
 	_ = typ.AddRel(rel7)
+	rel8 := Rel{
+		FromName: "rel8",
+		FromType: "thirdtype",
+		ToOne:    false,
+		ToName:   "rel9",
+		ToType:   "othertype",
+		FromOne:  true,
+	}
+	sr.AddRel(rel8)
+	_ = typ.AddRel(rel8)
 
 	sc.Add(sr)
 

@@ -471,7 +471,7 @@ func TestCopyType(t *testing.T) {
 	}
 
 	// Copy
-	typ2 := CopyType(typ1)
+	typ2 := typ1.Copy()
 
 	assert.Equal("type1", typ2.Name)
 	assert.Len(typ2.Attrs, 1)

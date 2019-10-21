@@ -150,6 +150,26 @@ func (t Type) Equal(typ Type) bool {
 	return reflect.DeepEqual(t, typ)
 }
 
+// Copy deeply copies the receiver and returns the result.
+func (t Type) Copy() Type {
+	ctyp := Type{
+		Name:  t.Name,
+		Attrs: map[string]Attr{},
+		Rels:  map[string]Rel{},
+	}
+
+	for name, attr := range t.Attrs {
+		ctyp.Attrs[name] = attr
+	}
+	for name, rel := range t.Rels {
+		ctyp.Rels[name] = rel
+	}
+
+	ctyp.NewFunc = t.NewFunc
+
+	return ctyp
+}
+
 // Attr represents a resource attribute.
 type Attr struct {
 	Name     string
@@ -377,9 +397,8 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString return the name of the attribute type specified by an int
-// (see constants) and a boolean that indicates whether the value can be null or
-// not.
+// GetAttrTypeString returns the name of the attribute type specified by t (see
+// constants) and nullable.
 func GetAttrTypeString(t int, nullable bool) string {
 	str := ""
 	switch t {
@@ -513,24 +532,4 @@ func GetZeroValue(t int, null bool) interface{} {
 	default:
 		return nil
 	}
-}
-
-// CopyType deeply copies the given type and returns the result.
-func CopyType(typ Type) Type {
-	ctyp := Type{
-		Name:  typ.Name,
-		Attrs: map[string]Attr{},
-		Rels:  map[string]Rel{},
-	}
-
-	for name, attr := range typ.Attrs {
-		ctyp.Attrs[name] = attr
-	}
-	for name, rel := range typ.Rels {
-		ctyp.Rels[name] = rel
-	}
-
-	ctyp.NewFunc = typ.NewFunc
-
-	return ctyp
 }
