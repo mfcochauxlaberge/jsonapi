@@ -59,7 +59,7 @@ func TestInclude(t *testing.T) {
 	col.Add(newResource(typ1, "id1"))
 	col.Add(newResource(typ1, "id2"))
 	col.Add(newResource(typ1, "id3"))
-	doc.Data = Collection(col)
+	doc.Data = col.Collection()
 
 	// Inclusions
 	doc.Include(newResource(typ1, "id1"))

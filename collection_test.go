@@ -1,29 +1,25 @@
 package jsonapi_test
 
-import (
-	"testing"
+// import (
+// 	. "github.com/mfcochauxlaberge/jsonapi"
+// )
 
-	. "github.com/mfcochauxlaberge/jsonapi"
+// var _ Collection = (*Resources)(nil)
 
-	"github.com/stretchr/testify/assert"
-)
+// func TestResources(t *testing.T) {
+// 	assert := assert.New(t)
 
-var _ Collection = (*Resources)(nil)
+// 	col := Resources{}
+// 	assert.Equal(Type{}, col.GetType())
+// 	assert.Equal(0, col.Len())
 
-func TestResources(t *testing.T) {
-	assert := assert.New(t)
+// 	// Add a resource
+// 	res := &SoftResource{}
+// 	res.SetID("id")
+// 	col.Add(res)
+// 	assert.Equal(1, col.Len())
 
-	col := Resources{}
-	assert.Equal(Type{}, col.GetType())
-	assert.Equal(0, col.Len())
-
-	// Add a resource
-	res := &SoftResource{}
-	res.SetID("id")
-	col.Add(res)
-	assert.Equal(1, col.Len())
-
-	// Retrieve a resource
-	assert.Equal("id", col.At(0).GetID())
-	assert.Nil(col.At(1))
-}
+// 	// Retrieve a resource
+// 	assert.Equal("id", col.At(0).GetID())
+// 	assert.Nil(col.At(1))
+// }

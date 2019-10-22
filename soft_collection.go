@@ -90,3 +90,12 @@ func (s *SoftCollection) Remove(id string) {
 		}
 	}
 }
+
+// Collection returns a Collection with all the elements of s.
+func (s *SoftCollection) Collection() Collection {
+	col := Collection{}
+	for i := range s.col {
+		col.Add(s.col[i])
+	}
+	return col
+}

@@ -16,7 +16,7 @@ import (
 //
 // A non-nil Collection is always returned, but it can be empty.
 func Range(c Collection, ids []string, filter *Filter, sort []string, size uint, num uint) Collection {
-	col := sortedResources{}
+	col := sortedCollection{}
 
 	// Filter IDs
 	if len(ids) > 0 {
@@ -50,28 +50,28 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, size uint,
 	col.Sort(sort)
 
 	// Pagination
-	var page Resources
+	var page Collection
 	skip := int(num * size)
-	if skip >= len(col.col) {
-		col = sortedResources{}
+	if skip >= col.Len() {
+		col = sortedCollection{}
 	} else {
-		for i := skip; i < len(col.col) && i < skip+int(size); i++ {
+		for i := skip; i < col.Len() && i < skip+int(size); i++ {
 			page = append(page, col.col[i])
 		}
 	}
 
-	return &page
+	return page
 }
 
-// sortedResources is an internal struct for sorting Collections with the Range
+// sortedCollection is an internal struct for sorting Collections with the Range
 // function.
-type sortedResources struct {
+type sortedCollection struct {
 	rules []string
-	col   Resources
+	col   Collection
 }
 
 // Sort rearranges the order of the collection according the rules.
-func (s sortedResources) Sort(rules []string) {
+func (s sortedCollection) Sort(rules []string) {
 	s.rules = rules
 	if len(s.rules) == 0 {
 		s.rules = []string{"id"}
@@ -80,17 +80,17 @@ func (s sortedResources) Sort(rules []string) {
 }
 
 // Len implements sort.Interface's Len method.
-func (s sortedResources) Len() int {
-	return len(s.col)
+func (s sortedCollection) Len() int {
+	return s.col.Len()
 }
 
 // Swap implements sort.Interface's Swap method.
-func (s sortedResources) Swap(i, j int) {
+func (s sortedCollection) Swap(i, j int) {
 	s.col[i], s.col[j] = s.col[j], s.col[i]
 }
 
 // Less implements sort.Interface's Less method.
-func (s sortedResources) Less(i, j int) bool {
+func (s sortedCollection) Less(i, j int) bool {
 	for _, r := range s.rules {
 		inverse := false
 		if strings.HasPrefix(r, "-") {

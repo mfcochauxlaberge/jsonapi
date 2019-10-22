@@ -8,8 +8,6 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-var _ Collection = (*WrapperCollection)(nil)
-
 func TestWrapCollection(t *testing.T) {
 	assert := assert.New(t)
 

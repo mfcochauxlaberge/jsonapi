@@ -395,7 +395,7 @@ func unmarshalCollection(data []byte, schema *Schema) (Collection, error) {
 		return nil, err
 	}
 
-	col := &Resources{}
+	col := Collection{}
 	for i := range cske {
 		res, err := unmarshalResource(cske[i], schema)
 		if err != nil {

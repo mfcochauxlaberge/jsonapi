@@ -25,7 +25,7 @@ func TestMarshaling(t *testing.T) {
 	typ.NewFunc = func() Resource {
 		return Wrap(&mocktype{})
 	}
-	col := &Resources{}
+	col := Collection{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
 		Str:      "str",
@@ -72,7 +72,7 @@ func TestMarshaling(t *testing.T) {
 		}, {
 			name: "empty collection",
 			doc: &Document{
-				Data: &Resources{},
+				Data: &Collection{},
 			},
 		}, {
 			name: "resource",
@@ -225,7 +225,7 @@ func TestMarshalingInvalidDocuments(t *testing.T) {
 	typ.NewFunc = func() Resource {
 		return Wrap(&mocktype{})
 	}
-	col := &Resources{}
+	col := &Collection{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
 		Str:      "str",
@@ -303,7 +303,7 @@ func TestUnmarshaling(t *testing.T) {
 		return Wrap(&mocktype{})
 	}
 	schema := &Schema{Types: []Type{typ}}
-	col := Resources{}
+	col := Collection{}
 	col.Add(Wrap(&mocktype{
 		ID:       "id1",
 		Str:      "str",
