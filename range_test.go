@@ -16,7 +16,7 @@ func TestRange(t *testing.T) {
 	assert := assert.New(t)
 
 	// Collection
-	col := Resources{}
+	col := Collection{}
 	typ := &Type{}
 	_ = typ.AddAttr(Attr{
 		Name:     "attr1",
@@ -29,7 +29,7 @@ func TestRange(t *testing.T) {
 		Nullable: false,
 	})
 
-	resources := []struct {
+	collection := []struct {
 		id     string
 		fields map[string]interface{}
 	}{
@@ -84,7 +84,7 @@ func TestRange(t *testing.T) {
 		},
 	}
 
-	for _, res := range resources {
+	for _, res := range collection {
 		sr := &SoftResource{}
 		sr.SetType(typ)
 		sr.SetID(res.id)
@@ -97,7 +97,7 @@ func TestRange(t *testing.T) {
 	// Range test 1
 	ranged := Range(
 		// Collection
-		&col,
+		col,
 		// IDs
 		[]string{},
 		// Filter
@@ -122,7 +122,7 @@ func TestRange(t *testing.T) {
 	// Range test 2
 	ranged = Range(
 		// Collection
-		&col,
+		col,
 		// IDs
 		[]string{"res1", "res2", "res3", "res4", "res5", "res6"},
 		// Filter
@@ -145,7 +145,7 @@ func TestRange(t *testing.T) {
 	// Range test 3
 	assert.Equal(
 		0,
-		Range(&Resources{}, nil, nil, nil, 1, 100).Len(),
+		Range(Collection{}, nil, nil, nil, 1, 100).Len(),
 		"range of IDs (3)",
 	)
 }
@@ -155,7 +155,7 @@ func TestSortResources(t *testing.T) {
 
 	var (
 		now            = time.Now()
-		col Collection = &Resources{}
+		col Collection = Collection{}
 	)
 
 	// A collection of resources will be created and
@@ -343,13 +343,13 @@ func TestSortResources(t *testing.T) {
 	// Sort collection with different types
 	sr1 := &SoftResource{}
 	sr1.SetID("sr1")
-	col1 := &Resources{Wrap(mocktype{}), sr1}
+	col1 := Collection{Wrap(mocktype{}), sr1}
 	assert.Panics(func() {
 		_ = Range(col1, nil, nil, []string{"field", "id"}, 100, 0)
 	})
 
 	// Sort collection with unknown attribute
-	col1 = &Resources{
+	col1 = Collection{
 		Wrap(mocktype{}),
 		Wrap(mocktype{}),
 	}
@@ -358,7 +358,7 @@ func TestSortResources(t *testing.T) {
 	})
 
 	// Sort collection with attribute of different type
-	col1 = &Resources{
+	col1 = Collection{
 		&SoftResource{
 			Type: &Type{
 				Name: "type",
