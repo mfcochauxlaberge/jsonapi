@@ -203,7 +203,8 @@ func (s *Schema) Check() []error {
 	return errs
 }
 
-// buildRels ...
+// buildRels builds the set of normalized relationships that is returned by
+// Schema.Rels.
 func (s *Schema) buildRels() {
 	s.rels = map[string]Rel{}
 
