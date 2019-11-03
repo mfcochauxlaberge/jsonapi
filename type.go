@@ -350,7 +350,7 @@ func (r *Rel) Inverse() Rel {
 func (r *Rel) Normalize() Rel {
 	from := r.FromType + r.FromName
 	to := r.ToType + r.ToName
-	if from < to {
+	if from < to || r.ToName == "" {
 		return *r
 	}
 	return r.Inverse()
