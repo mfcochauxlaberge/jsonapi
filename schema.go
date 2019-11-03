@@ -209,18 +209,9 @@ func (s *Schema) buildRels() {
 
 	for _, typ := range s.Types {
 		for _, rel := range typ.Rels {
-			relName := rel.FromType + "_" + rel.FromName
-			if rel.ToName == "" {
-				s.rels[relName] = rel
-			} else {
-				inv := rel.Inverse()
-				invName := inv.FromType + "_" + inv.FromName
-				if relName < invName {
-					s.rels[relName] = rel
-				} else {
-					s.rels[invName] = inv
-				}
-			}
+			nr := rel.Normalize()
+			relName := nr.FromType + "_" + nr.FromName
+			s.rels[relName] = nr
 		}
 	}
 }
