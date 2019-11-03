@@ -252,6 +252,22 @@ func TestRelNormalize(t *testing.T) {
 	assert.Equal(false, norm.FromOne)
 }
 
+func TestRelString(t *testing.T) {
+	assert := assert.New(t)
+
+	rel := Rel{
+		FromName: "rel2",
+		FromType: "type2",
+		ToOne:    false,
+		ToName:   "rel1",
+		ToType:   "type1",
+		FromOne:  true,
+	}
+
+	assert.Equal("type2_rel2", rel.String())
+	assert.Equal("type1_rel1", rel.Inverse().String())
+}
+
 func TestGetAttrType(t *testing.T) {
 	assert := assert.New(t)
 
