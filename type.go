@@ -331,8 +331,8 @@ type Rel struct {
 	FromOne  bool
 }
 
-// Inverse returns the inverse relationship of r.
-func (r *Rel) Inverse() Rel {
+// Invert returns the inverse relationship of r.
+func (r *Rel) Invert() Rel {
 	return Rel{
 		FromType: r.ToType,
 		FromName: r.ToName,
@@ -350,10 +350,18 @@ func (r *Rel) Inverse() Rel {
 func (r *Rel) Normalize() Rel {
 	from := r.FromType + r.FromName
 	to := r.ToType + r.ToName
-	if from < to {
+	if from < to || r.ToName == "" {
 		return *r
 	}
-	return r.Inverse()
+	return r.Invert()
+}
+
+// String returns a string representation of the receiving Rel.
+//
+// The returned string only contains the type's name followed by the
+// relationship's name.
+func (r Rel) String() string {
+	return r.FromType + "_" + r.FromName
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a

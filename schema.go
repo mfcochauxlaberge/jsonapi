@@ -203,24 +203,16 @@ func (s *Schema) Check() []error {
 	return errs
 }
 
-// buildRels ...
+// buildRels builds the set of normalized relationships that is returned by
+// Schema.Rels.
 func (s *Schema) buildRels() {
 	s.rels = map[string]Rel{}
 
 	for _, typ := range s.Types {
 		for _, rel := range typ.Rels {
-			relName := rel.FromType + "_" + rel.FromName
-			if rel.ToName == "" {
-				s.rels[relName] = rel
-			} else {
-				inv := rel.Inverse()
-				invName := inv.FromType + "_" + inv.FromName
-				if relName < invName {
-					s.rels[relName] = rel
-				} else {
-					s.rels[invName] = inv
-				}
-			}
+			nr := rel.Normalize()
+			relName := nr.FromType + "_" + nr.FromName
+			s.rels[relName] = nr
 		}
 	}
 }
