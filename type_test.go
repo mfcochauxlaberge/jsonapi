@@ -198,7 +198,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	assert.Nil(val)
 }
 
-func TestInverseRel(t *testing.T) {
+func TestRelInvert(t *testing.T) {
 	assert := assert.New(t)
 
 	rel := Rel{
@@ -210,7 +210,7 @@ func TestInverseRel(t *testing.T) {
 		FromOne:  false,
 	}
 
-	invRel := rel.Inverse()
+	invRel := rel.Invert()
 
 	assert.Equal("rel2", invRel.FromName)
 	assert.Equal("type1", invRel.ToType)
@@ -265,7 +265,7 @@ func TestRelString(t *testing.T) {
 	}
 
 	assert.Equal("type2_rel2", rel.String())
-	assert.Equal("type1_rel1", rel.Inverse().String())
+	assert.Equal("type1_rel1", rel.Invert().String())
 }
 
 func TestGetAttrType(t *testing.T) {
