@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// NewRequest builds a return a *Request based on r and schema.
+// NewRequest builds and returns a *Request based on r and schema.
 //
 // schema can be nil, in which case no checks will be done to insure that the
 // request respects a specific schema.
