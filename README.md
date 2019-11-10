@@ -43,11 +43,11 @@ The supported versions of Go are the latest patch releases of every minor releas
 
 ## Quick start
 
-The simplest way to start using jsonapi is to use the Marshal and Unmarshal functions.
+The simplest way to start using jsonapi is to use the MarshalDocument and UnmarshalDocument functions.
 
 ```go
-func Marshal(doc *Document, url *URL) ([]byte, error)
-func Unmarshal(payload []byte, schema *Schema) (*Document, error)
+func MarshalDocument(doc *Document, url *URL) ([]byte, error)
+func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error)
 ```
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.
