@@ -185,6 +185,82 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	return res, nil
 }
 
+// UnmarshalPartialResource unmarshals the given payload into a *SoftResource.
+//
+// The returned *SoftResource will only contain the information found in the
+// payload. That means that fields not in the payload won't be part of the
+// *SoftResource. Its type will be a new type whose fields will be a subset of
+// the fields of the corresponding type from the schema.
+//
+// This is useful when handling a PATCH request where only some fields might be
+// set to a value. UnmarshalResource returns a Resource where the missing fields
+// are added and set to their zero value, but UnmarshalPartialResource does not
+// do that. Therefore, the user is able to tell which fields have been set.
+func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error) {
+	var rske resourceSkeleton
+	err := json.Unmarshal(data, &rske)
+	if err != nil {
+		return nil, NewErrBadRequest(
+			"Invalid JSON",
+			"The provided JSON body could not be read.",
+		)
+	}
+
+	typ := schema.GetType(rske.Type)
+	newType := Type{
+		Name: typ.Name,
+	}
+	res := &SoftResource{
+		Type: &newType,
+		id:   rske.ID,
+	}
+
+	for a, v := range rske.Attributes {
+		if attr, ok := typ.Attrs[a]; ok {
+			val, err := attr.UnmarshalToType(v)
+			if err != nil {
+				return nil, err
+			}
+			_ = newType.AddAttr(attr)
+			res.Set(attr.Name, val)
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, a)
+		}
+	}
+	for r, v := range rske.Relationships {
+		if rel, ok := typ.Rels[r]; ok {
+			if len(v.Data) > 0 {
+				if rel.ToOne {
+					var iden identifierSkeleton
+					err = json.Unmarshal(v.Data, &iden)
+					_ = newType.AddRel(rel)
+					res.SetToOne(rel.FromName, iden.ID)
+				} else {
+					var idens []identifierSkeleton
+					err = json.Unmarshal(v.Data, &idens)
+					ids := make([]string, len(idens))
+					for i := range idens {
+						ids[i] = idens[i].ID
+					}
+					_ = newType.AddRel(rel)
+					res.SetToMany(rel.FromName, ids)
+				}
+			}
+			if err != nil {
+				return nil, NewErrInvalidFieldValueInBody(
+					rel.FromName,
+					string(v.Data),
+					typ.Name,
+				)
+			}
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, r)
+		}
+	}
+
+	return res, nil
+}
+
 // Equal reports whether r1 and r2 are equal.
 //
 // Two resources are equal if their types are equal, all the attributes are
