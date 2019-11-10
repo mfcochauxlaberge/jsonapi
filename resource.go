@@ -195,7 +195,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 // This is useful when handling a PATCH request where only some fields might be
 // set to a value. UnmarshalResource returns a Resource where the missing fields
 // are added and set to their zero value, but UnmarshalPartialResource does not
-// do that.
+// do that. Therefore, the user is able to tell which fields have been set.
 func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error) {
 	var rske resourceSkeleton
 	err := json.Unmarshal(data, &rske)
@@ -207,9 +207,13 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 	}
 
 	typ := schema.GetType(rske.Type)
-	res := typ.New()
-
-	res.SetID(rske.ID)
+	newType := Type{
+		Name: typ.Name,
+	}
+	res := &SoftResource{
+		Type: &newType,
+		id:   rske.ID,
+	}
 
 	for a, v := range rske.Attributes {
 		if attr, ok := typ.Attrs[a]; ok {
@@ -217,6 +221,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 			if err != nil {
 				return nil, err
 			}
+			_ = newType.AddAttr(attr)
 			res.Set(attr.Name, val)
 		} else {
 			return nil, NewErrUnknownFieldInBody(typ.Name, a)
@@ -228,6 +233,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 				if rel.ToOne {
 					var iden identifierSkeleton
 					err = json.Unmarshal(v.Data, &iden)
+					_ = newType.AddRel(rel)
 					res.SetToOne(rel.FromName, iden.ID)
 				} else {
 					var idens []identifierSkeleton
@@ -236,6 +242,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 					for i := range idens {
 						ids[i] = idens[i].ID
 					}
+					_ = newType.AddRel(rel)
 					res.SetToMany(rel.FromName, ids)
 				}
 			}
