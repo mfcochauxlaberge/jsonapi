@@ -459,52 +459,6 @@ func TestUnmarshalDocument(t *testing.T) {
 		// TODO Make all the necessary assertions.
 	})
 
-	t.Run("identifier", func(t *testing.T) {
-		assert := assert.New(t)
-
-		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-1")
-
-		doc := &Document{
-			Data: Identifier{
-				ID:   "id2",
-				Type: "mocktype",
-			},
-		}
-
-		payload, err := MarshalDocument(doc, url)
-		assert.NoError(err)
-
-		doc2, err := UnmarshalIdentifiers(payload, schema)
-		assert.NoError(err)
-		assert.Equal(doc.Data, doc2.Data)
-	})
-
-	t.Run("identifers", func(t *testing.T) {
-		assert := assert.New(t)
-
-		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-x")
-
-		doc := &Document{
-			Data: Identifiers{
-				Identifier{
-					ID:   "id2",
-					Type: "mocktype",
-				},
-				Identifier{
-					ID:   "id3",
-					Type: "mocktype",
-				},
-			},
-		}
-
-		payload, err := MarshalDocument(doc, url)
-		assert.NoError(err)
-
-		doc2, err := UnmarshalIdentifiers(payload, schema)
-		assert.NoError(err)
-		assert.Equal(doc.Data, doc2.Data)
-	})
-
 	t.Run("errors (Unmarshal)", func(t *testing.T) {
 		assert := assert.New(t)
 
@@ -522,27 +476,6 @@ func TestUnmarshalDocument(t *testing.T) {
 		assert.NoError(err)
 
 		doc2, err := UnmarshalDocument(payload, schema)
-		assert.NoError(err)
-		assert.Equal(doc.Data, doc2.Data)
-	})
-
-	t.Run("errors (UnmarshalIdentifers)", func(t *testing.T) {
-		assert := assert.New(t)
-
-		url, _ := NewURLFromRaw(schema, "/mocktype/id1/relationships/to-x")
-
-		doc := &Document{
-			Errors: func() []Error {
-				err := NewErrBadRequest("Bad Request", "This request is bad.")
-				err.ID = "00000000-0000-0000-0000-000000000000"
-				return []Error{err}
-			}(),
-		}
-
-		payload, err := MarshalDocument(doc, url)
-		assert.NoError(err)
-
-		doc2, err := UnmarshalIdentifiers(payload, schema)
 		assert.NoError(err)
 		assert.Equal(doc.Data, doc2.Data)
 	})
@@ -613,40 +546,6 @@ func TestUnmarshalDocument(t *testing.T) {
 
 		for _, test := range tests {
 			doc, err := UnmarshalDocument([]byte(test.payload), schema)
-			assert.EqualError(err, test.expected)
-			assert.Nil(doc)
-		}
-	})
-
-	t.Run("invalid payloads (UnmarshalIdentifiers)", func(t *testing.T) {
-		assert := assert.New(t)
-
-		tests := []struct {
-			payload  string
-			expected string
-		}{
-			{
-				payload:  `{invalid json}`,
-				expected: "invalid character 'i' looking for beginning of object key string",
-			}, {
-				payload:  `{"jsonapi":{}}`,
-				expected: "400 Bad Request: Missing data top-level member in payload.",
-			}, {
-				payload:  `{"jsonapi":{"key":"data/errors missing"}}`,
-				expected: "400 Bad Request: Missing data top-level member in payload.",
-			}, {
-				payload: `{"data":{"id":["invalid"]}}`,
-				expected: "json: " +
-					"cannot unmarshal array into Go struct field Identifier.id of type string",
-			}, {
-				payload: `{"data":[{"id":["invalid"]}]}`,
-				expected: "json: " +
-					"cannot unmarshal array into Go struct field Identifier.id of type string",
-			},
-		}
-
-		for _, test := range tests {
-			doc, err := UnmarshalIdentifiers([]byte(test.payload), nil)
 			assert.EqualError(err, test.expected)
 			assert.Nil(doc)
 		}

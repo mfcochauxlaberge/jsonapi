@@ -38,53 +38,24 @@ type Identifier struct {
 	Type string `json:"type"`
 }
 
-// UnmarshalIdentifiers reads a payload where the main data is one or more
-// identifiers to build and return a Document object.
-//
-// The included top-level member is ignored.
+// UnmarshalIdentifier reads a payload where the main data is one identifier to
+// build and return an Identifier object.
 //
 // schema must not be nil.
-func UnmarshalIdentifiers(payload []byte, schema *Schema) (*Document, error) {
-	doc := &Document{
-		Included:  []Resource{},
-		Resources: map[string]map[string]struct{}{},
-		Links:     map[string]Link{},
-		RelData:   map[string][]string{},
-		Meta:      map[string]interface{}{},
-	}
-	ske := &payloadSkeleton{}
+func UnmarshalIdentifier(payload []byte, schema *Schema) (Identifier, error) {
+	iden := Identifier{}
+	err := json.Unmarshal(payload, &iden)
+	// TODO Validate with schema.
+	return iden, err
+}
 
-	// Unmarshal
-	err := json.Unmarshal(payload, ske)
-	if err != nil {
-		return nil, err
-	}
-
-	// Identifiers
-	if len(ske.Data) > 0 {
-		if ske.Data[0] == '{' {
-			inc := Identifier{}
-			err = json.Unmarshal(ske.Data, &inc)
-			if err != nil {
-				return nil, err
-			}
-			doc.Data = inc
-		} else if ske.Data[0] == '[' {
-			incs := Identifiers{}
-			err = json.Unmarshal(ske.Data, &incs)
-			if err != nil {
-				return nil, err
-			}
-			doc.Data = incs
-		}
-	} else if len(ske.Errors) > 0 {
-		doc.Errors = ske.Errors
-	} else {
-		return nil, NewErrMissingDataMember()
-	}
-
-	// Meta
-	doc.Meta = ske.Meta
-
-	return doc, nil
+// UnmarshalIdentifiers reads a payload where the main data is a collection of
+// identifiers to build and return an Idenfitiers slice.
+//
+// schema must not be nil.
+func UnmarshalIdentifiers(payload []byte, schema *Schema) (Identifiers, error) {
+	idens := Identifiers{}
+	err := json.Unmarshal(payload, &idens)
+	// TODO Validate with schema.
+	return idens, err
 }
