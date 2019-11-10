@@ -1,6 +1,7 @@
 package jsonapi
 
 import (
+	"encoding/json"
 	"fmt"
 	"reflect"
 	"sort"
@@ -30,6 +31,158 @@ type Resource interface {
 	Set(key string, val interface{})
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
+}
+
+// MarshalResource marshals a Resource into a JSON-encoded payload.
+func MarshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
+	mapPl := map[string]interface{}{}
+
+	mapPl["id"] = r.GetID()
+	mapPl["type"] = r.GetType().Name
+
+	// Attributes
+	attrs := map[string]interface{}{}
+	for _, attr := range r.Attrs() {
+		for _, field := range fields {
+			if field == attr.Name {
+				attrs[attr.Name] = r.Get(attr.Name)
+				break
+			}
+		}
+	}
+	mapPl["attributes"] = attrs
+
+	// Relationships
+	rels := map[string]*json.RawMessage{}
+	for _, rel := range r.Rels() {
+		include := false
+		for _, field := range fields {
+			if field == rel.FromName {
+				include = true
+				break
+			}
+		}
+
+		if include {
+			var raw json.RawMessage
+
+			if rel.ToOne {
+				s := map[string]map[string]string{
+					"links": buildRelationshipLinks(r, prepath, rel.FromName),
+				}
+
+				for _, n := range relData[r.GetType().Name] {
+					if n == rel.FromName {
+						id := r.GetToOne(rel.FromName)
+						if id != "" {
+							s["data"] = map[string]string{
+								"id":   r.GetToOne(rel.FromName),
+								"type": rel.ToType,
+							}
+						} else {
+							s["data"] = nil
+						}
+						break
+					}
+				}
+
+				raw, _ = json.Marshal(s)
+				rels[rel.FromName] = &raw
+			} else {
+				s := map[string]interface{}{
+					"links": buildRelationshipLinks(r, prepath, rel.FromName),
+				}
+
+				for _, n := range relData[r.GetType().Name] {
+					if n == rel.FromName {
+						data := []map[string]string{}
+						ids := r.GetToMany(rel.FromName)
+						sort.Strings(ids)
+						for _, id := range ids {
+							data = append(data, map[string]string{
+								"id":   id,
+								"type": rel.ToType,
+							})
+						}
+						s["data"] = data
+						break
+					}
+				}
+
+				raw, _ = json.Marshal(s)
+				rels[rel.FromName] = &raw
+			}
+		}
+	}
+	mapPl["relationships"] = rels
+
+	// Links
+	mapPl["links"] = map[string]string{
+		"self": buildSelfLink(r, prepath), // TODO
+	}
+
+	// NOTE An error should not happen.
+	pl, _ := json.Marshal(mapPl)
+	return pl
+}
+
+// UnmarshalResource unmarshals a JSON-encoded payload into a Resource.
+func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
+	var rske resourceSkeleton
+	err := json.Unmarshal(data, &rske)
+	if err != nil {
+		return nil, NewErrBadRequest(
+			"Invalid JSON",
+			"The provided JSON body could not be read.",
+		)
+	}
+
+	typ := schema.GetType(rske.Type)
+	res := typ.New()
+
+	res.SetID(rske.ID)
+
+	for a, v := range rske.Attributes {
+		if attr, ok := typ.Attrs[a]; ok {
+			val, err := attr.UnmarshalToType(v)
+			if err != nil {
+				return nil, err
+			}
+			res.Set(attr.Name, val)
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, a)
+		}
+	}
+	for r, v := range rske.Relationships {
+		if rel, ok := typ.Rels[r]; ok {
+			if len(v.Data) > 0 {
+				if rel.ToOne {
+					var iden identifierSkeleton
+					err = json.Unmarshal(v.Data, &iden)
+					res.SetToOne(rel.FromName, iden.ID)
+				} else {
+					var idens []identifierSkeleton
+					err = json.Unmarshal(v.Data, &idens)
+					ids := make([]string, len(idens))
+					for i := range idens {
+						ids[i] = idens[i].ID
+					}
+					res.SetToMany(rel.FromName, ids)
+				}
+			}
+			if err != nil {
+				return nil, NewErrInvalidFieldValueInBody(
+					rel.FromName,
+					string(v.Data),
+					typ.Name,
+				)
+			}
+		} else {
+			return nil, NewErrUnknownFieldInBody(typ.Name, r)
+		}
+	}
+
+	return res, nil
 }
 
 // Equal reports whether r1 and r2 are equal.
