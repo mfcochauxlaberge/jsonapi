@@ -24,7 +24,7 @@ func TestIdentifiers(t *testing.T) {
 	assert.Equal([]string{"id1", "id2", "id3"}, idens.IDs())
 }
 
-func TestMarshalIdentifiers(t *testing.T) {
+func TestUnmarshalIdentifiers(t *testing.T) {
 	// Setup
 	typ, _ := BuildType(mocktype{})
 	typ.NewFunc = func() Resource {
