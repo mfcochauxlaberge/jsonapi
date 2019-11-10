@@ -31,32 +31,6 @@ func TestUnmarshalIdentifiers(t *testing.T) {
 		return Wrap(&mocktype{})
 	}
 	schema := &Schema{Types: []Type{typ}}
-	col := Resources{}
-	col.Add(Wrap(&mocktype{
-		ID:       "id1",
-		Str:      "str",
-		Int:      10,
-		Int8:     18,
-		Int16:    116,
-		Int32:    132,
-		Int64:    164,
-		Uint:     100,
-		Uint8:    108,
-		Uint16:   1016,
-		Uint32:   1032,
-		Uint64:   1064,
-		Bool:     true,
-		Time:     getTime(),
-		Bytes:    []byte{1, 2, 3},
-		To1:      "id2",
-		To1From1: "id3",
-		To1FromX: "id3",
-		ToX:      []string{"id2", "id3"},
-		ToXFrom1: []string{"id4"},
-		ToXFromX: []string{"id3", "id4"},
-	}))
-	col.Add(Wrap(&mocktype{ID: "id2"}))
-	col.Add(Wrap(&mocktype{ID: "id3"}))
 
 	t.Run("identifier", func(t *testing.T) {
 		assert := assert.New(t)
