@@ -20,9 +20,10 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		return nil, err
 	}
 
-	doc := &Document{}
-	if len(body) > 0 {
-		doc, err = Unmarshal(body, schema)
+	var doc *Document
+
+	if r.Method == http.MethodPost || r.Method == http.MethodPatch {
+		doc, err = UnmarshalDocument(body, schema)
 		if err != nil {
 			return nil, err
 		}
