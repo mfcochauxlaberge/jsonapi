@@ -157,11 +157,11 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 		if rel, ok := typ.Rels[r]; ok {
 			if len(v.Data) > 0 {
 				if rel.ToOne {
-					var iden identifierSkeleton
+					var iden Identifier
 					err = json.Unmarshal(v.Data, &iden)
 					res.SetToOne(rel.FromName, iden.ID)
 				} else {
-					var idens []identifierSkeleton
+					var idens Identifiers
 					err = json.Unmarshal(v.Data, &idens)
 					ids := make([]string, len(idens))
 					for i := range idens {
@@ -231,12 +231,12 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 		if rel, ok := typ.Rels[r]; ok {
 			if len(v.Data) > 0 {
 				if rel.ToOne {
-					var iden identifierSkeleton
+					var iden Identifier
 					err = json.Unmarshal(v.Data, &iden)
 					_ = newType.AddRel(rel)
 					res.SetToOne(rel.FromName, iden.ID)
 				} else {
-					var idens []identifierSkeleton
+					var idens Identifiers
 					err = json.Unmarshal(v.Data, &idens)
 					ids := make([]string, len(idens))
 					for i := range idens {
