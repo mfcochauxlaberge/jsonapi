@@ -35,10 +35,8 @@ func Wrap(v interface{}) *Wrapper {
 			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
 		}
 		val = reflect.New(val.Type())
-	} else {
-		if val.Elem().Kind() != reflect.Struct {
-			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
-		}
+	} else if val.Elem().Kind() != reflect.Struct {
+		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
 	}
 	val = val.Elem()
 
