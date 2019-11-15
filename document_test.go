@@ -92,7 +92,6 @@ func TestInclude(t *testing.T) {
 
 func TestMarshalDocument(t *testing.T) {
 	// TODO Describe how this test suite works
-
 	// Setup
 	typ, _ := BuildType(mocktype{})
 	typ.NewFunc = func() Resource {
@@ -292,7 +291,6 @@ func TestMarshalDocument(t *testing.T) {
 
 func TestMarshalInvalidDocuments(t *testing.T) {
 	// TODO Describe how this test suite works
-
 	// Setup
 	typ, _ := BuildType(mocktype{})
 	typ.NewFunc = func() Resource {
@@ -556,5 +554,6 @@ func newResource(typ *Type, id string) Resource {
 	res := &SoftResource{}
 	res.SetType(typ)
 	res.SetID(id)
+
 	return res
 }

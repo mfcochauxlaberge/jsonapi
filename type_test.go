@@ -24,6 +24,7 @@ func TestType(t *testing.T) {
 	}
 	err := typ.AddAttr(attr1)
 	assert.NoError(err)
+
 	rel1 := Rel{
 		FromName: "rel1",
 		ToType:   "type1",
@@ -59,6 +60,7 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 }
 
+// TODO Add tests with attributes and relationships.
 func TestTypeEqual(t *testing.T) {
 	assert := assert.New(t)
 
@@ -85,8 +87,6 @@ func TestTypeEqual(t *testing.T) {
 		return &SoftResource{}
 	}
 	assert.True(typ1.Equal(typ2))
-
-	// TODO Add tests with attributes and relationships.
 }
 
 func TestTypeNewFunc(t *testing.T) {
@@ -183,6 +183,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 
 	// Invalid slide of bytes
 	attr.Type = AttrTypeBytes
+
 	assert.Panics(func() {
 		_, _ = attr.UnmarshalToType([]byte("invalid"))
 	})

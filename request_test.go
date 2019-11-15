@@ -44,6 +44,7 @@ func TestNewRequest(t *testing.T) {
 		req := httptest.NewRequest(test.method, test.url, body)
 
 		doc, err := NewRequest(req, test.schema)
+
 		if test.expectedError == "" {
 			assert.NoError(err)
 			assert.Equal(test.method, doc.Method, test.name)

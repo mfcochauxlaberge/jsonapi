@@ -125,6 +125,7 @@ func (s *Schema) HasType(name string) bool {
 			return true
 		}
 	}
+
 	return false
 }
 
@@ -139,6 +140,7 @@ func (s *Schema) GetType(name string) Type {
 			return typ
 		}
 	}
+
 	return Type{}
 }
 

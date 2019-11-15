@@ -259,9 +259,11 @@ func TestEqual(t *testing.T) {
 
 	typ = mt11.GetType().Copy()
 	sr1 = &SoftResource{Type: &typ}
+
 	for _, attr := range typ.Attrs {
 		sr1.Set(attr.Name, mt11.Get(attr.Name))
 	}
+
 	for _, rel := range typ.Rels {
 		if rel.ToOne {
 			sr1.SetToOne(rel.FromName, mt11.GetToOne(rel.FromName))
@@ -269,6 +271,7 @@ func TestEqual(t *testing.T) {
 			sr1.SetToMany(rel.FromName, mt11.GetToMany(rel.FromName))
 		}
 	}
+
 	sr1.RemoveField("to-one")
 	assert.False(Equal(mt11, sr1), "different number of relationships")
 
@@ -300,6 +303,7 @@ func TestEqualStrict(t *testing.T) {
 	sr1.SetType(&Type{
 		Name: "type",
 	})
+
 	sr2 := &SoftResource{}
 	sr2.SetType(&Type{
 		Name: "type",

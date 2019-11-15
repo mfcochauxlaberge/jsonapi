@@ -88,9 +88,11 @@ func TestRange(t *testing.T) {
 		sr := &SoftResource{}
 		sr.SetType(typ)
 		sr.SetID(res.id)
+
 		for field, val := range res.fields {
 			sr.Set(field, val)
 		}
+
 		col.Add(sr)
 	}
 
@@ -113,10 +115,12 @@ func TestRange(t *testing.T) {
 	expectedIDs := []string{
 		"res1", "res2", "res3", "res4", "res5", "res6", "res7", "res8",
 	}
+
 	ids := []string{}
 	for i := 0; i < ranged.Len(); i++ {
 		ids = append(ids, ranged.At(i).GetID())
 	}
+
 	assert.Equal(expectedIDs, ids, "range of IDs (1)")
 
 	// Range test 2
@@ -137,6 +141,7 @@ func TestRange(t *testing.T) {
 
 	expectedIDs = []string{"res5", "res2"}
 	ids = []string{}
+
 	for i := 0; i < ranged.Len(); i++ {
 		ids = append(ids, ranged.At(i).GetID())
 	}
@@ -257,6 +262,7 @@ func TestSortResources(t *testing.T) {
 
 	// Add attributes to type
 	typ := &Type{Name: "type"}
+
 	for i, t := range attrs {
 		ti, null := GetAttrType(fmt.Sprintf("%T", t.vals[0]))
 		_ = typ.AddAttr(Attr{
@@ -272,6 +278,7 @@ func TestSortResources(t *testing.T) {
 			Type: typ,
 		}
 		sr.SetID("id" + strconv.Itoa(i))
+
 		for j := range attrs {
 			if i != j {
 				sr.Set("attr"+strconv.Itoa(j), attrs[j].vals[0])
@@ -279,19 +286,24 @@ func TestSortResources(t *testing.T) {
 				sr.Set("attr"+strconv.Itoa(j), attrs[j].vals[1])
 			}
 		}
+
 		col.Add(sr)
 	}
 
 	// Sort collection
 	rules := []string{}
+
 	for i := 0; i < col.Len(); i++ {
 		reverse := ""
 		if i%3 == 0 {
 			reverse = "-"
 		}
+
 		rules = append(rules, reverse+"attr"+strconv.Itoa(i))
 	}
+
 	rules = append(rules, "id")
+
 	page := Range(
 		col,
 		nil,
@@ -344,6 +356,7 @@ func TestSortResources(t *testing.T) {
 	sr1 := &SoftResource{}
 	sr1.SetID("sr1")
 	col1 := &Resources{Wrap(mocktype{}), sr1}
+
 	assert.Panics(func() {
 		_ = Range(col1, nil, nil, []string{"field", "id"}, 100, 0)
 	})
@@ -353,6 +366,7 @@ func TestSortResources(t *testing.T) {
 		Wrap(mocktype{}),
 		Wrap(mocktype{}),
 	}
+
 	assert.Panics(func() {
 		_ = Range(col1, nil, nil, []string{"unknown", "id"}, 100, 0)
 	})
@@ -384,6 +398,7 @@ func TestSortResources(t *testing.T) {
 			},
 		},
 	}
+
 	assert.Panics(func() {
 		_ = Range(col1, nil, nil, []string{"samename", "id"}, 100, 0)
 	})

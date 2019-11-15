@@ -28,6 +28,7 @@ func Check(v interface{}) error {
 		idField reflect.StructField
 		ok      bool
 	)
+
 	if idField, ok = value.Type().FieldByName("ID"); !ok {
 		return errors.New("jsonapi: struct doesn't have an ID field")
 	}
@@ -110,6 +111,7 @@ func BuildType(v interface{}) (Type, error) {
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
+
 	if val.Kind() != reflect.Struct {
 		return typ, errors.New("jsonapi: value must represent a struct")
 	}
@@ -124,6 +126,7 @@ func BuildType(v interface{}) (Type, error) {
 
 	// Attributes
 	typ.Attrs = map[string]Attr{}
+
 	for i := 0; i < val.NumField(); i++ {
 		fs := val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
@@ -141,11 +144,13 @@ func BuildType(v interface{}) (Type, error) {
 
 	// Relationships
 	typ.Rels = map[string]Rel{}
+
 	for i := 0; i < val.NumField(); i++ {
 		fs := val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
 		relTag := strings.Split(fs.Tag.Get("api"), ",")
 		invName := ""
+
 		if len(relTag) == 3 {
 			invName = relTag[2]
 		}
@@ -182,6 +187,7 @@ func MustBuildType(v interface{}) Type {
 	if err != nil {
 		panic(err)
 	}
+
 	return typ
 }
 
