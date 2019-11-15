@@ -56,9 +56,9 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		url.IsCol = !url.Rel.ToOne
 		url.ResType = url.Rel.ToType
 		url.BelongsToFilter = BelongsToFilter{
-			Type:        url.Fragments[0],
-			ID:          url.Fragments[1],
-			Name:        url.Rel.FromName,
+			Type:   url.Fragments[0],
+			ID:     url.Fragments[1],
+			Name:   url.Rel.FromName,
 			ToName: url.Rel.ToName,
 		}
 
@@ -214,8 +214,8 @@ func (u *URL) UnescapedString() string {
 // For example, in /articles/abc123/comments, the parent is the article with the
 // ID abc123.
 type BelongsToFilter struct {
-	Type        string
-	ID          string
-	Name        string
+	Type   string
+	ID     string
+	Name   string
 	ToName string
 }

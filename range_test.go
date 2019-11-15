@@ -363,7 +363,7 @@ func TestSortResources(t *testing.T) {
 			Type: &Type{
 				Name: "type",
 				Attrs: map[string]Attr{
-					"samename": Attr{
+					"samename": {
 						Name:     "samename",
 						Type:     AttrTypeString,
 						Nullable: false,
@@ -375,7 +375,7 @@ func TestSortResources(t *testing.T) {
 			Type: &Type{
 				Name: "type",
 				Attrs: map[string]Attr{
-					"samename": Attr{
+					"samename": {
 						Name:     "samename",
 						Type:     AttrTypeString,
 						Nullable: true,
