@@ -26,7 +26,6 @@ func (s *SoftCollection) AddAttr(attr Attr) error {
 // AddRel adds a relationship to all of the resources in the collection.
 func (s *SoftCollection) AddRel(rel Rel) error {
 	return s.Type.AddRel(rel)
-
 }
 
 // Len returns the length of the collection.
