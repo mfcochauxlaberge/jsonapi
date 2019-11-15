@@ -52,6 +52,7 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 		if strings.HasPrefix(name, "fields[") && strings.HasSuffix(name, "]") && len(name) > 8 {
 			// Fields
 			resType := name[7 : len(name)-1]
+
 			if len(values.Get(name)) > 0 {
 				sURL.Fields[resType] = parseCommaList(values.Get(name))
 			}

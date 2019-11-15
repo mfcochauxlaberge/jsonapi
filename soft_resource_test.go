@@ -36,6 +36,7 @@ func TestSoftResource(t *testing.T) {
 
 	// ID and type
 	sr.SetID("id")
+
 	typ2 := typ
 	typ2.Name = "type2"
 	sr.SetType(&typ2)
@@ -60,6 +61,7 @@ func TestSoftResource(t *testing.T) {
 
 		assert.Equal(t, attr, sr.Attr(attr.Name))
 	}
+
 	assert.Equal(t, attrs, sr.Attrs())
 
 	// Relationships
@@ -86,6 +88,7 @@ func TestSoftResource(t *testing.T) {
 
 		assert.Equal(t, rel, sr.Rel(rel.FromName))
 	}
+
 	assert.Equal(t, rels, sr.Rels())
 
 	sr.RemoveField("attr1")
@@ -108,6 +111,7 @@ func TestSoftResource(t *testing.T) {
 
 		assert.Equal(t, attr, sr.Attr(attr.Name))
 	}
+
 	for _, rel := range rels {
 		sr.AddRel(rel)
 
@@ -131,7 +135,9 @@ func TestSoftResource(t *testing.T) {
 		Type:     AttrTypeString,
 		Nullable: true,
 	})
+
 	assert.Nil(t, sr.Get("nullable-str"))
+
 	str := "abc"
 	sr.Set("nullable-str", &str)
 	assert.Equal(t, &str, sr.Get("nullable-str"))

@@ -40,6 +40,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		words := strings.Split(incs[i], ".")
 
 		incRel := Rel{ToType: resType}
+
 		for _, word := range words {
 			if typ := schema.GetType(incRel.ToType); typ.Name != "" {
 				var ok bool
@@ -55,12 +56,14 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 
 	// Build params.Include
 	params.Include = make([][]Rel, len(incs))
+
 	for i := range incs {
 		words := strings.Split(incs[i], ".")
 
 		params.Include[i] = make([]Rel, len(words))
 
 		var incRel Rel
+
 		for w := range words {
 			if w == 0 {
 				typ := schema.GetType(resType)
@@ -87,8 +90,10 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 				return nil, NewErrUnknownTypeInURL(t)
 			}
 		}
+
 		if typ := schema.GetType(t); typ.Name != "" {
 			params.Fields[t] = []string{}
+
 			for _, f := range fields {
 				if f == "id" {
 					params.Fields[t] = append(params.Fields[t], "id")
@@ -113,6 +118,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 			}
 		}
 	}
+
 	for t := range params.Fields {
 		if len(params.Fields[t]) == 0 {
 			typ := schema.GetType(t)
@@ -172,20 +178,26 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		rel := typ.Rels[relName]
 		isCol = !rel.ToOne
 	}
+
 	if isCol {
 		typ := schema.GetType(resType)
 		sortingRules := make([]string, 0, len(typ.Attrs))
 		idFound := false
+
 		for _, rule := range su.SortingRules {
 			urule := rule
 			if urule[0] == '-' {
 				urule = urule[1:]
 			}
+
 			if urule == "id" {
 				idFound = true
+
 				sortingRules = append(sortingRules, rule)
+
 				break
 			}
+
 			for _, attr := range typ.Attrs {
 				if urule == attr.Name {
 					sortingRules = append(sortingRules, rule)
@@ -193,29 +205,37 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 				}
 			}
 		}
+
 		// Add 1 because of id
 		restOfRules := make([]string, 0, len(typ.Attrs)+1-len(sortingRules))
+
 		for _, attr := range typ.Attrs {
 			found := false
+
 			for _, rule := range sortingRules {
 				urule := rule
 				if urule[0] == '-' {
 					urule = urule[1:]
 				}
+
 				if urule == attr.Name {
 					found = true
 					break
 				}
 			}
+
 			if !found {
 				restOfRules = append(restOfRules, attr.Name)
 			}
 		}
+
 		sort.Strings(restOfRules)
 		sortingRules = append(sortingRules, restOfRules...)
+
 		if !idFound {
 			sortingRules = append(sortingRules, "id")
 		}
+
 		params.SortingRules = sortingRules
 	}
 

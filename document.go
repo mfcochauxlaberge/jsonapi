@@ -122,6 +122,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 
 	// Included
 	var inclusions []*json.RawMessage
+
 	if len(doc.Included) > 0 {
 		sort.Slice(doc.Included, func(i, j int) bool {
 			return doc.Included[i].GetID() < doc.Included[j].GetID()
@@ -164,6 +165,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 			"self": doc.PrePath + url.String(),
 		}
 	}
+
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
 
 	return json.Marshal(plMap)
@@ -196,6 +198,7 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			doc.Data = res
 		} else if ske.Data[0] == '[' {
 			col, err := UnmarshalCollection(ske.Data, schema)
@@ -219,11 +222,13 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 	if len(ske.Included) > 0 {
 		inc := Identifier{}
 		incs := []Identifier{}
+
 		for _, rawInc := range ske.Included {
 			err = json.Unmarshal(rawInc, &inc)
 			if err != nil {
 				return nil, err
 			}
+
 			incs = append(incs, inc)
 		}
 
@@ -232,6 +237,7 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			doc.Included = append(doc.Included, res)
 		}
 	}

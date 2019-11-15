@@ -841,6 +841,7 @@ func TestFilterResource(t *testing.T) {
 	for _, test := range relTests {
 		typ := &Type{Name: "type"}
 		toOne := true
+
 		if _, ok := test.rval.([]string); ok {
 			toOne = false
 		}
@@ -855,6 +856,7 @@ func TestFilterResource(t *testing.T) {
 
 		res := &SoftResource{}
 		res.SetType(typ)
+
 		if toOne {
 			res.SetToOne("rel", test.rval.(string))
 		} else {
@@ -913,6 +915,7 @@ func TestFilterResource(t *testing.T) {
 		typ := &Type{Name: "type"}
 		res := &SoftResource{}
 		res.SetType(typ)
+
 		filters := []*Filter{}
 
 		for j := range test.rvals {
