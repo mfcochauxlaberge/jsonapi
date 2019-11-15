@@ -168,9 +168,7 @@ func BuildType(v interface{}) (Type, error) {
 
 	// NewFunc
 	res := Wrap(reflect.New(val.Type()).Interface())
-	typ.NewFunc = func() Resource {
-		return res.Copy()
-	}
+	typ.NewFunc = res.Copy
 
 	return typ, nil
 }
