@@ -962,7 +962,7 @@ func TestFilterResource(t *testing.T) {
 	}
 }
 
-func TestFilterMarshaling(t *testing.T) {
+func TestFilterUnmarshaling(t *testing.T) {
 	assert := assert.New(t)
 
 	// time1, _ := time.Parse(time.RFC3339Nano, "2012-05-16T17:45:28.2539Z")
