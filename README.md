@@ -27,11 +27,9 @@
   </a>
 </div>
 
-jsonapi is a complete library to marshal and unmarshal JSON:API payloads.
+jsonapi offers a set of tools to build JSON:API compliant services.
 
-It also offers many tools for parsing URLs, handling resources, managing schemas, and building other tools on top of this library.
-
-The official specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
+The official JSON:API specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
 
 ## Features
 
