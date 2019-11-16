@@ -169,10 +169,8 @@ func deduceRoute(path []string) string {
 	if len(path) >= 4 {
 		if path[3] == meta {
 			route += "/" + meta
-		} else {
-			if path[2] == rel {
-				route += "/" + path[3]
-			}
+		} else if path[2] == rel {
+			route += "/" + path[3]
 		}
 	}
 
