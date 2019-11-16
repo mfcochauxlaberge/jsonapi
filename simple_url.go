@@ -65,6 +65,7 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 					err = json.Unmarshal([]byte("\""+values.Get(name)+"\""), &sURL.FilterLabel)
 				} else {
 					// It should be a JSON object
+					sURL.Filter = &Filter{}
 					err = json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
 				}
 
