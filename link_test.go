@@ -1,6 +1,7 @@
 package jsonapi_test
 
 import (
+	"errors"
 	"testing"
 
 	"github.com/mfcochauxlaberge/jsonapi"
@@ -14,6 +15,7 @@ func TestMarshalLink(t *testing.T) {
 	tests := []struct {
 		link            jsonapi.Link
 		expectedPayload string
+		expectedErr     bool
 	}{
 		{
 			link:            jsonapi.Link{},
@@ -32,12 +34,26 @@ func TestMarshalLink(t *testing.T) {
 				},
 			},
 			expectedPayload: `{"href":"example.org","meta":{"n":123,"s":"abc"}}`,
+		}, {
+			link: jsonapi.Link{
+				HRef: "example.org",
+				Meta: map[string]interface{}{
+					"bad": badMarshaler{},
+				},
+			},
+			expectedErr: true,
 		},
 	}
 
 	for _, test := range tests {
 		pl, err := test.link.MarshalJSON()
-		assert.NoError(err)
+		assert.Equal(test.expectedErr, err != nil)
 		assert.Equal(test.expectedPayload, string(pl))
 	}
+}
+
+type badMarshaler struct{}
+
+func (b badMarshaler) MarshalJSON() ([]byte, error) {
+	return nil, errors.New("error")
 }
