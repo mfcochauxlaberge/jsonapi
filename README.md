@@ -67,7 +67,7 @@ A few tasks are required before committing to the current API:
    * Use the new tools introduced in Go 1.13.
  * Gather comments from users
    * The library should be used on more real projects to see of the API is convenient.
-   * It is current used by [github.com/mfcochauxlaberge/karigo](http://github.com/mfcochauxlaberge/karigo).
+   * It is currently used by [github.com/mfcochauxlaberge/karigo](http://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
@@ -94,7 +94,7 @@ Here are some of the main concepts covered by the library.
 
 A `Request` represents an HTTP request structured in a format easily readable from a JSON:API point of view.
 
-If you are familiar to the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
+If you are familiar with the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
 
 ### Type
 
