@@ -701,6 +701,7 @@ func TestFilterResource(t *testing.T) {
 		{rval: ptr(true), op: "!=", cval: nilptr("bool"), expected: true},
 		{rval: ptr(true), op: "!=", cval: ptr(true), expected: false},
 		{rval: ptr(true), op: "!=", cval: ptr(false), expected: true},
+		{rval: nilptr("bool"), op: "bad", cval: nilptr("bool"), expected: false},
 
 		// *time.Time
 		{rval: nilptr("time.Time"), op: "=", cval: nilptr("time.Time"), expected: true},
@@ -773,6 +774,9 @@ func TestFilterResource(t *testing.T) {
 		{rval: ptr([]byte{1}), op: ">=", cval: ptr([]byte{0}), expected: true},
 		{rval: ptr([]byte{1}), op: ">=", cval: ptr([]byte{1}), expected: true},
 		{rval: ptr([]byte{1}), op: ">=", cval: ptr([]byte{2}), expected: false},
+
+		// Invalid type
+		{rval: func() {}, op: "=", cval: func() {}, expected: false},
 	}
 
 	for _, test := range attrTests {
@@ -981,7 +985,17 @@ func TestFilterUnmarshaling(t *testing.T) {
 		}, {
 			name:          "null value",
 			query:         `{"v":null}`,
-			expectedError: false, // TODO
+			expectedError: false, // TODO Is this okay?
+		}, {
+			name:           "invalid JSON data",
+			query:          `{"thisis:invalid}`,
+			expectedFilter: Filter{},
+			expectedError:  true,
+		}, {
+			name:           "invalid data",
+			query:          `{"f":42}`,
+			expectedFilter: Filter{},
+			expectedError:  true,
 		}, {
 			name: "standard values",
 			query: `{
@@ -1000,25 +1014,25 @@ func TestFilterUnmarshaling(t *testing.T) {
 		}, {
 			name: "and & or",
 			query: `{
-				"f": "field",
+				"f": "",
 				"o": "or",
 				"v": [
 					{
-						"f": "field",
+						"f": "field1",
 						"o": "=",
 						"v": 10
 					},
 					{
-						"f": "field",
+						"f": "",
 						"o": "and",
 						"v": [
 							{
-								"f": "field",
+								"f": "field2",
 								"o": ">=",
 								"v": 20
 							},
 							{
-								"f": "field",
+								"f": "field3",
 								"o": "<=",
 								"v": 30
 							}
@@ -1031,21 +1045,19 @@ func TestFilterUnmarshaling(t *testing.T) {
 				Op:    "or",
 				Val: []*Filter{
 					{
-						Field: "field",
+						Field: "field1",
 						Op:    "=",
 						Val:   float64(10),
-					},
-					{
+					}, {
 						Field: "",
 						Op:    "and",
 						Val: []*Filter{
 							{
-								Field: "field",
+								Field: "field2",
 								Op:    ">=",
 								Val:   float64(20),
-							},
-							{
-								Field: "field",
+							}, {
+								Field: "field3",
 								Op:    "<=",
 								Val:   float64(30),
 							},
@@ -1054,6 +1066,15 @@ func TestFilterUnmarshaling(t *testing.T) {
 				},
 			},
 			expectedError: false,
+		}, {
+			name: "invalid or",
+			query: `{
+				"f": "",
+				"o": "or",
+				"v": "should not be a string"
+			}`,
+			expectedFilter: Filter{},
+			expectedError:  true,
 		},
 	}
 
@@ -1065,28 +1086,6 @@ func TestFilterUnmarshaling(t *testing.T) {
 
 		if !test.expectedError {
 			assert.Equal(test.expectedFilter, filter, test.name)
-
-			data, err := json.Marshal(&filter)
-			assert.NoError(err, test.name)
-
-			assert.Equal(
-				makeOneLineNoSpaces(test.query),
-				makeOneLineNoSpaces(string(data)),
-				test.name,
-			)
 		}
 	}
-
-	// Test marshaling error
-	_, err := json.Marshal(&Filter{
-		Op:  "=",
-		Val: func() {},
-	})
-	assert.Equal(true, err != nil, "function as value")
-
-	_, err = json.Marshal(&Filter{
-		Op:  "",
-		Val: "",
-	})
-	assert.Equal(false, err != nil, "empty operation and value") // TODO
 }
