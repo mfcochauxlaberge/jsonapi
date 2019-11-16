@@ -3,12 +3,6 @@ package jsonapi
 // WrapCollection returns a *WrapperCollection which implements the Collection
 // interface and holds resources of the type defined in r.
 func WrapCollection(r Resource) *WrapperCollection {
-	// if r2, ok := v.(Resource); ok {
-	// 	r = r2
-	// } else {
-	// 	r := Wrap(v)
-	// }
-
 	return &WrapperCollection{
 		typ:    r.GetType(),
 		col:    []*Wrapper{},

@@ -28,19 +28,24 @@ func (f *Filter) MarshalJSON() ([]byte, error) {
 	if f.Field != "" {
 		payload["f"] = f.Field
 	}
+
 	if f.Op != "" {
 		payload["o"] = f.Op
 	}
+
 	payload["v"] = f.Val
+
 	if f.Col != "" {
 		payload["c"] = f.Col
 	}
+
 	return json.Marshal(payload)
 }
 
 // UnmarshalJSON parses the provided data and populates a Filter.
 func (f *Filter) UnmarshalJSON(data []byte) error {
 	tmpFilter := filter{}
+
 	err := json.Unmarshal(data, &tmpFilter)
 	if err != nil {
 		return err
@@ -54,10 +59,12 @@ func (f *Filter) UnmarshalJSON(data []byte) error {
 		f.Field = ""
 
 		filters := []*Filter{}
+
 		err := json.Unmarshal(tmpFilter.Val, &filters)
 		if err != nil {
 			return err
 		}
+
 		f.Val = filters
 	} else {
 		err := json.Unmarshal(tmpFilter.Val, &f.Val)
@@ -75,9 +82,11 @@ func (f *Filter) IsAllowed(res Resource) bool {
 		val interface{}
 		// typ string
 	)
+
 	if _, ok := res.Attrs()[f.Field]; ok {
 		val = res.Get(f.Field)
 	}
+
 	if rel, ok := res.Rels()[f.Field]; ok {
 		if rel.ToOne {
 			val = res.GetToOne(f.Field)
@@ -94,6 +103,7 @@ func (f *Filter) IsAllowed(res Resource) bool {
 				return false
 			}
 		}
+
 		return true
 	case "or":
 		filters := f.Val.([]*Filter)
@@ -102,6 +112,7 @@ func (f *Filter) IsAllowed(res Resource) bool {
 				return true
 			}
 		}
+
 		return false
 	case "in":
 		return checkIn(val.(string), f.Val.([]string))
@@ -113,189 +124,219 @@ func (f *Filter) IsAllowed(res Resource) bool {
 }
 
 func checkVal(op string, rval, cval interface{}) bool {
-	switch rval.(type) {
+	switch rval := rval.(type) {
 	case string:
-		return checkStr(op, rval.(string), cval.(string))
+		return checkStr(op, rval, cval.(string))
 	case int:
-		return checkInt(op, int64(rval.(int)), int64(cval.(int)))
+		return checkInt(op, int64(rval), int64(cval.(int)))
 	case int8:
-		return checkInt(op, int64(rval.(int8)), int64(cval.(int8)))
+		return checkInt(op, int64(rval), int64(cval.(int8)))
 	case int16:
-		return checkInt(op, int64(rval.(int16)), int64(cval.(int16)))
+		return checkInt(op, int64(rval), int64(cval.(int16)))
 	case int32:
-		return checkInt(op, int64(rval.(int32)), int64(cval.(int32)))
+		return checkInt(op, int64(rval), int64(cval.(int32)))
 	case int64:
-		return checkInt(op, rval.(int64), cval.(int64))
+		return checkInt(op, rval, cval.(int64))
 	case uint:
-		return checkUint(op, uint64(rval.(uint)), uint64(cval.(uint)))
+		return checkUint(op, uint64(rval), uint64(cval.(uint)))
 	case uint8:
-		return checkUint(op, uint64(rval.(uint8)), uint64(cval.(uint8)))
+		return checkUint(op, uint64(rval), uint64(cval.(uint8)))
 	case uint16:
-		return checkUint(op, uint64(rval.(uint16)), uint64(cval.(uint16)))
+		return checkUint(op, uint64(rval), uint64(cval.(uint16)))
 	case uint32:
-		return checkUint(op, uint64(rval.(uint32)), uint64(cval.(uint32)))
+		return checkUint(op, uint64(rval), uint64(cval.(uint32)))
 	case uint64:
-		return checkUint(op, rval.(uint64), cval.(uint64))
+		return checkUint(op, rval, cval.(uint64))
 	case bool:
-		return checkBool(op, rval.(bool), cval.(bool))
+		return checkBool(op, rval, cval.(bool))
 	case time.Time:
-		return checkTime(op, rval.(time.Time), cval.(time.Time))
+		return checkTime(op, rval, cval.(time.Time))
 	case []byte:
-		return checkBytes(op, rval.([]byte), cval.([]byte))
+		return checkBytes(op, rval, cval.([]byte))
 	case *string:
-		if rval.(*string) == nil || cval.(*string) == nil {
-			if op == "=" {
-				return rval.(*string) == cval.(*string)
-			} else if op == "!=" {
-				return rval.(*string) != cval.(*string)
-			} else {
+		if rval == nil || cval.(*string) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*string)
+			case "!=":
+				return rval != cval.(*string)
+			default:
 				return false
 			}
 		}
-		return checkStr(op, *rval.(*string), *cval.(*string))
+
+		return checkStr(op, *rval, *cval.(*string))
 	case *int:
-		if rval.(*int) == nil || cval.(*int) == nil {
-			if op == "=" {
-				return rval.(*int) == cval.(*int)
-			} else if op == "!=" {
-				return rval.(*int) != cval.(*int)
-			} else {
+		if rval == nil || cval.(*int) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*int)
+			case "!=":
+				return rval != cval.(*int)
+			default:
 				return false
 			}
 		}
-		return checkInt(op, int64(*rval.(*int)), int64(*cval.(*int)))
+
+		return checkInt(op, int64(*rval), int64(*cval.(*int)))
 	case *int8:
-		if rval.(*int8) == nil || cval.(*int8) == nil {
-			if op == "=" {
-				return rval.(*int8) == cval.(*int8)
-			} else if op == "!=" {
-				return rval.(*int8) != cval.(*int8)
-			} else {
+		if rval == nil || cval.(*int8) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*int8)
+			case "!=":
+				return rval != cval.(*int8)
+			default:
 				return false
 			}
 		}
-		return checkInt(op, int64(*rval.(*int8)), int64(*cval.(*int8)))
+
+		return checkInt(op, int64(*rval), int64(*cval.(*int8)))
 	case *int16:
-		if rval.(*int16) == nil || cval.(*int16) == nil {
-			if op == "=" {
-				return rval.(*int16) == cval.(*int16)
-			} else if op == "!=" {
-				return rval.(*int16) != cval.(*int16)
-			} else {
+		if rval == nil || cval.(*int16) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*int16)
+			case "!=":
+				return rval != cval.(*int16)
+			default:
 				return false
 			}
 		}
-		return checkInt(op, int64(*rval.(*int16)), int64(*cval.(*int16)))
+
+		return checkInt(op, int64(*rval), int64(*cval.(*int16)))
 	case *int32:
-		if rval.(*int32) == nil || cval.(*int32) == nil {
-			if op == "=" {
-				return rval.(*int32) == cval.(*int32)
-			} else if op == "!=" {
-				return rval.(*int32) != cval.(*int32)
-			} else {
+		if rval == nil || cval.(*int32) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*int32)
+			case "!=":
+				return rval != cval.(*int32)
+			default:
 				return false
 			}
 		}
-		return checkInt(op, int64(*rval.(*int32)), int64(*cval.(*int32)))
+
+		return checkInt(op, int64(*rval), int64(*cval.(*int32)))
 	case *int64:
-		if rval.(*int64) == nil || cval.(*int64) == nil {
-			if op == "=" {
-				return rval.(*int64) == cval.(*int64)
-			} else if op == "!=" {
-				return rval.(*int64) != cval.(*int64)
-			} else {
+		if rval == nil || cval.(*int64) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*int64)
+			case "!=":
+				return rval != cval.(*int64)
+			default:
 				return false
 			}
 		}
-		return checkInt(op, *rval.(*int64), *cval.(*int64))
+
+		return checkInt(op, *rval, *cval.(*int64))
 	case *uint:
-		if rval.(*uint) == nil || cval.(*uint) == nil {
-			if op == "=" {
-				return rval.(*uint) == cval.(*uint)
-			} else if op == "!=" {
-				return rval.(*uint) != cval.(*uint)
-			} else {
+		if rval == nil || cval.(*uint) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*uint)
+			case "!=":
+				return rval != cval.(*uint)
+			default:
 				return false
 			}
 		}
-		return checkUint(op, uint64(*rval.(*uint)), uint64(*cval.(*uint)))
+
+		return checkUint(op, uint64(*rval), uint64(*cval.(*uint)))
 	case *uint8:
-		if rval.(*uint8) == nil || cval.(*uint8) == nil {
-			if op == "=" {
-				return rval.(*uint8) == cval.(*uint8)
-			} else if op == "!=" {
-				return rval.(*uint8) != cval.(*uint8)
-			} else {
+		if rval == nil || cval.(*uint8) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*uint8)
+			case "!=":
+				return rval != cval.(*uint8)
+			default:
 				return false
 			}
 		}
-		return checkUint(op, uint64(*rval.(*uint8)), uint64(*cval.(*uint8)))
+
+		return checkUint(op, uint64(*rval), uint64(*cval.(*uint8)))
 	case *uint16:
-		if rval.(*uint16) == nil || cval.(*uint16) == nil {
-			if op == "=" {
-				return rval.(*uint16) == cval.(*uint16)
-			} else if op == "!=" {
-				return rval.(*uint16) != cval.(*uint16)
-			} else {
+		if rval == nil || cval.(*uint16) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*uint16)
+			case "!=":
+				return rval != cval.(*uint16)
+			default:
 				return false
 			}
 		}
-		return checkUint(op, uint64(*rval.(*uint16)), uint64(*cval.(*uint16)))
+
+		return checkUint(op, uint64(*rval), uint64(*cval.(*uint16)))
 	case *uint32:
-		if rval.(*uint32) == nil || cval.(*uint32) == nil {
-			if op == "=" {
-				return rval.(*uint32) == cval.(*uint32)
-			} else if op == "!=" {
-				return rval.(*uint32) != cval.(*uint32)
-			} else {
+		if rval == nil || cval.(*uint32) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*uint32)
+			case "!=":
+				return rval != cval.(*uint32)
+			default:
 				return false
 			}
 		}
-		return checkUint(op, uint64(*rval.(*uint32)), uint64(*cval.(*uint32)))
+
+		return checkUint(op, uint64(*rval), uint64(*cval.(*uint32)))
 	case *uint64:
-		if rval.(*uint64) == nil || cval.(*uint64) == nil {
-			if op == "=" {
-				return rval.(*uint64) == cval.(*uint64)
-			} else if op == "!=" {
-				return rval.(*uint64) != cval.(*uint64)
-			} else {
+		if rval == nil || cval.(*uint64) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*uint64)
+			case "!=":
+				return rval != cval.(*uint64)
+			default:
 				return false
 			}
 		}
-		return checkUint(op, *rval.(*uint64), *cval.(*uint64))
+
+		return checkUint(op, *rval, *cval.(*uint64))
 	case *bool:
-		if rval.(*bool) == nil || cval.(*bool) == nil {
-			if op == "=" {
-				return rval.(*bool) == cval.(*bool)
-			} else if op == "!=" {
-				return rval.(*bool) != cval.(*bool)
+		if rval == nil || cval.(*bool) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*bool)
+			case "!=":
+				return rval != cval.(*bool)
+			default:
+				return false
 			}
 		}
-		return checkBool(op, *rval.(*bool), *cval.(*bool))
+
+		return checkBool(op, *rval, *cval.(*bool))
 	case *time.Time:
-		if rval.(*time.Time) == nil || cval.(*time.Time) == nil {
-			if op == "=" {
-				return rval.(*time.Time) == cval.(*time.Time)
-			} else if op == "!=" {
-				return rval.(*time.Time) != cval.(*time.Time)
-			} else {
+		if rval == nil || cval.(*time.Time) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*time.Time)
+			case "!=":
+				return rval != cval.(*time.Time)
+			default:
 				return false
 			}
 		}
-		return checkTime(op, *rval.(*time.Time), *cval.(*time.Time))
+
+		return checkTime(op, *rval, *cval.(*time.Time))
 	case *[]byte:
-		if rval.(*[]byte) == nil || cval.(*[]byte) == nil {
-			if op == "=" {
-				return rval.(*[]byte) == cval.(*[]byte)
-			} else if op == "!=" {
-				return rval.(*[]byte) != cval.(*[]byte)
-			} else {
+		if rval == nil || cval.(*[]byte) == nil {
+			switch op {
+			case "=":
+				return rval == cval.(*[]byte)
+			case "!=":
+				return rval != cval.(*[]byte)
+			default:
 				return false
 			}
 		}
-		return checkBytes(op, *rval.(*[]byte), *cval.(*[]byte))
+
+		return checkBytes(op, *rval, *cval.(*[]byte))
 	case []string:
-		return checkSlice(op, rval.([]string), cval.([]string))
+		return checkSlice(op, rval, cval.([]string))
 	default:
 		return false
 	}
@@ -396,6 +437,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return false
 			}
 		}
+
 		return len(rval) == len(cval)
 	case "!=":
 		for i := 0; i < len(rval) && i < len(cval); i++ {
@@ -403,6 +445,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return true
 			}
 		}
+
 		return len(rval) != len(cval)
 	case "<":
 		for i := 0; i < len(rval) && i < len(cval); i++ {
@@ -410,6 +453,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return true
 			}
 		}
+
 		return len(rval) < len(cval)
 	case "<=":
 		for i := 0; i < len(rval) && i < len(cval); i++ {
@@ -417,6 +461,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return false
 			}
 		}
+
 		return len(rval) <= len(cval)
 	case ">":
 		for i := 0; i < len(rval) && i < len(cval); i++ {
@@ -424,6 +469,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return true
 			}
 		}
+
 		return len(rval) > len(cval)
 	case ">=":
 		for i := 0; i < len(rval) && i < len(cval); i++ {
@@ -431,6 +477,7 @@ func checkBytes(op string, rval, cval []byte) bool {
 				return false
 			}
 		}
+
 		return len(rval) >= len(cval)
 	default:
 		return false
@@ -439,10 +486,13 @@ func checkBytes(op string, rval, cval []byte) bool {
 
 func checkSlice(op string, rval, cval []string) bool {
 	equal := false
+
 	if len(rval) == len(cval) {
 		sort.Strings(rval)
 		sort.Strings(cval)
+
 		equal = true
+
 		for i := 0; i < len(rval); i++ {
 			if rval[i] != cval[i] {
 				equal = false
@@ -450,6 +500,7 @@ func checkSlice(op string, rval, cval []string) bool {
 			}
 		}
 	}
+
 	switch op {
 	case "=":
 		return equal
@@ -466,5 +517,6 @@ func checkIn(id string, ids []string) bool {
 			return true
 		}
 	}
+
 	return false
 }

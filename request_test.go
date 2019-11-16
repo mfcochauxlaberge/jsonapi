@@ -44,6 +44,7 @@ func TestNewRequest(t *testing.T) {
 		req := httptest.NewRequest(test.method, test.url, body)
 
 		doc, err := NewRequest(req, test.schema)
+
 		if test.expectedError == "" {
 			assert.NoError(err)
 			assert.Equal(test.method, doc.Method, test.name)
@@ -61,7 +62,7 @@ func TestNewRequestInvalidBody(t *testing.T) {
 	schema := newMockSchema()
 
 	// Nil body
-	req := httptest.NewRequest("GET", "/mocktypes1", badReader{})
+	req := httptest.NewRequest("POST", "/mocktypes1", badReader{})
 
 	doc, err := NewRequest(req, schema)
 	assert.EqualError(err, "bad reader")
@@ -69,7 +70,7 @@ func TestNewRequestInvalidBody(t *testing.T) {
 
 	// Invalid body
 	body := bytes.NewBufferString("{invalidjson}")
-	req = httptest.NewRequest("GET", "/mocktypes1", body)
+	req = httptest.NewRequest("POST", "/mocktypes1", body)
 
 	doc, err = NewRequest(req, schema)
 	assert.EqualError(

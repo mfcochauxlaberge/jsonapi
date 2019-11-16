@@ -5,7 +5,7 @@ import (
 	"net/http"
 )
 
-// NewRequest builds a return a *Request based on r and schema.
+// NewRequest builds and returns a *Request based on r and schema.
 //
 // schema can be nil, in which case no checks will be done to insure that the
 // request respects a specific schema.
@@ -20,9 +20,10 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		return nil, err
 	}
 
-	doc := &Document{}
-	if len(body) > 0 {
-		doc, err = Unmarshal(body, schema)
+	var doc *Document
+
+	if r.Method == http.MethodPost || r.Method == http.MethodPatch {
+		doc, err = UnmarshalDocument(body, schema)
 		if err != nil {
 			return nil, err
 		}

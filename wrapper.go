@@ -34,12 +34,12 @@ func Wrap(v interface{}) *Wrapper {
 		if val.Kind() != reflect.Struct {
 			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
 		}
+
 		val = reflect.New(val.Type())
-	} else {
-		if val.Elem().Kind() != reflect.Struct {
-			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
-		}
+	} else if val.Elem().Kind() != reflect.Struct {
+		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
 	}
+
 	val = val.Elem()
 
 	err := Check(val.Interface())
@@ -78,6 +78,7 @@ func Wrap(v interface{}) *Wrapper {
 		jsonTag := fs.Tag.Get("json")
 		relTag := strings.Split(fs.Tag.Get("api"), ",")
 		invName := ""
+
 		if len(relTag) == 3 {
 			invName = relTag[2]
 		}
@@ -123,6 +124,7 @@ func (w *Wrapper) Attr(key string) Attr {
 			return attr
 		}
 	}
+
 	return Attr{}
 }
 
@@ -133,6 +135,7 @@ func (w *Wrapper) Rel(key string) Rel {
 			return rel
 		}
 	}
+
 	return Rel{}
 }
 
@@ -241,6 +244,7 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 			}
 
 			field.SetString(rel)
+
 			return
 		}
 	}
@@ -268,6 +272,7 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 			}
 
 			field.Set(reflect.ValueOf(rels))
+
 			return
 		}
 	}
