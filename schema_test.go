@@ -46,6 +46,7 @@ func TestSchemaTypes(t *testing.T) {
 	}
 	err = schema.AddAttr("type1", attr)
 	assert.NoError(err)
+
 	typ = schema.GetType("type1")
 	assert.Contains(typ.Attrs, "attr1")
 	assert.Equal(attr, typ.Attrs["attr1"])
@@ -74,6 +75,7 @@ func TestSchemaTypes(t *testing.T) {
 	}
 	err = schema.AddRel("type1", rel)
 	assert.NoError(err)
+
 	typ = schema.GetType("type1")
 	assert.Contains(typ.Rels, "rel1")
 	assert.Equal(rel, typ.Rels["rel1"])
@@ -146,9 +148,11 @@ func TestSchemaCheck(t *testing.T) {
 	// Check schema
 	errs := schema.Check()
 	errsStr := []string{}
+
 	for _, err := range errs {
 		errsStr = append(errsStr, err.Error())
 	}
+
 	assert.Len(errs, 3)
 	assert.Contains(
 		errsStr,

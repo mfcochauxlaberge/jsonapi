@@ -8,6 +8,7 @@ import (
 func makeOneLineNoSpaces(str string) string {
 	str = strings.Replace(str, "\t", "", -1)
 	str = strings.Replace(str, "\n", "", -1)
+
 	return strings.Replace(str, " ", "", -1)
 }
 
@@ -46,8 +47,9 @@ func ptr(v interface{}) interface{} {
 	// []byte
 	case []byte:
 		return &c
+	default:
+		return nil
 	}
-	return nil
 }
 
 func nilptr(t string) interface{} {
@@ -99,6 +101,7 @@ func nilptr(t string) interface{} {
 	case "[]byte":
 		var p *[]byte
 		return p
+	default:
+		return nil
 	}
-	return nil
 }

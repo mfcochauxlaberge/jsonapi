@@ -47,3 +47,7 @@ issues:
     - source: ^func
       linters:
         - lll
+
+    - source: ^var update =
+      linters:
+        - gochecknoglobals

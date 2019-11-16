@@ -38,6 +38,7 @@ func (s *SoftCollection) At(i int) Resource {
 	if i >= 0 && i < len(s.col) {
 		return s.col[i]
 	}
+
 	return nil
 }
 
@@ -50,6 +51,7 @@ func (s *SoftCollection) Resource(id string, fields []string) Resource {
 			return s.col[i]
 		}
 	}
+
 	return nil
 }
 
@@ -68,6 +70,7 @@ func (s *SoftCollection) Add(r Resource) {
 
 	for _, rel := range r.Rels() {
 		sr.AddRel(rel)
+
 		if rel.ToOne {
 			sr.SetToOne(rel.FromName, r.GetToOne(rel.FromName))
 		} else {

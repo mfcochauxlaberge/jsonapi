@@ -36,23 +36,27 @@ func MarshalCollection(c Collection, prepath string, fields map[string][]string,
 
 	// NOTE An error should not happen.
 	pl, _ := json.Marshal(raws)
+
 	return pl
 }
 
 // UnmarshalCollection unmarshals a JSON-encoded payload into a Collection.
 func UnmarshalCollection(data []byte, schema *Schema) (Collection, error) {
 	var cske []json.RawMessage
+
 	err := json.Unmarshal(data, &cske)
 	if err != nil {
 		return nil, err
 	}
 
 	col := &Resources{}
+
 	for i := range cske {
 		res, err := UnmarshalResource(cske[i], schema)
 		if err != nil {
 			return nil, err
 		}
+
 		col.Add(res)
 	}
 
@@ -79,6 +83,7 @@ func (r *Resources) At(i int) Resource {
 	if i >= 0 && i < r.Len() {
 		return (*r)[i]
 	}
+
 	return nil
 }
 

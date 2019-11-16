@@ -42,6 +42,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 
 	// Attributes
 	attrs := map[string]interface{}{}
+
 	for _, attr := range r.Attrs() {
 		for _, field := range fields {
 			if field == attr.Name {
@@ -50,12 +51,15 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 			}
 		}
 	}
+
 	mapPl["attributes"] = attrs
 
 	// Relationships
 	rels := map[string]*json.RawMessage{}
+
 	for _, rel := range r.Rels() {
 		include := false
+
 		for _, field := range fields {
 			if field == rel.FromName {
 				include = true
@@ -82,6 +86,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 						} else {
 							s["data"] = nil
 						}
+
 						break
 					}
 				}
@@ -114,6 +119,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 			}
 		}
 	}
+
 	mapPl["relationships"] = rels
 
 	// Links
@@ -123,6 +129,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 
 	// NOTE An error should not happen.
 	pl, _ := json.Marshal(mapPl)
+
 	return pl
 }
 
@@ -130,6 +137,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	var rske resourceSkeleton
 	err := json.Unmarshal(data, &rske)
+
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -148,11 +156,13 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 			if err != nil {
 				return nil, err
 			}
+
 			res.Set(attr.Name, val)
 		} else {
 			return nil, NewErrUnknownFieldInBody(typ.Name, a)
 		}
 	}
+
 	for r, v := range rske.Relationships {
 		if rel, ok := typ.Rels[r]; ok {
 			if len(v.Data) > 0 {
@@ -170,6 +180,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 					res.SetToMany(rel.FromName, ids)
 				}
 			}
+
 			if err != nil {
 				return nil, NewErrInvalidFieldValueInBody(
 					rel.FromName,
@@ -199,6 +210,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error) {
 	var rske resourceSkeleton
 	err := json.Unmarshal(data, &rske)
+
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -221,12 +233,14 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 			if err != nil {
 				return nil, err
 			}
+
 			_ = newType.AddAttr(attr)
 			res.Set(attr.Name, val)
 		} else {
 			return nil, NewErrUnknownFieldInBody(typ.Name, a)
 		}
 	}
+
 	for r, v := range rske.Relationships {
 		if rel, ok := typ.Rels[r]; ok {
 			if len(v.Data) > 0 {
@@ -246,6 +260,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 					res.SetToMany(rel.FromName, ids)
 				}
 			}
+
 			if err != nil {
 				return nil, NewErrInvalidFieldValueInBody(
 					rel.FromName,
@@ -276,17 +291,22 @@ func Equal(r1, r2 Resource) bool {
 	// Attributes
 	attrs := r1.Attrs()
 	r1Attrs := make([]Attr, 0, len(attrs))
+
 	for name := range attrs {
 		r1Attrs = append(r1Attrs, attrs[name])
 	}
+
 	sort.Slice(r1Attrs, func(i, j int) bool {
 		return r1Attrs[i].Name < r1Attrs[j].Name
 	})
+
 	attrs = r2.Attrs()
 	r2Attrs := make([]Attr, 0, len(attrs))
+
 	for name := range attrs {
 		r2Attrs = append(r2Attrs, attrs[name])
 	}
+
 	sort.Slice(r2Attrs, func(i, j int) bool {
 		return r2Attrs[i].Name < r2Attrs[j].Name
 	})
@@ -305,6 +325,7 @@ func Equal(r1, r2 Resource) bool {
 				fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
 				continue
 			}
+
 			return false
 		}
 	}
@@ -312,17 +333,22 @@ func Equal(r1, r2 Resource) bool {
 	// Relationships
 	rels := r1.Rels()
 	r1Rels := make([]Rel, 0, len(rels))
+
 	for name := range rels {
 		r1Rels = append(r1Rels, rels[name])
 	}
+
 	sort.Slice(r1Rels, func(i, j int) bool {
 		return r1Rels[i].FromName < r1Rels[j].FromName
 	})
+
 	rels = r2.Rels()
 	r2Rels := make([]Rel, 0, len(rels))
+
 	for name := range rels {
 		r2Rels = append(r2Rels, rels[name])
 	}
+
 	sort.Slice(r2Rels, func(i, j int) bool {
 		return r2Rels[i].FromName < r2Rels[j].FromName
 	})
@@ -336,6 +362,7 @@ func Equal(r1, r2 Resource) bool {
 		if rel1.ToOne != rel2.ToOne {
 			return false
 		}
+
 		if rel1.ToOne {
 			if r1.GetToOne(rel1.FromName) != r2.GetToOne(rel2.FromName) {
 				return false
@@ -359,5 +386,6 @@ func EqualStrict(r1, r2 Resource) bool {
 	if r1.GetID() != r2.GetID() {
 		return false
 	}
+
 	return Equal(r1, r2)
 }

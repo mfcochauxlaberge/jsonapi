@@ -51,7 +51,9 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, size uint,
 
 	// Pagination
 	var page Resources
+
 	skip := int(num * size)
+
 	if skip >= len(col.col) {
 		col = sortedResources{}
 	} else {
@@ -76,6 +78,7 @@ func (s sortedResources) Sort(rules []string) {
 	if len(s.rules) == 0 {
 		s.rules = []string{"id"}
 	}
+
 	sort.Sort(s)
 }
 
@@ -93,6 +96,7 @@ func (s sortedResources) Swap(i, j int) {
 func (s sortedResources) Less(i, j int) bool {
 	for _, r := range s.rules {
 		inverse := false
+
 		if strings.HasPrefix(r, "-") {
 			r = r[1:]
 			inverse = true
@@ -115,71 +119,83 @@ func (s sortedResources) Less(i, j int) bool {
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case int:
 			v2 := v2.(int)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case int8:
 			v2 := v2.(int8)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case int16:
 			v2 := v2.(int16)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case int32:
 			v2 := v2.(int32)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case int64:
 			v2 := v2.(int64)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case uint:
 			v2 := v2.(uint)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case uint8:
 			v2 := v2.(uint8)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case uint16:
 			v2 := v2.(uint16)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case uint32:
 			v2 := v2.(uint32)
 			if v == v2 {
 				continue
 			}
+
 			return v < v2 != inverse
 		case bool:
 			v2 := v2.(bool)
 			if v == v2 {
 				continue
 			}
+
 			return !v != inverse
 		case time.Time:
 			if v.Equal(v2.(time.Time)) {
 				continue
 			}
+
 			return v.Before(v2.(time.Time)) != inverse
 		case []byte:
 			s2 := v2.([]byte)
@@ -187,191 +203,242 @@ func (s sortedResources) Less(i, j int) bool {
 				if v[i] == s2[i] {
 					continue
 				}
+
 				return v[i] < s2[i] != inverse
 			}
+
 			if len(v) == len(s2) {
 				continue
 			}
+
 			return len(v) < len(s2) != inverse
 		case *string:
 			v2 := v2.(*string)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *int:
 			v2 := v2.(*int)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *int8:
 			v2 := v2.(*int8)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *int16:
 			v2 := v2.(*int16)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *int32:
 			v2 := v2.(*int32)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *int64:
 			v2 := v2.(*int64)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *uint:
 			v2 := v2.(*uint)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *uint8:
 			v2 := v2.(*uint8)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *uint16:
 			v2 := v2.(*uint16)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *uint32:
 			v2 := v2.(*uint32)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return *v < *v2 != inverse
 		case *bool:
 			v2 := v2.(*bool)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if *v == *v2 {
 				continue
 			}
+
 			return !*v != inverse
 		case *time.Time:
 			v2 := v2.(*time.Time)
 			if v == v2 {
 				continue
 			}
+
 			if v == nil {
 				return !inverse
 			}
+
 			if v2 == nil {
 				return inverse
 			}
+
 			if v.Equal(*v2) {
 				continue
 			}
+
 			return v.Before(*v2) != inverse
 		}
 	}

@@ -213,6 +213,7 @@ func TestParseURL(t *testing.T) {
 
 	for _, test := range tests {
 		url, err := NewURLFromRaw(schema, makeOneLineNoSpaces(test.url))
+
 		if test.expectedError {
 			assert.Error(err)
 		} else {
@@ -453,6 +454,7 @@ func TestParseParams(t *testing.T) {
 		assert.NoError(err, test.name)
 
 		params, err := NewParams(schema, su, test.colType)
+
 		if test.expectedError {
 			assert.Error(err, test.name)
 		} else {
