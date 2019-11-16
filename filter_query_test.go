@@ -1058,15 +1058,15 @@ func TestFilterUnmarshaling(t *testing.T) {
 	}
 
 	for _, test := range tests {
-		cdt := Filter{}
-		err := json.Unmarshal([]byte(test.query), &cdt)
+		filter := Filter{}
+		err := json.Unmarshal([]byte(test.query), &filter)
 
 		assert.Equal(test.expectedError, err != nil, test.name)
 
 		if !test.expectedError {
-			assert.Equal(test.expectedFilter, cdt, test.name)
+			assert.Equal(test.expectedFilter, filter, test.name)
 
-			data, err := json.Marshal(&cdt)
+			data, err := json.Marshal(&filter)
 			assert.NoError(err, test.name)
 
 			assert.Equal(
