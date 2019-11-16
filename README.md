@@ -33,6 +33,24 @@ It also offers many tools for parsing URLs, handling resources, managing schemas
 
 The official specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
 
+## Features
+
+jsonapi offers the following features:
+
+ * Marshaling and unmarshaling of JSON:API URLs and documents
+ * Structs for handling URLs, documents, resources, collections...
+ * Schema management
+   * It can ensure relationships between types make sense.
+   * Very useful for validation when marshaling and unmarshaling.
+ * Utilities for pagination, sorting, and filtering
+   * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
+ * In-memory data store (`SoftCollection`)
+   * It can store resources (anything that implements `Resource`).
+   * It can sort, filter, retrieve pages, etc.
+   * Enough to build a demo API or use in test suites.
+   * Not made for production use.
+ * Other useful helpers
+
 ## State
 
 The library is in **beta** and its API is subject to change until v1 is released.
