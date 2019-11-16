@@ -8,7 +8,6 @@ linters:
     - errcheck
     - gochecknoglobals
     - gochecknoinits
-    - gocritic
     - gofmt
     - goimports
     - golint
