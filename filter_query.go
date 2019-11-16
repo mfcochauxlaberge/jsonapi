@@ -16,30 +16,10 @@ type Filter struct {
 
 // filter is an internal version of Filter.
 type filter struct {
-	Field string          `json:"f"`
-	Op    string          `json:"o"`
+	Field string          `json:"f,omitempty"`
+	Op    string          `json:"o,omitempty"`
 	Val   json.RawMessage `json:"v"`
-	Col   string          `json:"c"`
-}
-
-// MarshalJSON marshals a filter into JSON.
-func (f *Filter) MarshalJSON() ([]byte, error) {
-	payload := map[string]interface{}{}
-	if f.Field != "" {
-		payload["f"] = f.Field
-	}
-
-	if f.Op != "" {
-		payload["o"] = f.Op
-	}
-
-	payload["v"] = f.Val
-
-	if f.Col != "" {
-		payload["c"] = f.Col
-	}
-
-	return json.Marshal(payload)
+	Col   string          `json:"c,omitempty"`
 }
 
 // UnmarshalJSON parses the provided data and populates a Filter.
@@ -55,7 +35,8 @@ func (f *Filter) UnmarshalJSON(data []byte) error {
 	f.Op = tmpFilter.Op
 	f.Col = tmpFilter.Col
 
-	if tmpFilter.Op == "and" || tmpFilter.Op == "or" {
+	switch tmpFilter.Op {
+	case "and", "or":
 		f.Field = ""
 
 		filters := []*Filter{}
@@ -66,11 +47,11 @@ func (f *Filter) UnmarshalJSON(data []byte) error {
 		}
 
 		f.Val = filters
-	} else {
-		err := json.Unmarshal(tmpFilter.Val, &f.Val)
-		if err != nil {
-			return err
-		}
+	default:
+		// Error checking ignored since it cannot fail at this
+		// point. The first unmarshaling step of this function
+		// has already checked the data.
+		_ = json.Unmarshal(tmpFilter.Val, &f.Val)
 	}
 
 	return nil
