@@ -1,5 +1,3 @@
-# jsonapi
-
 <div align="center" style="text-align: center;">
   <img src="assets/logo.png" height="120">
   <br>
@@ -26,6 +24,8 @@
     <img src="https://godoc.org/github.com/golang/gddo?status.svg">
   </a>
 </div>
+
+# jsonapi
 
 jsonapi offers a set of tools to build JSON:API compliant services.
 
