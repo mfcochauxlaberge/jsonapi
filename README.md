@@ -37,6 +37,20 @@ The official specification can be found at [jsonapi.org/format](http://jsonapi.o
 
 The library is in **beta** and its API is subject to change until v1 is released.
 
+In terms of features, jsonapi is complete. The work left is polishing and testing the deisgn of current API.
+
+### Roadmap to v1
+
+While anything can happen before a v1 release, the API is stable and no big changes are expected at this moment.
+
+A few tasks are required before committing to the current API:
+
+ * Rethink how errors are handled
+   * Use the new tools introduced in Go 1.13.
+ * Gather comments from users
+   * The library should be used on more real projects to see of the API is convenient.
+   * It is current used by [github.com/mfcochauxlaberge/karigo](http://github.com/mfcochauxlaberge/karigo).
+
 ## Requirements
 
 The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
