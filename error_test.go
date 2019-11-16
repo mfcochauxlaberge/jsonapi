@@ -323,7 +323,7 @@ func TestErrorMarshalJSON(t *testing.T) {
 
 	payload, err := json.Marshal(jaerr)
 	assert.NoError(err)
-	assert.Equal(string(payload), makeOneLineNoSpaces(`
+	assert.JSONEq(string(payload), `
 		{
 			"code": "Code",
 			"detail": "Detail",
@@ -341,5 +341,5 @@ func TestErrorMarshalJSON(t *testing.T) {
 			"status": "Status",
 			"title": "Title"
 		}
-	`))
+	`)
 }
