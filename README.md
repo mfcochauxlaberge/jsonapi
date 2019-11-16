@@ -53,7 +53,7 @@ jsonapi offers the following features:
 
 The library is in **beta** and its API is subject to change until v1 is released.
 
-In terms of features, jsonapi is complete. The work left is polishing and testing the deisgn of current API.
+In terms of features, jsonapi is complete. The work left is polishing and testing the design of current API.
 
 ### Roadmap to v1
 
