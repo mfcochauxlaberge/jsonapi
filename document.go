@@ -81,32 +81,32 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 
 	// Data
 	var data json.RawMessage
-	if res, ok := doc.Data.(Resource); ok {
-		// Resource
+	switch d := doc.Data.(type) {
+	case Resource:
 		data = MarshalResource(
-			res,
+			d,
 			doc.PrePath,
-			url.Params.Fields[res.GetType().Name],
+			url.Params.Fields[d.GetType().Name],
 			doc.RelData,
 		)
-	} else if col, ok := doc.Data.(Collection); ok {
-		// Collection
+	case Collection:
 		data = MarshalCollection(
-			col,
+			d,
 			doc.PrePath,
 			url.Params.Fields,
 			doc.RelData,
 		)
-	} else if id, ok := doc.Data.(Identifier); ok {
-		// Identifier
-		data, err = json.Marshal(id)
-	} else if ids, ok := doc.Data.(Identifiers); ok {
-		// Identifiers
-		data, err = json.Marshal(ids)
-	} else if doc.Data != nil {
-		err = errors.New("data contains an unknown type")
-	} else if len(doc.Errors) == 0 {
-		data = []byte("null")
+	case Identifier:
+		data, err = json.Marshal(d)
+
+	case Identifiers:
+		data, err = json.Marshal(d)
+	default:
+		if doc.Data != nil {
+			err = errors.New("data contains an unknown type")
+		} else if len(doc.Errors) == 0 {
+			data = []byte("null")
+		}
 	}
 
 	// Data
@@ -191,8 +191,10 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 	}
 
 	// Data
-	if len(ske.Data) > 0 {
-		if ske.Data[0] == '{' {
+	switch {
+	case len(ske.Data) > 0:
+		switch {
+		case ske.Data[0] == '{':
 			// Resource
 			res, err := UnmarshalResource(ske.Data, schema)
 			if err != nil {
@@ -200,21 +202,22 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 			}
 
 			doc.Data = res
-		} else if ske.Data[0] == '[' {
+		case ske.Data[0] == '[':
 			col, err := UnmarshalCollection(ske.Data, schema)
 			if err != nil {
 				return nil, err
 			}
+
 			doc.Data = col
-		} else if string(ske.Data) == "null" {
+		case string(ske.Data) == "null":
 			doc.Data = nil
-		} else {
+		default:
 			// TODO Not exactly the right error
 			return nil, NewErrMissingDataMember()
 		}
-	} else if len(ske.Errors) > 0 {
+	case len(ske.Errors) > 0:
 		doc.Errors = ske.Errors
-	} else {
+	default:
 		return nil, NewErrMissingDataMember()
 	}
 

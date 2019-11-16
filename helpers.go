@@ -194,9 +194,8 @@ func MustBuildType(v interface{}) Type {
 // Two empty strings are returned if v is not recognized as a resource.
 // CheckType can be used to check the validity of a struct.
 func IDAndType(v interface{}) (string, string) {
-	switch nv := v.(type) {
-	case Resource:
-		return nv.GetID(), nv.GetType().Name
+	if res, ok := v.(Resource); ok {
+		return res.GetID(), res.GetType().Name
 	}
 
 	val := reflect.ValueOf(v)

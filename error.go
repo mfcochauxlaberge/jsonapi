@@ -46,11 +46,12 @@ func (e Error) Error() string {
 	fullName := http.StatusText(statusCode)
 
 	if fullName != "" && e.Status != "" {
-		if e.Detail != "" {
+		switch {
+		case e.Detail != "":
 			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Detail)
-		} else if e.Title != "" {
+		case e.Title != "":
 			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Title)
-		} else {
+		default:
 			return fmt.Sprintf("%s %s", e.Status, fullName)
 		}
 	}
