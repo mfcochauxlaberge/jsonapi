@@ -580,3 +580,49 @@ func TestURLEscaping(t *testing.T) {
 		)
 	}
 }
+
+func TestURLString(t *testing.T) {
+	assert := assert.New(t)
+
+	// Simple test
+	raw := `
+		/mocktypes1
+		?include=
+			to-many-from-one.to-one-from-many.to-one.to-many-from-many%2C
+			to-one-from-one.to-many-from-many
+		&sort=to-many%2Cstr,%2C%2C-bool
+		&page[number]=3
+		&sort=uint8
+		&include=
+			to-many-from-one,
+			to-many-from-many
+		&page[size]=50
+		&filter={"f":"str","o":"=","v":"abc"}
+	`
+	expected := `
+		/mocktypes1
+		?fields[mocktypes1]=bool,int,int16,int32,int64,int8,str,time,to-many,
+			to-many-from-many,to-many-from-one,to-one,to-one-from-many,
+			to-one-from-one,uint,uint16,uint32,uint64,uint8
+		&fields[mocktypes2]=boolptr,int16ptr,int32ptr,int64ptr,int8ptr,intptr,
+			strptr,timeptr,to-many-from-many,to-many-from-one,to-one-from-many,
+			to-one-from-one,uint16ptr,uint32ptr,uint64ptr,uint8ptr,uintptr
+		&filter={"f":"str","o":"=","v":"abc","c":""}
+		&page[number]=3
+		&page[size]=50
+		&sort=str,-bool,uint8,int,int16,int32,int64,int8,time,uint,uint16,
+			uint32,uint64,id
+		`
+
+	url, err := NewURLFromRaw(newMockSchema(), makeOneLineNoSpaces(raw))
+
+	assert.NoError(err)
+	assert.Equal(makeOneLineNoSpaces(expected), url.UnescapedString())
+
+	// Invalid filter
+	url.Params.Filter.Val = func() {}
+
+	assert.Panics(func() {
+		_ = url.String()
+	})
+}
