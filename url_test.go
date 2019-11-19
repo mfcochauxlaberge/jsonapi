@@ -456,14 +456,11 @@ func TestParseParams(t *testing.T) {
 				Fields: map[string][]string{
 					"mocktypes1": mockTypes1.Fields(),
 				},
-				Attrs:   map[string][]Attr{},
-				Rels:    map[string][]Rel{},
-				RelData: map[string][]string{},
-				SortingRules: []string{
-					"str", "-int", "id", "bool", "int16", "int32", "int64", "int8",
-					"time", "uint", "uint16", "uint32", "uint64", "uint8",
-				},
-				Include: [][]Rel{},
+				Attrs:        map[string][]Attr{},
+				Rels:         map[string][]Rel{},
+				RelData:      map[string][]string{},
+				SortingRules: []string{},
+				Include:      [][]Rel{},
 			},
 			expectedError: true,
 		}, {
