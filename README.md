@@ -73,6 +73,29 @@ A few tasks are required before committing to the current API:
 
 The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
 
+## Examples
+
+### Resource marshaling
+
+Here we have a struct defining a type and we create an object to represente a resource.
+
+```go
+type User struct {
+	// The ID field is mandatory and the api tag sets the type name.
+	ID string `json:"id" api:"users"`
+
+	// Attributes
+	// They are defined by setting the api to tag "attr".
+	Name         string    `json:"name" api:"attr"`
+	RegisteredAt time.Time `json:"registered-at" api:"attr"`
+
+	// Relationships
+	// They are defined by setting the api to tag "rel".
+	BestFriend string   `json:"best-friend" api:"rel,best-friend"`
+	Articles   []string `json:"articles" api:"rel,articles"`
+}
+```
+
 ## Quick start
 
 The simplest way to start using jsonapi is to use the MarshalDocument and UnmarshalDocument functions.
