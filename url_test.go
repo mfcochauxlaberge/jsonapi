@@ -498,12 +498,6 @@ func TestParseParams(t *testing.T) {
 
 		params, err := NewParams(schema, su, test.colType)
 
-		if test.expectedError {
-			assert.Error(err, test.name)
-		} else {
-			assert.NoError(err, test.name)
-		}
-
 		// Set Attrs and Rels
 		for colType, fields := range test.expectedParams.Fields {
 			for _, field := range fields {
