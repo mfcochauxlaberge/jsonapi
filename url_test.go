@@ -419,7 +419,8 @@ func TestParseParams(t *testing.T) {
 				RelData: map[string][]string{},
 				SortingRules: []string{
 					"str", "-int", "bool", "int16", "int32", "int64", "int8",
-					"time", "uint", "uint16", "uint32", "uint64", "uint8", "id"},
+					"time", "uint", "uint16", "uint32", "uint64", "uint8", "id",
+				},
 				Include: [][]Rel{},
 			},
 			expectedError: false,
@@ -439,7 +440,8 @@ func TestParseParams(t *testing.T) {
 				RelData: map[string][]string{},
 				SortingRules: []string{
 					"str", "-int", "id", "bool", "int16", "int32", "int64", "int8",
-					"time", "uint", "uint16", "uint32", "uint64", "uint8"},
+					"time", "uint", "uint16", "uint32", "uint64", "uint8",
+				},
 				Include: [][]Rel{},
 			},
 			expectedError: false,
