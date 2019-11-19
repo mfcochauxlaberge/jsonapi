@@ -20,7 +20,6 @@ func (l Link) MarshalJSON() ([]byte, error) {
 		m["href"], _ = json.Marshal(l.HRef)
 
 		m["meta"], err = json.Marshal(l.Meta)
-
 		if err != nil {
 			return []byte{}, err
 		}
