@@ -466,6 +466,29 @@ func TestParseParams(t *testing.T) {
 				Include: [][]Rel{},
 			},
 			expectedError: true,
+		}, {
+			name: "fields with id",
+			url: `
+				/mocktypes1
+				?fields[mocktypes1]=str,id
+			`,
+			colType: "mocktypes1",
+			expectedParams: Params{
+				Fields: map[string][]string{
+					"mocktypes1": {"str", "id"},
+				},
+				Attrs: map[string][]Attr{},
+				Rels: map[string][]Rel{
+					"mocktypes1": {},
+				},
+				RelData: map[string][]string{},
+				SortingRules: []string{
+					"bool", "int", "int16", "int32", "int64", "int8", "str",
+					"time", "uint", "uint16", "uint32", "uint64", "uint8", "id",
+				},
+				Include: [][]Rel{},
+			},
+			expectedError: false,
 		},
 	}
 
