@@ -75,26 +75,7 @@ The supported versions of Go are the latest patch releases of every minor releas
 
 ## Examples
 
-### Resource marshaling
-
-Here we have a struct defining a type and we create an object to represente a resource.
-
-```go
-type User struct {
-	// The ID field is mandatory and the api tag sets the type name.
-	ID string `json:"id" api:"users"`
-
-	// Attributes
-	// They are defined by setting the api to tag "attr".
-	Name         string    `json:"name" api:"attr"`
-	RegisteredAt time.Time `json:"registered-at" api:"attr"`
-
-	// Relationships
-	// They are defined by setting the api to tag "rel".
-	BestFriend string   `json:"best-friend" api:"rel,best-friend"`
-	Articles   []string `json:"articles" api:"rel,articles"`
-}
-```
+The best way to learn and appreciate this package is to look at the simple examples provided in the `examples/` directory.
 
 ## Quick start
 
