@@ -71,6 +71,10 @@ A few tasks are required before committing to the current API:
 
 The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
 
+## Examples
+
+The best way to learn and appreciate this package is to look at the simple examples provided in the `examples/` directory.
+
 ## Quick start
 
 The simplest way to start using jsonapi is to use the MarshalDocument and UnmarshalDocument functions.
