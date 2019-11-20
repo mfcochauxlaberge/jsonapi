@@ -10,16 +10,10 @@ import (
 )
 
 func ExampleMarshalDocument() {
-	// A schema is a list of types.
-	// Here, two types automatically built from two structs are
-	// added to the schema.
+	// See the schema example for more details.
 	schema := &jsonapi.Schema{}
 	schema.AddType(jsonapi.MustBuildType(&User{}))
 	schema.AddType(jsonapi.MustBuildType(&Article{}))
-
-	// The schema can be checked. Among other things, it makes
-	// sure names are valid and relationships point to existing
-	// types.
 	_ = schema.Check()
 
 	now, _ := time.Parse(time.RFC3339, "2019-11-19T23:17:01-05:00")
@@ -138,34 +132,4 @@ func ExampleMarshalDocument() {
 	// 		"meta": "meta_value"
 	// 	}
 	// }
-}
-
-type User struct {
-	// The ID field is mandatory and the api tag sets the type name.
-	ID string `json:"id" api:"users"`
-
-	// Attributes
-	// They are defined by setting the api to tag "attr".
-	Username     string    `json:"username" api:"attr"`
-	RegisteredAt time.Time `json:"registered-at" api:"attr"`
-
-	// Relationships
-	// They are defined by setting the api to tag "rel," followed
-	// by the name of the target type. Optionally, a third argument
-	// can be given to specify a relationship on the target type
-	// which indicates a two-way relationship.
-	Articles []string `json:"articles" api:"rel,articles,author"`
-}
-
-type Article struct {
-	// The ID field is mandatory and the api tag sets the type name.
-	ID string `json:"id" api:"articles"`
-
-	// Attributes
-	Title      string    `json:"title" api:"attr"`
-	Content    string    `json:"content" api:"attr"`
-	CreratedAt time.Time `json:"created-at" api:"attr"`
-
-	// Relationships
-	Author string `json:"author" api:"rel,author,articles"`
 }

@@ -7,16 +7,10 @@ import (
 )
 
 func ExampleUnmarshalDocument() {
-	// A schema is a list of types.
-	// Here, two types automatically built from two structs are
-	// added to the schema.
+	// See the schema example for more details.
 	schema := &jsonapi.Schema{}
 	schema.AddType(jsonapi.MustBuildType(User{}))
 	schema.AddType(jsonapi.MustBuildType(Article{}))
-
-	// The schema can be checked. Among other things, it makes
-	// sure names are valid and relationships point to existing
-	// types.
 	_ = schema.Check()
 
 	// This is the payload to be unmarshaled.
