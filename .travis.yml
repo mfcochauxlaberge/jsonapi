@@ -7,10 +7,10 @@ go:
 env:
   - GO111MODULE=on
 
-# stages:
-#   - lint
-#       - script: echo "LINTING!"
-#   - test
+stages:
+  - lint
+      - script: echo "LINTING!"
+  - test
 
 jobs:
   exclude:
