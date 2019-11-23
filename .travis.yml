@@ -26,10 +26,10 @@ jobs:
         - ./bin/golangci-lint run
     - stage: race
       script:
-        - go test ./... -race
+        - go test ./... -v -race
       go: 1.13.x
     - stage: test
       script:
-        - go test ./... -coverprofile=coverage.txt -covermode=atomic
+        - go test ./... -v -coverprofile=coverage.txt -covermode=atomic
       after_success:
         - bash <(curl -s https://codecov.io/bash)
