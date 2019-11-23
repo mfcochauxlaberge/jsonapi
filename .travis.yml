@@ -12,11 +12,11 @@ stages:
       - script: echo "LINTING!"
   - test
 
-jobs:
-  exclude:
-    - stage: lint
-      go:
-        - 1.10.x
+# jobs:
+#   exclude:
+#     - stage: lint
+#       go:
+#         - 1.10.x
 
 before_script:
   - 'curl -sfL
