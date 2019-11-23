@@ -123,7 +123,7 @@ func (sr *SoftResource) SetID(id string) {
 	sr.id = id
 }
 
-// SetType ...
+// SetType sets the resource's type.
 func (sr *SoftResource) SetType(typ *Type) {
 	sr.check()
 	sr.Type = typ
