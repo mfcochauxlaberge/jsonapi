@@ -9,7 +9,7 @@ import (
 func ExampleSoftResource() {
 	// A SoftResource is a struct that implements the Resource
 	// interface. It holds a Type object that defines its type and
-	// that type is mutable
+	// that type is mutable.
 	sr := &jsonapi.SoftResource{}
 
 	// One use case for a SoftResource is handling a JSON request

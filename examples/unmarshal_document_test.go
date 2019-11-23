@@ -2,6 +2,7 @@ package examples_test
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/mfcochauxlaberge/jsonapi"
 )
@@ -58,11 +59,13 @@ func ExampleUnmarshalDocument() {
 	// Print the result.
 	fmt.Printf("user.ID: %s\n", res.GetID())
 	fmt.Printf("user.Username: %s\n", res.Get("username"))
-	fmt.Printf("user.RegisteredAt: %s\n", res.Get("registered-at"))
+	tm := res.Get("registered-at").(time.Time)
+	out, _ := tm.MarshalText()
+	fmt.Printf("user.RegisteredAt: %s\n", out)
 	fmt.Printf("user.Articles: %s\n", res.GetToMany("articles"))
 	// Output:
 	// user.ID: user1
 	// user.Username: rob
-	// user.RegisteredAt: 2019-11-19 23:17:01 -0500 EST
+	// user.RegisteredAt: 2019-11-19T23:17:01-05:00
 	// user.Articles: [article1]
 }
