@@ -32,9 +32,6 @@ jobs:
             | sh -s v1.21.0'
       script:
         - ./bin/golangci-lint run
-
-script:
-  - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-
-after_success:
-  - bash <(curl -s https://codecov.io/bash)
+    - stage: test
+      script: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+      after_success: bash <(curl -s https://codecov.io/bash)
