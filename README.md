@@ -1,5 +1,3 @@
-# jsonapi
-
 <div align="center" style="text-align: center;">
   <img src="assets/logo.png" height="120">
   <br>
@@ -27,27 +25,63 @@
   </a>
 </div>
 
-jsonapi is a complete library to marshal and unmarshal JSON:API payloads.
+# jsonapi
 
-It also offers many tools for parsing URLs, handling resources, managing schemas, and building other tools on top of this library.
+jsonapi offers a set of tools to build JSON:API compliant services.
 
-The official specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
+The official JSON:API specification can be found at [jsonapi.org/format](http://jsonapi.org/format).
+
+## Features
+
+jsonapi offers the following features:
+
+ * Marshaling and unmarshaling of JSON:API URLs and documents
+ * Structs for handling URLs, documents, resources, collections...
+ * Schema management
+   * It can ensure relationships between types make sense.
+   * Very useful for validation when marshaling and unmarshaling.
+ * Utilities for pagination, sorting, and filtering
+   * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
+ * In-memory data store (`SoftCollection`)
+   * It can store resources (anything that implements `Resource`).
+   * It can sort, filter, retrieve pages, etc.
+   * Enough to build a demo API or use in test suites.
+   * Not made for production use.
+ * Other useful helpers
 
 ## State
 
 The library is in **beta** and its API is subject to change until v1 is released.
 
+In terms of features, jsonapi is complete. The work left is polishing and testing the design of current API.
+
+### Roadmap to v1
+
+While anything can happen before a v1 release, the API is stable and no big changes are expected at this moment.
+
+A few tasks are required before committing to the current API:
+
+ * Rethink how errors are handled
+   * Use the new tools introduced in Go 1.13.
+ * Gather feedback from users
+   * The library should be used more on real projects to see of the API is convenient.
+   * It is currently used by [mfcochauxlaberge/karigo](https://github.com/mfcochauxlaberge/karigo).
+
 ## Requirements
 
 The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
 
+## Examples
+
+The best way to learn and appreciate this package is to look at the simple examples provided in the `examples/` directory.
+
 ## Quick start
 
-The simplest way to start using jsonapi is to use the Marshal and Unmarshal functions.
+The simplest way to start using jsonapi is to use the MarshalDocument and UnmarshalDocument functions.
 
 ```go
-func Marshal(doc *Document, url *URL) ([]byte, error)
-func Unmarshal(payload []byte, schema *Schema) (*Document, error)
+func MarshalDocument(doc *Document, url *URL) ([]byte, error)
+func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error)
 ```
 
 A struct has to follow certain rules in order to be understood by the library, but interfaces are also provided which let the library avoid the reflect package and be more efficient.
@@ -62,7 +96,7 @@ Here are some of the main concepts covered by the library.
 
 A `Request` represents an HTTP request structured in a format easily readable from a JSON:API point of view.
 
-If you are familiar to the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
+If you are familiar with the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
 
 ### Type
 
@@ -150,6 +184,6 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 
 ## Documentation
 
-Check out the [incomplete documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
+Check out the [documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
 
 The best way to learn how to use it is to look at the source code and its comments.

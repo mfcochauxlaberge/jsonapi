@@ -162,19 +162,26 @@ func TestWrapper(t *testing.T) {
 	}
 
 	// Set values (attributes)
-	var anotherString = "anotherString"
+	var (
+		anotherString = "anotherString"
+		newInt        = 3
+	)
+
 	wrap2.Set("strptr", &anotherString)
 	assert.Equal(&anotherString, wrap2.Get("strptr"), "set string pointer attribute")
-	var newInt = 3
+
 	wrap2.Set("intptr", &newInt)
 	assert.Equal(&newInt, wrap2.Get("intptr"), "set int pointer attribute")
+
 	wrap2.Set("uintptr", nil)
+
 	if wrap2.Get("uintptr") != nil {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
 		// way. If the nil check fails, then the next line will fail too.
 		assert.Equal(t, "nil pointer", nil, wrap2.Get("uintptr"))
 	}
+
 	if res2.UintPtr != nil {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
@@ -184,18 +191,22 @@ func TestWrapper(t *testing.T) {
 
 	// New
 	wrap3 := wrap1.New()
+
 	for _, attr := range wrap1.Attrs() {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
+
 	for _, rel := range wrap1.Rels() {
 		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
 
 	// Copy
 	wrap3 = wrap1.Copy()
+
 	for _, attr := range wrap1.Attrs() {
 		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
 	}
+
 	for _, rel := range wrap1.Rels() {
 		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
 	}
@@ -361,14 +372,4 @@ func TestWrapperGetAndSetErrors(t *testing.T) {
 	assert.Panics(func() {
 		wrap.SetToMany("to-1", []string{"id"})
 	})
-}
-
-func TestWrapperValidate(t *testing.T) {
-	assert := assert.New(t)
-
-	// TODO Implement this test when the implementation
-	// of Wrapper.Validate is done.
-	wrap := Wrap(mocktype{})
-	errs := wrap.Validate()
-	assert.Nil(errs)
 }

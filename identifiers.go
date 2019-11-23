@@ -38,11 +38,24 @@ type Identifier struct {
 	Type string `json:"type"`
 }
 
-// MarshalIdentifiers builds a json.RawMessage object from the given IDs.
+// UnmarshalIdentifier reads a payload where the main data is one identifier to
+// build and return an Identifier object.
 //
-// TODO Implement the function.
-func MarshalIdentifiers(ids []string, toOne bool) json.RawMessage {
-	raw := ""
+// schema must not be nil.
+func UnmarshalIdentifier(payload []byte, schema *Schema) (Identifier, error) {
+	iden := Identifier{}
+	err := json.Unmarshal(payload, &iden)
+	// TODO Validate with schema.
+	return iden, err
+}
 
-	return []byte(raw)
+// UnmarshalIdentifiers reads a payload where the main data is a collection of
+// identifiers to build and return an Idenfitiers slice.
+//
+// schema must not be nil.
+func UnmarshalIdentifiers(payload []byte, schema *Schema) (Identifiers, error) {
+	idens := Identifiers{}
+	err := json.Unmarshal(payload, &idens)
+	// TODO Validate with schema.
+	return idens, err
 }

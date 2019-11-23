@@ -14,15 +14,16 @@ type Link struct {
 func (l Link) MarshalJSON() ([]byte, error) {
 	if len(l.Meta) > 0 {
 		var err error
+
 		m := map[string]json.RawMessage{}
-		m["href"], err = json.Marshal(l.HRef)
-		if err != nil {
-			return []byte{}, err
-		}
+
+		m["href"], _ = json.Marshal(l.HRef)
+
 		m["meta"], err = json.Marshal(l.Meta)
 		if err != nil {
 			return []byte{}, err
 		}
+
 		return json.Marshal(m)
 	}
 

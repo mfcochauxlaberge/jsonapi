@@ -69,6 +69,7 @@ func (t *Type) AddAttr(attr Attr) error {
 	if t.Attrs == nil {
 		t.Attrs = map[string]Attr{}
 	}
+
 	t.Attrs[attr.Name] = attr
 
 	return nil
@@ -89,6 +90,7 @@ func (t *Type) AddRel(rel Rel) error {
 	if rel.FromName == "" {
 		return fmt.Errorf("jsonapi: relationship name is empty")
 	}
+
 	if rel.ToType == "" {
 		return fmt.Errorf("jsonapi: relationship type is empty")
 	}
@@ -103,6 +105,7 @@ func (t *Type) AddRel(rel Rel) error {
 	if t.Rels == nil {
 		t.Rels = map[string]Rel{}
 	}
+
 	t.Rels[rel.FromName] = rel
 
 	return nil
@@ -124,10 +127,13 @@ func (t *Type) Fields() []string {
 	for i := range t.Attrs {
 		fields = append(fields, t.Attrs[i].Name)
 	}
+
 	for i := range t.Rels {
 		fields = append(fields, t.Rels[i].FromName)
 	}
+
 	sort.Strings(fields)
+
 	return fields
 }
 
@@ -139,6 +145,7 @@ func (t *Type) New() Resource {
 	if t.NewFunc != nil {
 		return t.NewFunc()
 	}
+
 	return &SoftResource{Type: t}
 }
 
@@ -147,7 +154,29 @@ func (t *Type) New() Resource {
 func (t Type) Equal(typ Type) bool {
 	t.NewFunc = nil
 	typ.NewFunc = nil
+
 	return reflect.DeepEqual(t, typ)
+}
+
+// Copy deeply copies the receiver and returns the result.
+func (t Type) Copy() Type {
+	ctyp := Type{
+		Name:  t.Name,
+		Attrs: map[string]Attr{},
+		Rels:  map[string]Rel{},
+	}
+
+	for name, attr := range t.Attrs {
+		ctyp.Attrs[name] = attr
+	}
+
+	for name, rel := range t.Rels {
+		ctyp.Rels[name] = rel
+	}
+
+	ctyp.NewFunc = t.NewFunc
+
+	return ctyp
 }
 
 // Attr represents a resource attribute.
@@ -168,10 +197,12 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		v   interface{}
 		err error
 	)
+
 	switch a.Type {
 	case AttrTypeString:
 		var s string
 		err = json.Unmarshal(data, &s)
+
 		if a.Nullable {
 			v = &s
 		} else {
@@ -179,6 +210,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeInt:
 		v, err = strconv.Atoi(string(data))
+
 		if a.Nullable {
 			n := v.(int)
 			v = &n
@@ -187,6 +219,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeInt8:
 		v, err = strconv.Atoi(string(data))
+
 		if a.Nullable {
 			n := int8(v.(int))
 			v = &n
@@ -195,6 +228,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeInt16:
 		v, err = strconv.Atoi(string(data))
+
 		if a.Nullable {
 			n := int16(v.(int))
 			v = &n
@@ -203,6 +237,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeInt32:
 		v, err = strconv.Atoi(string(data))
+
 		if a.Nullable {
 			n := int32(v.(int))
 			v = &n
@@ -211,6 +246,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeInt64:
 		v, err = strconv.Atoi(string(data))
+
 		if a.Nullable {
 			n := int64(v.(int))
 			v = &n
@@ -219,6 +255,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeUint:
 		v, err = strconv.ParseUint(string(data), 10, 64)
+
 		if a.Nullable {
 			n := uint(v.(uint64))
 			v = &n
@@ -227,6 +264,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeUint8:
 		v, err = strconv.ParseUint(string(data), 10, 8)
+
 		if a.Nullable {
 			n := uint8(v.(uint64))
 			v = &n
@@ -235,6 +273,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeUint16:
 		v, err = strconv.ParseUint(string(data), 10, 16)
+
 		if a.Nullable {
 			n := uint16(v.(uint64))
 			v = &n
@@ -243,6 +282,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeUint32:
 		v, err = strconv.ParseUint(string(data), 10, 32)
+
 		if a.Nullable {
 			n := uint32(v.(uint64))
 			v = &n
@@ -251,6 +291,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		}
 	case AttrTypeUint64:
 		v, err = strconv.ParseUint(string(data), 10, 64)
+
 		if a.Nullable {
 			n := v.(uint64)
 			v = &n
@@ -264,7 +305,9 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else if string(data) != "false" {
 			err = errors.New("boolean is not true or false")
 		}
+
 		v = b
+
 		if a.Nullable {
 			v = &b
 		}
@@ -272,15 +315,18 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		var t time.Time
 		err = json.Unmarshal(data, &t)
 		v = t
+
 		if a.Nullable {
 			v = &t
 		}
 	case AttrTypeBytes:
 		s := make([]byte, len(data))
 		err := json.Unmarshal(data, &s)
+
 		if err != nil {
 			panic(err)
 		}
+
 		if a.Nullable {
 			v = &s
 		} else {
@@ -311,8 +357,8 @@ type Rel struct {
 	FromOne  bool
 }
 
-// Inverse returns the inverse relationship of r.
-func (r *Rel) Inverse() Rel {
+// Invert returns the inverse relationship of r.
+func (r *Rel) Invert() Rel {
 	return Rel{
 		FromType: r.ToType,
 		FromName: r.ToName,
@@ -330,19 +376,31 @@ func (r *Rel) Inverse() Rel {
 func (r *Rel) Normalize() Rel {
 	from := r.FromType + r.FromName
 	to := r.ToType + r.ToName
-	if from < to {
+
+	if from < to || r.ToName == "" {
 		return *r
 	}
-	return r.Inverse()
+
+	return r.Invert()
+}
+
+// String returns a string representation of the receiving Rel.
+//
+// The returned string only contains the type's name followed by the
+// relationship's name.
+func (r Rel) String() string {
+	return r.FromType + "_" + r.FromName
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
 // boolean that indicates whether the attribute can be null or not.
 func GetAttrType(t string) (int, bool) {
 	nullable := strings.HasPrefix(t, "*")
+
 	if nullable {
 		t = t[1:]
 	}
+
 	switch t {
 	case "string":
 		return AttrTypeString, nullable
@@ -377,11 +435,11 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString return the name of the attribute type specified by an int
-// (see constants) and a boolean that indicates whether the value can be null or
-// not.
+// GetAttrTypeString returns the name of the attribute type specified by t (see
+// constants) and nullable.
 func GetAttrTypeString(t int, nullable bool) string {
 	str := ""
+
 	switch t {
 	case AttrTypeString:
 		str = "string"
@@ -414,9 +472,11 @@ func GetAttrTypeString(t int, nullable bool) string {
 	default:
 		str = ""
 	}
+
 	if nullable {
 		return "*" + str
 	}
+
 	return str
 }
 
@@ -431,106 +491,100 @@ func GetZeroValue(t int, null bool) interface{} {
 			var np *string
 			return np
 		}
+
 		return ""
 	case AttrTypeInt:
 		if null {
 			var np *int
 			return np
 		}
+
 		return int(0)
 	case AttrTypeInt8:
 		if null {
 			var np *int8
 			return np
 		}
+
 		return int8(0)
 	case AttrTypeInt16:
 		if null {
 			var np *int16
 			return np
 		}
+
 		return int16(0)
 	case AttrTypeInt32:
 		if null {
 			var np *int32
 			return np
 		}
+
 		return int32(0)
 	case AttrTypeInt64:
 		if null {
 			var np *int64
 			return np
 		}
+
 		return int64(0)
 	case AttrTypeUint:
 		if null {
 			var np *uint
 			return np
 		}
+
 		return uint(0)
 	case AttrTypeUint8:
 		if null {
 			var np *uint8
 			return np
 		}
+
 		return uint8(0)
 	case AttrTypeUint16:
 		if null {
 			var np *uint16
 			return np
 		}
+
 		return uint16(0)
 	case AttrTypeUint32:
 		if null {
 			var np *uint32
 			return np
 		}
+
 		return uint32(0)
 	case AttrTypeUint64:
 		if null {
 			var np *uint64
 			return np
 		}
+
 		return uint64(0)
 	case AttrTypeBool:
 		if null {
 			var np *bool
 			return np
 		}
+
 		return false
 	case AttrTypeTime:
 		if null {
 			var np *time.Time
 			return np
 		}
+
 		return time.Time{}
 	case AttrTypeBytes:
 		if null {
 			var np *[]byte
 			return np
 		}
+
 		return []byte{}
 	default:
 		return nil
 	}
-}
-
-// CopyType deeply copies the given type and returns the result.
-func CopyType(typ Type) Type {
-	ctyp := Type{
-		Name:  typ.Name,
-		Attrs: map[string]Attr{},
-		Rels:  map[string]Rel{},
-	}
-
-	for name, attr := range typ.Attrs {
-		ctyp.Attrs[name] = attr
-	}
-	for name, rel := range typ.Rels {
-		ctyp.Rels[name] = rel
-	}
-
-	ctyp.NewFunc = typ.NewFunc
-
-	return ctyp
 }

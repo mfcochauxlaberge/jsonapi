@@ -215,6 +215,50 @@ func TestSimpleURL(t *testing.T) {
 				Include:      []string{},
 			},
 			expectedError: NewErrUnknownParameter("unknownparam"),
+		}, {
+			name: "filter query",
+			url: `
+				http://api.example.com/type/id/rel
+				?filter={
+					"f": "field",
+					"o": "=",
+					"v": "abc"
+				}
+			`,
+			expectedURL: SimpleURL{
+				Fragments: []string{"type", "id", "rel"},
+				Route:     "/type/:id/rel",
+
+				Fields: map[string][]string{},
+				Filter: &Filter{
+					Field: "field",
+					Op:    "=",
+					Val:   "abc",
+				},
+				SortingRules: []string{},
+				PageSize:     0,
+				PageNumber:   0,
+				Include:      []string{},
+			},
+			expectedError: nil,
+		}, {
+			name: "filter query",
+			url: `
+				http://api.example.com/type/id/rel
+				?filter={"thisis:invalid"}
+			`,
+			expectedURL: SimpleURL{
+				Fragments: []string{"type", "id", "rel"},
+				Route:     "/type/:id/rel",
+
+				Fields:       map[string][]string{},
+				Filter:       nil,
+				SortingRules: []string{},
+				PageSize:     0,
+				PageNumber:   0,
+				Include:      []string{},
+			},
+			expectedError: NewErrMalformedFilterParameter(`{"thisis:invalid"}`),
 		},
 	}
 

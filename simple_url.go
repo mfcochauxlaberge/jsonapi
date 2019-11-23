@@ -52,50 +52,59 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 		if strings.HasPrefix(name, "fields[") && strings.HasSuffix(name, "]") && len(name) > 8 {
 			// Fields
 			resType := name[7 : len(name)-1]
+
 			if len(values.Get(name)) > 0 {
 				sURL.Fields[resType] = parseCommaList(values.Get(name))
 			}
-		} else if name == "filter" {
-			var err error
-			if values.Get(name)[0] != '{' {
-				// It should be a label
-				err = json.Unmarshal([]byte("\""+values.Get(name)+"\""), &sURL.FilterLabel)
-			} else {
-				// It should be a JSON object
-				err = json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
-			}
-			if err != nil {
-				sURL.FilterLabel = ""
-				sURL.Filter = nil
-				return sURL, NewErrMalformedFilterParameter(values.Get(name))
-			}
-		} else if name == "sort" {
-			// Sort
-			for _, rules := range values[name] {
-				sURL.SortingRules = append(sURL.SortingRules, parseCommaList(rules)...)
-			}
-		} else if name == "page[size]" {
-			// Page size
-			size, err := strconv.ParseUint(values.Get(name), 10, 64)
-			if err != nil {
-				return sURL, NewErrInvalidPageSizeParameter(values.Get(name))
-			}
-			sURL.PageSize = uint(size)
-		} else if name == "page[number]" {
-			// Page number
-			num, err := strconv.ParseUint(values.Get(name), 10, 64)
-			if err != nil {
-				return sURL, NewErrInvalidPageNumberParameter(values.Get(name))
-			}
-			sURL.PageNumber = uint(num)
-		} else if name == "include" {
-			// Include
-			for _, include := range values[name] {
-				sURL.Include = append(sURL.Include, parseCommaList(include)...)
-			}
 		} else {
-			// Unkmown parameter
-			return sURL, NewErrUnknownParameter(name)
+			switch name {
+			case "filter":
+				var err error
+				if values.Get(name)[0] != '{' {
+					// It should be a label
+					err = json.Unmarshal([]byte("\""+values.Get(name)+"\""), &sURL.FilterLabel)
+				} else {
+					// It should be a JSON object
+					sURL.Filter = &Filter{}
+					err = json.Unmarshal([]byte(values.Get(name)), sURL.Filter)
+				}
+
+				if err != nil {
+					sURL.FilterLabel = ""
+					sURL.Filter = nil
+
+					return sURL, NewErrMalformedFilterParameter(values.Get(name))
+				}
+			case "sort":
+				// Sort
+				for _, rules := range values[name] {
+					sURL.SortingRules = append(sURL.SortingRules, parseCommaList(rules)...)
+				}
+			case "page[size]":
+				// Page size
+				size, err := strconv.ParseUint(values.Get(name), 10, 64)
+				if err != nil {
+					return sURL, NewErrInvalidPageSizeParameter(values.Get(name))
+				}
+
+				sURL.PageSize = uint(size)
+			case "page[number]":
+				// Page number
+				num, err := strconv.ParseUint(values.Get(name), 10, 64)
+				if err != nil {
+					return sURL, NewErrInvalidPageNumberParameter(values.Get(name))
+				}
+
+				sURL.PageNumber = uint(num)
+			case "include":
+				// Include
+				for _, include := range values[name] {
+					sURL.Include = append(sURL.Include, parseCommaList(include)...)
+				}
+			default:
+				// Unkmown parameter
+				return sURL, NewErrUnknownParameter(name)
+			}
 		}
 	}
 
@@ -156,11 +165,12 @@ func deduceRoute(path []string) string {
 	}
 
 	if len(path) >= 3 {
-		if path[2] == rel {
+		switch {
+		case path[2] == rel:
 			route += "/" + rel
-		} else if path[2] == meta {
+		case path[2] == meta:
 			route += "/" + meta
-		} else {
+		default:
 			route += "/" + path[2]
 		}
 	}
@@ -168,10 +178,8 @@ func deduceRoute(path []string) string {
 	if len(path) >= 4 {
 		if path[3] == meta {
 			route += "/" + meta
-		} else {
-			if path[2] == rel {
-				route += "/" + path[3]
-			}
+		} else if path[2] == rel {
+			route += "/" + path[3]
 		}
 	}
 

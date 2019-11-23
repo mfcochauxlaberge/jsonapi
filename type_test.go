@@ -24,6 +24,7 @@ func TestType(t *testing.T) {
 	}
 	err := typ.AddAttr(attr1)
 	assert.NoError(err)
+
 	rel1 := Rel{
 		FromName: "rel1",
 		ToType:   "type1",
@@ -59,6 +60,7 @@ func TestType(t *testing.T) {
 	assert.Error(err)
 }
 
+// TODO Add tests with attributes and relationships.
 func TestTypeEqual(t *testing.T) {
 	assert := assert.New(t)
 
@@ -85,8 +87,6 @@ func TestTypeEqual(t *testing.T) {
 		return &SoftResource{}
 	}
 	assert.True(typ1.Equal(typ2))
-
-	// TODO Add tests with attributes and relationships.
 }
 
 func TestTypeNewFunc(t *testing.T) {
@@ -183,6 +183,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 
 	// Invalid slide of bytes
 	attr.Type = AttrTypeBytes
+
 	assert.Panics(func() {
 		_, _ = attr.UnmarshalToType([]byte("invalid"))
 	})
@@ -198,7 +199,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	assert.Nil(val)
 }
 
-func TestInverseRel(t *testing.T) {
+func TestRelInvert(t *testing.T) {
 	assert := assert.New(t)
 
 	rel := Rel{
@@ -210,7 +211,7 @@ func TestInverseRel(t *testing.T) {
 		FromOne:  false,
 	}
 
-	invRel := rel.Inverse()
+	invRel := rel.Invert()
 
 	assert.Equal("rel2", invRel.FromName)
 	assert.Equal("type1", invRel.ToType)
@@ -250,6 +251,22 @@ func TestRelNormalize(t *testing.T) {
 	assert.Equal("type2", norm.ToType)
 	assert.Equal("rel2", norm.ToName)
 	assert.Equal(false, norm.FromOne)
+}
+
+func TestRelString(t *testing.T) {
+	assert := assert.New(t)
+
+	rel := Rel{
+		FromName: "rel2",
+		FromType: "type2",
+		ToOne:    false,
+		ToName:   "rel1",
+		ToType:   "type1",
+		FromOne:  true,
+	}
+
+	assert.Equal("type2_rel2", rel.String())
+	assert.Equal("type1_rel1", rel.Invert().String())
 }
 
 func TestGetAttrType(t *testing.T) {
@@ -471,7 +488,7 @@ func TestCopyType(t *testing.T) {
 	}
 
 	// Copy
-	typ2 := CopyType(typ1)
+	typ2 := typ1.Copy()
 
 	assert.Equal("type1", typ2.Name)
 	assert.Len(typ2.Attrs, 1)
