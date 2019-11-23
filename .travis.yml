@@ -10,17 +10,17 @@ env:
 
 stages:
   - lint
-    before_script:
-      - 'curl -sfL
-          https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
-          | sh -s v1.21.0'
-    script:
-      - ./bin/golangci-lint run
+    # before_script:
+    #   - 'curl -sfL
+    #       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
+    #       | sh -s v1.21.0'
+    # script:
+    #   - ./bin/golangci-lint run
   - test
-    script:
-      - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
-    after_script:
-      - bash <(curl -s https://codecov.io/bash)
+    # script:
+    #   - go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+    # after_script:
+    #   - bash <(curl -s https://codecov.io/bash)
 
 jobs:
   exclude:
