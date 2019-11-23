@@ -8,8 +8,12 @@ go:
 #   only:
 #     - master
 
-# env:
-#   - GO111MODULE=on
+env:
+  - GO111MODULE=on
+
+stages:
+  - lint
+  - test
 
 before_script:
   - 'curl -sfL
