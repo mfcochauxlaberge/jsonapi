@@ -17,7 +17,7 @@ stages:
     # script:
     #   - ./bin/golangci-lint run
   - test
-    - script: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+    # - script: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
     # after_script:
     #   - bash <(curl -s https://codecov.io/bash)
 
