@@ -9,7 +9,6 @@ env:
 
 stages:
   - lint
-      - script: echo "LINTING!"
   - test
 
 jobs:
