@@ -169,7 +169,7 @@ sr := SoftResource{}
 sr.AddAttr(Attr{
   Name: "attr",
   Type: AttrTypeInt,
-  Null: false,
+  Nullable: false,
 })
 fmt.Println(sr.Get("attr")) // Output: 0
 ```
