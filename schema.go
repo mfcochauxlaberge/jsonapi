@@ -103,7 +103,7 @@ func (s *Schema) RemoveRel(typ string, rel string) {
 func (s *Schema) Rels() []Rel {
 	s.buildRels()
 
-	rels := make([]Rel, len(s.rels))
+	rels := make([]Rel, 0, len(s.rels))
 	for _, rel := range s.rels {
 		rels = append(rels, rel)
 	}
