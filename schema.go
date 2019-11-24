@@ -117,8 +117,8 @@ func (s *Schema) Rels() []Rel {
 	return rels
 }
 
-// HasType returns a boolean indicating whether a type has the specified
-// name or not.
+// HasType returns a boolean indicating whether a type has the specified name or
+// not.
 func (s *Schema) HasType(name string) bool {
 	for i := range s.Types {
 		if s.Types[i].Name == name {
