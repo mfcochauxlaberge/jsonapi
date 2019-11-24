@@ -2,6 +2,7 @@ package examples_test
 
 import (
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/mfcochauxlaberge/jsonapi"
@@ -11,8 +12,64 @@ func ExampleSchema() {
 	// A schema holds a list of types.
 	schema := &jsonapi.Schema{}
 
+	// A type holds information about a type, like its name,
+	// attributes, and relationships.
+	comments := jsonapi.Type{
+		Name: "comments",
+	}
+
+	// Attributes can be added.
+	comments.AddAttr(jsonapi.Attr{
+		Name:     "content",
+		Type:     jsonapi.AttrTypeString,
+		Nullable: false,
+	})
+
+	// Relationships can be added.
+	comments.AddRel(jsonapi.Rel{
+		FromType: "comments",
+		FromName: "author",
+		ToOne:    true,
+		ToType:   "users",
+		ToName:   "comments",
+		FromOne:  false,
+	})
+	comments.AddRel(jsonapi.Rel{
+		FromType: "comments",
+		FromName: "article",
+		ToOne:    true,
+		ToType:   "articles",
+		ToName:   "comments",
+		FromOne:  false,
+	})
+
+	// Finally, the type is added to the schema. But it can
+	// still be modified after.
+	schema.AddType(comments)
+
+	// Here, types are built from structs and added.
 	schema.AddType(jsonapi.MustBuildType(User{}))
 	schema.AddType(jsonapi.MustBuildType(Article{}))
+
+	// Since a comments type was added dynamically, the two types
+	// added above to not contain the necessary relationships, but
+	// they can be added.
+	schema.AddRel("users", jsonapi.Rel{
+		FromType: "users",
+		FromName: "comments",
+		ToOne:    false,
+		ToType:   "comments",
+		ToName:   "author",
+		FromOne:  true,
+	})
+	schema.AddRel("articles", jsonapi.Rel{
+		FromType: "articles",
+		FromName: "comments",
+		ToOne:    false,
+		ToType:   "comments",
+		ToName:   "article",
+		FromOne:  true,
+	})
 
 	// A schema can be checked. Some validation is performed
 	// like checking the names and making sure relationships
@@ -23,14 +80,26 @@ func ExampleSchema() {
 	// can behave unexpectedly.
 	_ = schema.Check()
 
-	// Useful methods are offered, like HasType.
-	has := schema.HasType("users")
-	fmt.Println(has)
-	// Output: true
+	// This schema contains 0 errors and three types.
+	out := []string{
+		fmt.Sprint(len(schema.Check())), // 0
+	}
+	for _, typ := range schema.Types {
+		out = append(out, typ.Name)
+	}
+	sort.Strings(out)
+	for _, name := range out {
+		fmt.Println(name)
+	}
+	// Output:
+	// 0
+	// articles
+	// comments
+	// users
 }
 
 // The following structs are defined and used in this file, but they are also
-// used in other example.
+// used in other examples.
 
 type User struct {
 	// The ID field is mandatory and the api tag sets the type name.
@@ -59,5 +128,5 @@ type Article struct {
 	CreratedAt time.Time `json:"created-at" api:"attr"`
 
 	// Relationships
-	Author string `json:"author" api:"rel,author,articles"`
+	Author string `json:"author" api:"rel,users,articles"`
 }
