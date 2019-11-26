@@ -12,7 +12,7 @@
   </a>
   <br>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
-    <img src="https://img.shields.io/badge/go%20version-go1.11%2B-red">
+    <img src="https://img.shields.io/badge/go%20version-1.11%2B-%2300acd7">
   </a>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
     <img src="https://img.shields.io/github/v/release/mfcochauxlaberge/jsonapi?include_prereleases&sort=semver">
