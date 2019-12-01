@@ -52,7 +52,9 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 		}
 	}
 
-	mapPl["attributes"] = attrs
+	if len(attrs) > 0 {
+		mapPl["attributes"] = attrs
+	}
 
 	// Relationships
 	rels := map[string]*json.RawMessage{}
@@ -120,7 +122,9 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 		}
 	}
 
-	mapPl["relationships"] = rels
+	if len(rels) > 0 {
+		mapPl["relationships"] = rels
+	}
 
 	// Links
 	mapPl["links"] = map[string]string{
