@@ -127,7 +127,7 @@ func TestWrapper(t *testing.T) {
 	aTime := time.Date(2018, 2, 3, 4, 5, 6, 7, loc)
 
 	// Set the values (attributes) after the wrapping
-	res2 := &mockType2{
+	res2 := mockType2{
 		ID:        "res123",
 		StrPtr:    &aStr,
 		IntPtr:    &aInt,
@@ -154,7 +154,7 @@ func TestWrapper(t *testing.T) {
 	assert.Equal(typ, wrap2.GetType().Name, "GetType 2")
 
 	// Get values (attributes)
-	v2 := reflect.ValueOf(res2).Elem()
+	v2 := reflect.ValueOf(res2)
 	for i := 0; i < v2.NumField(); i++ {
 		f := v2.Field(i)
 		sf := v2.Type().Field(i)
