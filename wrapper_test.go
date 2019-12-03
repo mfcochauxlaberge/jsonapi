@@ -67,6 +67,8 @@ func TestWrapper(t *testing.T) {
 	id, typ := wrap1.IDAndType()
 	assert.Equal(res1.ID, id, "id")
 	assert.Equal("mocktypes1", typ, "type")
+	assert.Equal(id, wrap1.GetID(), "GetID()")
+	assert.Equal(typ, wrap1.GetType().Name, "GetType")
 
 	wrap1.SetID("another-id")
 	assert.Equal(res1.ID, "another-id", "set id")
@@ -148,6 +150,8 @@ func TestWrapper(t *testing.T) {
 	id, typ = wrap2.IDAndType()
 	assert.Equal(res2.ID, id, "id 2")
 	assert.Equal("mocktypes2", typ, "type 2")
+	assert.Equal(id, wrap2.GetID(), "GetID() 2")
+	assert.Equal(typ, wrap2.GetType().Name, "GetType 2")
 
 	// Get values (attributes)
 	v2 := reflect.ValueOf(res2).Elem()
