@@ -498,9 +498,6 @@ func TestUnmarshalDocument(t *testing.T) {
 				payload:  `{"data":[{"id":true}]}`,
 				expected: "400 Bad Request: The provided JSON body could not be read.",
 			}, {
-				payload:  `{"jsonapi":{"key":"data/errors missing"}}`,
-				expected: "400 Bad Request: Missing data top-level member in payload.",
-			}, {
 				payload: `{"data":null,"included":[{"id":true}]}`,
 				expected: "json: " +
 					"cannot unmarshal bool into Go struct field Identifier.id of type string",

@@ -217,8 +217,6 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 		}
 	case len(ske.Errors) > 0:
 		doc.Errors = ske.Errors
-	default:
-		return nil, NewErrMissingDataMember()
 	}
 
 	// Included
@@ -247,6 +245,10 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 
 	// Meta
 	doc.Meta = ske.Meta
+
+	// TODO Return an error if there is no data (not even
+	// null), no errors, and no meta. The JSON:API specification
+	// considers this invalid.
 
 	return doc, nil
 }
