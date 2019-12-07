@@ -167,8 +167,8 @@ A SoftResource is a struct whose type (name, attributes, and relationships) can 
 ```go
 sr := SoftResource{}
 sr.AddAttr(Attr{
-  Name: "attr",
-  Type: AttrTypeInt,
+  Name:     "attr",
+  Type:     AttrTypeInt,
   Nullable: false,
 })
 fmt.Println(sr.Get("attr")) // Output: 0
