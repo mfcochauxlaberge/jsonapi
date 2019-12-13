@@ -221,16 +221,13 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 
 	// Included
 	if len(ske.Included) > 0 {
-		inc := Identifier{}
-		incs := []Identifier{}
+		incs := make([]Identifier, len(ske.Included))
 
-		for _, rawInc := range ske.Included {
-			err = json.Unmarshal(rawInc, &inc)
+		for i, rawInc := range ske.Included {
+			err = json.Unmarshal(rawInc, &incs[i])
 			if err != nil {
 				return nil, err
 			}
-
-			incs = append(incs, inc)
 		}
 
 		for i := range incs {

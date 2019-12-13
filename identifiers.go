@@ -23,10 +23,10 @@ type Identifiers []Identifier
 
 // IDs returns the IDs part of the Identifiers.
 func (i Identifiers) IDs() []string {
-	ids := []string{}
+	ids := make([]string, len(i))
 
-	for _, id := range i {
-		ids = append(ids, id.ID)
+	for n := range i {
+		ids[n] = i[n].ID
 	}
 
 	return ids
