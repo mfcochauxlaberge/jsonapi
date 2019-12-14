@@ -65,7 +65,7 @@ A few tasks are required before committing to the current API:
    * Use the new tools introduced in Go 1.13.
  * Gather feedback from users
    * The library should be used more on real projects to see of the API is convenient.
-   * It is currently used by [mfcochauxlaberge/karigo](https://github.com/mfcochauxlaberge/karigo).
+   * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
