@@ -124,7 +124,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 
 	// Links
 	mapPl["links"] = map[string]string{
-		"self": buildSelfLink(r, prepath), // TODO
+		"self": buildSelfLink(r, prepath),
 	}
 
 	// NOTE An error should not happen.
