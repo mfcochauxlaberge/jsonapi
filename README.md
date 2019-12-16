@@ -186,4 +186,4 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 
 Check out the [documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
 
-The best way to learn how to use it is to look at documentation, the examples,.and the code itself.
+The best way to learn how to use it is to look at documentation, the examples, and the code itself.
