@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"flag"
+	"testing"
 	"time"
 )
 
@@ -39,4 +40,8 @@ type mocktype struct {
 	ToX      []string `json:"to-x" api:"rel,mocktype"`
 	ToXFrom1 []string `json:"to-x-from-1" api:"rel,mocktype,to-1-from-x"`
 	ToXFromX []string `json:"to-x-from-x" api:"rel,mocktype,to-x-from-x"`
+}
+
+func BenchmarkMarshalDocument(b *testing.B) {
+
 }
