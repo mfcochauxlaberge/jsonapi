@@ -263,3 +263,8 @@ func (sr *SoftResource) check() {
 		}
 	}
 }
+
+func copyData(d map[string]interface{}) map[string]interface{} {
+	// TODO Implement this.
+	return nil
+}
