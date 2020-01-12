@@ -384,12 +384,18 @@ func (r *Rel) Normalize() Rel {
 	return r.Invert()
 }
 
-// String returns a string representation of the receiving Rel.
+// String builds and returns the name of the receiving Rel.
 //
-// The returned string only contains the type's name followed by the
-// relationship's name.
+// r.Normalize is always called.
 func (r Rel) String() string {
-	return r.FromType + "_" + r.FromName
+	r = r.Normalize()
+
+	id := r.FromType + "_" + r.FromName
+	if r.ToName != "" {
+		id += "_" + r.ToType + "_" + r.ToName
+	}
+
+	return id
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
