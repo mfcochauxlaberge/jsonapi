@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
 
@@ -144,10 +145,6 @@ func TestSoftResource(t *testing.T) {
 	sr.Set("nullable-str", nil)
 	assert.Nil(t, sr.Get("nullable-str"))
 	assert.Equal(t, (*string)(nil), sr.Get("nullable-str"))
-
-	// Copy
-	sr2 := sr.Copy()
-	assert.Equal(t, true, Equal(sr, sr2))
 }
 
 func TestSoftResourceNew(t *testing.T) {
@@ -168,4 +165,82 @@ func TestSoftResourceNew(t *testing.T) {
 	assert.Equal("", nsr.GetID())
 	assert.Equal("", nsr.Get("str"))
 	assert.Equal(0, nsr.Get("int"))
+}
+
+func TestSoftResourceCopy(t *testing.T) {
+	assert := assert.New(t)
+
+	now, _ := time.Parse(time.RFC3339, "2019-11-19T23:17:01-05:00")
+
+	sr := &SoftResource{}
+
+	// Attributes
+	attrs := map[string]interface{}{
+		"string":     "abc",
+		"int":        42,
+		"int8":       8,
+		"int16":      16,
+		"int32":      32,
+		"int64":      64,
+		"uint":       42,
+		"uint8":      8,
+		"uint16":     16,
+		"uint32":     32,
+		"uint64":     64,
+		"bool":       true,
+		"time.Time":  now,
+		"[]uint8":    []byte{'a', 'b', 'c'},
+		"*string":    ptr("abc"),
+		"*int":       ptr(42),
+		"*int8":      ptr(8),
+		"*int16":     ptr(16),
+		"*int32":     ptr(32),
+		"*int64":     ptr(64),
+		"*uint":      ptr(42),
+		"*uint8":     ptr(8),
+		"*uint16":    ptr(16),
+		"*uint32":    ptr(32),
+		"*uint64":    ptr(64),
+		"*bool":      ptr(true),
+		"*time.Time": ptr(now),
+		"*[]uint8":   ptr([]byte{'a', 'b', 'c'}),
+	}
+
+	for t, v := range attrs {
+		typ, null := GetAttrType(t)
+
+		sr.AddAttr(Attr{
+			Name:     t,
+			Type:     typ,
+			Nullable: null,
+		})
+
+		sr.Set(t, v)
+	}
+
+	// Special cases
+	sr.AddAttr(Attr{
+		Name:     "nil-*[]byte",
+		Type:     AttrTypeBytes,
+		Nullable: true,
+	})
+
+	sr.Set("nil-*[]byte", (*[]byte)(nil))
+
+	// Relationships
+	sr.AddRel(Rel{
+		FromName: "to-one",
+		ToOne:    true,
+	})
+	sr.SetToOne("to-one", "id1")
+
+	sr.AddRel(Rel{
+		FromName: "to-many",
+		ToOne:    false,
+	})
+	sr.SetToMany("to-many", []string{"id2", "id3"})
+
+	// Copy
+	sr2 := sr.Copy()
+	assert.Equal(true, Equal(sr, sr2))
 }

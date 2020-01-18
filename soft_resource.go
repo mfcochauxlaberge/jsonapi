@@ -303,82 +303,30 @@ func copyData(d map[string]interface{}) map[string]interface{} {
 			_ = copy(nv, v2)
 			d2[k] = v2
 		case *string:
-			if v2 == nil {
-				d2[k] = (*string)(nil)
-			}
-
 			d2[k] = v2
 		case *int:
-			if v2 == nil {
-				d2[k] = (*int)(nil)
-			}
-
 			d2[k] = v2
 		case *int8:
-			if v2 == nil {
-				d2[k] = (*int8)(nil)
-			}
-
 			d2[k] = v2
 		case *int16:
-			if v2 == nil {
-				d2[k] = (*int16)(nil)
-			}
-
 			d2[k] = v2
 		case *int32:
-			if v2 == nil {
-				d2[k] = (*int32)(nil)
-			}
-
 			d2[k] = v2
 		case *int64:
-			if v2 == nil {
-				d2[k] = (*int64)(nil)
-			}
-
 			d2[k] = v2
 		case *uint:
-			if v2 == nil {
-				d2[k] = (*uint)(nil)
-			}
-
 			d2[k] = v2
 		case *uint8:
-			if v2 == nil {
-				d2[k] = (*uint8)(nil)
-			}
-
 			d2[k] = v2
 		case *uint16:
-			if v2 == nil {
-				d2[k] = (*uint16)(nil)
-			}
-
 			d2[k] = v2
 		case *uint32:
-			if v2 == nil {
-				d2[k] = (*uint32)(nil)
-			}
-
 			d2[k] = v2
 		case *uint64:
-			if v2 == nil {
-				d2[k] = (*uint64)(nil)
-			}
-
 			d2[k] = v2
 		case *bool:
-			if v2 == nil {
-				d2[k] = (*bool)(nil)
-			}
-
 			d2[k] = v2
 		case *time.Time:
-			if v2 == nil {
-				d2[k] = (*time.Time)(nil)
-			}
-
 			d2[k] = v2
 		case *[]uint8:
 			if v2 == nil {
