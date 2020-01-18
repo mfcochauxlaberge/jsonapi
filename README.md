@@ -65,7 +65,7 @@ A few tasks are required before committing to the current API:
    * Use the new tools introduced in Go 1.13.
  * Gather feedback from users
    * The library should be used more on real projects to see of the API is convenient.
-   * It is currently used by [mfcochauxlaberge/karigo](https://github.com/mfcochauxlaberge/karigo).
+   * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
@@ -167,8 +167,8 @@ A SoftResource is a struct whose type (name, attributes, and relationships) can 
 ```go
 sr := SoftResource{}
 sr.AddAttr(Attr{
-  Name: "attr",
-  Type: AttrTypeInt,
+  Name:     "attr",
+  Type:     AttrTypeInt,
   Nullable: false,
 })
 fmt.Println(sr.Get("attr")) // Output: 0
@@ -186,4 +186,4 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 
 Check out the [documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
 
-The best way to learn how to use it is to look at the source code and its comments.
+The best way to learn how to use it is to look at documentation, the examples, and the code itself.

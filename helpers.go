@@ -178,8 +178,9 @@ func BuildType(v interface{}) (Type, error) {
 	return typ, nil
 }
 
-// MustBuildType calls BuildType and returns the result, except that it panics
-// if the error is not nil.
+// MustBuildType calls BuildType and returns the result.
+//
+// It panics if the error returned by BuildType is not nil.
 func MustBuildType(v interface{}) Type {
 	typ, err := BuildType(v)
 	if err != nil {

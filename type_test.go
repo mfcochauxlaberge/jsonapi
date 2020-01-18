@@ -265,8 +265,8 @@ func TestRelString(t *testing.T) {
 		FromOne:  true,
 	}
 
-	assert.Equal("type2_rel2", rel.String())
-	assert.Equal("type1_rel1", rel.Invert().String())
+	assert.Equal("type1_rel1_type2_rel2", rel.String())
+	assert.Equal("type1_rel1_type2_rel2", rel.Invert().String())
 }
 
 func TestGetAttrType(t *testing.T) {

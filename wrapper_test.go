@@ -179,14 +179,14 @@ func TestWrapper(t *testing.T) {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
 		// way. If the nil check fails, then the next line will fail too.
-		assert.Equal(t, "nil pointer", nil, wrap2.Get("uintptr"))
+		assert.Equal("nil pointer", nil, wrap2.Get("uintptr"))
 	}
 
 	if res2.UintPtr != nil {
 		// We first do a != nil check because that's what we are really
 		// checking and reflect.DeepEqual doesn't work exactly work the same
 		// way. If the nil check fails, then the next line will fail too.
-		assert.Equal(t, "nil pointer 2", nil, res2.UintPtr)
+		assert.Equal("nil pointer 2", nil, res2.UintPtr)
 	}
 
 	// New

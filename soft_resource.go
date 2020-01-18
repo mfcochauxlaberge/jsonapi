@@ -85,8 +85,10 @@ func (sr *SoftResource) Rel(key string) Rel {
 func (sr *SoftResource) New() Resource {
 	sr.check()
 
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 	}
 }
 
@@ -186,8 +188,10 @@ func (sr *SoftResource) SetToMany(key string, v []string) {
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 		id:   sr.id,
 		data: copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
 	}
