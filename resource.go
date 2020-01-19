@@ -322,9 +322,9 @@ func Equal(r1, r2 Resource) bool {
 	for i, attr1 := range r1Attrs {
 		attr2 := r2Attrs[i]
 		if !reflect.DeepEqual(r1.Get(attr1.Name), r2.Get(attr2.Name)) {
-			// TODO Fix the following condition one day, there should be a better
-			// way to do this. Basically, all nils (nil pointer, nil slice, etc)
-			// should be considered equal to a nil empty interface.
+			// TODO Fix the following condition one day. Basically, all
+			// nils (nil pointer, nil slice, etc) should be considered
+			// equal to a nil empty interface.
 			if fmt.Sprintf("%v", r1.Get(attr1.Name)) == "<nil>" &&
 				fmt.Sprintf("%v", r2.Get(attr1.Name)) == "<nil>" {
 				continue
