@@ -49,8 +49,10 @@ func (e Error) Error() string {
 		switch {
 		case e.Detail != "":
 			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Detail)
+
 		case e.Title != "":
 			return fmt.Sprintf("%s %s: %s", e.Status, fullName, e.Title)
+
 		default:
 			return fmt.Sprintf("%s %s", e.Status, fullName)
 		}

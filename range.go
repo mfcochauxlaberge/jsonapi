@@ -121,6 +121,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case int:
 			v2 := v2.(int)
 			if v == v2 {
@@ -128,6 +129,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case int8:
 			v2 := v2.(int8)
 			if v == v2 {
@@ -135,6 +137,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case int16:
 			v2 := v2.(int16)
 			if v == v2 {
@@ -142,6 +145,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case int32:
 			v2 := v2.(int32)
 			if v == v2 {
@@ -149,6 +153,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case int64:
 			v2 := v2.(int64)
 			if v == v2 {
@@ -156,6 +161,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case uint:
 			v2 := v2.(uint)
 			if v == v2 {
@@ -163,6 +169,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case uint8:
 			v2 := v2.(uint8)
 			if v == v2 {
@@ -170,6 +177,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case uint16:
 			v2 := v2.(uint16)
 			if v == v2 {
@@ -177,6 +185,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case uint32:
 			v2 := v2.(uint32)
 			if v == v2 {
@@ -184,6 +193,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return v < v2 != inverse
+
 		case bool:
 			v2 := v2.(bool)
 			if v == v2 {
@@ -191,12 +201,14 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return !v != inverse
+
 		case time.Time:
 			if v.Equal(v2.(time.Time)) {
 				continue
 			}
 
 			return v.Before(v2.(time.Time)) != inverse
+
 		case []byte:
 			s2 := v2.([]byte)
 			for i := 0; i < len(v) && i < len(s2); i++ {
@@ -212,6 +224,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return len(v) < len(s2) != inverse
+
 		case *string:
 			v2 := v2.(*string)
 			if v == v2 {
@@ -231,6 +244,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *int:
 			v2 := v2.(*int)
 			if v == v2 {
@@ -250,6 +264,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *int8:
 			v2 := v2.(*int8)
 			if v == v2 {
@@ -269,6 +284,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *int16:
 			v2 := v2.(*int16)
 			if v == v2 {
@@ -288,6 +304,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *int32:
 			v2 := v2.(*int32)
 			if v == v2 {
@@ -307,6 +324,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *int64:
 			v2 := v2.(*int64)
 			if v == v2 {
@@ -326,6 +344,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *uint:
 			v2 := v2.(*uint)
 			if v == v2 {
@@ -345,6 +364,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *uint8:
 			v2 := v2.(*uint8)
 			if v == v2 {
@@ -364,6 +384,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *uint16:
 			v2 := v2.(*uint16)
 			if v == v2 {
@@ -383,6 +404,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *uint32:
 			v2 := v2.(*uint32)
 			if v == v2 {
@@ -402,6 +424,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return *v < *v2 != inverse
+
 		case *bool:
 			v2 := v2.(*bool)
 			if v == v2 {
@@ -421,6 +444,7 @@ func (s sortedResources) Less(i, j int) bool {
 			}
 
 			return !*v != inverse
+
 		case *time.Time:
 			v2 := v2.(*time.Time)
 			if v == v2 {

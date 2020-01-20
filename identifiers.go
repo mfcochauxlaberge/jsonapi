@@ -57,8 +57,10 @@ func UnmarshalIdentifier(payload []byte, schema *Schema) (Identifier, error) {
 	switch {
 	case iden.ID == "":
 		return Identifier{}, errors.New("identifier has no ID")
+
 	case iden.Type == "":
 		return Identifier{}, errors.New("identifier has no type")
+
 	case schema != nil && !schema.HasType(iden.Type):
 		return Identifier{}, fmt.Errorf("type %q is unknown", iden.Type)
 	}

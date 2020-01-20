@@ -208,6 +208,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = s
 		}
+
 	case AttrTypeInt:
 		v, err = strconv.Atoi(string(data))
 
@@ -217,6 +218,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = v.(int)
 		}
+
 	case AttrTypeInt8:
 		v, err = strconv.Atoi(string(data))
 
@@ -226,6 +228,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = int8(v.(int))
 		}
+
 	case AttrTypeInt16:
 		v, err = strconv.Atoi(string(data))
 
@@ -235,6 +238,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = int16(v.(int))
 		}
+
 	case AttrTypeInt32:
 		v, err = strconv.Atoi(string(data))
 
@@ -244,6 +248,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = int32(v.(int))
 		}
+
 	case AttrTypeInt64:
 		v, err = strconv.Atoi(string(data))
 
@@ -253,6 +258,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = int64(v.(int))
 		}
+
 	case AttrTypeUint:
 		v, err = strconv.ParseUint(string(data), 10, 64)
 
@@ -262,6 +268,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = uint(v.(uint64))
 		}
+
 	case AttrTypeUint8:
 		v, err = strconv.ParseUint(string(data), 10, 8)
 
@@ -271,6 +278,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = uint8(v.(uint64))
 		}
+
 	case AttrTypeUint16:
 		v, err = strconv.ParseUint(string(data), 10, 16)
 
@@ -280,6 +288,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = uint16(v.(uint64))
 		}
+
 	case AttrTypeUint32:
 		v, err = strconv.ParseUint(string(data), 10, 32)
 
@@ -289,6 +298,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = uint32(v.(uint64))
 		}
+
 	case AttrTypeUint64:
 		v, err = strconv.ParseUint(string(data), 10, 64)
 
@@ -298,6 +308,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		} else {
 			v = v.(uint64)
 		}
+
 	case AttrTypeBool:
 		var b bool
 		if string(data) == "true" {
@@ -311,6 +322,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		if a.Nullable {
 			v = &b
 		}
+
 	case AttrTypeTime:
 		var t time.Time
 		err = json.Unmarshal(data, &t)
@@ -319,6 +331,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		if a.Nullable {
 			v = &t
 		}
+
 	case AttrTypeBytes:
 		s := make([]byte, len(data))
 		err := json.Unmarshal(data, &s)
@@ -410,30 +423,43 @@ func GetAttrType(t string) (int, bool) {
 	switch t {
 	case "string":
 		return AttrTypeString, nullable
+
 	case "int":
 		return AttrTypeInt, nullable
+
 	case "int8":
 		return AttrTypeInt8, nullable
+
 	case "int16":
 		return AttrTypeInt16, nullable
+
 	case "int32":
 		return AttrTypeInt32, nullable
+
 	case "int64":
 		return AttrTypeInt64, nullable
+
 	case "uint":
 		return AttrTypeUint, nullable
+
 	case "uint8":
 		return AttrTypeUint8, nullable
+
 	case "uint16":
 		return AttrTypeUint16, nullable
+
 	case "uint32":
 		return AttrTypeUint32, nullable
+
 	case "uint64":
 		return AttrTypeUint64, nullable
+
 	case "bool":
 		return AttrTypeBool, nullable
+
 	case "time.Time":
 		return AttrTypeTime, nullable
+
 	case "[]uint8":
 		return AttrTypeBytes, nullable
 	default:
@@ -449,32 +475,46 @@ func GetAttrTypeString(t int, nullable bool) string {
 	switch t {
 	case AttrTypeString:
 		str = "string"
+
 	case AttrTypeInt:
 		str = "int"
+
 	case AttrTypeInt8:
 		str = "int8"
+
 	case AttrTypeInt16:
 		str = "int16"
+
 	case AttrTypeInt32:
 		str = "int32"
+
 	case AttrTypeInt64:
 		str = "int64"
+
 	case AttrTypeUint:
 		str = "uint"
+
 	case AttrTypeUint8:
 		str = "uint8"
+
 	case AttrTypeUint16:
 		str = "uint16"
+
 	case AttrTypeUint32:
 		str = "uint32"
+
 	case AttrTypeUint64:
 		str = "uint64"
+
 	case AttrTypeBool:
 		str = "bool"
+
 	case AttrTypeTime:
 		str = "time.Time"
+
 	case AttrTypeBytes:
 		str = "[]uint8"
+
 	default:
 		str = ""
 	}
@@ -498,84 +538,98 @@ func GetZeroValue(t int, nullable bool) interface{} {
 		}
 
 		return ""
+
 	case AttrTypeInt:
 		if nullable {
 			return (*int)(nil)
 		}
 
 		return int(0)
+
 	case AttrTypeInt8:
 		if nullable {
 			return (*int8)(nil)
 		}
 
 		return int8(0)
+
 	case AttrTypeInt16:
 		if nullable {
 			return (*int16)(nil)
 		}
 
 		return int16(0)
+
 	case AttrTypeInt32:
 		if nullable {
 			return (*int32)(nil)
 		}
 
 		return int32(0)
+
 	case AttrTypeInt64:
 		if nullable {
 			return (*int64)(nil)
 		}
 
 		return int64(0)
+
 	case AttrTypeUint:
 		if nullable {
 			return (*uint)(nil)
 		}
 
 		return uint(0)
+
 	case AttrTypeUint8:
 		if nullable {
 			return (*uint8)(nil)
 		}
 
 		return uint8(0)
+
 	case AttrTypeUint16:
 		if nullable {
 			return (*uint16)(nil)
 		}
 
 		return uint16(0)
+
 	case AttrTypeUint32:
 		if nullable {
 			return (*uint32)(nil)
 		}
 
 		return uint32(0)
+
 	case AttrTypeUint64:
 		if nullable {
 			return (*uint64)(nil)
 		}
 
 		return uint64(0)
+
 	case AttrTypeBool:
 		if nullable {
 			return (*bool)(nil)
 		}
 
 		return false
+
 	case AttrTypeTime:
 		if nullable {
 			return (*time.Time)(nil)
 		}
 
 		return time.Time{}
+
 	case AttrTypeBytes:
 		if nullable {
 			return (*[]byte)(nil)
 		}
 
 		return []byte{}
+
 	default:
 		return nil
 	}

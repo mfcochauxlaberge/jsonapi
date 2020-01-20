@@ -89,6 +89,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 			url.Params.Fields[d.GetType().Name],
 			doc.RelData,
 		)
+
 	case Collection:
 		data = MarshalCollection(
 			d,
@@ -96,11 +97,13 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 			url.Params.Fields,
 			doc.RelData,
 		)
+
 	case Identifier:
 		data, err = json.Marshal(d)
 
 	case Identifiers:
 		data, err = json.Marshal(d)
+
 	default:
 		if doc.Data != nil {
 			err = errors.New("data contains an unknown type")
