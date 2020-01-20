@@ -165,21 +165,21 @@ func (sr *SoftResource) GetToMany(key string) []string {
 	return []string{}
 }
 
-// SetToOne sets the relationship named after key to rel.
-func (sr *SoftResource) SetToOne(key string, v string) {
+// SetToOne sets the relationship named after key to id.
+func (sr *SoftResource) SetToOne(key string, id string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = id
 	}
 }
 
-// SetToMany sets the relationship named after key to rel.
-func (sr *SoftResource) SetToMany(key string, v []string) {
+// SetToMany sets the relationship named after key to ids.
+func (sr *SoftResource) SetToMany(key string, ids []string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = ids
 	}
 }
 
