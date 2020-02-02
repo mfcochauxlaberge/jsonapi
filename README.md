@@ -35,19 +35,19 @@ The official JSON:API specification can be found at [jsonapi.org/format](http://
 
 jsonapi offers the following features:
 
- * Marshaling and unmarshaling of JSON:API URLs and documents
- * Structs for handling URLs, documents, resources, collections...
- * Schema management
-   * It can ensure relationships between types make sense.
-   * Very useful for validation when marshaling and unmarshaling.
- * Utilities for pagination, sorting, and filtering
-   * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
- * In-memory data store (`SoftCollection`)
-   * It can store resources (anything that implements `Resource`).
-   * It can sort, filter, retrieve pages, etc.
-   * Enough to build a demo API or use in test suites.
-   * Not made for production use.
- * Other useful helpers
+* Marshaling and unmarshaling of JSON:API URLs and documents
+* Structs for handling URLs, documents, resources, collections...
+* Schema management
+  * It can ensure relationships between types make sense.
+  * Very useful for validation when marshaling and unmarshaling.
+* Utilities for pagination, sorting, and filtering
+  * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
+* In-memory data store (`SoftCollection`)
+  * It can store resources (anything that implements `Resource`).
+  * It can sort, filter, retrieve pages, etc.
+  * Enough to build a demo API or use in test suites.
+  * Not made for production use.
+* Other useful helpers
 
 ## State
 
@@ -61,11 +61,11 @@ While anything can happen before a v1 release, the API is stable and no big chan
 
 A few tasks are required before committing to the current API:
 
- * Rethink how errors are handled
-   * Use the new tools introduced in Go 1.13.
- * Gather feedback from users
-   * The library should be used more on real projects to see of the API is convenient.
-   * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
+* Rethink how errors are handled
+  * Use the new tools introduced in Go 1.13.
+* Gather feedback from users
+  * The library should be used more on real projects to see of the API is convenient.
+  * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
