@@ -20,8 +20,8 @@
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/mfcochauxlaberge/jsonapi?color=a33">
   </a>
-  <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
-    <img src="https://godoc.org/github.com/golang/gddo?status.svg">
+  <a href="https://pkg.go.dev/github.com/mfcochauxlaberge/jsonapi?tab=doc">
+    <img src="https://img.shields.io/static/v1?label=doc&message=pkg.go.dev&color=007d9c">
   </a>
 </div>
 
@@ -184,6 +184,6 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 
 ## Documentation
 
-Check out the [documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
+Check out the [documentation](https://pkg.go.dev/github.com/mfcochauxlaberge/jsonapi?tab=doc).
 
 The best way to learn how to use it is to look at documentation, the examples, and the code itself.
