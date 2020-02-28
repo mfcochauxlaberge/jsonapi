@@ -2,8 +2,7 @@ package jsonapi
 
 import (
 	"fmt"
-
-	"github.com/mitchellh/copystructure"
+	"time"
 )
 
 // SoftResource represents a resource whose type is defined by an internal field
@@ -85,8 +84,10 @@ func (sr *SoftResource) Rel(key string) Rel {
 func (sr *SoftResource) New() Resource {
 	sr.check()
 
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 	}
 }
 
@@ -164,21 +165,21 @@ func (sr *SoftResource) GetToMany(key string) []string {
 	return []string{}
 }
 
-// SetToOne sets the relationship named after key to rel.
-func (sr *SoftResource) SetToOne(key string, v string) {
+// SetToOne sets the relationship named after key to id.
+func (sr *SoftResource) SetToOne(key string, id string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = id
 	}
 }
 
-// SetToMany sets the relationship named after key to rel.
-func (sr *SoftResource) SetToMany(key string, v []string) {
+// SetToMany sets the relationship named after key to ids.
+func (sr *SoftResource) SetToMany(key string, ids []string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = ids
 	}
 }
 
@@ -186,10 +187,12 @@ func (sr *SoftResource) SetToMany(key string, v []string) {
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 		id:   sr.id,
-		data: copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
+		data: copyData(sr.data),
 	}
 }
 
@@ -258,4 +261,83 @@ func (sr *SoftResource) check() {
 			}
 		}
 	}
+}
+
+func copyData(d map[string]interface{}) map[string]interface{} {
+	d2 := map[string]interface{}{}
+
+	for k, v := range d {
+		switch v2 := v.(type) {
+		case string:
+			d2[k] = v2
+		case int:
+			d2[k] = v2
+		case int8:
+			d2[k] = v2
+		case int16:
+			d2[k] = v2
+		case int32:
+			d2[k] = v2
+		case int64:
+			d2[k] = v2
+		case uint:
+			d2[k] = v2
+		case uint8:
+			d2[k] = v2
+		case uint16:
+			d2[k] = v2
+		case uint32:
+			d2[k] = v2
+		case uint64:
+			d2[k] = v2
+		case bool:
+			d2[k] = v2
+		case time.Time:
+			d2[k] = v2
+		case []uint8:
+			nv := make([]byte, len(v2))
+			_ = copy(nv, v2)
+			d2[k] = v2
+		case []string:
+			nv := make([]string, len(v2))
+			_ = copy(nv, v2)
+			d2[k] = v2
+		case *string:
+			d2[k] = v2
+		case *int:
+			d2[k] = v2
+		case *int8:
+			d2[k] = v2
+		case *int16:
+			d2[k] = v2
+		case *int32:
+			d2[k] = v2
+		case *int64:
+			d2[k] = v2
+		case *uint:
+			d2[k] = v2
+		case *uint8:
+			d2[k] = v2
+		case *uint16:
+			d2[k] = v2
+		case *uint32:
+			d2[k] = v2
+		case *uint64:
+			d2[k] = v2
+		case *bool:
+			d2[k] = v2
+		case *time.Time:
+			d2[k] = v2
+		case *[]uint8:
+			if v2 == nil {
+				d2[k] = (*[]uint8)(nil)
+			} else {
+				nv := make([]byte, len(*v2))
+				_ = copy(nv, *v2)
+				d2[k] = v2
+			}
+		}
+	}
+
+	return d2
 }

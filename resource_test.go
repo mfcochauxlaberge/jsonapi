@@ -294,6 +294,25 @@ func TestEqual(t *testing.T) {
 	sr1.SetToOne("to-one", "a")
 	sr1.SetToMany("to-many", []string{"d", "e", "f"})
 	assert.False(Equal(mt11, sr1), "different relationship value (to-many)")
+
+	// Comparing two nil values of different types
+	sr3 := &SoftResource{}
+	sr3.AddAttr(Attr{
+		Name:     "nil",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*string)(nil))
+
+	sr4 := &SoftResource{}
+	sr4.AddAttr(Attr{
+		Name:     "nil2",
+		Type:     AttrTypeInt,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*int)(nil))
+
+	assert.Equal(true, Equal(sr3, sr4))
 }
 
 func TestEqualStrict(t *testing.T) {

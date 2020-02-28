@@ -1,5 +1,5 @@
 <div align="center" style="text-align: center;">
-  <img src="assets/logo.png" height="120">
+  <img src="https://raw.githubusercontent.com/mfcochauxlaberge/jsonapi/master/assets/logo.png" height="120">
   <br>
   <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
     <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
@@ -20,8 +20,8 @@
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/LICENSE">
     <img src="https://img.shields.io/github/license/mfcochauxlaberge/jsonapi?color=a33">
   </a>
-  <a href="https://godoc.org/github.com/mfcochauxlaberge/jsonapi">
-    <img src="https://godoc.org/github.com/golang/gddo?status.svg">
+  <a href="https://pkg.go.dev/github.com/mfcochauxlaberge/jsonapi?tab=doc">
+    <img src="https://img.shields.io/static/v1?label=doc&message=pkg.go.dev&color=007d9c">
   </a>
 </div>
 
@@ -35,19 +35,19 @@ The official JSON:API specification can be found at [jsonapi.org/format](http://
 
 jsonapi offers the following features:
 
- * Marshaling and unmarshaling of JSON:API URLs and documents
- * Structs for handling URLs, documents, resources, collections...
- * Schema management
-   * It can ensure relationships between types make sense.
-   * Very useful for validation when marshaling and unmarshaling.
- * Utilities for pagination, sorting, and filtering
-   * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
- * In-memory data store (`SoftCollection`)
-   * It can store resources (anything that implements `Resource`).
-   * It can sort, filter, retrieve pages, etc.
-   * Enough to build a demo API or use in test suites.
-   * Not made for production use.
- * Other useful helpers
+* Marshaling and unmarshaling of JSON:API URLs and documents
+* Structs for handling URLs, documents, resources, collections...
+* Schema management
+  * It can ensure relationships between types make sense.
+  * Very useful for validation when marshaling and unmarshaling.
+* Utilities for pagination, sorting, and filtering
+  * jsonapi is opiniated when it comes to those features. If you prefer you own strategy fo pagination, sorting, and filtering, it will have to be done manually.
+* In-memory data store (`SoftCollection`)
+  * It can store resources (anything that implements `Resource`).
+  * It can sort, filter, retrieve pages, etc.
+  * Enough to build a demo API or use in test suites.
+  * Not made for production use.
+* Other useful helpers
 
 ## State
 
@@ -61,11 +61,11 @@ While anything can happen before a v1 release, the API is stable and no big chan
 
 A few tasks are required before committing to the current API:
 
- * Rethink how errors are handled
-   * Use the new tools introduced in Go 1.13.
- * Gather feedback from users
-   * The library should be used more on real projects to see of the API is convenient.
-   * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
+* Rethink how errors are handled
+  * Use the new tools introduced in Go 1.13.
+* Gather feedback from users
+  * The library should be used more on real projects to see of the API is convenient.
+  * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
@@ -184,6 +184,6 @@ It is also possible to build a `URL` from a `Schema` and a `SimpleURL` which con
 
 ## Documentation
 
-Check out the [documentation](https://godoc.org/github.com/mfcochauxlaberge/jsonapi).
+Check out the [documentation](https://pkg.go.dev/github.com/mfcochauxlaberge/jsonapi?tab=doc).
 
 The best way to learn how to use it is to look at documentation, the examples, and the code itself.

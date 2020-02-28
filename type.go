@@ -384,12 +384,18 @@ func (r *Rel) Normalize() Rel {
 	return r.Invert()
 }
 
-// String returns a string representation of the receiving Rel.
+// String builds and returns the name of the receiving Rel.
 //
-// The returned string only contains the type's name followed by the
-// relationship's name.
+// r.Normalize is always called.
 func (r Rel) String() string {
-	return r.FromType + "_" + r.FromName
+	r = r.Normalize()
+
+	id := r.FromType + "_" + r.FromName
+	if r.ToName != "" {
+		id += "_" + r.ToType + "_" + r.ToName
+	}
+
+	return id
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
@@ -488,99 +494,85 @@ func GetZeroValue(t int, nullable bool) interface{} {
 	switch t {
 	case AttrTypeString:
 		if nullable {
-			var np *string
-			return np
+			return (*string)(nil)
 		}
 
 		return ""
 	case AttrTypeInt:
 		if nullable {
-			var np *int
-			return np
+			return (*int)(nil)
 		}
 
 		return int(0)
 	case AttrTypeInt8:
 		if nullable {
-			var np *int8
-			return np
+			return (*int8)(nil)
 		}
 
 		return int8(0)
 	case AttrTypeInt16:
 		if nullable {
-			var np *int16
-			return np
+			return (*int16)(nil)
 		}
 
 		return int16(0)
 	case AttrTypeInt32:
 		if nullable {
-			var np *int32
-			return np
+			return (*int32)(nil)
 		}
 
 		return int32(0)
 	case AttrTypeInt64:
 		if nullable {
-			var np *int64
-			return np
+			return (*int64)(nil)
 		}
 
 		return int64(0)
 	case AttrTypeUint:
 		if nullable {
-			var np *uint
-			return np
+			return (*uint)(nil)
 		}
 
 		return uint(0)
 	case AttrTypeUint8:
 		if nullable {
-			var np *uint8
-			return np
+			return (*uint8)(nil)
 		}
 
 		return uint8(0)
 	case AttrTypeUint16:
 		if nullable {
-			var np *uint16
-			return np
+			return (*uint16)(nil)
 		}
 
 		return uint16(0)
 	case AttrTypeUint32:
 		if nullable {
-			var np *uint32
-			return np
+			return (*uint32)(nil)
 		}
 
 		return uint32(0)
 	case AttrTypeUint64:
 		if nullable {
-			var np *uint64
-			return np
+			return (*uint64)(nil)
 		}
 
 		return uint64(0)
 	case AttrTypeBool:
 		if nullable {
-			var np *bool
-			return np
+			return (*bool)(nil)
 		}
 
 		return false
 	case AttrTypeTime:
 		if nullable {
-			var np *time.Time
-			return np
+			return (*time.Time)(nil)
 		}
 
 		return time.Time{}
 	case AttrTypeBytes:
 		if nullable {
-			var np *[]byte
-			return np
+			return (*[]byte)(nil)
 		}
 
 		return []byte{}
