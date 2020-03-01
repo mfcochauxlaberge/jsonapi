@@ -5,7 +5,7 @@ import "encoding/json"
 // A Collection defines the interface of a structure that can manage a set of
 // ordered resources of the same type.
 type Collection interface {
-	// GetType returns the name of the resources' type.
+	// GetType returns the type of the resources.
 	GetType() Type
 
 	// Len returns the number of resources in the collection.
