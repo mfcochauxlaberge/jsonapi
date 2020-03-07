@@ -13,21 +13,21 @@ import (
 
 // Attribute types
 const (
-	AttrTypeInvalid = iota
-	AttrTypeString
-	AttrTypeInt
-	AttrTypeInt8
-	AttrTypeInt16
-	AttrTypeInt32
-	AttrTypeInt64
-	AttrTypeUint
-	AttrTypeUint8
-	AttrTypeUint16
-	AttrTypeUint32
-	AttrTypeUint64
-	AttrTypeBool
-	AttrTypeTime
-	AttrTypeBytes
+	AttrTypeInvalid = ""
+	AttrTypeString  = "string"
+	AttrTypeInt     = "int"
+	AttrTypeInt8    = "int8"
+	AttrTypeInt16   = "int16"
+	AttrTypeInt32   = "int32"
+	AttrTypeInt64   = "int64"
+	AttrTypeUint    = "uint"
+	AttrTypeUint8   = "uint8"
+	AttrTypeUint16  = "uint16"
+	AttrTypeUint32  = "uint32"
+	AttrTypeUint64  = "uint64"
+	AttrTypeBool    = "bool"
+	AttrTypeTime    = "time"
+	AttrTypeBytes   = "bytes"
 )
 
 // A Type stores all the necessary information about a type as represented in
