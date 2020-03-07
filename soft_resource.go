@@ -135,7 +135,8 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
 
 	if attr, ok := sr.Type.Attrs[key]; ok {
-		if GetAttrTypeString(attr.Type, attr.Nullable) == fmt.Sprintf("%T", v) {
+		typ, nullable := GetAttrType(fmt.Sprintf("%T", v))
+		if attr.Type == typ && attr.Nullable == nullable {
 			sr.data[key] = v
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
