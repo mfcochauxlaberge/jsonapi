@@ -182,7 +182,7 @@ func (t Type) Copy() Type {
 // Attr represents a resource attribute.
 type Attr struct {
 	Name     string
-	Type     int
+	Type     string
 	Nullable bool
 }
 
@@ -441,50 +441,50 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString returns the name of the attribute type specified by t (see
-// constants) and nullable.
-func GetAttrTypeString(t int, nullable bool) string {
-	str := ""
+// // GetAttrTypeString returns the name of the attribute type specified by t (see
+// // constants) and nullable.
+// func GetAttrTypeString(t int, nullable bool) string {
+// 	str := ""
 
-	switch t {
-	case AttrTypeString:
-		str = "string"
-	case AttrTypeInt:
-		str = "int"
-	case AttrTypeInt8:
-		str = "int8"
-	case AttrTypeInt16:
-		str = "int16"
-	case AttrTypeInt32:
-		str = "int32"
-	case AttrTypeInt64:
-		str = "int64"
-	case AttrTypeUint:
-		str = "uint"
-	case AttrTypeUint8:
-		str = "uint8"
-	case AttrTypeUint16:
-		str = "uint16"
-	case AttrTypeUint32:
-		str = "uint32"
-	case AttrTypeUint64:
-		str = "uint64"
-	case AttrTypeBool:
-		str = "bool"
-	case AttrTypeTime:
-		str = "time.Time"
-	case AttrTypeBytes:
-		str = "[]uint8"
-	default:
-		str = ""
-	}
+// 	switch t {
+// 	case AttrTypeString:
+// 		str = "string"
+// 	case AttrTypeInt:
+// 		str = "int"
+// 	case AttrTypeInt8:
+// 		str = "int8"
+// 	case AttrTypeInt16:
+// 		str = "int16"
+// 	case AttrTypeInt32:
+// 		str = "int32"
+// 	case AttrTypeInt64:
+// 		str = "int64"
+// 	case AttrTypeUint:
+// 		str = "uint"
+// 	case AttrTypeUint8:
+// 		str = "uint8"
+// 	case AttrTypeUint16:
+// 		str = "uint16"
+// 	case AttrTypeUint32:
+// 		str = "uint32"
+// 	case AttrTypeUint64:
+// 		str = "uint64"
+// 	case AttrTypeBool:
+// 		str = "bool"
+// 	case AttrTypeTime:
+// 		str = "time.Time"
+// 	case AttrTypeBytes:
+// 		str = "[]uint8"
+// 	default:
+// 		str = ""
+// 	}
 
-	if nullable {
-		return "*" + str
-	}
+// 	if nullable {
+// 		return "*" + str
+// 	}
 
-	return str
-}
+// 	return str
+// }
 
 // GetZeroValue returns the zero value of the attribute type represented by the
 // specified int (see constants).
