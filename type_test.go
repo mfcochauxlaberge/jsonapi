@@ -126,36 +126,37 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	)
 
 	tests := []struct {
-		val interface{}
+		typ string
+		val []byte
 	}{
-		{val: "str"},            // string
-		{val: 1},                // int
-		{val: int8(8)},          // int8
-		{val: int16(16)},        // int16
-		{val: int32(32)},        // int32
-		{val: int64(64)},        // int64
-		{val: uint(1)},          // uint
-		{val: uint8(8)},         // uint8
-		{val: uint16(16)},       // uint16
-		{val: uint32(32)},       // uint32
-		{val: uint64(64)},       // uint64
-		{val: true},             // bool
-		{val: time.Time{}},      // time
-		{val: []byte{1, 2, 3}},  // []byte
-		{val: &vstr},            // *string
-		{val: &vint},            // *int
-		{val: &vint8},           // *int8
-		{val: &vint16},          // *int16
-		{val: &vint32},          // *int32
-		{val: &vint64},          // *int64
-		{val: &vuint},           // *uint
-		{val: &vuint8},          // *uint8
-		{val: &vuint16},         // *uint16
-		{val: &vuint32},         // *uint32
-		{val: &vuint64},         // *uint64
-		{val: &vbool},           // *bool
-		{val: &time.Time{}},     // *time
-		{val: &[]byte{1, 2, 3}}, // *[]byte
+		{typ: "string", val: []byte("str")},
+		{typ: "int", val: []byte{1}},
+		{typ: "int8", val: int8(8)},
+		{typ: "int16", val: int16(16)},
+		{typ: "int32", val: int32(32)},
+		{typ: "int64", val: int64(64)},
+		{typ: "uint", val: uint(1)},
+		{typ: "uint8", val: uint8(8)},
+		{typ: "uint16", val: uint16(16)},
+		{typ: "uint32", val: uint32(32)},
+		{typ: "uint64", val: uint64(64)},
+		{typ: "bool", val: true},
+		{typ: "time", val: time.Time{}},
+		{typ: "[]byte", val: []byte{1, 2, 3}},
+		{typ: "*string", val: &vstr},
+		{typ: "*int", val: &vint},
+		{typ: "*int8", val: &vint8},
+		{typ: "*int16", val: &vint16},
+		{typ: "*int32", val: &vint32},
+		{typ: "*int64", val: &vint64},
+		{typ: "*uint", val: &vuint},
+		{typ: "*uint8", val: &vuint8},
+		{typ: "*uint16", val: &vuint16},
+		{typ: "*uint32", val: &vuint32},
+		{typ: "*uint64", val: &vuint64},
+		{typ: "*bool", val: &vbool},
+		{typ: "*time", val: &time.Time{}},
+		{typ: "*[]byte", val: &[]byte{1, 2, 3}},
 	}
 
 	attr := Attr{}
