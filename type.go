@@ -190,7 +190,7 @@ type Attr struct {
 // the attribute and returns it.
 func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 	if a.Nullable && string(data) == "null" {
-		return nil, nil
+		return GetZeroValue(a.Type, a.Nullable), nil
 	}
 
 	var (
