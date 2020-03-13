@@ -169,9 +169,9 @@ func TestAttrUnmarshalToType(t *testing.T) {
 		assert.Equal(fmt.Sprintf("%T", test.val), fmt.Sprintf("%T", val))
 	}
 
-	// Nil value
+	// Null value
 	attr.Nullable = true
-	val, err := attr.UnmarshalToType([]byte("nil"))
+	val, err := attr.UnmarshalToType([]byte("null"))
 	assert.NoError(err)
 	assert.Nil(val)
 
