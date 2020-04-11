@@ -98,7 +98,6 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 		)
 	case Identifier:
 		data, err = json.Marshal(d)
-
 	case Identifiers:
 		data, err = json.Marshal(d)
 	default:
