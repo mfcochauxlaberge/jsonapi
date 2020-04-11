@@ -97,6 +97,19 @@ A `Request` represents an HTTP request structured in a format easily readable fr
 
 If you are familiar with the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
 
+### Schema
+
+A `Schema` contains all the schema information for an API, like types, fields, relationships between types, and so on. See `schema.go` and `type.go` for more details.
+
+This is really useful for many uses cases:
+
+* Making sure the schema is coherent
+* Validating resources
+* Parsing documents and URLs
+* And probably many more...
+
+For example, when a request comes in, a `Document` and a `URL` can be created by parsing the request. By providing a schema, the parsing can fail if it finds some errors like a type that does not exist, a field of the wrong kind, etc. After that step, valid data can be assumed.
+
 ### Type
 
 A JSON:API type is generally defined with a struct.
