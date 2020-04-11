@@ -63,6 +63,8 @@ A few tasks are required before committing to the current API:
 
 * Rethink how errors are handled
   * Use the new tools introduced in Go 1.13.
+* Simplify the API
+  * Remove anything that is redundant or not useful.
 * Gather feedback from users
   * The library should be used more on real projects to see of the API is convenient.
 
