@@ -9,6 +9,11 @@ arch:
   - amd64
   - arm64
 
+jobs:
+  exclude:
+    - go: 1.11.x
+      arch: arm64
+
 branches:
   only:
     - master
