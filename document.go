@@ -98,7 +98,6 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 		)
 	case Identifier:
 		data, err = json.Marshal(d)
-
 	case Identifiers:
 		data, err = json.Marshal(d)
 	default:
@@ -242,10 +241,6 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 
 	// Meta
 	doc.Meta = ske.Meta
-
-	// TODO Return an error if there is no data (not even
-	// null), no errors, and no meta. The JSON:API specification
-	// considers this invalid.
 
 	return doc, nil
 }
