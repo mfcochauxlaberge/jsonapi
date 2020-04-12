@@ -1,5 +1,10 @@
 package jsonapi
 
+import (
+	"fmt"
+	"time"
+)
+
 type Meta map[string]interface{}
 
 // Has reports whether the Meta map contains or not the given key.
@@ -13,8 +18,7 @@ func (m Meta) Has(key string) bool {
 // An empty string is returned if the key could not be found or the type is not
 // compatible.
 func (m Meta) GetString(key string) string {
-	v, _ := m[key].(string)
-	return v
+	return fmt.Sprint(m[key])
 }
 
 // GetInt returns the int associated with the given key.
@@ -23,4 +27,28 @@ func (m Meta) GetString(key string) string {
 func (m Meta) GetInt(key string) int {
 	v, _ := m[key].(int)
 	return v
+}
+
+// GetBool returns the bool associated with the given key.
+//
+// False is returned if the key could not be found or the type is not
+// compatible. The "true" JSON keyword is the only value that will make this
+// method return true.
+func (m Meta) GetBool(key string) bool {
+	b, _ := m[key].(bool)
+	return b
+}
+
+// GetTime returns the time.Time associated with the given key.
+//
+// time.Time{} is returned is the value associated with the key could not be
+// found or could not be parsed with time.RFC3339Nano.
+func (m Meta) GetTime(key string) time.Time {
+	t := time.Time{}
+
+	if s, ok := m[key].(string); ok {
+		t, _ = time.Parse(time.RFC3339Nano, s)
+	}
+
+	return t
 }
