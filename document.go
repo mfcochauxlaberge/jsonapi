@@ -22,7 +22,7 @@ type Document struct {
 	RelData map[string][]string
 
 	// Top-level members
-	Meta map[string]interface{}
+	Meta Meta
 
 	// Errors
 	Errors []Error
