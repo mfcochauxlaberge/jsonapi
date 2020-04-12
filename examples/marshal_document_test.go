@@ -45,7 +45,7 @@ func ExampleMarshalDocument() {
 	doc.Include(jsonapi.Wrap(article))
 
 	// As an example, some meta data is added.
-	doc.Meta = map[string]interface{}{
+	doc.Meta = jsonapi.Meta{
 		"meta": "meta_value",
 	}
 
