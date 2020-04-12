@@ -24,9 +24,11 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		typ Type
 		ok  bool
 	)
+
 	if len(url.Fragments) == 0 {
 		return nil, NewErrBadRequest("Empty path", "There is no path.")
 	}
+
 	if len(url.Fragments) >= 1 {
 		if typ = schema.GetType(url.Fragments[0]); typ.Name == "" {
 			return nil, NewErrUnknownTypeInURL(url.Fragments[0])
@@ -43,6 +45,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 			url.ResID = url.Fragments[1]
 		}
 	}
+
 	if len(url.Fragments) >= 3 {
 		relName := url.Fragments[len(url.Fragments)-1]
 		if url.Rel, ok = typ.Rels[relName]; !ok {
@@ -56,9 +59,9 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 		url.IsCol = !url.Rel.ToOne
 		url.ResType = url.Rel.ToType
 		url.BelongsToFilter = BelongsToFilter{
-			Type:        url.Fragments[0],
-			ID:          url.Fragments[1],
-			Name:        url.Rel.FromName,
+			Type:   url.Fragments[0],
+			ID:     url.Fragments[1],
+			Name:   url.Rel.FromName,
 			ToName: url.Rel.ToName,
 		}
 
@@ -72,6 +75,7 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 	// Params
 	var err error
 	url.Params, err = NewParams(schema, su, url.ResType)
+
 	if err != nil {
 		return nil, err
 	}
@@ -127,6 +131,7 @@ func (u *URL) String() string {
 	for _, p := range u.Fragments {
 		path += p + "/"
 	}
+
 	path = path[:len(path)-1]
 
 	// Params
@@ -137,7 +142,9 @@ func (u *URL) String() string {
 	for key := range u.Params.Fields {
 		fields = append(fields, key)
 	}
+
 	sort.Strings(fields)
+
 	for _, typ := range fields {
 		sort.Strings(u.Params.Fields[typ])
 
@@ -145,6 +152,7 @@ func (u *URL) String() string {
 		for _, f := range u.Params.Fields[typ] {
 			param += f + "%2C"
 		}
+
 		param = param[:len(param)-3]
 
 		urlParams = append(urlParams, param)
@@ -158,6 +166,7 @@ func (u *URL) String() string {
 			// at this point.
 			panic(fmt.Errorf("jsonapi: can't marshal filter: %s", err))
 		}
+
 		param := "filter=" + string(mf)
 		urlParams = append(urlParams, param)
 	} else if u.Params.FilterLabel != "" {
@@ -172,6 +181,7 @@ func (u *URL) String() string {
 				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
 			)
 		}
+
 		if u.Params.PageSize != 0 {
 			urlParams = append(
 				urlParams,
@@ -186,6 +196,7 @@ func (u *URL) String() string {
 		for _, attr := range u.Params.SortingRules {
 			param += attr + "%2C"
 		}
+
 		param = param[:len(param)-3]
 
 		urlParams = append(urlParams, param)
@@ -195,6 +206,7 @@ func (u *URL) String() string {
 	for _, param := range urlParams {
 		params += param + "&"
 	}
+
 	params = params[:len(params)-1]
 
 	return path + params
@@ -214,8 +226,8 @@ func (u *URL) UnescapedString() string {
 // For example, in /articles/abc123/comments, the parent is the article with the
 // ID abc123.
 type BelongsToFilter struct {
-	Type        string
-	ID          string
-	Name        string
+	Type   string
+	ID     string
+	Name   string
 	ToName string
 }

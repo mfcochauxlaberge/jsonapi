@@ -28,6 +28,7 @@ func Check(v interface{}) error {
 		idField reflect.StructField
 		ok      bool
 	)
+
 	if idField, ok = value.Type().FieldByName("ID"); !ok {
 		return errors.New("jsonapi: struct doesn't have an ID field")
 	}
@@ -110,6 +111,7 @@ func BuildType(v interface{}) (Type, error) {
 	if val.Kind() == reflect.Ptr {
 		val = val.Elem()
 	}
+
 	if val.Kind() != reflect.Struct {
 		return typ, errors.New("jsonapi: value must represent a struct")
 	}
@@ -124,6 +126,7 @@ func BuildType(v interface{}) (Type, error) {
 
 	// Attributes
 	typ.Attrs = map[string]Attr{}
+
 	for i := 0; i < val.NumField(); i++ {
 		fs := val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
@@ -141,11 +144,13 @@ func BuildType(v interface{}) (Type, error) {
 
 	// Relationships
 	typ.Rels = map[string]Rel{}
+
 	for i := 0; i < val.NumField(); i++ {
 		fs := val.Type().Field(i)
 		jsonTag := fs.Tag.Get("json")
 		relTag := strings.Split(fs.Tag.Get("api"), ",")
 		invName := ""
+
 		if len(relTag) == 3 {
 			invName = relTag[2]
 		}
@@ -168,20 +173,20 @@ func BuildType(v interface{}) (Type, error) {
 
 	// NewFunc
 	res := Wrap(reflect.New(val.Type()).Interface())
-	typ.NewFunc = func() Resource {
-		return res.Copy()
-	}
+	typ.NewFunc = res.Copy
 
 	return typ, nil
 }
 
-// MustBuildType calls BuildType and returns the result, except that it panics
-// if the error is not nil.
+// MustBuildType calls BuildType and returns the result.
+//
+// It panics if the error returned by BuildType is not nil.
 func MustBuildType(v interface{}) Type {
 	typ, err := BuildType(v)
 	if err != nil {
 		panic(err)
 	}
+
 	return typ
 }
 
@@ -190,9 +195,8 @@ func MustBuildType(v interface{}) Type {
 // Two empty strings are returned if v is not recognized as a resource.
 // CheckType can be used to check the validity of a struct.
 func IDAndType(v interface{}) (string, string) {
-	switch nv := v.(type) {
-	case Resource:
-		return nv.GetID(), nv.GetType().Name
+	if res, ok := v.(Resource); ok {
+		return res.GetID(), res.GetType().Name
 	}
 
 	val := reflect.ValueOf(v)

@@ -1,6 +1,7 @@
 package jsonapi_test
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 	"testing"
@@ -297,4 +298,48 @@ func TestErrorConstructors(t *testing.T) {
 	for _, test := range tests {
 		assert.Equal(test.expected, test.err.Error(), test.name)
 	}
+}
+
+func TestErrorMarshalJSON(t *testing.T) {
+	assert := assert.New(t)
+
+	jaerr := Error{
+		ID:     "c1897530-fdf5-4a42-88fb-1c1c4bd0962f",
+		Code:   "Code",
+		Status: "Status",
+		Title:  "Title",
+		Detail: "Detail",
+		Links: map[string]string{
+			"link": "http://example.com",
+		},
+		Source: map[string]interface{}{
+			"parameter": "param",
+			"pointer":   "/data",
+		},
+		Meta: map[string]interface{}{
+			"meta": 123,
+		},
+	}
+
+	payload, err := json.Marshal(jaerr)
+	assert.NoError(err)
+	assert.JSONEq(string(payload), `
+		{
+			"code": "Code",
+			"detail": "Detail",
+			"id": "c1897530-fdf5-4a42-88fb-1c1c4bd0962f",
+			"links": {
+				"link": "http://example.com"
+			},
+			"meta": {
+				"meta": 123
+			},
+			"source": {
+				"parameter": "param",
+				"pointer": "/data"
+			},
+			"status": "Status",
+			"title": "Title"
+		}
+	`)
 }

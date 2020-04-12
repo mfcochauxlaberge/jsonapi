@@ -27,3 +27,15 @@ func TestResources(t *testing.T) {
 	assert.Equal("id", col.At(0).GetID())
 	assert.Nil(col.At(1))
 }
+
+func TestUnmarshalCollection(t *testing.T) {
+	assert := assert.New(t)
+
+	// Invalid payload
+	payload := `{"no:valid"}`
+
+	col, err := UnmarshalCollection([]byte(payload), nil)
+
+	assert.Error(err)
+	assert.Nil(col)
+}

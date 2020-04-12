@@ -9,6 +9,152 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+func TestUnmarshalPartialResource(t *testing.T) {
+	// Setup
+	typ, _ := BuildType(mocktype{})
+	typ.NewFunc = func() Resource {
+		return Wrap(&mocktype{})
+	}
+	schema := &Schema{Types: []Type{typ}}
+
+	// Tests
+	t.Run("partial resource", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{
+			"id": "abc123",
+			"type": "mocktype",
+			"attributes": {
+				"str": "abc"
+			},
+			"relationships": {
+				"to-1": {
+					"data": {
+						"type": "mocktype",
+						"data": "def"
+					}
+				},
+				"to-x": {
+					"data": [
+						{
+							"type": "mocktype",
+							"data": "ghi"
+						},
+						{
+							"type": "mocktype",
+							"data": "jkl"
+						}
+					]
+				}
+			}
+		}`
+
+		res, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.NoError(err)
+
+		assert.Equal("abc123", res.GetID())
+		assert.Equal("mocktype", res.GetType().Name)
+		assert.Len(res.Attrs(), 1)
+		assert.Len(res.Rels(), 2)
+	})
+
+	t.Run("partial resource (invalid attribute)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{
+			"id": "abc123",
+			"type": "mocktype",
+			"attributes": {
+				"int": "not an int"
+			}
+		}`
+
+		_, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.EqualError(
+			err,
+			"400 Bad Request: The field value is invalid for the expected type.",
+		)
+	})
+
+	t.Run("partial resource (unknown attribute)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{
+			"id": "abc123",
+			"type": "mocktype",
+			"attributes": {
+				"unknown": "abc"
+			}
+		}`
+
+		_, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.EqualError(
+			err,
+			`400 Bad Request: "unknown" is not a known field.`,
+		)
+	})
+
+	t.Run("partial resource (invalid relationship)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{
+			"id": "abc123",
+			"type": "mocktype",
+			"relationships": {
+				"to-1": {
+					"data": [
+						{
+							"type": "mocktype",
+							"data": "def"
+						}
+					]
+				}
+			}
+		}`
+
+		_, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.EqualError(
+			err,
+			"400 Bad Request: The field value is invalid for the expected type.",
+		)
+	})
+
+	t.Run("partial resource (unknown relationship)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{
+			"id": "abc123",
+			"type": "mocktype",
+			"relationships": {
+				"unknown": {
+					"data": {
+						"type": "mocktype",
+						"data": "def"
+					}
+				}
+			}
+		}`
+
+		_, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.EqualError(
+			err,
+			`400 Bad Request: "unknown" is not a known field.`,
+		)
+	})
+
+	t.Run("partial resource (invalid)", func(t *testing.T) {
+		assert := assert.New(t)
+
+		payload := `{invalid}`
+
+		_, err := UnmarshalPartialResource([]byte(payload), schema)
+		assert.EqualError(
+			err,
+			"400 Bad Request: The provided JSON body could not be read.",
+		)
+	})
+}
+
 func TestEqual(t *testing.T) {
 	assert := assert.New(t)
 
@@ -106,16 +252,18 @@ func TestEqual(t *testing.T) {
 	assert.False(Equal(mt11, mt13), "different resources (same type)")
 	assert.False(Equal(mt11, mt21), "different types")
 
-	typ := CopyType(mt11.GetType())
+	typ := mt11.GetType().Copy()
 	sr1 := &SoftResource{Type: &typ}
 	sr1.RemoveField("str")
 	assert.False(Equal(mt11, sr1), "different number of attributes")
 
-	typ = CopyType(mt11.GetType())
+	typ = mt11.GetType().Copy()
 	sr1 = &SoftResource{Type: &typ}
+
 	for _, attr := range typ.Attrs {
 		sr1.Set(attr.Name, mt11.Get(attr.Name))
 	}
+
 	for _, rel := range typ.Rels {
 		if rel.ToOne {
 			sr1.SetToOne(rel.FromName, mt11.GetToOne(rel.FromName))
@@ -123,6 +271,7 @@ func TestEqual(t *testing.T) {
 			sr1.SetToMany(rel.FromName, mt11.GetToMany(rel.FromName))
 		}
 	}
+
 	sr1.RemoveField("to-one")
 	assert.False(Equal(mt11, sr1), "different number of relationships")
 
@@ -145,6 +294,25 @@ func TestEqual(t *testing.T) {
 	sr1.SetToOne("to-one", "a")
 	sr1.SetToMany("to-many", []string{"d", "e", "f"})
 	assert.False(Equal(mt11, sr1), "different relationship value (to-many)")
+
+	// Comparing two nil values of different types
+	sr3 := &SoftResource{}
+	sr3.AddAttr(Attr{
+		Name:     "nil",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*string)(nil))
+
+	sr4 := &SoftResource{}
+	sr4.AddAttr(Attr{
+		Name:     "nil2",
+		Type:     AttrTypeInt,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*int)(nil))
+
+	assert.Equal(true, Equal(sr3, sr4))
 }
 
 func TestEqualStrict(t *testing.T) {
@@ -154,6 +322,7 @@ func TestEqualStrict(t *testing.T) {
 	sr1.SetType(&Type{
 		Name: "type",
 	})
+
 	sr2 := &SoftResource{}
 	sr2.SetType(&Type{
 		Name: "type",

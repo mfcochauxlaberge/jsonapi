@@ -21,8 +21,3 @@ type relationshipSkeleton struct {
 	Links map[string]json.RawMessage `json:"links"`
 	Meta  map[string]json.RawMessage `json:"meta"`
 }
-
-type identifierSkeleton struct {
-	ID   string `json:"id"`
-	Type string `json:"type"`
-}

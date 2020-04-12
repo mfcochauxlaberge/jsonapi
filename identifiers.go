@@ -1,6 +1,10 @@
 package jsonapi
 
-import "encoding/json"
+import (
+	"encoding/json"
+	"errors"
+	"fmt"
+)
 
 // NewIdentifiers returns an Identifiers object.
 //
@@ -23,10 +27,10 @@ type Identifiers []Identifier
 
 // IDs returns the IDs part of the Identifiers.
 func (i Identifiers) IDs() []string {
-	ids := []string{}
+	ids := make([]string, len(i))
 
-	for _, id := range i {
-		ids = append(ids, id.ID)
+	for n := range i {
+		ids[n] = i[n].ID
 	}
 
 	return ids
@@ -38,11 +42,52 @@ type Identifier struct {
 	Type string `json:"type"`
 }
 
-// MarshalIdentifiers builds a json.RawMessage object from the given IDs.
+// UnmarshalIdentifier reads a payload where the main data is one identifier to
+// build and return an Identifier object.
 //
-// TODO Implement the function.
-func MarshalIdentifiers(ids []string, toOne bool) json.RawMessage {
-	raw := ""
+// schema must not be nil.
+func UnmarshalIdentifier(payload []byte, schema *Schema) (Identifier, error) {
+	iden := Identifier{}
 
-	return []byte(raw)
+	err := json.Unmarshal(payload, &iden)
+	if err != nil {
+		return Identifier{}, err
+	}
+
+	switch {
+	case iden.ID == "":
+		return Identifier{}, errors.New("identifier has no ID")
+	case iden.Type == "":
+		return Identifier{}, errors.New("identifier has no type")
+	case schema != nil && !schema.HasType(iden.Type):
+		return Identifier{}, fmt.Errorf("type %q is unknown", iden.Type)
+	}
+
+	return iden, nil
+}
+
+// UnmarshalIdentifiers reads a payload where the main data is a collection of
+// identifiers to build and return an Idenfitiers slice.
+//
+// schema must not be nil.
+func UnmarshalIdentifiers(payload []byte, schema *Schema) (Identifiers, error) {
+	raw := []*json.RawMessage{}
+
+	err := json.Unmarshal(payload, &raw)
+	if err != nil {
+		return Identifiers{}, err
+	}
+
+	idens := make([]Identifier, len(raw))
+
+	for i, r := range raw {
+		iden, err := UnmarshalIdentifier(*r, schema)
+		if err != nil {
+			return nil, err
+		}
+
+		idens[i] = iden
+	}
+
+	return idens, nil
 }

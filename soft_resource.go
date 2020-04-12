@@ -2,8 +2,7 @@ package jsonapi
 
 import (
 	"fmt"
-
-	"github.com/mitchellh/copystructure"
+	"time"
 )
 
 // SoftResource represents a resource whose type is defined by an internal field
@@ -22,34 +21,40 @@ type SoftResource struct {
 // Attrs returns the resource's attributes.
 func (sr *SoftResource) Attrs() map[string]Attr {
 	sr.check()
+
 	return sr.Type.Attrs
 }
 
 // Rels returns the resource's relationships.
 func (sr *SoftResource) Rels() map[string]Rel {
 	sr.check()
+
 	return sr.Type.Rels
 }
 
 // AddAttr adds an attribute.
 func (sr *SoftResource) AddAttr(attr Attr) {
 	sr.check()
+
 	for _, name := range sr.fields() {
 		if name == attr.Name {
 			return
 		}
 	}
+
 	sr.Type.Attrs[attr.Name] = attr
 }
 
 // AddRel adds a relationship.
 func (sr *SoftResource) AddRel(rel Rel) {
 	sr.check()
+
 	for _, name := range sr.fields() {
 		if name == rel.FromName {
 			return
 		}
 	}
+
 	sr.Type.Rels[rel.FromName] = rel
 }
 
@@ -63,12 +68,14 @@ func (sr *SoftResource) RemoveField(field string) {
 // Attr returns the attribute named after key.
 func (sr *SoftResource) Attr(key string) Attr {
 	sr.check()
+
 	return sr.Type.Attrs[key]
 }
 
 // Rel returns the relationship named after key.
 func (sr *SoftResource) Rel(key string) Rel {
 	sr.check()
+
 	return sr.Type.Rels[key]
 }
 
@@ -76,31 +83,38 @@ func (sr *SoftResource) Rel(key string) Rel {
 // without the values.
 func (sr *SoftResource) New() Resource {
 	sr.check()
+
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 	}
 }
 
 // GetID returns the resource's ID.
 func (sr *SoftResource) GetID() string {
 	sr.check()
+
 	return sr.id
 }
 
 // GetType returns the resource's type.
 func (sr *SoftResource) GetType() Type {
 	sr.check()
+
 	return *sr.Type
 }
 
 // Get returns the value associated to the field named after key.
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
+
 	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
 	}
+
 	return nil
 }
 
@@ -110,7 +124,7 @@ func (sr *SoftResource) SetID(id string) {
 	sr.id = id
 }
 
-// SetType ...
+// SetType sets the resource's type.
 func (sr *SoftResource) SetType(typ *Type) {
 	sr.check()
 	sr.Type = typ
@@ -119,8 +133,10 @@ func (sr *SoftResource) SetType(typ *Type) {
 // Set sets the value associated to the field named key to v.
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
+
 	if attr, ok := sr.Type.Attrs[key]; ok {
-		if GetAttrTypeString(attr.Type, attr.Nullable) == fmt.Sprintf("%T", v) {
+		typ, nullable := GetAttrType(fmt.Sprintf("%T", v))
+		if attr.Type == typ && attr.Nullable == nullable {
 			sr.data[key] = v
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
@@ -131,50 +147,53 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 // GetToOne returns the value associated to the relationship named after key.
 func (sr *SoftResource) GetToOne(key string) string {
 	sr.check()
+
 	if _, ok := sr.Type.Rels[key]; ok {
 		return sr.data[key].(string)
 	}
+
 	return ""
 }
 
 // GetToMany returns the value associated to the relationship named after key.
 func (sr *SoftResource) GetToMany(key string) []string {
 	sr.check()
+
 	if _, ok := sr.Type.Rels[key]; ok {
 		return sr.data[key].([]string)
 	}
+
 	return []string{}
 }
 
-// SetToOne sets the relationship named after key to rel.
-func (sr *SoftResource) SetToOne(key string, v string) {
+// SetToOne sets the relationship named after key to id.
+func (sr *SoftResource) SetToOne(key string, id string) {
 	sr.check()
+
 	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = id
 	}
 }
 
-// SetToMany sets the relationship named after key to rel.
-func (sr *SoftResource) SetToMany(key string, v []string) {
+// SetToMany sets the relationship named after key to ids.
+func (sr *SoftResource) SetToMany(key string, ids []string) {
 	sr.check()
+
 	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = ids
 	}
-}
-
-// Validate returns validation errors found in the resource.
-func (sr *SoftResource) Validate() []error {
-	sr.check()
-	return []error{}
 }
 
 // Copy return a new SoftResource object with the same type and values.
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
+
+	typ := sr.Type.Copy()
+
 	return &SoftResource{
-		Type: copystructure.Must(copystructure.Copy(sr.Type)).(*Type),
+		Type: &typ,
 		id:   sr.id,
-		data: copystructure.Must(copystructure.Copy(sr.data)).(map[string]interface{}),
+		data: copyData(sr.data),
 	}
 }
 
@@ -183,9 +202,11 @@ func (sr *SoftResource) fields() []string {
 	for i := range sr.Type.Attrs {
 		fields = append(fields, sr.Type.Attrs[i].Name)
 	}
+
 	for i := range sr.Type.Rels {
 		fields = append(fields, sr.Type.Rels[i].FromName)
 	}
+
 	return fields
 }
 
@@ -193,12 +214,15 @@ func (sr *SoftResource) check() {
 	if sr.Type == nil {
 		sr.Type = &Type{}
 	}
+
 	if sr.Type.Attrs == nil {
 		sr.Type.Attrs = map[string]Attr{}
 	}
+
 	if sr.Type.Rels == nil {
 		sr.Type.Rels = map[string]Rel{}
 	}
+
 	if sr.data == nil {
 		sr.data = map[string]interface{}{}
 	}
@@ -209,6 +233,7 @@ func (sr *SoftResource) check() {
 			sr.data[n] = GetZeroValue(sr.Type.Attrs[i].Type, sr.Type.Attrs[i].Nullable)
 		}
 	}
+
 	for i := range sr.Type.Rels {
 		n := sr.Type.Rels[i].FromName
 		if _, ok := sr.data[n]; !ok {
@@ -224,15 +249,96 @@ func (sr *SoftResource) check() {
 	if len(fields) < len(sr.data) {
 		for k := range sr.data {
 			found := false
+
 			for _, f := range fields {
 				if k == f {
 					found = true
 					break
 				}
 			}
+
 			if !found {
 				delete(sr.data, k)
 			}
 		}
 	}
+}
+
+func copyData(d map[string]interface{}) map[string]interface{} {
+	d2 := map[string]interface{}{}
+
+	for k, v := range d {
+		switch v2 := v.(type) {
+		case string:
+			d2[k] = v2
+		case int:
+			d2[k] = v2
+		case int8:
+			d2[k] = v2
+		case int16:
+			d2[k] = v2
+		case int32:
+			d2[k] = v2
+		case int64:
+			d2[k] = v2
+		case uint:
+			d2[k] = v2
+		case uint8:
+			d2[k] = v2
+		case uint16:
+			d2[k] = v2
+		case uint32:
+			d2[k] = v2
+		case uint64:
+			d2[k] = v2
+		case bool:
+			d2[k] = v2
+		case time.Time:
+			d2[k] = v2
+		case []uint8:
+			nv := make([]byte, len(v2))
+			_ = copy(nv, v2)
+			d2[k] = v2
+		case []string:
+			nv := make([]string, len(v2))
+			_ = copy(nv, v2)
+			d2[k] = v2
+		case *string:
+			d2[k] = v2
+		case *int:
+			d2[k] = v2
+		case *int8:
+			d2[k] = v2
+		case *int16:
+			d2[k] = v2
+		case *int32:
+			d2[k] = v2
+		case *int64:
+			d2[k] = v2
+		case *uint:
+			d2[k] = v2
+		case *uint8:
+			d2[k] = v2
+		case *uint16:
+			d2[k] = v2
+		case *uint32:
+			d2[k] = v2
+		case *uint64:
+			d2[k] = v2
+		case *bool:
+			d2[k] = v2
+		case *time.Time:
+			d2[k] = v2
+		case *[]uint8:
+			if v2 == nil {
+				d2[k] = (*[]uint8)(nil)
+			} else {
+				nv := make([]byte, len(*v2))
+				_ = copy(nv, *v2)
+				d2[k] = v2
+			}
+		}
+	}
+
+	return d2
 }

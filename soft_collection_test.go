@@ -5,7 +5,6 @@ import (
 
 	. "github.com/mfcochauxlaberge/jsonapi"
 
-	"github.com/mitchellh/copystructure"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -45,7 +44,7 @@ func TestSoftCollection(t *testing.T) {
 
 	// Make a copy so that modifying the original typ
 	// does not modify the SoftCollection's type.
-	typcopy := copystructure.Must(copystructure.Copy(typ)).(Type)
+	typcopy := typ.Copy()
 	sc.SetType(&typcopy)
 
 	assert.Equal(t, sc.Type, &typ)
@@ -93,6 +92,16 @@ func TestSoftCollection(t *testing.T) {
 	}
 	sr.AddRel(rel7)
 	_ = typ.AddRel(rel7)
+	rel8 := Rel{
+		FromName: "rel8",
+		FromType: "thirdtype",
+		ToOne:    false,
+		ToName:   "rel9",
+		ToType:   "othertype",
+		FromOne:  true,
+	}
+	sr.AddRel(rel8)
+	_ = typ.AddRel(rel8)
 
 	sc.Add(sr)
 
