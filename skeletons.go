@@ -14,6 +14,7 @@ type resourceSkeleton struct {
 	Type          string                          `json:"type"`
 	Attributes    map[string]json.RawMessage      `json:"attributes"`
 	Relationships map[string]relationshipSkeleton `json:"relationships"`
+	Meta          Meta                            `json:"meta"`
 }
 
 type relationshipSkeleton struct {
