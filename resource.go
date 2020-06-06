@@ -208,6 +208,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	for k := range meta {
 		delete(meta, k)
 	}
+
 	for k, v := range rske.Meta {
 		meta[k] = v
 	}
