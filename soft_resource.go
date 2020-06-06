@@ -184,7 +184,7 @@ func (sr *SoftResource) SetToMany(key string, ids []string) {
 	}
 }
 
-// Copy return a new SoftResource object with the same type and values.
+// Copy returns a new SoftResource object with the same type and values.
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 
