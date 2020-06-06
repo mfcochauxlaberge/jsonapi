@@ -281,8 +281,8 @@ func TestMarshalDocument(t *testing.T) {
 				dst := &bytes.Buffer{}
 				err = json.Indent(dst, payload, "", "\t")
 				assert.NoError(err)
-				// TODO Figure out whether 0644 is okay or not.
-				err = ioutil.WriteFile(path, dst.Bytes(), 0644)
+				// TODO Figure out whether 0600 is okay or not.
+				err = ioutil.WriteFile(path, dst.Bytes(), 0600)
 				assert.NoError(err)
 			}
 		})
