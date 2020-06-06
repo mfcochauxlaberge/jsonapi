@@ -16,6 +16,7 @@ type SoftResource struct {
 
 	id   string
 	data map[string]interface{}
+	meta Meta
 }
 
 // Attrs returns the resource's attributes.
@@ -195,6 +196,11 @@ func (sr *SoftResource) Copy() Resource {
 		id:   sr.id,
 		data: copyData(sr.data),
 	}
+}
+
+// Meta returns the meta values of the resource.
+func (sr *SoftResource) Meta() Meta {
+	return sr.meta
 }
 
 func (sr *SoftResource) fields() []string {

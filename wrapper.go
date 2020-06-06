@@ -20,6 +20,7 @@ type Wrapper struct {
 	typ   string
 	attrs map[string]Attr
 	rels  map[string]Rel
+	meta  Meta
 }
 
 // Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
@@ -305,6 +306,11 @@ func (w *Wrapper) Copy() Resource {
 	}
 
 	return nw
+}
+
+// Meta returns the meta values of the resource.
+func (w *Wrapper) Meta() Meta {
+	return w.meta
 }
 
 // Private methods

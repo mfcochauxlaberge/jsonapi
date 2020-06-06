@@ -18,6 +18,7 @@ type Resource interface {
 	Rels() map[string]Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
+	Meta() Meta
 
 	// Read
 	GetID() string
