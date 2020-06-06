@@ -1,7 +1,6 @@
 package jsonapi_test
 
 import (
-	"fmt"
 	"reflect"
 	"testing"
 	"time"
@@ -215,7 +214,7 @@ func TestWrapper(t *testing.T) {
 	assert.NotEqual(
 		wrap1.Get("str"),
 		wrap3.Get("str"),
-		fmt.Sprintf("modified value does not affect original"),
+		"modified value does not affect original",
 	)
 }
 
