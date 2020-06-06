@@ -132,6 +132,11 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath),
 	}
 
+	// Meta
+	if len(r.Meta()) > 0 {
+		mapPl["meta"] = r.Meta()
+	}
+
 	// NOTE An error should not happen.
 	pl, _ := json.Marshal(mapPl)
 
