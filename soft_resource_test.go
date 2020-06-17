@@ -251,16 +251,18 @@ func TestSoftResourceMeta(t *testing.T) {
 	typ, _ := BuildType(mocktype{})
 	sr := &SoftResource{}
 	sr.Type = &typ
-
-	// Modify the SoftResource object
 	sr.SetID("id")
-	sr.Set("str", "abc123")
-	sr.Set("int", 42)
 
-	nsr := sr.New()
+	meta := Meta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 200,
+		"key3": false,
+		"key4": getTime(),
+	})
+
+	// Add some meta values
+	sr.SetMeta(meta)
 
 	// The new
-	assert.Equal("", nsr.GetID())
-	assert.Equal("", nsr.Get("str"))
-	assert.Equal(0, nsr.Get("int"))
+	assert.Equal(meta, sr.Meta())
 }
