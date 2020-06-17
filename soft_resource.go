@@ -203,6 +203,11 @@ func (sr *SoftResource) Meta() Meta {
 	return sr.meta
 }
 
+// SetMeta sets the meta values of the resource.
+func (sr *SoftResource) SetMeta(m Meta) {
+	sr.meta = m
+}
+
 func (sr *SoftResource) fields() []string {
 	fields := make([]string, 0, len(sr.Type.Attrs)+len(sr.Type.Rels))
 	for i := range sr.Type.Attrs {

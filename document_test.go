@@ -129,13 +129,17 @@ func TestMarshalDocument(t *testing.T) {
 		Bytes: []byte{},
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
-	col.Add(Wrap(&mocktype{
-		ID:    "id2",
-		Str:   "漢語",
-		Int:   -42,
-		Time:  time.Time{},
-		Bytes: []byte{},
-	}))
+
+	r4 := &mocktype{
+		ID: "id4",
+	}
+	r4.SetMeta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 42,
+		"key3": true,
+		"key4": getTime(),
+	})
+	col.Add(Wrap(r4))
 
 	// Test struct
 	tests := []struct {

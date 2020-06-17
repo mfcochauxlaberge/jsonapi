@@ -100,6 +100,13 @@ func Wrap(v interface{}) *Wrapper {
 		}
 	}
 
+	// Meta
+	if m, ok := v.(Meter); ok {
+		if len(m.Meta()) > 0 {
+			w.SetMeta(m.Meta())
+		}
+	}
+
 	return w
 }
 
@@ -311,6 +318,11 @@ func (w *Wrapper) Copy() Resource {
 // Meta returns the meta values of the resource.
 func (w *Wrapper) Meta() Meta {
 	return w.meta
+}
+
+// SetMeta sets the meta values of the resource.
+func (w *Wrapper) SetMeta(m Meta) {
+	w.meta = m
 }
 
 // Private methods
