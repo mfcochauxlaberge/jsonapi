@@ -179,7 +179,7 @@ func (w *Wrapper) Set(key string, val interface{}) {
 // GetToOne returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToOne(key string) string {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
@@ -205,7 +205,7 @@ func (w *Wrapper) GetToOne(key string) string {
 // GetToMany returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToMany(key string) []string {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
@@ -231,7 +231,7 @@ func (w *Wrapper) GetToMany(key string) []string {
 // SetToOne sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToOne(key string, rel string) {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
@@ -259,7 +259,7 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 // SetToMany sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToMany(key string, rels []string) {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
@@ -311,7 +311,7 @@ func (w *Wrapper) Copy() Resource {
 
 func (w *Wrapper) getAttr(key string) interface{} {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
@@ -332,7 +332,7 @@ func (w *Wrapper) getAttr(key string) interface{} {
 
 func (w *Wrapper) setAttr(key string, v interface{}) {
 	if key == "" {
-		panic("jsonapi: key is empty")
+		panic("key is empty")
 	}
 
 	for i := 0; i < w.val.NumField(); i++ {
