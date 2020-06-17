@@ -5,6 +5,16 @@ import (
 	"time"
 )
 
+// A Meter represents the interface of an object that has meta information about
+// itself.
+//
+// It is useful for a struct that represents a resource type to implement this
+// interface to have a meta property as part of its JSON output.
+type Meter interface {
+	Meta() Meta
+	SetMeta(Meta)
+}
+
 type Meta map[string]interface{}
 
 // Has reports whether the Meta map contains or not the given key.

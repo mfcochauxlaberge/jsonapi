@@ -129,6 +129,13 @@ func TestMarshalDocument(t *testing.T) {
 		Bytes: []byte{},
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
+	col.Add(Wrap(&mocktype{
+		ID:    "id2",
+		Str:   "漢語",
+		Int:   -42,
+		Time:  time.Time{},
+		Bytes: []byte{},
+	}))
 
 	// Test struct
 	tests := []struct {

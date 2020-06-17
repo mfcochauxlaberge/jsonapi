@@ -18,7 +18,6 @@ type Resource interface {
 	Rels() map[string]Rel
 	Attr(key string) Attr
 	Rel(key string) Rel
-	Meta() Meta
 
 	// Read
 	GetID() string
@@ -133,8 +132,10 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 	}
 
 	// Meta
-	if len(r.Meta()) > 0 {
-		mapPl["meta"] = r.Meta()
+	if m, ok := r.(Meter); ok {
+		if len(m.Meta()) > 0 {
+			mapPl["meta"] = m.Meta()
+		}
 	}
 
 	// NOTE An error should not happen.
@@ -204,13 +205,8 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	}
 
 	// Meta
-	meta := res.Meta()
-	for k := range meta {
-		delete(meta, k)
-	}
-
-	for k, v := range rske.Meta {
-		meta[k] = v
+	if m, ok := res.(Meter); ok {
+		m.SetMeta(rske.Meta)
 	}
 
 	return res, nil
