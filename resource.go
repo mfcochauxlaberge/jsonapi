@@ -132,7 +132,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 	}
 
 	// Meta
-	if m, ok := r.(Meter); ok {
+	if m, ok := r.(MetaHolder); ok {
 		if len(m.Meta()) > 0 {
 			mapPl["meta"] = m.Meta()
 		}
@@ -205,7 +205,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	}
 
 	// Meta
-	if m, ok := res.(Meter); ok {
+	if m, ok := res.(MetaHolder); ok {
 		m.SetMeta(rske.Meta)
 	}
 

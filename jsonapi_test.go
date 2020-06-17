@@ -14,7 +14,7 @@ func getTime() time.Time {
 	return now
 }
 
-var _ Meter = (*mocktype)(nil)
+var _ MetaHolder = (*mocktype)(nil)
 
 // mocktype is a fake struct that defines a JSON:API type for test purposes.
 type mocktype struct {

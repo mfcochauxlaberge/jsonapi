@@ -101,7 +101,7 @@ func Wrap(v interface{}) *Wrapper {
 	}
 
 	// Meta
-	if m, ok := v.(Meter); ok {
+	if m, ok := v.(MetaHolder); ok {
 		if len(m.Meta()) > 0 {
 			w.SetMeta(m.Meta())
 		}
