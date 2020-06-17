@@ -130,6 +130,17 @@ func TestMarshalDocument(t *testing.T) {
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
 
+	r4 := &mocktype{
+		ID: "id4",
+	}
+	r4.SetMeta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 42,
+		"key3": true,
+		"key4": getTime(),
+	})
+	col.Add(Wrap(r4))
+
 	// Test struct
 	tests := []struct {
 		name   string
@@ -400,6 +411,17 @@ func TestUnmarshalDocument(t *testing.T) {
 	}))
 	col.Add(Wrap(&mocktype{ID: "id2"}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
+
+	r4 := &mocktype{
+		ID: "id4",
+	}
+	r4.SetMeta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 42,
+		"key3": true,
+		"key4": getTime(),
+	})
+	col.Add(Wrap(r4))
 
 	// Tests
 	t.Run("resource with inclusions", func(t *testing.T) {

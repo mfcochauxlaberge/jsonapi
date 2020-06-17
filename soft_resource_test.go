@@ -244,3 +244,25 @@ func TestSoftResourceCopy(t *testing.T) {
 	sr2 := sr.Copy()
 	assert.Equal(true, Equal(sr, sr2))
 }
+
+func TestSoftResourceMeta(t *testing.T) {
+	assert := assert.New(t)
+
+	typ, _ := BuildType(mocktype{})
+	sr := &SoftResource{}
+	sr.Type = &typ
+	sr.SetID("id")
+
+	meta := Meta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 200,
+		"key3": false,
+		"key4": getTime(),
+	})
+
+	// Add some meta values
+	sr.SetMeta(meta)
+
+	// The new
+	assert.Equal(meta, sr.Meta())
+}

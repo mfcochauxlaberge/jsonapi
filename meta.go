@@ -52,3 +52,14 @@ func (m Meta) GetTime(key string) time.Time {
 
 	return t
 }
+
+// A MetaHolder can hold and return meta values.
+//
+// It is useful for a struct that represents a resource type to implement this
+// interface to have a meta property as part of its JSON output.
+//
+// Implementations don't have to deeply copy the maps.
+type MetaHolder interface {
+	Meta() Meta
+	SetMeta(Meta)
+}

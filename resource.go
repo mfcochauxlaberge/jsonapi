@@ -131,6 +131,13 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath),
 	}
 
+	// Meta
+	if m, ok := r.(MetaHolder); ok {
+		if len(m.Meta()) > 0 {
+			mapPl["meta"] = m.Meta()
+		}
+	}
+
 	// NOTE An error should not happen.
 	pl, _ := json.Marshal(mapPl)
 
@@ -195,6 +202,11 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 		} else {
 			return nil, NewErrUnknownFieldInBody(typ.Name, r)
 		}
+	}
+
+	// Meta
+	if m, ok := res.(MetaHolder); ok {
+		m.SetMeta(rske.Meta)
 	}
 
 	return res, nil
