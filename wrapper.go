@@ -125,28 +125,6 @@ func (w *Wrapper) Rels() map[string]Rel {
 	return w.rels
 }
 
-// Attr returns the attribute that corresponds to the given key.
-func (w *Wrapper) Attr(key string) Attr {
-	for _, attr := range w.attrs {
-		if attr.Name == key {
-			return attr
-		}
-	}
-
-	return Attr{}
-}
-
-// Rel returns the relationship that corresponds to the given key.
-func (w *Wrapper) Rel(key string) Rel {
-	for _, rel := range w.rels {
-		if rel.FromName == key {
-			return rel
-		}
-	}
-
-	return Rel{}
-}
-
 // New returns a copy of the resource under the wrapper.
 func (w *Wrapper) New() Resource {
 	newVal := reflect.New(w.val.Type())

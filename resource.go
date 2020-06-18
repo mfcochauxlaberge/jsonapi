@@ -16,8 +16,6 @@ type Resource interface {
 	// Structure
 	Attrs() map[string]Attr
 	Rels() map[string]Rel
-	Attr(key string) Attr
-	Rel(key string) Rel
 
 	// Read
 	GetID() string
