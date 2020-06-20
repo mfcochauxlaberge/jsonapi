@@ -27,7 +27,6 @@ type Resource interface {
 	GetToMany(key string) []string
 
 	// Update
-	SetID(id string)
 	Set(key string, val interface{})
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
