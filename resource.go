@@ -23,14 +23,10 @@ type Resource interface {
 	GetID() string
 	GetType() Type
 	Get(key string) interface{}
-	GetToOne(key string) string
-	GetToMany(key string) []string
 
 	// Update
 	SetID(id string)
 	Set(key string, val interface{})
-	SetToOne(key string, rel string)
-	SetToMany(key string, rels []string)
 }
 
 // MarshalResource marshals a Resource into a JSON-encoded payload.
