@@ -135,6 +135,13 @@ func (sr *SoftResource) SetType(typ *Type) {
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
 
+	if key == "id" {
+		id, _ := v.(string)
+		sr.id = id
+
+		return
+	}
+
 	if attr, ok := sr.Type.Attrs[key]; ok {
 		typ, nullable := GetAttrType(fmt.Sprintf("%T", v))
 		if attr.Type == typ && attr.Nullable == nullable {

@@ -181,6 +181,11 @@ func (w *Wrapper) SetID(id string) {
 
 // Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
+	if key == "id" {
+		id, _ := val.(string)
+		w.SetID(id)
+	}
+
 	w.setAttr(key, val)
 }
 

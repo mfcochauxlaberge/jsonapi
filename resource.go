@@ -158,7 +158,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	typ := schema.GetType(rske.Type)
 	res := typ.New()
 
-	res.SetID(rske.ID)
+	res.Set("id", rske.ID)
 
 	for a, v := range rske.Attributes {
 		if attr, ok := typ.Attrs[a]; ok {
