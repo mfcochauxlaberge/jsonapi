@@ -26,7 +26,6 @@ type Resource interface {
 	GetToMany(key string) []string
 
 	// Update
-	SetID(id string)
 	Set(key string, val interface{})
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
@@ -158,7 +157,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	typ := schema.GetType(rske.Type)
 	res := typ.New()
 
-	res.SetID(rske.ID)
+	res.Set("id", rske.ID)
 
 	for a, v := range rske.Attributes {
 		if attr, ok := typ.Attrs[a]; ok {
