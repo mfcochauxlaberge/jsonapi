@@ -66,6 +66,20 @@ func (sr *SoftResource) RemoveField(field string) {
 	delete(sr.Type.Rels, field)
 }
 
+// Attr returns the attribute named after key.
+func (sr *SoftResource) Attr(key string) Attr {
+	sr.check()
+
+	return sr.Type.Attrs[key]
+}
+
+// Rel returns the relationship named after key.
+func (sr *SoftResource) Rel(key string) Rel {
+	sr.check()
+
+	return sr.Type.Rels[key]
+}
+
 // New returns a new resource (of type SoftResource) with the same type but
 // without the values.
 func (sr *SoftResource) New() Resource {
