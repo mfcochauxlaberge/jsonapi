@@ -41,7 +41,7 @@ func TestSoftResource(t *testing.T) {
 	typ2 := typ
 	typ2.Name = "type2"
 	sr.SetType(&typ2)
-	assert.Equal(t, "id", sr.GetID())
+	assert.Equal(t, "id", sr.Get("id").(string))
 	assert.Equal(t, "type2", sr.GetType().Name)
 
 	// Attributes
@@ -162,7 +162,7 @@ func TestSoftResourceNew(t *testing.T) {
 	nsr := sr.New()
 
 	// The new
-	assert.Equal("", nsr.GetID())
+	assert.Equal("", nsr.Get("id").(string))
 	assert.Equal("", nsr.Get("str"))
 	assert.Equal(0, nsr.Get("int"))
 }

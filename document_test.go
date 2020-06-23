@@ -44,7 +44,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids := []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect := []string{
@@ -79,7 +79,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids = []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect = []string{

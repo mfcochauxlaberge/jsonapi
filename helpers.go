@@ -196,7 +196,7 @@ func MustBuildType(v interface{}) Type {
 // CheckType can be used to check the validity of a struct.
 func IDAndType(v interface{}) (string, string) {
 	if res, ok := v.(Resource); ok {
-		return res.GetID(), res.GetType().Name
+		return res.Get("id").(string), res.GetType().Name
 	}
 
 	val := reflect.ValueOf(v)
