@@ -190,24 +190,25 @@ func TestWrapper(t *testing.T) {
 
 	// New
 	wrap3 := wrap1.New()
+	wrap3Type := wrap3.GetType()
 
 	for _, attr := range wrap1.Attrs() {
-		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
+		assert.Equal(wrap1.Attr(attr.Name), wrap3Type.Attrs[attr.Name], "copied attribute")
 	}
 
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3Type.Rels[rel.FromName], "copied relationship")
 	}
 
 	// Copy
 	wrap3 = wrap1.Copy()
 
 	for _, attr := range wrap1.Attrs() {
-		assert.Equal(wrap1.Attr(attr.Name), wrap3.Attr(attr.Name), "copied attribute")
+		assert.Equal(wrap1.Attr(attr.Name), wrap3Type.Attrs[attr.Name], "copied attribute")
 	}
 
 	for _, rel := range wrap1.Rels() {
-		assert.Equal(wrap1.Rel(rel.FromName), wrap3.Rel(rel.FromName), "copied relationship")
+		assert.Equal(wrap1.Rel(rel.FromName), wrap3Type.Rels[rel.FromName], "copied relationship")
 	}
 
 	wrap3.Set("str", "another string")
