@@ -110,6 +110,10 @@ func (sr *SoftResource) GetType() Type {
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
 
+	if key == "id" {
+		return sr.GetID()
+	}
+
 	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v

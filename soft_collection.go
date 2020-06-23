@@ -60,7 +60,7 @@ func (s *SoftCollection) Add(r Resource) {
 	// A SoftResource is built from the Resource and
 	// then it is added to the collection.
 	sr := &SoftResource{}
-	sr.id = r.GetID()
+	sr.id = r.Get("id").(string)
 	sr.Type = s.Type
 
 	for _, attr := range r.Attrs() {

@@ -118,7 +118,7 @@ func TestRange(t *testing.T) {
 
 	ids := []string{}
 	for i := 0; i < ranged.Len(); i++ {
-		ids = append(ids, ranged.At(i).GetID())
+		ids = append(ids, ranged.At(i).Get("id").(string))
 	}
 
 	assert.Equal(expectedIDs, ids, "range of IDs (1)")
@@ -143,7 +143,7 @@ func TestRange(t *testing.T) {
 	ids = []string{}
 
 	for i := 0; i < ranged.Len(); i++ {
-		ids = append(ids, ranged.At(i).GetID())
+		ids = append(ids, ranged.At(i).Get("id").(string))
 	}
 	assert.Equal(expectedIDs, ids, "range of IDs (2)")
 
@@ -316,7 +316,7 @@ func TestSortResources(t *testing.T) {
 	// Sorted IDs from the collection
 	ids := []string{}
 	for i := 0; i < page.Len(); i++ {
-		ids = append(ids, page.At(i).GetID())
+		ids = append(ids, page.At(i).Get("id").(string))
 	}
 
 	expectedIDs := []string{
@@ -346,7 +346,7 @@ func TestSortResources(t *testing.T) {
 
 	ids = []string{}
 	for i := 0; i < page.Len(); i++ {
-		ids = append(ids, page.At(i).GetID())
+		ids = append(ids, page.At(i).Get("id").(string))
 	}
 
 	sort.Strings(expectedIDs)

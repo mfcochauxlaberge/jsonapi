@@ -57,7 +57,7 @@ func ExampleUnmarshalDocument() {
 	res, _ := doc.Data.(jsonapi.Resource)
 
 	// Print the result.
-	fmt.Printf("user.ID: %s\n", res.GetID())
+	fmt.Printf("user.ID: %s\n", res.Get("id").(string))
 	fmt.Printf("user.Username: %s\n", res.Get("username"))
 	tm := res.Get("registered-at").(time.Time)
 	out, _ := tm.MarshalText()
