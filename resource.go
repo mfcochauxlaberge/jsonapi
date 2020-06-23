@@ -18,14 +18,12 @@ type Resource interface {
 	Rels() map[string]Rel
 
 	// Read
-	GetID() string
 	GetType() Type
 	Get(key string) interface{}
 	GetToOne(key string) string
 	GetToMany(key string) []string
 
 	// Update
-	SetID(id string)
 	Set(key string, val interface{})
 	SetToOne(key string, rel string)
 	SetToMany(key string, rels []string)
@@ -35,7 +33,7 @@ type Resource interface {
 func MarshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
-	mapPl["id"] = r.GetID()
+	mapPl["id"] = r.Get("id").(string)
 	mapPl["type"] = r.GetType().Name
 
 	// Attributes
@@ -157,7 +155,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	typ := schema.GetType(rske.Type)
 	res := typ.New()
 
-	res.SetID(rske.ID)
+	res.Set("id", rske.ID)
 
 	for a, v := range rske.Attributes {
 		if attr, ok := typ.Attrs[a]; ok {
@@ -397,7 +395,7 @@ func Equal(r1, r2 Resource) bool {
 
 // EqualStrict is like Equal, but it also considers IDs.
 func EqualStrict(r1, r2 Resource) bool {
-	if r1.GetID() != r2.GetID() {
+	if r1.Get("id").(string) != r2.Get("id").(string) {
 		return false
 	}
 

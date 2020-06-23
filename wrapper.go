@@ -149,6 +149,10 @@ func (w *Wrapper) GetType() Type {
 
 // Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
+	if key == "id" {
+		return w.GetID()
+	}
+
 	return w.getAttr(key)
 }
 
@@ -159,6 +163,11 @@ func (w *Wrapper) SetID(id string) {
 
 // Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
+	if key == "id" {
+		id, _ := val.(string)
+		w.SetID(id)
+	}
+
 	w.setAttr(key, val)
 }
 

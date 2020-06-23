@@ -36,7 +36,7 @@ type Document struct {
 //
 // It also makes sure that resources are not added twice.
 func (d *Document) Include(res Resource) {
-	key := res.GetID() + " " + res.GetType().Name
+	key := res.Get("id").(string) + " " + res.GetType().Name
 
 	if len(d.Included) == 0 {
 		d.Included = []Resource{}
@@ -44,7 +44,7 @@ func (d *Document) Include(res Resource) {
 
 	if dres, ok := d.Data.(Resource); ok {
 		// Check resource
-		rkey := dres.GetID() + " " + dres.GetType().Name
+		rkey := dres.Get("id").(string) + " " + dres.GetType().Name
 
 		if rkey == key {
 			return
@@ -54,7 +54,7 @@ func (d *Document) Include(res Resource) {
 		ctyp := col.GetType()
 		if ctyp.Name == res.GetType().Name {
 			for i := 0; i < col.Len(); i++ {
-				rkey := col.At(i).GetID() + " " + col.At(i).GetType().Name
+				rkey := col.At(i).Get("id").(string) + " " + col.At(i).GetType().Name
 
 				if rkey == key {
 					return
@@ -65,7 +65,7 @@ func (d *Document) Include(res Resource) {
 
 	// Check already included resources
 	for _, res := range d.Included {
-		if key == res.GetID()+" "+res.GetType().Name {
+		if key == res.Get("id").(string)+" "+res.GetType().Name {
 			return
 		}
 	}
@@ -124,7 +124,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 
 	if len(doc.Included) > 0 {
 		sort.Slice(doc.Included, func(i, j int) bool {
-			return doc.Included[i].GetID() < doc.Included[j].GetID()
+			return doc.Included[i].Get("id").(string) < doc.Included[j].Get("id").(string)
 		})
 
 		if len(data) > 0 {
