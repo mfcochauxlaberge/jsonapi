@@ -171,6 +171,10 @@ func (w *Wrapper) GetType() Type {
 
 // Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
+	if key == "id" {
+		return w.GetID()
+	}
+
 	return w.getAttr(key)
 }
 

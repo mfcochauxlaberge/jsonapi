@@ -20,7 +20,6 @@ type Resource interface {
 	Rel(key string) Rel
 
 	// Read
-	GetID() string
 	GetType() Type
 	Get(key string) interface{}
 	GetToOne(key string) string
@@ -37,7 +36,7 @@ type Resource interface {
 func MarshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
 	mapPl := map[string]interface{}{}
 
-	mapPl["id"] = r.GetID()
+	mapPl["id"] = r.Get("id").(string)
 	mapPl["type"] = r.GetType().Name
 
 	// Attributes
@@ -399,7 +398,7 @@ func Equal(r1, r2 Resource) bool {
 
 // EqualStrict is like Equal, but it also considers IDs.
 func EqualStrict(r1, r2 Resource) bool {
-	if r1.GetID() != r2.GetID() {
+	if r1.Get("id").(string) != r2.Get("id").(string) {
 		return false
 	}
 

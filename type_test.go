@@ -104,7 +104,7 @@ func TestTypeNewFunc(t *testing.T) {
 			return res
 		},
 	}
-	assert.Equal("abc123", typ.New().GetID())
+	assert.Equal("abc123", typ.New().Get("id").(string))
 }
 
 func TestAttrUnmarshalToType(t *testing.T) {
