@@ -266,3 +266,12 @@ func TestSoftResourceMeta(t *testing.T) {
 	// The new
 	assert.Equal(meta, sr.Meta())
 }
+
+func TestSoftResourceGetSetID(t *testing.T) {
+	assert := assert.New(t)
+
+	sr := &SoftResource{}
+	sr.Set("id", "abc123")
+
+	assert.Equal("abc123", sr.Get("id"))
+}
