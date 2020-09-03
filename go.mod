@@ -4,5 +4,5 @@ go 1.11
 
 require (
 	github.com/google/uuid v1.1.2
-	github.com/stretchr/testify v1.5.1
+	github.com/stretchr/testify v1.6.1
 )
