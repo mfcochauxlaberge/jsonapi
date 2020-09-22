@@ -6,10 +6,10 @@ import (
 )
 
 func makeOneLineNoSpaces(str string) string {
-	str = strings.Replace(str, "\t", "", -1)
-	str = strings.Replace(str, "\n", "", -1)
+	str = strings.ReplaceAll(str, "\t", "")
+	str = strings.ReplaceAll(str, "\n", "")
 
-	return strings.Replace(str, " ", "", -1)
+	return strings.ReplaceAll(str, " ", "")
 }
 
 func ptr(v interface{}) interface{} {
