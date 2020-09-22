@@ -25,7 +25,7 @@ env:
 before_script:
   - 'curl -sfL
       https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh
-      | sh -s v1.30.0'
+      | sh -s v1.31.0'
 
 script:
   - ./bin/golangci-lint run
