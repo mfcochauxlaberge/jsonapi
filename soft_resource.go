@@ -114,10 +114,21 @@ func (sr *SoftResource) Get(key string) interface{} {
 		return sr.GetID()
 	}
 
-	if _, ok := sr.Type.Attrs[key]; ok {
+	if typ, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
+
+		return GetZeroValue(typ.Type, typ.Nullable)
+	} else if typ, ok := sr.Type.Rels[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+
+		if typ.ToOne {
+			return ""
+		}
+		return make([]string, 0)
 	}
 
 	return nil
@@ -153,46 +164,6 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
 		}
-	}
-}
-
-// GetToOne returns the value associated to the relationship named after key.
-func (sr *SoftResource) GetToOne(key string) string {
-	sr.check()
-
-	if _, ok := sr.Type.Rels[key]; ok {
-		return sr.data[key].(string)
-	}
-
-	return ""
-}
-
-// GetToMany returns the value associated to the relationship named after key.
-func (sr *SoftResource) GetToMany(key string) []string {
-	sr.check()
-
-	if _, ok := sr.Type.Rels[key]; ok {
-		return sr.data[key].([]string)
-	}
-
-	return []string{}
-}
-
-// SetToOne sets the relationship named after key to id.
-func (sr *SoftResource) SetToOne(key string, id string) {
-	sr.check()
-
-	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = id
-	}
-}
-
-// SetToMany sets the relationship named after key to ids.
-func (sr *SoftResource) SetToMany(key string, ids []string) {
-	sr.check()
-
-	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = ids
 	}
 }
 

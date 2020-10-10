@@ -103,8 +103,8 @@ func TestSoftResource(t *testing.T) {
 	assert.Equal(t, map[string]Rel{}, sr.Rels())
 
 	assert.Equal(t, nil, sr.Get("nonexistent"))
-	assert.Equal(t, "", sr.GetToOne("nonexistent"))
-	assert.Equal(t, []string{}, sr.GetToMany("nonexistent"))
+	assert.Equal(t, nil, sr.Get("nonexistent"))
+	assert.Equal(t, nil, sr.Get("nonexistent"))
 
 	// Put the fields back
 	for _, attr := range attrs {
@@ -121,14 +121,14 @@ func TestSoftResource(t *testing.T) {
 
 	// Set and get some fields
 	assert.Equal(t, "", sr.Get("attr1"))
-	assert.Equal(t, "", sr.GetToOne("rel1"))
-	assert.Equal(t, []string{}, sr.GetToMany("rel2"))
+	assert.Equal(t, "", sr.Get("rel1").(string))
+	assert.Equal(t, []string{}, sr.Get("rel2").([]string))
 	sr.Set("attr1", "value")
-	sr.SetToOne("rel1", "id1")
-	sr.SetToMany("rel2", []string{"id1", "id2"})
+	sr.Set("rel1", "id1")
+	sr.Set("rel2", []string{"id1", "id2"})
 	assert.Equal(t, "value", sr.Get("attr1"))
-	assert.Equal(t, "id1", sr.GetToOne("rel1"))
-	assert.Equal(t, []string{"id1", "id2"}, sr.GetToMany("rel2"))
+	assert.Equal(t, "id1", sr.Get("rel1").(string))
+	assert.Equal(t, []string{"id1", "id2"}, sr.Get("rel2").([]string))
 
 	// Set a nullable attribute to nil
 	_ = sr.Type.AddAttr(Attr{
@@ -232,13 +232,13 @@ func TestSoftResourceCopy(t *testing.T) {
 		FromName: "to-one",
 		ToOne:    true,
 	})
-	sr.SetToOne("to-one", "id1")
+	sr.Set("to-one", "id1")
 
 	sr.AddRel(Rel{
 		FromName: "to-many",
 		ToOne:    false,
 	})
-	sr.SetToMany("to-many", []string{"id2", "id3"})
+	sr.Set("to-many", []string{"id2", "id3"})
 
 	// Copy
 	sr2 := sr.Copy()
