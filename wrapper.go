@@ -20,6 +20,7 @@ type Wrapper struct {
 	typ   string
 	attrs map[string]Attr
 	rels  map[string]Rel
+	meta  Meta
 }
 
 // Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
@@ -99,6 +100,13 @@ func Wrap(v interface{}) *Wrapper {
 		}
 	}
 
+	// Meta
+	if m, ok := v.(MetaHolder); ok {
+		if len(m.Meta()) > 0 {
+			w.SetMeta(m.Meta())
+		}
+	}
+
 	return w
 }
 
@@ -163,6 +171,10 @@ func (w *Wrapper) GetType() Type {
 
 // Get returns the value associated to the attribute named after key.
 func (w *Wrapper) Get(key string) interface{} {
+	if key == "id" {
+		return w.GetID()
+	}
+
 	return w.getAttr(key)
 }
 
@@ -173,11 +185,20 @@ func (w *Wrapper) SetID(id string) {
 
 // Set sets the value associated to the attribute named after key.
 func (w *Wrapper) Set(key string, val interface{}) {
+	if key == "id" {
+		id, _ := val.(string)
+		w.SetID(id)
+	}
+
 	w.setAttr(key, val)
 }
 
 // GetToOne returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToOne(key string) string {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -195,15 +216,15 @@ func (w *Wrapper) GetToOne(key string) string {
 		}
 	}
 
-	if key == "" {
-		panic("jsonapi: key is empty")
-	}
-
 	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // GetToMany returns the value associated with the relationship named after key.
 func (w *Wrapper) GetToMany(key string) []string {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -221,15 +242,15 @@ func (w *Wrapper) GetToMany(key string) []string {
 		}
 	}
 
-	if key == "" {
-		panic("jsonapi: key is empty")
-	}
-
 	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // SetToOne sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToOne(key string, rel string) {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -249,15 +270,15 @@ func (w *Wrapper) SetToOne(key string, rel string) {
 		}
 	}
 
-	if key == "" {
-		panic("jsonapi: key is empty")
-	}
-
 	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
 }
 
 // SetToMany sets the value associated to the relationship named after key.
 func (w *Wrapper) SetToMany(key string, rels []string) {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -275,10 +296,6 @@ func (w *Wrapper) SetToMany(key string, rels []string) {
 
 			return
 		}
-	}
-
-	if key == "" {
-		panic("jsonapi: key is empty")
 	}
 
 	panic(fmt.Sprintf("jsonapi: relationship %q does not exist", key))
@@ -307,9 +324,23 @@ func (w *Wrapper) Copy() Resource {
 	return nw
 }
 
+// Meta returns the meta values of the resource.
+func (w *Wrapper) Meta() Meta {
+	return w.meta
+}
+
+// SetMeta sets the meta values of the resource.
+func (w *Wrapper) SetMeta(m Meta) {
+	w.meta = m
+}
+
 // Private methods
 
 func (w *Wrapper) getAttr(key string) interface{} {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -323,14 +354,14 @@ func (w *Wrapper) getAttr(key string) interface{} {
 		}
 	}
 
-	if key == "" {
-		panic("jsonapi: key is empty")
-	}
-
 	panic(fmt.Sprintf("jsonapi: attribute %q does not exist", key))
 }
 
 func (w *Wrapper) setAttr(key string, v interface{}) {
+	if key == "" {
+		panic("key is empty")
+	}
+
 	for i := 0; i < w.val.NumField(); i++ {
 		field := w.val.Field(i)
 		sf := w.val.Type().Field(i)
@@ -352,10 +383,6 @@ func (w *Wrapper) setAttr(key string, v interface{}) {
 				val.Type(),
 			))
 		}
-	}
-
-	if key == "" {
-		panic("jsonapi: key is empty")
 	}
 
 	panic(fmt.Errorf("jsonapi: attribute %q does not exist", key))

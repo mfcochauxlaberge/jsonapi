@@ -41,7 +41,7 @@ func TestSoftResource(t *testing.T) {
 	typ2 := typ
 	typ2.Name = "type2"
 	sr.SetType(&typ2)
-	assert.Equal(t, "id", sr.GetID())
+	assert.Equal(t, "id", sr.Get("id").(string))
 	assert.Equal(t, "type2", sr.GetType().Name)
 
 	// Attributes
@@ -162,7 +162,7 @@ func TestSoftResourceNew(t *testing.T) {
 	nsr := sr.New()
 
 	// The new
-	assert.Equal("", nsr.GetID())
+	assert.Equal("", nsr.Get("id").(string))
 	assert.Equal("", nsr.Get("str"))
 	assert.Equal(0, nsr.Get("int"))
 }
@@ -243,4 +243,35 @@ func TestSoftResourceCopy(t *testing.T) {
 	// Copy
 	sr2 := sr.Copy()
 	assert.Equal(true, Equal(sr, sr2))
+}
+
+func TestSoftResourceMeta(t *testing.T) {
+	assert := assert.New(t)
+
+	typ, _ := BuildType(mocktype{})
+	sr := &SoftResource{}
+	sr.Type = &typ
+	sr.SetID("id")
+
+	meta := Meta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 200,
+		"key3": false,
+		"key4": getTime(),
+	})
+
+	// Add some meta values
+	sr.SetMeta(meta)
+
+	// The new
+	assert.Equal(meta, sr.Meta())
+}
+
+func TestSoftResourceGetSetID(t *testing.T) {
+	assert := assert.New(t)
+
+	sr := &SoftResource{}
+	sr.Set("id", "abc123")
+
+	assert.Equal("abc123", sr.Get("id"))
 }

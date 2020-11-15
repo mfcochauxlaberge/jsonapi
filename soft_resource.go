@@ -16,6 +16,7 @@ type SoftResource struct {
 
 	id   string
 	data map[string]interface{}
+	meta Meta
 }
 
 // Attrs returns the resource's attributes.
@@ -109,6 +110,10 @@ func (sr *SoftResource) GetType() Type {
 func (sr *SoftResource) Get(key string) interface{} {
 	sr.check()
 
+	if key == "id" {
+		return sr.GetID()
+	}
+
 	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
@@ -134,8 +139,16 @@ func (sr *SoftResource) SetType(typ *Type) {
 func (sr *SoftResource) Set(key string, v interface{}) {
 	sr.check()
 
+	if key == "id" {
+		id, _ := v.(string)
+		sr.id = id
+
+		return
+	}
+
 	if attr, ok := sr.Type.Attrs[key]; ok {
-		if GetAttrTypeString(attr.Type, attr.Nullable) == fmt.Sprintf("%T", v) {
+		typ, nullable := GetAttrType(fmt.Sprintf("%T", v))
+		if attr.Type == typ && attr.Nullable == nullable {
 			sr.data[key] = v
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
@@ -165,25 +178,25 @@ func (sr *SoftResource) GetToMany(key string) []string {
 	return []string{}
 }
 
-// SetToOne sets the relationship named after key to rel.
-func (sr *SoftResource) SetToOne(key string, v string) {
+// SetToOne sets the relationship named after key to id.
+func (sr *SoftResource) SetToOne(key string, id string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = id
 	}
 }
 
-// SetToMany sets the relationship named after key to rel.
-func (sr *SoftResource) SetToMany(key string, v []string) {
+// SetToMany sets the relationship named after key to ids.
+func (sr *SoftResource) SetToMany(key string, ids []string) {
 	sr.check()
 
 	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = v
+		sr.data[key] = ids
 	}
 }
 
-// Copy return a new SoftResource object with the same type and values.
+// Copy returns a new SoftResource object with the same type and values.
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 
@@ -194,6 +207,16 @@ func (sr *SoftResource) Copy() Resource {
 		id:   sr.id,
 		data: copyData(sr.data),
 	}
+}
+
+// Meta returns the meta values of the resource.
+func (sr *SoftResource) Meta() Meta {
+	return sr.meta
+}
+
+// SetMeta sets the meta values of the resource.
+func (sr *SoftResource) SetMeta(m Meta) {
+	sr.meta = m
 }
 
 func (sr *SoftResource) fields() []string {

@@ -228,7 +228,7 @@ func TestEqual(t *testing.T) {
 
 	mt21 := Wrap(&mockType2{
 		ID:             "mt1",
-		StrPtr:         func() *string { v := string(1); return &v }(),
+		StrPtr:         func() *string { v := "id"; return &v }(),
 		IntPtr:         func() *int { v := int(1); return &v }(),
 		Int8Ptr:        func() *int8 { v := int8(2); return &v }(),
 		Int16Ptr:       func() *int16 { v := int16(3); return &v }(),

@@ -11,7 +11,25 @@ import (
 	"time"
 )
 
-// Attribute types
+// Attribute types are the possible types for attributes.
+//
+// Those constants are numbers that represent the types. Each type has a string
+// representation which should be used instead of the numbers when storing
+// that information. The numbers can change between any version of this library,
+// even if it potentially can break existing code.
+//
+// The names are as follow:
+//  - string
+//  - int, int8, int16, int32, int64
+//  - uint, uint8, uint16, uint32, uint64
+//  - bool
+//  - time (Go type is time.Time)
+//  - bytes (Go type is []uint8 or []byte)
+//
+// An asterisk is present as a prefix when the type is nullable (like *string).
+//
+// Developers are encouraged to use the constants, the Type struct, and other
+// tools to handle attribute types instead of dealing with strings.
 const (
 	AttrTypeInvalid = iota
 	AttrTypeString
@@ -189,8 +207,8 @@ type Attr struct {
 // UnmarshalToType unmarshals the data into a value of the type represented by
 // the attribute and returns it.
 func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
-	if a.Nullable && string(data) == "nil" {
-		return nil, nil
+	if a.Nullable && string(data) == "null" {
+		return GetZeroValue(a.Type, a.Nullable), nil
 	}
 
 	var (
@@ -457,11 +475,12 @@ func GetAttrType(t string) (int, bool) {
 	case "bool":
 		return AttrTypeBool, nullable
 
-	case "time.Time":
+	case "time.Time", "time":
 		return AttrTypeTime, nullable
 
-	case "[]uint8":
+	case "[]uint8", "[]byte", "bytes":
 		return AttrTypeBytes, nullable
+
 	default:
 		return AttrTypeInvalid, false
 	}
@@ -510,10 +529,10 @@ func GetAttrTypeString(t int, nullable bool) string {
 		str = "bool"
 
 	case AttrTypeTime:
-		str = "time.Time"
+		str = "time"
 
 	case AttrTypeBytes:
-		str = "[]uint8"
+		str = "bytes"
 
 	default:
 		str = ""
