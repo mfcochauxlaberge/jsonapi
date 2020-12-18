@@ -1,8 +1,11 @@
 <div align="center" style="text-align: center;">
   <img src="https://raw.githubusercontent.com/mfcochauxlaberge/jsonapi/master/assets/logo.png" height="120">
   <br>
-  <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
-    <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ATest+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Test/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ALint+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Lint/badge.svg?branch=master">
   </a>
   <a href="https://goreportcard.com/report/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://goreportcard.com/badge/github.com/mfcochauxlaberge/jsonapi">
