@@ -26,22 +26,34 @@ type Wrapper struct {
 // Wrap wraps v (a struct or a pointer to a struct) and returns a Wrapper that
 // can be used as a Resource to handle the given value.
 //
-// If v is not a pointer, the changes applied to the Wrapper object won't affect
-// the underlying object (which will be a new instance of v's type).
+// Changes made to the Wrapper object (through Set for example) will be applied
+// to v.
+//
+// If v is not a pointer, a copy is made and v won't be modified by the wrapper.
 func Wrap(v interface{}) *Wrapper {
 	val := reflect.ValueOf(v)
 
-	if val.Kind() != reflect.Ptr {
+	switch {
+	case val.Kind() != reflect.Ptr:
 		if val.Kind() != reflect.Struct {
 			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
 		}
 
-		val = reflect.New(val.Type())
-	} else if val.Elem().Kind() != reflect.Struct {
-		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
-	}
+		newVal := reflect.New(val.Type()).Elem()
 
-	val = val.Elem()
+		for i := 0; i < newVal.NumField(); i++ {
+			f := newVal.Field(i)
+			if f.CanSet() {
+				f.Set(val.Field(i))
+			}
+		}
+
+		val = newVal
+	case val.Elem().Kind() != reflect.Struct:
+		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+	default:
+		val = val.Elem()
+	}
 
 	err := Check(val.Interface())
 	if err != nil {
