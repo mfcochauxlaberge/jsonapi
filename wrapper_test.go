@@ -57,8 +57,9 @@ func TestWrapStruct(t *testing.T) {
 	// Modyfing the wrapper does not modify
 	// the original value.
 	wrap1.SetID("another-id")
+	id, _ = wrap1.IDAndType()
 	wrap1.Set("str", "another_string")
-	assert.Equal("mocktypes1", typ, "type")
+	assert.Equal("another_id", id, "type")
 	assert.Equal(res1.Str, wrap1.Get("str"), "str field")
 }
 
