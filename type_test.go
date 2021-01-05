@@ -104,7 +104,7 @@ func TestTypeNewFunc(t *testing.T) {
 			return res
 		},
 	}
-	assert.Equal("abc123", typ.New().GetID())
+	assert.Equal("abc123", typ.New().Get("id").(string))
 }
 
 func TestAttrUnmarshalToType(t *testing.T) {
@@ -169,9 +169,9 @@ func TestAttrUnmarshalToType(t *testing.T) {
 		assert.Equal(fmt.Sprintf("%T", test.val), fmt.Sprintf("%T", val))
 	}
 
-	// Nil value
+	// Null value
 	attr.Nullable = true
-	val, err := attr.UnmarshalToType([]byte("nil"))
+	val, err := attr.UnmarshalToType([]byte("null"))
 	assert.NoError(err)
 	assert.Nil(val)
 
@@ -265,8 +265,8 @@ func TestRelString(t *testing.T) {
 		FromOne:  true,
 	}
 
-	assert.Equal("type2_rel2", rel.String())
-	assert.Equal("type1_rel1", rel.Invert().String())
+	assert.Equal("type1_rel1_type2_rel2", rel.String())
+	assert.Equal("type1_rel1_type2_rel2", rel.Invert().String())
 }
 
 func TestGetAttrType(t *testing.T) {
@@ -324,7 +324,19 @@ func TestGetAttrType(t *testing.T) {
 	assert.Equal(AttrTypeTime, typ)
 	assert.False(nullable)
 
+	typ, nullable = GetAttrType("time")
+	assert.Equal(AttrTypeTime, typ)
+	assert.False(nullable)
+
 	typ, nullable = GetAttrType("[]uint8")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.False(nullable)
+
+	typ, nullable = GetAttrType("[]byte")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.False(nullable)
+
+	typ, nullable = GetAttrType("bytes")
 	assert.Equal(AttrTypeBytes, typ)
 	assert.False(nullable)
 
@@ -380,7 +392,19 @@ func TestGetAttrType(t *testing.T) {
 	assert.Equal(AttrTypeTime, typ)
 	assert.True(nullable)
 
+	typ, nullable = GetAttrType("*time")
+	assert.Equal(AttrTypeTime, typ)
+	assert.True(nullable)
+
 	typ, nullable = GetAttrType("*[]uint8")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.True(nullable)
+
+	typ, nullable = GetAttrType("*[]byte")
+	assert.Equal(AttrTypeBytes, typ)
+	assert.True(nullable)
+
+	typ, nullable = GetAttrType("*bytes")
 	assert.Equal(AttrTypeBytes, typ)
 	assert.True(nullable)
 
@@ -408,8 +432,8 @@ func TestGetAttrTypeString(t *testing.T) {
 	assert.Equal("uint32", GetAttrTypeString(AttrTypeUint32, false))
 	assert.Equal("uint64", GetAttrTypeString(AttrTypeUint64, false))
 	assert.Equal("bool", GetAttrTypeString(AttrTypeBool, false))
-	assert.Equal("time.Time", GetAttrTypeString(AttrTypeTime, false))
-	assert.Equal("[]uint8", GetAttrTypeString(AttrTypeBytes, false))
+	assert.Equal("time", GetAttrTypeString(AttrTypeTime, false))
+	assert.Equal("bytes", GetAttrTypeString(AttrTypeBytes, false))
 	assert.Equal("*string", GetAttrTypeString(AttrTypeString, true))
 	assert.Equal("*int", GetAttrTypeString(AttrTypeInt, true))
 	assert.Equal("*int8", GetAttrTypeString(AttrTypeInt8, true))
@@ -422,8 +446,8 @@ func TestGetAttrTypeString(t *testing.T) {
 	assert.Equal("*uint32", GetAttrTypeString(AttrTypeUint32, true))
 	assert.Equal("*uint64", GetAttrTypeString(AttrTypeUint64, true))
 	assert.Equal("*bool", GetAttrTypeString(AttrTypeBool, true))
-	assert.Equal("*time.Time", GetAttrTypeString(AttrTypeTime, true))
-	assert.Equal("*[]uint8", GetAttrTypeString(AttrTypeBytes, true))
+	assert.Equal("*time", GetAttrTypeString(AttrTypeTime, true))
+	assert.Equal("*bytes", GetAttrTypeString(AttrTypeBytes, true))
 	assert.Equal("", GetAttrTypeString(AttrTypeInvalid, false))
 	assert.Equal("", GetAttrTypeString(999, false))
 }

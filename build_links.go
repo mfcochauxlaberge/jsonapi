@@ -12,8 +12,9 @@ func buildSelfLink(res Resource, prepath string) string {
 		prepath += "/"
 	}
 
-	if res.GetID() != "" && res.GetType().Name != "" {
-		return prepath + res.GetType().Name + "/" + res.GetID()
+	id, _ := res.Get("id").(string)
+	if id != "" && res.GetType().Name != "" {
+		return prepath + res.GetType().Name + "/" + id
 	}
 
 	return ""

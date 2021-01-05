@@ -133,8 +133,8 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 		// it is checked earlier.
 		typ := schema.GetType(typeName)
 
-		params.Attrs[typeName] = []Attr{}
-		params.Rels[typeName] = []Rel{}
+		params.Attrs[typeName] = make([]Attr, 0, len(typ.Attrs))
+		params.Rels[typeName] = make([]Rel, 0, len(typ.Attrs))
 
 		for _, field := range typ.Fields() {
 			for _, field2 := range fields {

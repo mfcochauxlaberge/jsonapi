@@ -228,7 +228,7 @@ func TestEqual(t *testing.T) {
 
 	mt21 := Wrap(&mockType2{
 		ID:             "mt1",
-		StrPtr:         func() *string { v := string(1); return &v }(),
+		StrPtr:         func() *string { v := "id"; return &v }(),
 		IntPtr:         func() *int { v := int(1); return &v }(),
 		Int8Ptr:        func() *int8 { v := int8(2); return &v }(),
 		Int16Ptr:       func() *int16 { v := int16(3); return &v }(),
@@ -294,6 +294,25 @@ func TestEqual(t *testing.T) {
 	sr1.SetToOne("to-one", "a")
 	sr1.SetToMany("to-many", []string{"d", "e", "f"})
 	assert.False(Equal(mt11, sr1), "different relationship value (to-many)")
+
+	// Comparing two nil values of different types
+	sr3 := &SoftResource{}
+	sr3.AddAttr(Attr{
+		Name:     "nil",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*string)(nil))
+
+	sr4 := &SoftResource{}
+	sr4.AddAttr(Attr{
+		Name:     "nil2",
+		Type:     AttrTypeInt,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*int)(nil))
+
+	assert.Equal(true, Equal(sr3, sr4))
 }
 
 func TestEqualStrict(t *testing.T) {
