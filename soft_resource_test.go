@@ -143,6 +143,36 @@ func TestSoftResource(t *testing.T) {
 	sr.Set("nullable-str", nil)
 	assert.Nil(t, sr.Get("nullable-str"))
 	assert.Equal(t, (*string)(nil), sr.Get("nullable-str"))
+
+	// Getting the value of an unset field returns
+	// the zero value of the type.
+	sr = &SoftResource{}
+
+	sr.AddAttr(Attr{
+		Name:     "zero-str",
+		Type:     AttrTypeString,
+		Nullable: false,
+	})
+	assert.Equal(t, "", sr.Get("zero-str"))
+
+	sr.AddAttr(Attr{
+		Name:     "zero-str-null",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	assert.Equal(t, (*string)(nil), sr.Get("zero-str-null"))
+
+	sr.AddRel(Rel{
+		FromName: "zero-to-one",
+		ToOne:    true,
+	})
+	assert.Equal(t, "", sr.Get("zero-to-one"))
+
+	sr.AddRel(Rel{
+		FromName: "zero-to-many",
+		ToOne:    false,
+	})
+	assert.Equal(t, []string{}, sr.Get("zero-to-many"))
 }
 
 func TestSoftResourceNew(t *testing.T) {

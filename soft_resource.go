@@ -114,22 +114,14 @@ func (sr *SoftResource) Get(key string) interface{} {
 		return sr.GetID()
 	}
 
-	if attr, ok := sr.Type.Attrs[key]; ok {
+	if _, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
-
-		return GetZeroValue(attr.Type, attr.Nullable)
-	} else if rel, ok := sr.Type.Rels[key]; ok {
+	} else if _, ok := sr.Type.Rels[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
-
-		if rel.ToOne {
-			return ""
-		}
-
-		return make([]string, 0)
 	}
 
 	return nil
