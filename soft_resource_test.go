@@ -103,8 +103,6 @@ func TestSoftResource(t *testing.T) {
 	assert.Equal(t, map[string]Rel{}, sr.Rels())
 
 	assert.Equal(t, nil, sr.Get("nonexistent"))
-	assert.Equal(t, nil, sr.Get("nonexistent"))
-	assert.Equal(t, nil, sr.Get("nonexistent"))
 
 	// Put the fields back
 	for _, attr := range attrs {
