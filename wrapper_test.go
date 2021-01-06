@@ -41,7 +41,7 @@ func TestWrap(t *testing.T) {
 func TestWrapStruct(t *testing.T) {
 	assert := assert.New(t)
 
-	res1 := &mockType1{
+	res1 := mockType1{
 		ID:  "res123",
 		Str: "a_string",
 	}
@@ -54,13 +54,20 @@ func TestWrapStruct(t *testing.T) {
 	assert.Equal("mocktypes1", typ, "type")
 	assert.Equal(res1.Str, wrap1.Get("str"), "str field")
 
-	// Modyfing the wrapper does not modify
+	// Modifying the wrapper does not modify
 	// the original value.
-	wrap1.SetID("another-id")
+	wrap1.SetID("another_id")
 	id, _ = wrap1.IDAndType()
-	wrap1.Set("str", "another_string")
 	assert.Equal("another_id", id, "type")
-	assert.Equal(res1.Str, wrap1.Get("str"), "str field")
+
+	wrap1.Set("str", "another_string")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
+
+	// Modifying the original value does
+	// not modify the wrapper.
+	res1.Str = "new_string"
+	assert.NotEqual(res1.Str, wrap1.Get("str"), "str field")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
 }
 
 func TestWrapper(t *testing.T) {
