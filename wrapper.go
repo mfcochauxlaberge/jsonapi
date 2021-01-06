@@ -1,7 +1,6 @@
 package jsonapi
 
 import (
-	"errors"
 	"fmt"
 	"reflect"
 	"strings"
@@ -36,7 +35,7 @@ func Wrap(v interface{}) *Wrapper {
 	switch {
 	case val.Kind() != reflect.Ptr:
 		if val.Kind() != reflect.Struct {
-			panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+			panic("value has to be a pointer to a struct")
 		}
 
 		newVal := reflect.New(val.Type()).Elem()
@@ -50,14 +49,14 @@ func Wrap(v interface{}) *Wrapper {
 
 		val = newVal
 	case val.Elem().Kind() != reflect.Struct:
-		panic(errors.New("jsonapi: value has to be a pointer to a struct"))
+		panic("value has to be a pointer to a struct")
 	default:
 		val = val.Elem()
 	}
 
 	err := Check(val.Interface())
 	if err != nil {
-		panic(fmt.Sprintf("jsonapi: invalid type: %s", err))
+		panic("invalid struct: " + err.Error())
 	}
 
 	w := &Wrapper{
@@ -258,7 +257,7 @@ func (w *Wrapper) getField(key string) interface{} {
 		}
 	}
 
-	panic(fmt.Sprintf("jsonapi: attribute %q does not exist", key))
+	panic(fmt.Sprintf("attribute %q does not exist", key))
 }
 
 func (w *Wrapper) setField(key string, v interface{}) {
@@ -282,12 +281,12 @@ func (w *Wrapper) setField(key string, v interface{}) {
 				return
 			}
 
-			panic(fmt.Sprintf("jsonapi: value is of wrong type (expected %q, got %q)",
-				field.Type(),
-				val.Type(),
+			panic(fmt.Sprintf(
+				"got value of type %q, not %q",
+				field.Type(), val.Type(),
 			))
 		}
 	}
 
-	panic(fmt.Errorf("jsonapi: attribute %q does not exist", key))
+	panic(fmt.Sprintf("attribute %q does not exist", key))
 }
