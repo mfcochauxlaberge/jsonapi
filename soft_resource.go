@@ -114,20 +114,21 @@ func (sr *SoftResource) Get(key string) interface{} {
 		return sr.GetID()
 	}
 
-	if typ, ok := sr.Type.Attrs[key]; ok {
+	if attr, ok := sr.Type.Attrs[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
 
-		return GetZeroValue(typ.Type, typ.Nullable)
-	} else if typ, ok := sr.Type.Rels[key]; ok {
+		return GetZeroValue(attr.Type, attr.Nullable)
+	} else if rel, ok := sr.Type.Rels[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
 
-		if typ.ToOne {
+		if rel.ToOne {
 			return ""
 		}
+
 		return make([]string, 0)
 	}
 
@@ -163,6 +164,12 @@ func (sr *SoftResource) Set(key string, v interface{}) {
 			sr.data[key] = v
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
+		}
+	} else if rel, ok := sr.Type.Rels[key]; ok {
+		if _, ok := v.(string); ok && rel.ToOne {
+			sr.data[key] = v
+		} else if _, ok := v.([]string); ok && !rel.ToOne {
+			sr.data[key] = v
 		}
 	}
 }
