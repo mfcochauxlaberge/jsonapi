@@ -38,6 +38,38 @@ func TestWrap(t *testing.T) {
 	}, "panic when not a valid struct")
 }
 
+func TestWrapStruct(t *testing.T) {
+	assert := assert.New(t)
+
+	res1 := mockType1{
+		ID:  "res123",
+		Str: "a_string",
+	}
+
+	wrap1 := Wrap(res1)
+
+	// ID, type, field
+	id, typ := wrap1.IDAndType()
+	assert.Equal(res1.ID, id, "id")
+	assert.Equal("mocktypes1", typ, "type")
+	assert.Equal(res1.Str, wrap1.Get("str"), "str field")
+
+	// Modifying the wrapper does not modify
+	// the original value.
+	wrap1.SetID("another_id")
+	id, _ = wrap1.IDAndType()
+	assert.Equal("another_id", id, "type")
+
+	wrap1.Set("str", "another_string")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
+
+	// Modifying the original value does
+	// not modify the wrapper.
+	res1.Str = "new_string"
+	assert.NotEqual(res1.Str, wrap1.Get("str"), "str field")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
+}
+
 func TestWrapper(t *testing.T) {
 	assert := assert.New(t)
 
