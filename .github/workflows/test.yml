@@ -17,4 +17,5 @@ jobs:
         with:
           go-version: ${{ matrix.go }}
       - uses: actions/checkout@v2
-      - run: go test ./...
+      - run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+      - uses: codecov/codecov-action@v1
