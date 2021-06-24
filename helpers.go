@@ -178,8 +178,9 @@ func BuildType(v interface{}) (Type, error) {
 	return typ, nil
 }
 
-// MustBuildType calls BuildType and returns the result, except that it panics
-// if the error is not nil.
+// MustBuildType calls BuildType and returns the result.
+//
+// It panics if the error returned by BuildType is not nil.
 func MustBuildType(v interface{}) Type {
 	typ, err := BuildType(v)
 	if err != nil {
@@ -195,7 +196,7 @@ func MustBuildType(v interface{}) Type {
 // CheckType can be used to check the validity of a struct.
 func IDAndType(v interface{}) (string, string) {
 	if res, ok := v.(Resource); ok {
-		return res.GetID(), res.GetType().Name
+		return res.Get("id").(string), res.GetType().Name
 	}
 
 	val := reflect.ValueOf(v)
