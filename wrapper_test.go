@@ -11,6 +11,7 @@ import (
 )
 
 var _ Resource = (*Wrapper)(nil)
+var _ Copier = (*Wrapper)(nil)
 
 func TestWrap(t *testing.T) {
 	assert := assert.New(t)
