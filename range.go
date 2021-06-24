@@ -23,7 +23,7 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, size uint,
 		for i := 0; i < c.Len(); i++ {
 			for _, id := range ids {
 				res := c.At(i)
-				if res.GetID() == id {
+				if res.Get("id").(string) == id {
 					col.col = append(col.col, res)
 				}
 			}
@@ -103,7 +103,7 @@ func (s sortedResources) Less(i, j int) bool {
 		}
 
 		if r == "id" {
-			return s.col[i].GetID() < s.col[j].GetID() != inverse
+			return s.col[i].Get("id").(string) < s.col[j].Get("id").(string) != inverse
 		}
 
 		v := s.col[i].Get(r)
