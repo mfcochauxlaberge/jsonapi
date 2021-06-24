@@ -2,7 +2,6 @@ package jsonapi
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/url"
 	"sort"
 	"strconv"
@@ -164,7 +163,7 @@ func (u *URL) String() string {
 		if err != nil {
 			// This should not happen since Filter should be validated
 			// at this point.
-			panic(fmt.Errorf("jsonapi: can't marshal filter: %s", err))
+			panic(err)
 		}
 
 		param := "filter=" + string(mf)

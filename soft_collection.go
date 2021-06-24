@@ -72,9 +72,9 @@ func (s *SoftCollection) Add(r Resource) {
 		sr.AddRel(rel)
 
 		if rel.ToOne {
-			sr.SetToOne(rel.FromName, r.GetToOne(rel.FromName))
+			sr.Set(rel.FromName, r.Get(rel.FromName).(string))
 		} else {
-			sr.SetToMany(rel.FromName, r.GetToMany(rel.FromName))
+			sr.Set(rel.FromName, r.Get(rel.FromName).([]string))
 		}
 	}
 

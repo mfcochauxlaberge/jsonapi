@@ -862,9 +862,9 @@ func TestFilterResource(t *testing.T) {
 		res.SetType(typ)
 
 		if toOne {
-			res.SetToOne("rel", test.rval.(string))
+			res.Set("rel", test.rval.(string))
 		} else {
-			res.SetToMany("rel", test.rval.([]string))
+			res.Set("rel", test.rval.([]string))
 		}
 
 		filter := &Filter{

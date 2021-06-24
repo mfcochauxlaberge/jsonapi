@@ -11,10 +11,11 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        go: [ '1.12', '1.13', '1.14', '1.15' ]
+        go: [ '1.13', '1.14', '1.15', '1.16' ]
     steps:
       - uses: actions/setup-go@v2
         with:
           go-version: ${{ matrix.go }}
       - uses: actions/checkout@v2
-      - run: go test ./...
+      - run: go test ./... -race -coverprofile=coverage.txt -covermode=atomic
+      - uses: codecov/codecov-action@v1
