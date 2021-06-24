@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"flag"
+	"testing"
 	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
@@ -53,4 +54,8 @@ func (mt *mocktype) Meta() Meta {
 
 func (mt *mocktype) SetMeta(m Meta) {
 	mt.meta = m
+}
+
+func BenchmarkMarshalDocument(b *testing.B) {
+
 }
