@@ -97,6 +97,43 @@ func (s *Schema) RemoveRel(typ string, rel string) {
 	}
 }
 
+// AddTwoWayRel adds a two-way relationship to both types involved.
+//
+// The types must already exist in the schema.
+func (s *Schema) AddTwoWayRel(rel Rel) error {
+	rel1 := rel.Normalize()
+	rel2 := rel.Invert()
+	found1 := false
+	found2 := false
+
+	for i := range s.Types {
+		if s.Types[i].Name == rel1.FromType {
+			found1 = true
+
+			err := s.Types[i].AddRel(rel1)
+			if err != nil {
+				return err
+			}
+		} else if s.Types[i].Name == rel2.FromType {
+			found2 = true
+
+			err := s.Types[i].AddRel(rel2)
+			if err != nil {
+				return err
+			}
+		}
+	}
+
+	if found1 && found2 {
+		return nil
+	}
+
+	return fmt.Errorf(
+		"jsonapi: types %q and %q must exist",
+		rel1.FromType, rel2.FromType,
+	)
+}
+
 // Rels returns all the relationships from the schema's types. For two-way
 // relationships (two types where each has a relationship pointing to the other
 // type), only one of the two relationships will appear in the list.

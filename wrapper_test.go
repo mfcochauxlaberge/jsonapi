@@ -38,6 +38,38 @@ func TestWrap(t *testing.T) {
 	}, "panic when not a valid struct")
 }
 
+func TestWrapStruct(t *testing.T) {
+	assert := assert.New(t)
+
+	res1 := mockType1{
+		ID:  "res123",
+		Str: "a_string",
+	}
+
+	wrap1 := Wrap(res1)
+
+	// ID, type, field
+	id, typ := wrap1.IDAndType()
+	assert.Equal(res1.ID, id, "id")
+	assert.Equal("mocktypes1", typ, "type")
+	assert.Equal(res1.Str, wrap1.Get("str"), "str field")
+
+	// Modifying the wrapper does not modify
+	// the original value.
+	wrap1.SetID("another_id")
+	id, _ = wrap1.IDAndType()
+	assert.Equal("another_id", id, "type")
+
+	wrap1.Set("str", "another_string")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
+
+	// Modifying the original value does
+	// not modify the wrapper.
+	res1.Str = "new_string"
+	assert.NotEqual(res1.Str, wrap1.Get("str"), "str field")
+	assert.Equal("another_string", wrap1.Get("str"), "str field")
+}
+
 func TestWrapper(t *testing.T) {
 	assert := assert.New(t)
 
@@ -291,85 +323,5 @@ func TestWrapperGetAndSetErrors(t *testing.T) {
 	// Set with value of wrong type
 	assert.Panics(func() {
 		wrap.Set("str", 42)
-	})
-
-	// GetToOne on empty field name
-	assert.Panics(func() {
-		_ = wrap.GetToOne("")
-	})
-
-	// GetToOne on unknown field name
-	assert.Panics(func() {
-		_ = wrap.GetToOne("unknown")
-	})
-
-	// GetToOne on attribute
-	assert.Panics(func() {
-		_ = wrap.GetToOne("str")
-	})
-
-	// GetToOne on to-many relationship
-	assert.Panics(func() {
-		_ = wrap.GetToOne("to-x")
-	})
-
-	// GetToMany on empty field name
-	assert.Panics(func() {
-		_ = wrap.GetToMany("")
-	})
-
-	// GetToMany on unknown field name
-	assert.Panics(func() {
-		_ = wrap.GetToMany("unknown")
-	})
-
-	// GetToMany on attribute
-	assert.Panics(func() {
-		_ = wrap.GetToMany("str")
-	})
-
-	// GetToMany on to-one relationship
-	assert.Panics(func() {
-		_ = wrap.GetToMany("to-1")
-	})
-
-	// SetToOne on empty field name
-	assert.Panics(func() {
-		wrap.SetToOne("", "id")
-	})
-
-	// SetToOne on unknown field name
-	assert.Panics(func() {
-		wrap.SetToOne("unknown", "id")
-	})
-
-	// SetToOne on attribute
-	assert.Panics(func() {
-		wrap.SetToOne("str", "id")
-	})
-
-	// SetToOne on to-many relationship
-	assert.Panics(func() {
-		wrap.SetToOne("to-x", "id")
-	})
-
-	// SetToMany on empty field name
-	assert.Panics(func() {
-		wrap.SetToMany("", []string{"id"})
-	})
-
-	// SetToMany on unknown field name
-	assert.Panics(func() {
-		wrap.SetToMany("unknown", []string{"id"})
-	})
-
-	// SetToMany on attribute
-	assert.Panics(func() {
-		wrap.SetToMany("str", []string{"id"})
-	})
-
-	// SetToMany on to-one relationship
-	assert.Panics(func() {
-		wrap.SetToMany("to-1", []string{"id"})
 	})
 }
