@@ -11,7 +11,25 @@ import (
 	"time"
 )
 
-// Attribute types
+// Attribute types are the possible types for attributes.
+//
+// Those constants are numbers that represent the types. Each type has a string
+// representation which should be used instead of the numbers when storing
+// that information. The numbers can change between any version of this library,
+// even if it potentially can break existing code.
+//
+// The names are as follow:
+//  - string
+//  - int, int8, int16, int32, int64
+//  - uint, uint8, uint16, uint32, uint64
+//  - bool
+//  - time (Go type is time.Time)
+//  - bytes (Go type is []uint8 or []byte)
+//
+// An asterisk is present as a prefix when the type is nullable (like *string).
+//
+// Developers are encouraged to use the constants, the Type struct, and other
+// tools to handle attribute types instead of dealing with strings.
 const (
 	AttrTypeInvalid = iota
 	AttrTypeString
@@ -189,8 +207,8 @@ type Attr struct {
 // UnmarshalToType unmarshals the data into a value of the type represented by
 // the attribute and returns it.
 func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
-	if a.Nullable && string(data) == "nil" {
-		return nil, nil
+	if a.Nullable && string(data) == "null" {
+		return GetZeroValue(a.Type, a.Nullable), nil
 	}
 
 	var (
@@ -384,12 +402,18 @@ func (r *Rel) Normalize() Rel {
 	return r.Invert()
 }
 
-// String returns a string representation of the receiving Rel.
+// String builds and returns the name of the receiving Rel.
 //
-// The returned string only contains the type's name followed by the
-// relationship's name.
+// r.Normalize is always called.
 func (r Rel) String() string {
-	return r.FromType + "_" + r.FromName
+	r = r.Normalize()
+
+	id := r.FromType + "_" + r.FromName
+	if r.ToName != "" {
+		id += "_" + r.ToType + "_" + r.ToName
+	}
+
+	return id
 }
 
 // GetAttrType returns the attribute type as an int (see constants) and a
@@ -426,9 +450,9 @@ func GetAttrType(t string) (int, bool) {
 		return AttrTypeUint64, nullable
 	case "bool":
 		return AttrTypeBool, nullable
-	case "time.Time":
+	case "time.Time", "time":
 		return AttrTypeTime, nullable
-	case "[]uint8":
+	case "[]uint8", "[]byte", "bytes":
 		return AttrTypeBytes, nullable
 	default:
 		return AttrTypeInvalid, false
@@ -466,9 +490,9 @@ func GetAttrTypeString(t int, nullable bool) string {
 	case AttrTypeBool:
 		str = "bool"
 	case AttrTypeTime:
-		str = "time.Time"
+		str = "time"
 	case AttrTypeBytes:
-		str = "[]uint8"
+		str = "bytes"
 	default:
 		str = ""
 	}
@@ -488,99 +512,85 @@ func GetZeroValue(t int, nullable bool) interface{} {
 	switch t {
 	case AttrTypeString:
 		if nullable {
-			var np *string
-			return np
+			return (*string)(nil)
 		}
 
 		return ""
 	case AttrTypeInt:
 		if nullable {
-			var np *int
-			return np
+			return (*int)(nil)
 		}
 
 		return int(0)
 	case AttrTypeInt8:
 		if nullable {
-			var np *int8
-			return np
+			return (*int8)(nil)
 		}
 
 		return int8(0)
 	case AttrTypeInt16:
 		if nullable {
-			var np *int16
-			return np
+			return (*int16)(nil)
 		}
 
 		return int16(0)
 	case AttrTypeInt32:
 		if nullable {
-			var np *int32
-			return np
+			return (*int32)(nil)
 		}
 
 		return int32(0)
 	case AttrTypeInt64:
 		if nullable {
-			var np *int64
-			return np
+			return (*int64)(nil)
 		}
 
 		return int64(0)
 	case AttrTypeUint:
 		if nullable {
-			var np *uint
-			return np
+			return (*uint)(nil)
 		}
 
 		return uint(0)
 	case AttrTypeUint8:
 		if nullable {
-			var np *uint8
-			return np
+			return (*uint8)(nil)
 		}
 
 		return uint8(0)
 	case AttrTypeUint16:
 		if nullable {
-			var np *uint16
-			return np
+			return (*uint16)(nil)
 		}
 
 		return uint16(0)
 	case AttrTypeUint32:
 		if nullable {
-			var np *uint32
-			return np
+			return (*uint32)(nil)
 		}
 
 		return uint32(0)
 	case AttrTypeUint64:
 		if nullable {
-			var np *uint64
-			return np
+			return (*uint64)(nil)
 		}
 
 		return uint64(0)
 	case AttrTypeBool:
 		if nullable {
-			var np *bool
-			return np
+			return (*bool)(nil)
 		}
 
 		return false
 	case AttrTypeTime:
 		if nullable {
-			var np *time.Time
-			return np
+			return (*time.Time)(nil)
 		}
 
 		return time.Time{}
 	case AttrTypeBytes:
 		if nullable {
-			var np *[]byte
-			return np
+			return (*[]byte)(nil)
 		}
 
 		return []byte{}

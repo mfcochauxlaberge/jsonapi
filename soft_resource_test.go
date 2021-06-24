@@ -2,6 +2,7 @@ package jsonapi_test
 
 import (
 	"testing"
+	"time"
 
 	. "github.com/mfcochauxlaberge/jsonapi"
 
@@ -40,7 +41,7 @@ func TestSoftResource(t *testing.T) {
 	typ2 := typ
 	typ2.Name = "type2"
 	sr.SetType(&typ2)
-	assert.Equal(t, "id", sr.GetID())
+	assert.Equal(t, "id", sr.Get("id").(string))
 	assert.Equal(t, "type2", sr.GetType().Name)
 
 	// Attributes
@@ -102,8 +103,6 @@ func TestSoftResource(t *testing.T) {
 	assert.Equal(t, map[string]Rel{}, sr.Rels())
 
 	assert.Equal(t, nil, sr.Get("nonexistent"))
-	assert.Equal(t, "", sr.GetToOne("nonexistent"))
-	assert.Equal(t, []string{}, sr.GetToMany("nonexistent"))
 
 	// Put the fields back
 	for _, attr := range attrs {
@@ -120,14 +119,14 @@ func TestSoftResource(t *testing.T) {
 
 	// Set and get some fields
 	assert.Equal(t, "", sr.Get("attr1"))
-	assert.Equal(t, "", sr.GetToOne("rel1"))
-	assert.Equal(t, []string{}, sr.GetToMany("rel2"))
+	assert.Equal(t, "", sr.Get("rel1").(string))
+	assert.Equal(t, []string{}, sr.Get("rel2").([]string))
 	sr.Set("attr1", "value")
-	sr.SetToOne("rel1", "id1")
-	sr.SetToMany("rel2", []string{"id1", "id2"})
+	sr.Set("rel1", "id1")
+	sr.Set("rel2", []string{"id1", "id2"})
 	assert.Equal(t, "value", sr.Get("attr1"))
-	assert.Equal(t, "id1", sr.GetToOne("rel1"))
-	assert.Equal(t, []string{"id1", "id2"}, sr.GetToMany("rel2"))
+	assert.Equal(t, "id1", sr.Get("rel1").(string))
+	assert.Equal(t, []string{"id1", "id2"}, sr.Get("rel2").([]string))
 
 	// Set a nullable attribute to nil
 	_ = sr.Type.AddAttr(Attr{
@@ -145,9 +144,35 @@ func TestSoftResource(t *testing.T) {
 	assert.Nil(t, sr.Get("nullable-str"))
 	assert.Equal(t, (*string)(nil), sr.Get("nullable-str"))
 
-	// Copy
-	sr2 := sr.Copy()
-	assert.Equal(t, true, Equal(sr, sr2))
+	// Getting the value of an unset field returns
+	// the zero value of the type.
+	sr = &SoftResource{}
+
+	sr.AddAttr(Attr{
+		Name:     "zero-str",
+		Type:     AttrTypeString,
+		Nullable: false,
+	})
+	assert.Equal(t, "", sr.Get("zero-str"))
+
+	sr.AddAttr(Attr{
+		Name:     "zero-str-null",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	assert.Equal(t, (*string)(nil), sr.Get("zero-str-null"))
+
+	sr.AddRel(Rel{
+		FromName: "zero-to-one",
+		ToOne:    true,
+	})
+	assert.Equal(t, "", sr.Get("zero-to-one"))
+
+	sr.AddRel(Rel{
+		FromName: "zero-to-many",
+		ToOne:    false,
+	})
+	assert.Equal(t, []string{}, sr.Get("zero-to-many"))
 }
 
 func TestSoftResourceNew(t *testing.T) {
@@ -165,7 +190,116 @@ func TestSoftResourceNew(t *testing.T) {
 	nsr := sr.New()
 
 	// The new
-	assert.Equal("", nsr.GetID())
+	assert.Equal("", nsr.Get("id").(string))
 	assert.Equal("", nsr.Get("str"))
 	assert.Equal(0, nsr.Get("int"))
+}
+
+func TestSoftResourceCopy(t *testing.T) {
+	assert := assert.New(t)
+
+	now, _ := time.Parse(time.RFC3339, "2019-11-19T23:17:01-05:00")
+
+	sr := &SoftResource{}
+
+	// Attributes
+	attrs := map[string]interface{}{
+		"string":     "abc",
+		"int":        42,
+		"int8":       8,
+		"int16":      16,
+		"int32":      32,
+		"int64":      64,
+		"uint":       42,
+		"uint8":      8,
+		"uint16":     16,
+		"uint32":     32,
+		"uint64":     64,
+		"bool":       true,
+		"time.Time":  now,
+		"[]uint8":    []byte{'a', 'b', 'c'},
+		"*string":    ptr("abc"),
+		"*int":       ptr(42),
+		"*int8":      ptr(8),
+		"*int16":     ptr(16),
+		"*int32":     ptr(32),
+		"*int64":     ptr(64),
+		"*uint":      ptr(42),
+		"*uint8":     ptr(8),
+		"*uint16":    ptr(16),
+		"*uint32":    ptr(32),
+		"*uint64":    ptr(64),
+		"*bool":      ptr(true),
+		"*time.Time": ptr(now),
+		"*[]uint8":   ptr([]byte{'a', 'b', 'c'}),
+	}
+
+	for t, v := range attrs {
+		typ, null := GetAttrType(t)
+
+		sr.AddAttr(Attr{
+			Name:     t,
+			Type:     typ,
+			Nullable: null,
+		})
+
+		sr.Set(t, v)
+	}
+
+	// Special cases
+	sr.AddAttr(Attr{
+		Name:     "nil-*[]byte",
+		Type:     AttrTypeBytes,
+		Nullable: true,
+	})
+
+	sr.Set("nil-*[]byte", (*[]byte)(nil))
+
+	// Relationships
+	sr.AddRel(Rel{
+		FromName: "to-one",
+		ToOne:    true,
+	})
+	sr.Set("to-one", "id1")
+
+	sr.AddRel(Rel{
+		FromName: "to-many",
+		ToOne:    false,
+	})
+	sr.Set("to-many", []string{"id2", "id3"})
+
+	// Copy
+	sr2 := sr.Copy()
+	assert.Equal(true, Equal(sr, sr2))
+}
+
+func TestSoftResourceMeta(t *testing.T) {
+	assert := assert.New(t)
+
+	typ, _ := BuildType(mocktype{})
+	sr := &SoftResource{}
+	sr.Type = &typ
+	sr.SetID("id")
+
+	meta := Meta(map[string]interface{}{
+		"key1": "a string",
+		"key2": 200,
+		"key3": false,
+		"key4": getTime(),
+	})
+
+	// Add some meta values
+	sr.SetMeta(meta)
+
+	// The new
+	assert.Equal(meta, sr.Meta())
+}
+
+func TestSoftResourceGetSetID(t *testing.T) {
+	assert := assert.New(t)
+
+	sr := &SoftResource{}
+	sr.Set("id", "abc123")
+
+	assert.Equal("abc123", sr.Get("id"))
 }
