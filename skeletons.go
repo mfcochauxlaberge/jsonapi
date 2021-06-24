@@ -3,10 +3,10 @@ package jsonapi
 import "encoding/json"
 
 type payloadSkeleton struct {
-	Data     json.RawMessage        `json:"data"`
-	Errors   []Error                `json:"errors"`
-	Included []json.RawMessage      `json:"included"`
-	Meta     map[string]interface{} `json:"meta"`
+	Data     json.RawMessage   `json:"data"`
+	Errors   []Error           `json:"errors"`
+	Included []json.RawMessage `json:"included"`
+	Meta     Meta              `json:"meta"`
 }
 
 type resourceSkeleton struct {
@@ -14,6 +14,7 @@ type resourceSkeleton struct {
 	Type          string                          `json:"type"`
 	Attributes    map[string]json.RawMessage      `json:"attributes"`
 	Relationships map[string]relationshipSkeleton `json:"relationships"`
+	Meta          Meta                            `json:"meta"`
 }
 
 type relationshipSkeleton struct {

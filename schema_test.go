@@ -95,6 +95,63 @@ func TestSchemaTypes(t *testing.T) {
 	assert.Error(err)
 }
 
+func TestSchemaAddTwoWayRel(t *testing.T) {
+	assert := assert.New(t)
+
+	// Add two-way relationship
+	schema := &Schema{}
+	_ = schema.AddType(Type{Name: "type1"})
+	_ = schema.AddType(Type{Name: "type2"})
+
+	err := schema.AddTwoWayRel(Rel{
+		FromType: "type1",
+		FromName: "parent",
+		ToOne:    true,
+		ToType:   "type2",
+		ToName:   "children",
+		FromOne:  false,
+	})
+	assert.NoError(err)
+
+	// Add two-way relationship (missing type)
+	schema = &Schema{}
+	_ = schema.AddType(Type{Name: "type1"})
+
+	err = schema.AddTwoWayRel(Rel{
+		FromType: "type1",
+		FromName: "parent",
+		ToOne:    true,
+		ToType:   "type2",
+		ToName:   "children",
+		FromOne:  false,
+	})
+	assert.EqualError(err, `jsonapi: types "type1" and "type2" must exist`)
+
+	// Add two-way relationship (invalid relationship)
+	schema = &Schema{}
+	_ = schema.AddType(Type{Name: "type1"})
+
+	err = schema.AddTwoWayRel(Rel{
+		FromType: "type1",
+		FromName: "parent",
+		ToOne:    true,
+		ToType:   "",
+		ToName:   "",
+		FromOne:  false,
+	})
+	assert.EqualError(err, `jsonapi: relationship type is empty`)
+
+	err = schema.AddTwoWayRel(Rel{
+		FromType: "",
+		FromName: "",
+		ToOne:    true,
+		ToType:   "type1",
+		ToName:   "parent",
+		FromOne:  false,
+	})
+	assert.EqualError(err, `jsonapi: relationship type is empty`)
+}
+
 func TestSchemaCheck(t *testing.T) {
 	assert := assert.New(t)
 

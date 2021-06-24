@@ -228,7 +228,7 @@ func TestEqual(t *testing.T) {
 
 	mt21 := Wrap(&mockType2{
 		ID:             "mt1",
-		StrPtr:         func() *string { v := string(1); return &v }(),
+		StrPtr:         func() *string { v := "id"; return &v }(),
 		IntPtr:         func() *int { v := int(1); return &v }(),
 		Int8Ptr:        func() *int8 { v := int8(2); return &v }(),
 		Int16Ptr:       func() *int16 { v := int16(3); return &v }(),
@@ -266,9 +266,9 @@ func TestEqual(t *testing.T) {
 
 	for _, rel := range typ.Rels {
 		if rel.ToOne {
-			sr1.SetToOne(rel.FromName, mt11.GetToOne(rel.FromName))
+			sr1.Set(rel.FromName, mt11.Get(rel.FromName).(string))
 		} else {
-			sr1.SetToMany(rel.FromName, mt11.GetToMany(rel.FromName))
+			sr1.Set(rel.FromName, mt11.Get(rel.FromName).([]string))
 		}
 	}
 
@@ -288,12 +288,31 @@ func TestEqual(t *testing.T) {
 		ToOne:    true,
 		ToType:   "mocktypes2",
 	})
-	sr1.SetToOne("to-one", "b")
+	sr1.Set("to-one", "b")
 	assert.False(Equal(mt11, sr1), "different relationship value (to-one)")
 
-	sr1.SetToOne("to-one", "a")
-	sr1.SetToMany("to-many", []string{"d", "e", "f"})
+	sr1.Set("to-one", "a")
+	sr1.Set("to-many", []string{"d", "e", "f"})
 	assert.False(Equal(mt11, sr1), "different relationship value (to-many)")
+
+	// Comparing two nil values of different types
+	sr3 := &SoftResource{}
+	sr3.AddAttr(Attr{
+		Name:     "nil",
+		Type:     AttrTypeString,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*string)(nil))
+
+	sr4 := &SoftResource{}
+	sr4.AddAttr(Attr{
+		Name:     "nil2",
+		Type:     AttrTypeInt,
+		Nullable: true,
+	})
+	sr3.Set("nil", (*int)(nil))
+
+	assert.Equal(true, Equal(sr3, sr4))
 }
 
 func TestEqualStrict(t *testing.T) {
