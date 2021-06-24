@@ -15,7 +15,12 @@ func NewRequest(r *http.Request, schema *Schema) (*Request, error) {
 		return nil, err
 	}
 
-	url, err := NewURLFromRaw(schema, r.URL.EscapedPath())
+	su, err := NewSimpleURL(r.URL)
+	if err != nil {
+		return nil, err
+	}
+
+	url, err := NewURL(schema, su)
 	if err != nil {
 		return nil, err
 	}

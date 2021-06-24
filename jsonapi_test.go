@@ -3,6 +3,8 @@ package jsonapi_test
 import (
 	"flag"
 	"time"
+
+	. "github.com/mfcochauxlaberge/jsonapi"
 )
 
 var update = flag.Bool("update-golden-files", false, "update the golden files")
@@ -11,6 +13,8 @@ func getTime() time.Time {
 	now, _ := time.Parse(time.RFC3339Nano, "2013-06-24T22:03:34.8276Z")
 	return now
 }
+
+var _ MetaHolder = (*mocktype)(nil)
 
 // mocktype is a fake struct that defines a JSON:API type for test purposes.
 type mocktype struct {
@@ -39,4 +43,14 @@ type mocktype struct {
 	ToX      []string `json:"to-x" api:"rel,mocktype"`
 	ToXFrom1 []string `json:"to-x-from-1" api:"rel,mocktype,to-1-from-x"`
 	ToXFromX []string `json:"to-x-from-x" api:"rel,mocktype,to-x-from-x"`
+
+	meta Meta
+}
+
+func (mt *mocktype) Meta() Meta {
+	return mt.meta
+}
+
+func (mt *mocktype) SetMeta(m Meta) {
+	mt.meta = m
 }

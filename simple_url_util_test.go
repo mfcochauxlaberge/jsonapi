@@ -50,8 +50,7 @@ func TestParseCommaList(t *testing.T) {
 			name:          "two commas in middle",
 			source:        `a,,b`,
 			expectedValue: []string{"a", "b"},
-		},
-		{
+		}, {
 			name:          "end with two commas",
 			source:        `a,b,c,,`,
 			expectedValue: []string{"a", "b", "c"},
