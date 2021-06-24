@@ -62,7 +62,7 @@ func ExampleUnmarshalDocument() {
 	tm := res.Get("registered-at").(time.Time)
 	out, _ := tm.MarshalText()
 	fmt.Printf("user.RegisteredAt: %s\n", out)
-	fmt.Printf("user.Articles: %s\n", res.GetToMany("articles"))
+	fmt.Printf("user.Articles: %s\n", res.Get("articles").([]string))
 	// Output:
 	// user.ID: user1
 	// user.Username: rob

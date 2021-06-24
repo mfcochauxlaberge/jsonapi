@@ -1,8 +1,11 @@
 <div align="center" style="text-align: center;">
   <img src="https://raw.githubusercontent.com/mfcochauxlaberge/jsonapi/master/assets/logo.png" height="120">
   <br>
-  <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
-    <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ATest+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Test/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ALint+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Lint/badge.svg?branch=master">
   </a>
   <a href="https://goreportcard.com/report/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://goreportcard.com/badge/github.com/mfcochauxlaberge/jsonapi">
@@ -12,7 +15,7 @@
   </a>
   <br>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
-    <img src="https://img.shields.io/badge/go%20version-1.12%2B-%2300acd7">
+    <img src="https://img.shields.io/badge/go%20version-1.13%2B-%2300acd7">
   </a>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
     <img src="https://img.shields.io/github/v/release/mfcochauxlaberge/jsonapi?include_prereleases&sort=semver">
@@ -70,7 +73,7 @@ A few tasks are required before committing to the current API:
 
 ## Requirements
 
-The supported versions of Go are the latest patch releases of every minor release starting with Go 1.12.
+The supported versions of Go are the latest patch releases of every minor release starting with Go 1.13.
 
 ## Examples
 

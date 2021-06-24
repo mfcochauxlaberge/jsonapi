@@ -36,6 +36,13 @@ func TestNewRequest(t *testing.T) {
 			url:           "/invalid",
 			schema:        schema,
 			expectedError: `400 Bad Request: "invalid" is not a known type.`,
+		}, {
+			name:   "bad url",
+			method: "GET",
+			url:    "/mocktypes1?filter={invalid}",
+			schema: schema,
+			expectedError: `400 Bad Request: The filter parameter is not a ` +
+				`string or a valid JSON object.`,
 		},
 	}
 

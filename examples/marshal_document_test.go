@@ -53,7 +53,7 @@ func ExampleMarshalDocument() {
 	// must be included in the payload.
 	// The relationship links are always included.
 	doc.RelData = map[string][]string{
-		"users": []string{"articles"},
+		"users": {"articles"},
 	}
 
 	// A URL represents a JSON:API compliant URL. Query

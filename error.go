@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/google/uuid"
 )
 
 // An Error represents an error object from the JSON:API specification.
@@ -24,11 +22,6 @@ type Error struct {
 // NewError returns an empty Error object.
 func NewError() Error {
 	err := Error{
-		ID:     uuid.New().String(),
-		Code:   "",
-		Status: "",
-		Title:  "",
-		Detail: "",
 		Links:  map[string]string{},
 		Source: map[string]interface{}{},
 		Meta:   Meta{},
