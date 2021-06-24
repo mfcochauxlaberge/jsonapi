@@ -1,39 +1,31 @@
 {
 	"data": {
-		"attributes": {},
 		"id": "id1",
 		"links": {
 			"self": "/mocktype/id1"
 		},
-		"relationships": {},
 		"type": "mocktype"
 	},
 	"included": [
 		{
-			"attributes": {},
 			"id": "id2",
 			"links": {
 				"self": "/mocktype/id2"
 			},
-			"relationships": {},
 			"type": "mocktype"
 		},
 		{
-			"attributes": {},
 			"id": "id3",
 			"links": {
 				"self": "/mocktype/id3"
 			},
-			"relationships": {},
 			"type": "mocktype"
 		},
 		{
-			"attributes": {},
 			"id": "id4",
 			"links": {
 				"self": "/mocktype/id4"
 			},
-			"relationships": {},
 			"type": "mocktype"
 		}
 	],

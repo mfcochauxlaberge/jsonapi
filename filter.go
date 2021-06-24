@@ -70,9 +70,9 @@ func (f *Filter) IsAllowed(res Resource) bool {
 
 	if rel, ok := res.Rels()[f.Field]; ok {
 		if rel.ToOne {
-			val = res.GetToOne(f.Field)
+			val = res.Get(f.Field).(string)
 		} else {
-			val = res.GetToMany(f.Field)
+			val = res.Get(f.Field).([]string)
 		}
 	}
 
