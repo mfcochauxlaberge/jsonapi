@@ -9,10 +9,6 @@ import (
 
 // A Resource is an element of a collection.
 type Resource interface {
-	// Creation
-	New() Resource
-	Copy() Resource
-
 	// Structure
 	Attrs() map[string]Attr
 	Rels() map[string]Rel
