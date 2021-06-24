@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// Meta holds meta information.
 type Meta map[string]interface{}
 
 // Has reports whether the Meta map contains or not the given key.

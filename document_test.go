@@ -44,7 +44,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids := []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect := []string{
@@ -79,7 +79,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids = []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect = []string{
@@ -281,7 +281,7 @@ func TestMarshalDocument(t *testing.T) {
 			assert.NoError(err)
 
 			// Golden file
-			filename := strings.Replace(test.name, " ", "_", -1) + ".json"
+			filename := strings.ReplaceAll(test.name, " ", "_") + ".json"
 			path := filepath.Join("testdata", "goldenfiles", "marshaling", filename)
 			if !*update {
 				// Retrieve the expected result from file
