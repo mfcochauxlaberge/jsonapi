@@ -10,6 +10,7 @@ import (
 )
 
 var _ Resource = (*SoftResource)(nil)
+var _ Copier = (*SoftResource)(nil)
 
 func TestSoftResource(t *testing.T) {
 	sr := &SoftResource{}
