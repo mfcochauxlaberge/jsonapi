@@ -256,6 +256,21 @@ func TestMarshalDocument(t *testing.T) {
 					return []Error{err1, err2}
 				}(),
 			},
+		}, {
+			name: "links",
+			doc: &Document{
+				Links: map[string]Link{
+					"self":      {HRef: "http://example.com"},
+					"some_link": {HRef: "http://example.org"},
+					"other_link": {
+						HRef: "http://example.com/other/path",
+						Meta: map[string]interface{}{
+							"field1": "value1",
+							"field2": 123,
+						},
+					},
+				},
+			},
 		},
 	}
 

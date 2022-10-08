@@ -159,10 +159,20 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 		plMap["meta"] = doc.Meta
 	}
 
+	links := doc.Links
+
 	if url != nil {
-		plMap["links"] = map[string]string{
-			"self": doc.PrePath + url.String(),
+		if links == nil {
+			links = map[string]Link{}
 		}
+
+		links["self"] = Link{
+			HRef: doc.PrePath + url.String(),
+		}
+	}
+
+	if links != nil {
+		plMap["links"] = links
 	}
 
 	plMap["jsonapi"] = map[string]string{"version": "1.0"}
