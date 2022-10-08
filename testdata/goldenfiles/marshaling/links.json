@@ -1,0 +1,17 @@
+{
+	"data": null,
+	"jsonapi": {
+		"version": "1.0"
+	},
+	"links": {
+		"other_link": {
+			"href": "http://example.com/other/path",
+			"meta": {
+				"field1": "value1",
+				"field2": 123
+			}
+		},
+		"self": "/fake/path?fields%5Bmocktype%",
+		"some_link": "http://example.org"
+	}
+}
