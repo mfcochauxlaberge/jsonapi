@@ -19,12 +19,12 @@ import (
 // even if it potentially can break existing code.
 //
 // The names are as follow:
-//  - string
-//  - int, int8, int16, int32, int64
-//  - uint, uint8, uint16, uint32, uint64
-//  - bool
-//  - time (Go type is time.Time)
-//  - bytes (Go type is []uint8 or []byte)
+//   - string
+//   - int, int8, int16, int32, int64
+//   - uint, uint8, uint16, uint32, uint64
+//   - bool
+//   - time (Go type is time.Time)
+//   - bytes (Go type is []uint8 or []byte)
 //
 // An asterisk is present as a prefix when the type is nullable (like *string).
 //
