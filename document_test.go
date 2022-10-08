@@ -271,10 +271,6 @@ func TestMarshalDocument(t *testing.T) {
 					},
 				},
 			},
-			// fields: []string{
-			// 	"str", "uint64", "bool", "int", "time", "bytes", "to-1",
-			// 	"to-x-from-1",
-			// },
 		},
 	}
 
