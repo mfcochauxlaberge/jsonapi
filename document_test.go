@@ -280,6 +280,8 @@ func TestMarshalDocument(t *testing.T) {
 			payload, err := MarshalDocument(test.doc, url)
 			assert.NoError(err)
 
+			payload = append(payload, '\n')
+
 			// Golden file
 			filename := strings.ReplaceAll(test.name, " ", "_") + ".json"
 			path := filepath.Join("testdata", "goldenfiles", "marshaling", filename)
