@@ -9,39 +9,27 @@ import (
 
 // A Resource is an element of a collection.
 type Resource interface {
-	// Creation
-	New() Resource
-	Copy() Resource
-
 	// Structure
 	Attrs() map[string]Attr
 	Rels() map[string]Rel
-	Attr(key string) Attr
-	Rel(key string) Rel
 
 	// Read
-	GetID() string
 	GetType() Type
-	Get(key string) interface{}
-	GetToOne(key string) string
-	GetToMany(key string) []string
+	Get(key string) any
 
 	// Update
-	SetID(id string)
-	Set(key string, val interface{})
-	SetToOne(key string, rel string)
-	SetToMany(key string, rels []string)
+	Set(key string, val any)
 }
 
 // MarshalResource marshals a Resource into a JSON-encoded payload.
 func MarshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
-	mapPl := map[string]interface{}{}
+	mapPl := map[string]any{}
 
-	mapPl["id"] = r.GetID()
+	mapPl["id"] = r.Get("id").(string)
 	mapPl["type"] = r.GetType().Name
 
 	// Attributes
-	attrs := map[string]interface{}{}
+	attrs := map[string]any{}
 
 	for _, attr := range r.Attrs() {
 		for _, field := range fields {
@@ -79,10 +67,10 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 
 				for _, n := range relData[r.GetType().Name] {
 					if n == rel.FromName {
-						id := r.GetToOne(rel.FromName)
+						id := r.Get(rel.FromName).(string)
 						if id != "" {
 							s["data"] = map[string]string{
-								"id":   r.GetToOne(rel.FromName),
+								"id":   r.Get(rel.FromName).(string),
 								"type": rel.ToType,
 							}
 						} else {
@@ -96,14 +84,14 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 				raw, _ = json.Marshal(s)
 				rels[rel.FromName] = &raw
 			} else {
-				s := map[string]interface{}{
+				s := map[string]any{
 					"links": buildRelationshipLinks(r, prepath, rel.FromName),
 				}
 
 				for _, n := range relData[r.GetType().Name] {
 					if n == rel.FromName {
 						data := []map[string]string{}
-						ids := r.GetToMany(rel.FromName)
+						ids := r.Get(rel.FromName).([]string)
 						sort.Strings(ids)
 						for _, id := range ids {
 							data = append(data, map[string]string{
@@ -131,6 +119,13 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 		"self": buildSelfLink(r, prepath),
 	}
 
+	// Meta
+	if m, ok := r.(MetaHolder); ok {
+		if len(m.Meta()) > 0 {
+			mapPl["meta"] = m.Meta()
+		}
+	}
+
 	// NOTE An error should not happen.
 	pl, _ := json.Marshal(mapPl)
 
@@ -152,7 +147,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	typ := schema.GetType(rske.Type)
 	res := typ.New()
 
-	res.SetID(rske.ID)
+	res.Set("id", rske.ID)
 
 	for a, v := range rske.Attributes {
 		if attr, ok := typ.Attrs[a]; ok {
@@ -173,7 +168,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 				if rel.ToOne {
 					var iden Identifier
 					err = json.Unmarshal(v.Data, &iden)
-					res.SetToOne(rel.FromName, iden.ID)
+					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
 					err = json.Unmarshal(v.Data, &idens)
@@ -181,7 +176,7 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 					for i := range idens {
 						ids[i] = idens[i].ID
 					}
-					res.SetToMany(rel.FromName, ids)
+					res.Set(rel.FromName, ids)
 				}
 			}
 
@@ -195,6 +190,11 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 		} else {
 			return nil, NewErrUnknownFieldInBody(typ.Name, r)
 		}
+	}
+
+	// Meta
+	if m, ok := res.(MetaHolder); ok {
+		m.SetMeta(rske.Meta)
 	}
 
 	return res, nil
@@ -252,7 +252,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 					var iden Identifier
 					err = json.Unmarshal(v.Data, &iden)
 					_ = newType.AddRel(rel)
-					res.SetToOne(rel.FromName, iden.ID)
+					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
 					err = json.Unmarshal(v.Data, &idens)
@@ -261,7 +261,7 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 						ids[i] = idens[i].ID
 					}
 					_ = newType.AddRel(rel)
-					res.SetToMany(rel.FromName, ids)
+					res.Set(rel.FromName, ids)
 				}
 			}
 
@@ -368,12 +368,12 @@ func Equal(r1, r2 Resource) bool {
 		}
 
 		if rel1.ToOne {
-			if r1.GetToOne(rel1.FromName) != r2.GetToOne(rel2.FromName) {
+			if r1.Get(rel1.FromName).(string) != r2.Get(rel2.FromName).(string) {
 				return false
 			}
 		} else {
-			v1 := r1.GetToMany(rel1.FromName)
-			v2 := r2.GetToMany(rel2.FromName)
+			v1 := r1.Get(rel1.FromName).([]string)
+			v2 := r2.Get(rel2.FromName).([]string)
 			if len(v1) != 0 || len(v2) != 0 {
 				if !reflect.DeepEqual(v1, v2) {
 					return false
@@ -387,7 +387,7 @@ func Equal(r1, r2 Resource) bool {
 
 // EqualStrict is like Equal, but it also considers IDs.
 func EqualStrict(r1, r2 Resource) bool {
-	if r1.GetID() != r2.GetID() {
+	if r1.Get("id").(string) != r2.Get("id").(string) {
 		return false
 	}
 

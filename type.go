@@ -11,7 +11,25 @@ import (
 	"time"
 )
 
-// Attribute types
+// Attribute types are the possible types for attributes.
+//
+// Those constants are numbers that represent the types. Each type has a string
+// representation which should be used instead of the numbers when storing
+// that information. The numbers can change between any version of this library,
+// even if it potentially can break existing code.
+//
+// The names are as follow:
+//   - string
+//   - int, int8, int16, int32, int64
+//   - uint, uint8, uint16, uint32, uint64
+//   - bool
+//   - time (Go type is time.Time)
+//   - bytes (Go type is []uint8 or []byte)
+//
+// An asterisk is present as a prefix when the type is nullable (like *string).
+//
+// Developers are encouraged to use the constants, the Type struct, and other
+// tools to handle attribute types instead of dealing with strings.
 const (
 	AttrTypeInvalid = ""
 	AttrTypeString  = "string"
@@ -55,7 +73,7 @@ func (t *Type) AddAttr(attr Attr) error {
 		return fmt.Errorf("jsonapi: attribute name is empty")
 	}
 
-	if GetAttrTypeString(attr.Type, attr.Nullable) == "" {
+	if name, _ := GetAttrType(attr.Type); name == "" {
 		return fmt.Errorf("jsonapi: attribute type is invalid")
 	}
 
@@ -188,13 +206,13 @@ type Attr struct {
 
 // UnmarshalToType unmarshals the data into a value of the type represented by
 // the attribute and returns it.
-func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
-	if a.Nullable && string(data) == "nil" {
-		return nil, nil
+func (a Attr) UnmarshalToType(data []byte) (any, error) {
+	if a.Nullable && string(data) == "null" {
+		return GetZeroValue(a.Type, a.Nullable), nil
 	}
 
 	var (
-		v   interface{}
+		v   any
 		err error
 	)
 
@@ -340,7 +358,7 @@ func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
 		return nil, NewErrInvalidFieldValueInBody(
 			a.Name,
 			string(data),
-			GetAttrTypeString(a.Type, a.Nullable),
+			a.Type,
 		)
 	}
 
@@ -400,7 +418,7 @@ func (r Rel) String() string {
 
 // GetAttrType returns the attribute type as an int (see constants) and a
 // boolean that indicates whether the attribute can be null or not.
-func GetAttrType(t string) (int, bool) {
+func GetAttrType(t string) (string, bool) {
 	nullable := strings.HasPrefix(t, "*")
 
 	if nullable {
@@ -432,65 +450,20 @@ func GetAttrType(t string) (int, bool) {
 		return AttrTypeUint64, nullable
 	case "bool":
 		return AttrTypeBool, nullable
-	case "time.Time":
+	case "time.Time", "time":
 		return AttrTypeTime, nullable
-	case "[]uint8":
+	case "[]uint8", "[]byte", "bytes":
 		return AttrTypeBytes, nullable
 	default:
 		return AttrTypeInvalid, false
 	}
 }
 
-// // GetAttrTypeString returns the name of the attribute type specified by t (see
-// // constants) and nullable.
-// func GetAttrTypeString(t int, nullable bool) string {
-// 	str := ""
-
-// 	switch t {
-// 	case AttrTypeString:
-// 		str = "string"
-// 	case AttrTypeInt:
-// 		str = "int"
-// 	case AttrTypeInt8:
-// 		str = "int8"
-// 	case AttrTypeInt16:
-// 		str = "int16"
-// 	case AttrTypeInt32:
-// 		str = "int32"
-// 	case AttrTypeInt64:
-// 		str = "int64"
-// 	case AttrTypeUint:
-// 		str = "uint"
-// 	case AttrTypeUint8:
-// 		str = "uint8"
-// 	case AttrTypeUint16:
-// 		str = "uint16"
-// 	case AttrTypeUint32:
-// 		str = "uint32"
-// 	case AttrTypeUint64:
-// 		str = "uint64"
-// 	case AttrTypeBool:
-// 		str = "bool"
-// 	case AttrTypeTime:
-// 		str = "time.Time"
-// 	case AttrTypeBytes:
-// 		str = "[]uint8"
-// 	default:
-// 		str = ""
-// 	}
-
-// 	if nullable {
-// 		return "*" + str
-// 	}
-
-// 	return str
-// }
-
 // GetZeroValue returns the zero value of the attribute type represented by the
 // specified int (see constants).
 //
 // If nullable is true, the returned value is a nil pointer.
-func GetZeroValue(t int, nullable bool) interface{} {
+func GetZeroValue(t string, nullable bool) any {
 	switch t {
 	case AttrTypeString:
 		if nullable {

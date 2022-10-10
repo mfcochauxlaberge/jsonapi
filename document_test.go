@@ -44,7 +44,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids := []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect := []string{
@@ -79,7 +79,7 @@ func TestInclude(t *testing.T) {
 	// Check
 	ids = []string{}
 	for _, res := range doc.Included {
-		ids = append(ids, res.GetType().Name+"-"+res.GetID())
+		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
 
 	expect = []string{
@@ -130,6 +130,17 @@ func TestMarshalDocument(t *testing.T) {
 	}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
 
+	r4 := &mocktype{
+		ID: "id4",
+	}
+	r4.SetMeta(map[string]any{
+		"key1": "a string",
+		"key2": 42,
+		"key3": true,
+		"key4": getTime(),
+	})
+	col.Add(Wrap(r4))
+
 	// Test struct
 	tests := []struct {
 		name   string
@@ -174,7 +185,7 @@ func TestMarshalDocument(t *testing.T) {
 			name: "meta",
 			doc: &Document{
 				Data: nil,
-				Meta: map[string]interface{}{
+				Meta: map[string]any{
 					"f1": "漢語",
 					"f2": 42,
 					"f3": true,
@@ -245,6 +256,21 @@ func TestMarshalDocument(t *testing.T) {
 					return []Error{err1, err2}
 				}(),
 			},
+		}, {
+			name: "links",
+			doc: &Document{
+				Links: map[string]Link{
+					"self":      {HRef: "http://example.com"},
+					"some_link": {HRef: "http://example.org"},
+					"other_link": {
+						HRef: "http://example.com/other/path",
+						Meta: map[string]any{
+							"field1": "value1",
+							"field2": 123,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -269,8 +295,10 @@ func TestMarshalDocument(t *testing.T) {
 			payload, err := MarshalDocument(test.doc, url)
 			assert.NoError(err)
 
+			payload = append(payload, '\n')
+
 			// Golden file
-			filename := strings.Replace(test.name, " ", "_", -1) + ".json"
+			filename := strings.ReplaceAll(test.name, " ", "_") + ".json"
 			path := filepath.Join("testdata", "goldenfiles", "marshaling", filename)
 			if !*update {
 				// Retrieve the expected result from file
@@ -281,8 +309,8 @@ func TestMarshalDocument(t *testing.T) {
 				dst := &bytes.Buffer{}
 				err = json.Indent(dst, payload, "", "\t")
 				assert.NoError(err)
-				// TODO Figure out whether 0644 is okay or not.
-				err = ioutil.WriteFile(path, dst.Bytes(), 0644)
+				// TODO Figure out whether 0600 is okay or not.
+				err = ioutil.WriteFile(path, dst.Bytes(), 0600)
 				assert.NoError(err)
 			}
 		})
@@ -400,6 +428,17 @@ func TestUnmarshalDocument(t *testing.T) {
 	}))
 	col.Add(Wrap(&mocktype{ID: "id2"}))
 	col.Add(Wrap(&mocktype{ID: "id3"}))
+
+	r4 := &mocktype{
+		ID: "id4",
+	}
+	r4.SetMeta(map[string]any{
+		"key1": "a string",
+		"key2": 42,
+		"key3": true,
+		"key4": getTime(),
+	})
+	col.Add(Wrap(r4))
 
 	// Tests
 	t.Run("resource with inclusions", func(t *testing.T) {

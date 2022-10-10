@@ -5,33 +5,26 @@ import (
 	"fmt"
 	"net/http"
 	"strconv"
-
-	"github.com/google/uuid"
 )
 
 // An Error represents an error object from the JSON:API specification.
 type Error struct {
-	ID     string                 `json:"id"`
-	Code   string                 `json:"code"`
-	Status string                 `json:"status"`
-	Title  string                 `json:"title"`
-	Detail string                 `json:"detail"`
-	Links  map[string]string      `json:"links"`
-	Source map[string]interface{} `json:"source"`
-	Meta   map[string]interface{} `json:"meta"`
+	ID     string            `json:"id"`
+	Code   string            `json:"code"`
+	Status string            `json:"status"`
+	Title  string            `json:"title"`
+	Detail string            `json:"detail"`
+	Links  map[string]string `json:"links"`
+	Source map[string]any    `json:"source"`
+	Meta   Meta              `json:"meta"`
 }
 
 // NewError returns an empty Error object.
 func NewError() Error {
 	err := Error{
-		ID:     uuid.New().String(),
-		Code:   "",
-		Status: "",
-		Title:  "",
-		Detail: "",
 		Links:  map[string]string{},
-		Source: map[string]interface{}{},
-		Meta:   map[string]interface{}{},
+		Source: map[string]any{},
+		Meta:   Meta{},
 	}
 
 	return err
@@ -66,7 +59,7 @@ func (e Error) Error() string {
 // MarshalJSON returns a JSON representation of the error according to the
 // JSON:API specification.
 func (e Error) MarshalJSON() ([]byte, error) {
-	m := map[string]interface{}{}
+	m := map[string]any{}
 
 	if e.ID != "" {
 		m["id"] = e.ID

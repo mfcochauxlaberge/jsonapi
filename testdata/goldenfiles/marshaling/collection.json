@@ -97,6 +97,42 @@
 				}
 			},
 			"type": "mocktype"
+		},
+		{
+			"attributes": {
+				"bool": false,
+				"int": 0,
+				"str": "",
+				"time": "0001-01-01T00:00:00Z",
+				"uint64": 0
+			},
+			"id": "id4",
+			"links": {
+				"self": "https://example.org/mocktype/id4"
+			},
+			"meta": {
+				"key1": "a string",
+				"key2": 42,
+				"key3": true,
+				"key4": "2013-06-24T22:03:34.8276Z"
+			},
+			"relationships": {
+				"to-1": {
+					"data": null,
+					"links": {
+						"related": "https://example.org/mocktype/id4/to-1",
+						"self": "https://example.org/mocktype/id4/relationships/to-1"
+					}
+				},
+				"to-x-from-1": {
+					"data": [],
+					"links": {
+						"related": "https://example.org/mocktype/id4/to-x-from-1",
+						"self": "https://example.org/mocktype/id4/relationships/to-x-from-1"
+					}
+				}
+			},
+			"type": "mocktype"
 		}
 	],
 	"jsonapi": {

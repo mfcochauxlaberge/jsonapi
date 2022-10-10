@@ -19,9 +19,9 @@ func TestFilterResource(t *testing.T) {
 
 	// Tests for attributes
 	attrTests := []struct {
-		rval     interface{}
+		rval     any
 		op       string
-		cval     interface{}
+		cval     any
 		expected bool
 	}{
 		// string
@@ -809,9 +809,9 @@ func TestFilterResource(t *testing.T) {
 
 	// Tests for relationships
 	relTests := []struct {
-		rval     interface{}
+		rval     any
 		op       string
-		cval     interface{}
+		cval     any
 		expected bool
 	}{
 		// to-one
@@ -862,9 +862,9 @@ func TestFilterResource(t *testing.T) {
 		res.SetType(typ)
 
 		if toOne {
-			res.SetToOne("rel", test.rval.(string))
+			res.Set("rel", test.rval.(string))
 		} else {
-			res.SetToMany("rel", test.rval.([]string))
+			res.Set("rel", test.rval.([]string))
 		}
 
 		filter := &Filter{
@@ -882,34 +882,34 @@ func TestFilterResource(t *testing.T) {
 
 	// Tests for "and" and "or"
 	andOrTests := []struct {
-		rvals       []interface{}
+		rvals       []any
 		ops         []string
-		cvals       []interface{}
+		cvals       []any
 		expectedAnd bool
 		expectedOr  bool
 	}{
 		{
-			rvals:       []interface{}{"abc", 1, true, now},
+			rvals:       []any{"abc", 1, true, now},
 			ops:         []string{"=", "=", "=", "="},
-			cvals:       []interface{}{"abc", 1, true, now},
+			cvals:       []any{"abc", 1, true, now},
 			expectedAnd: true,
 			expectedOr:  true,
 		}, {
-			rvals:       []interface{}{"abc", 1, false, now},
+			rvals:       []any{"abc", 1, false, now},
 			ops:         []string{"=", "=", "=", "="},
-			cvals:       []interface{}{"abc", 1, true, now},
+			cvals:       []any{"abc", 1, true, now},
 			expectedAnd: false,
 			expectedOr:  true,
 		}, {
-			rvals:       []interface{}{"abc", 1, false, now},
+			rvals:       []any{"abc", 1, false, now},
 			ops:         []string{"=", "!=", "!=", "="},
-			cvals:       []interface{}{"abc", 2, true, now},
+			cvals:       []any{"abc", 2, true, now},
 			expectedAnd: true,
 			expectedOr:  true,
 		}, {
-			rvals:       []interface{}{"abc", 1, false, now},
+			rvals:       []any{"abc", 1, false, now},
 			ops:         []string{"=", "!=", "=", "!="},
-			cvals:       []interface{}{"def", 1, true, now},
+			cvals:       []any{"def", 1, true, now},
 			expectedAnd: false,
 			expectedOr:  false,
 		},

@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"net/url"
 	"sort"
-	"strconv"
 )
 
 // NewURL builds a URL from a SimpleURL and a schema for validating and
@@ -164,7 +163,7 @@ func (u *URL) String() string {
 		if err != nil {
 			// This should not happen since Filter should be validated
 			// at this point.
-			panic(fmt.Errorf("jsonapi: can't marshal filter: %s", err))
+			panic(err)
 		}
 
 		param := "filter=" + string(mf)
@@ -175,17 +174,17 @@ func (u *URL) String() string {
 
 	// Pagination
 	if u.IsCol {
-		if u.Params.PageNumber != 0 {
+		if num, ok := u.Params.Page["number"]; ok {
 			urlParams = append(
 				urlParams,
-				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
+				"page%5Bnumber%5D="+fmt.Sprint(num),
 			)
 		}
 
-		if u.Params.PageSize != 0 {
+		if size, ok := u.Params.Page["size"]; ok {
 			urlParams = append(
 				urlParams,
-				"page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)),
+				"page%5Bsize%5D="+fmt.Sprint(size),
 			)
 		}
 	}

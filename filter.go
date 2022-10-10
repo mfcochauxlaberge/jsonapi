@@ -8,10 +8,10 @@ import (
 
 // A Filter is used to define filters when querying collections.
 type Filter struct {
-	Field string      `json:"f"`
-	Op    string      `json:"o"`
-	Val   interface{} `json:"v"`
-	Col   string      `json:"c"`
+	Field string `json:"f"`
+	Op    string `json:"o"`
+	Val   any    `json:"v"`
+	Col   string `json:"c"`
 }
 
 // filter is an internal version of Filter.
@@ -60,7 +60,7 @@ func (f *Filter) UnmarshalJSON(data []byte) error {
 // IsAllowed reports whether res is valid under the rules defined in the filter.
 func (f *Filter) IsAllowed(res Resource) bool {
 	var (
-		val interface{}
+		val any
 		// typ string
 	)
 
@@ -70,9 +70,9 @@ func (f *Filter) IsAllowed(res Resource) bool {
 
 	if rel, ok := res.Rels()[f.Field]; ok {
 		if rel.ToOne {
-			val = res.GetToOne(f.Field)
+			val = res.Get(f.Field).(string)
 		} else {
-			val = res.GetToMany(f.Field)
+			val = res.Get(f.Field).([]string)
 		}
 	}
 
@@ -104,7 +104,7 @@ func (f *Filter) IsAllowed(res Resource) bool {
 	}
 }
 
-func checkVal(op string, rval, cval interface{}) bool {
+func checkVal(op string, rval, cval any) bool {
 	switch rval := rval.(type) {
 	case string:
 		return checkStr(op, rval, cval.(string))

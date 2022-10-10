@@ -312,11 +312,11 @@ func TestErrorMarshalJSON(t *testing.T) {
 		Links: map[string]string{
 			"link": "http://example.com",
 		},
-		Source: map[string]interface{}{
+		Source: map[string]any{
 			"parameter": "param",
 			"pointer":   "/data",
 		},
-		Meta: map[string]interface{}{
+		Meta: map[string]any{
 			"meta": 123,
 		},
 	}

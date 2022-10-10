@@ -24,7 +24,7 @@ func TestResources(t *testing.T) {
 	assert.Equal(1, col.Len())
 
 	// Retrieve a resource
-	assert.Equal("id", col.At(0).GetID())
+	assert.Equal("id", col.At(0).Get("id").(string))
 	assert.Nil(col.At(1))
 }
 

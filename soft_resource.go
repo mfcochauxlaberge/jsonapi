@@ -15,7 +15,8 @@ type SoftResource struct {
 	Type *Type
 
 	id   string
-	data map[string]interface{}
+	data map[string]any
+	meta Meta
 }
 
 // Attrs returns the resource's attributes.
@@ -106,10 +107,18 @@ func (sr *SoftResource) GetType() Type {
 }
 
 // Get returns the value associated to the field named after key.
-func (sr *SoftResource) Get(key string) interface{} {
+func (sr *SoftResource) Get(key string) any {
 	sr.check()
 
+	if key == "id" {
+		return sr.GetID()
+	}
+
 	if _, ok := sr.Type.Attrs[key]; ok {
+		if v, ok := sr.data[key]; ok {
+			return v
+		}
+	} else if _, ok := sr.Type.Rels[key]; ok {
 		if v, ok := sr.data[key]; ok {
 			return v
 		}
@@ -131,59 +140,33 @@ func (sr *SoftResource) SetType(typ *Type) {
 }
 
 // Set sets the value associated to the field named key to v.
-func (sr *SoftResource) Set(key string, v interface{}) {
+func (sr *SoftResource) Set(key string, v any) {
 	sr.check()
 
+	if key == "id" {
+		id, _ := v.(string)
+		sr.id = id
+
+		return
+	}
+
 	if attr, ok := sr.Type.Attrs[key]; ok {
-		if GetAttrTypeString(attr.Type, attr.Nullable) == fmt.Sprintf("%T", v) {
+		typ, nullable := GetAttrType(fmt.Sprintf("%T", v))
+		if attr.Type == typ && attr.Nullable == nullable {
 			sr.data[key] = v
 		} else if v == nil && attr.Nullable {
 			sr.data[key] = GetZeroValue(attr.Type, attr.Nullable)
 		}
+	} else if rel, ok := sr.Type.Rels[key]; ok {
+		if _, ok := v.(string); ok && rel.ToOne {
+			sr.data[key] = v
+		} else if _, ok := v.([]string); ok && !rel.ToOne {
+			sr.data[key] = v
+		}
 	}
 }
 
-// GetToOne returns the value associated to the relationship named after key.
-func (sr *SoftResource) GetToOne(key string) string {
-	sr.check()
-
-	if _, ok := sr.Type.Rels[key]; ok {
-		return sr.data[key].(string)
-	}
-
-	return ""
-}
-
-// GetToMany returns the value associated to the relationship named after key.
-func (sr *SoftResource) GetToMany(key string) []string {
-	sr.check()
-
-	if _, ok := sr.Type.Rels[key]; ok {
-		return sr.data[key].([]string)
-	}
-
-	return []string{}
-}
-
-// SetToOne sets the relationship named after key to id.
-func (sr *SoftResource) SetToOne(key string, id string) {
-	sr.check()
-
-	if rel, ok := sr.Type.Rels[key]; ok && rel.ToOne {
-		sr.data[key] = id
-	}
-}
-
-// SetToMany sets the relationship named after key to ids.
-func (sr *SoftResource) SetToMany(key string, ids []string) {
-	sr.check()
-
-	if rel, ok := sr.Type.Rels[key]; ok && !rel.ToOne {
-		sr.data[key] = ids
-	}
-}
-
-// Copy return a new SoftResource object with the same type and values.
+// Copy returns a new SoftResource object with the same type and values.
 func (sr *SoftResource) Copy() Resource {
 	sr.check()
 
@@ -194,6 +177,16 @@ func (sr *SoftResource) Copy() Resource {
 		id:   sr.id,
 		data: copyData(sr.data),
 	}
+}
+
+// Meta returns the meta values of the resource.
+func (sr *SoftResource) Meta() Meta {
+	return sr.meta
+}
+
+// SetMeta sets the meta values of the resource.
+func (sr *SoftResource) SetMeta(m Meta) {
+	sr.meta = m
 }
 
 func (sr *SoftResource) fields() []string {
@@ -223,7 +216,7 @@ func (sr *SoftResource) check() {
 	}
 
 	if sr.data == nil {
-		sr.data = map[string]interface{}{}
+		sr.data = map[string]any{}
 	}
 
 	for i := range sr.Type.Attrs {
@@ -263,8 +256,8 @@ func (sr *SoftResource) check() {
 	}
 }
 
-func copyData(d map[string]interface{}) map[string]interface{} {
-	d2 := map[string]interface{}{}
+func copyData(d map[string]any) map[string]any {
+	d2 := map[string]any{}
 
 	for k, v := range d {
 		switch v2 := v.(type) {

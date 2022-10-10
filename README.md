@@ -1,8 +1,11 @@
 <div align="center" style="text-align: center;">
   <img src="https://raw.githubusercontent.com/mfcochauxlaberge/jsonapi/master/assets/logo.png" height="120">
   <br>
-  <a href="https://travis-ci.com/mfcochauxlaberge/jsonapi">
-    <img src="https://travis-ci.com/mfcochauxlaberge/jsonapi.svg?branch=master">
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ATest+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Test/badge.svg?branch=master">
+  </a>
+  <a href="https://github.com/mfcochauxlaberge/jsonapi/actions?query=workflow%3ALint+branch%3Amaster">
+    <img src="https://github.com/mfcochauxlaberge/jsonapi/workflows/Lint/badge.svg?branch=master">
   </a>
   <a href="https://goreportcard.com/report/github.com/mfcochauxlaberge/jsonapi">
     <img src="https://goreportcard.com/badge/github.com/mfcochauxlaberge/jsonapi">
@@ -12,7 +15,7 @@
   </a>
   <br>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
-    <img src="https://img.shields.io/badge/go%20version-1.11%2B-%2300acd7">
+    <img src="https://img.shields.io/badge/go%20version-1.13%2B-%2300acd7">
   </a>
   <a href="https://github.com/mfcochauxlaberge/jsonapi/blob/master/go.mod">
     <img src="https://img.shields.io/github/v/release/mfcochauxlaberge/jsonapi?include_prereleases&sort=semver">
@@ -63,13 +66,14 @@ A few tasks are required before committing to the current API:
 
 * Rethink how errors are handled
   * Use the new tools introduced in Go 1.13.
+* Simplify the API
+  * Remove anything that is redundant or not useful.
 * Gather feedback from users
   * The library should be used more on real projects to see of the API is convenient.
-  * It is currently used by [karigo](https://github.com/mfcochauxlaberge/karigo).
 
 ## Requirements
 
-The supported versions of Go are the latest patch releases of every minor release starting with Go 1.11.
+The supported versions of Go are the latest patch releases of every minor release starting with Go 1.13.
 
 ## Examples
 
@@ -97,6 +101,19 @@ Here are some of the main concepts covered by the library.
 A `Request` represents an HTTP request structured in a format easily readable from a JSON:API point of view.
 
 If you are familiar with the specification, reading the `Request` struct and its fields (`URL`, `Document`, etc) should be straightforward.
+
+### Schema
+
+A `Schema` contains all the schema information for an API, like types, fields, relationships between types, and so on. See `schema.go` and `type.go` for more details.
+
+This is really useful for many uses cases:
+
+* Making sure the schema is coherent
+* Validating resources
+* Parsing documents and URLs
+* And probably many more...
+
+For example, when a request comes in, a `Document` and a `URL` can be created by parsing the request. By providing a schema, the parsing can fail if it finds some errors like a type that does not exist, a field of the wrong kind, etc. After that step, valid data can be assumed.
 
 ### Type
 
