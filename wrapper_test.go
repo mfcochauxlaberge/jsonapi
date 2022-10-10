@@ -258,7 +258,7 @@ func TestWrapperSet(t *testing.T) {
 	tests := []struct {
 		typ   string // "1" for mockType1, "2" for mockType2
 		field string
-		val   interface{}
+		val   any
 	}{
 		{typ: "1", field: "str", val: "astring"},
 		{typ: "1", field: "int", val: int(9)},

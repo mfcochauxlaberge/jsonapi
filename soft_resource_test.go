@@ -204,7 +204,7 @@ func TestSoftResourceCopy(t *testing.T) {
 	sr := &SoftResource{}
 
 	// Attributes
-	attrs := map[string]interface{}{
+	attrs := map[string]any{
 		"string":     "abc",
 		"int":        42,
 		"int8":       8,
@@ -282,7 +282,7 @@ func TestSoftResourceMeta(t *testing.T) {
 	sr.Type = &typ
 	sr.SetID("id")
 
-	meta := Meta(map[string]interface{}{
+	meta := Meta(map[string]any{
 		"key1": "a string",
 		"key2": 200,
 		"key3": false,

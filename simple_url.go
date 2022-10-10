@@ -23,7 +23,7 @@ type SimpleURL struct {
 	FilterLabel  string
 	Filter       *Filter
 	SortingRules []string
-	Page         map[string]interface{}
+	Page         map[string]any
 	Include      []string
 }
 
@@ -60,7 +60,7 @@ func NewSimpleURL(u *url.URL) (SimpleURL, error) {
 
 			if len(values.Get(name)) > 0 {
 				if sURL.Page == nil {
-					sURL.Page = map[string]interface{}{}
+					sURL.Page = map[string]any{}
 				}
 
 				val := values.Get(name)

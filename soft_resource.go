@@ -15,7 +15,7 @@ type SoftResource struct {
 	Type *Type
 
 	id   string
-	data map[string]interface{}
+	data map[string]any
 	meta Meta
 }
 
@@ -107,7 +107,7 @@ func (sr *SoftResource) GetType() Type {
 }
 
 // Get returns the value associated to the field named after key.
-func (sr *SoftResource) Get(key string) interface{} {
+func (sr *SoftResource) Get(key string) any {
 	sr.check()
 
 	if key == "id" {
@@ -140,7 +140,7 @@ func (sr *SoftResource) SetType(typ *Type) {
 }
 
 // Set sets the value associated to the field named key to v.
-func (sr *SoftResource) Set(key string, v interface{}) {
+func (sr *SoftResource) Set(key string, v any) {
 	sr.check()
 
 	if key == "id" {
@@ -216,7 +216,7 @@ func (sr *SoftResource) check() {
 	}
 
 	if sr.data == nil {
-		sr.data = map[string]interface{}{}
+		sr.data = map[string]any{}
 	}
 
 	for i := range sr.Type.Attrs {
@@ -256,8 +256,8 @@ func (sr *SoftResource) check() {
 	}
 }
 
-func copyData(d map[string]interface{}) map[string]interface{} {
-	d2 := map[string]interface{}{}
+func copyData(d map[string]any) map[string]any {
+	d2 := map[string]any{}
 
 	for k, v := range d {
 		switch v2 := v.(type) {

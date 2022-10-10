@@ -14,7 +14,7 @@ import (
 // key of the field tags are properly formatted.
 //
 // If nil is returned, then the value can be safely used with this library.
-func Check(v interface{}) error {
+func Check(v any) error {
 	value := reflect.ValueOf(v)
 	kind := value.Kind()
 
@@ -104,7 +104,7 @@ func Check(v interface{}) error {
 // Type object that is returned.
 //
 // If an error is returned, the Type object will be empty.
-func BuildType(v interface{}) (Type, error) {
+func BuildType(v any) (Type, error) {
 	typ := Type{}
 
 	val := reflect.ValueOf(v)
@@ -181,7 +181,7 @@ func BuildType(v interface{}) (Type, error) {
 // MustBuildType calls BuildType and returns the result.
 //
 // It panics if the error returned by BuildType is not nil.
-func MustBuildType(v interface{}) Type {
+func MustBuildType(v any) Type {
 	typ, err := BuildType(v)
 	if err != nil {
 		panic(err)
@@ -194,7 +194,7 @@ func MustBuildType(v interface{}) Type {
 //
 // Two empty strings are returned if v is not recognized as a resource.
 // CheckType can be used to check the validity of a struct.
-func IDAndType(v interface{}) (string, string) {
+func IDAndType(v any) (string, string) {
 	if res, ok := v.(Resource); ok {
 		return res.Get("id").(string), res.GetType().Name
 	}

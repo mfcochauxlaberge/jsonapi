@@ -6,7 +6,7 @@ import (
 )
 
 // Meta holds meta information.
-type Meta map[string]interface{}
+type Meta map[string]any
 
 // Has reports whether the Meta map contains or not the given key.
 func (m Meta) Has(key string) bool {

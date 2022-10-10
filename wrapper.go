@@ -29,7 +29,7 @@ type Wrapper struct {
 // to v.
 //
 // If v is not a pointer, a copy is made and v won't be modified by the wrapper.
-func Wrap(v interface{}) *Wrapper {
+func Wrap(v any) *Wrapper {
 	val := reflect.ValueOf(v)
 
 	switch {
@@ -181,7 +181,7 @@ func (w *Wrapper) GetType() Type {
 }
 
 // Get returns the value associated to the attribute named after key.
-func (w *Wrapper) Get(key string) interface{} {
+func (w *Wrapper) Get(key string) any {
 	if key == "id" {
 		return w.GetID()
 	}
@@ -195,7 +195,7 @@ func (w *Wrapper) SetID(id string) {
 }
 
 // Set sets the value associated to the attribute named after key.
-func (w *Wrapper) Set(key string, val interface{}) {
+func (w *Wrapper) Set(key string, val any) {
 	if key == "id" {
 		id, _ := val.(string)
 		w.SetID(id)
@@ -239,7 +239,7 @@ func (w *Wrapper) SetMeta(m Meta) {
 
 // Private methods
 
-func (w *Wrapper) getField(key string) interface{} {
+func (w *Wrapper) getField(key string) any {
 	if key == "" {
 		panic("key is empty")
 	}
@@ -260,7 +260,7 @@ func (w *Wrapper) getField(key string) interface{} {
 	panic(fmt.Sprintf("attribute %q does not exist", key))
 }
 
-func (w *Wrapper) setField(key string, v interface{}) {
+func (w *Wrapper) setField(key string, v any) {
 	if key == "" {
 		panic("key is empty")
 	}

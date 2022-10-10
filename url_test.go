@@ -289,7 +289,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				Page: map[string]interface{}{
+				Page: map[string]any{
 					"size":   50,
 					"number": 3,
 				},
@@ -334,7 +334,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				Page: map[string]interface{}{
+				Page: map[string]any{
 					"size":   50,
 					"number": 3,
 				},
@@ -377,7 +377,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				Page: map[string]interface{}{
+				Page: map[string]any{
 					"size":   90,
 					"number": 110,
 				},

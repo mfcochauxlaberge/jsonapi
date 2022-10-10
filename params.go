@@ -261,7 +261,7 @@ type Params struct {
 	SortingRules []string
 
 	// Pagination
-	Page map[string]interface{}
+	Page map[string]any
 
 	// Include
 	Include [][]Rel
