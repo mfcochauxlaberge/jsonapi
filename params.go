@@ -240,8 +240,7 @@ func NewParams(schema *Schema, su SimpleURL, resType string) (*Params, error) {
 	}
 
 	// Pagination
-	params.PageSize = su.PageSize
-	params.PageNumber = su.PageNumber
+	params.Page = su.Page
 
 	return params, nil
 }
@@ -262,8 +261,7 @@ type Params struct {
 	SortingRules []string
 
 	// Pagination
-	PageSize   uint
-	PageNumber uint
+	Page map[string]any
 
 	// Include
 	Include [][]Rel

@@ -74,7 +74,7 @@ func TestParseURL(t *testing.T) {
 			name: "invalid simpleurl",
 			url: `
 				/mocktypes1/abc123
-				?page[size]=invalid
+				?filter="
 			`,
 			expectedError: true,
 		}, {
@@ -248,8 +248,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				PageSize:     0,
-				PageNumber:   0,
+				Page:         nil,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -262,8 +261,7 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				PageSize:     0,
-				PageNumber:   0,
+				Page:         nil,
 				Include:      [][]Rel{},
 			},
 			expectedError: false,
@@ -291,8 +289,10 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				PageSize:     50,
-				PageNumber:   3,
+				Page: map[string]any{
+					"size":   50,
+					"number": 3,
+				},
 				Include: [][]Rel{
 					{
 						mockTypes1.Rels["to-many-from-many"],
@@ -334,8 +334,10 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				PageSize:     50,
-				PageNumber:   3,
+				Page: map[string]any{
+					"size":   50,
+					"number": 3,
+				},
 				Include: [][]Rel{
 					{
 						mockTypes1.Rels["to-many-from-many"],
@@ -375,8 +377,10 @@ func TestParseParams(t *testing.T) {
 				Rels:         map[string][]Rel{},
 				RelData:      map[string][]string{},
 				SortingRules: []string{},
-				PageSize:     90,
-				PageNumber:   110,
+				Page: map[string]any{
+					"size":   90,
+					"number": 110,
+				},
 				Include: [][]Rel{
 					{
 						mockTypes1.Rels["to-many-from-one"],

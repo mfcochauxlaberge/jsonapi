@@ -133,7 +133,7 @@ func TestMarshalDocument(t *testing.T) {
 	r4 := &mocktype{
 		ID: "id4",
 	}
-	r4.SetMeta(map[string]interface{}{
+	r4.SetMeta(map[string]any{
 		"key1": "a string",
 		"key2": 42,
 		"key3": true,
@@ -185,7 +185,7 @@ func TestMarshalDocument(t *testing.T) {
 			name: "meta",
 			doc: &Document{
 				Data: nil,
-				Meta: map[string]interface{}{
+				Meta: map[string]any{
 					"f1": "漢語",
 					"f2": 42,
 					"f3": true,
@@ -256,6 +256,21 @@ func TestMarshalDocument(t *testing.T) {
 					return []Error{err1, err2}
 				}(),
 			},
+		}, {
+			name: "links",
+			doc: &Document{
+				Links: map[string]Link{
+					"self":      {HRef: "http://example.com"},
+					"some_link": {HRef: "http://example.org"},
+					"other_link": {
+						HRef: "http://example.com/other/path",
+						Meta: map[string]any{
+							"field1": "value1",
+							"field2": 123,
+						},
+					},
+				},
+			},
 		},
 	}
 
@@ -279,6 +294,8 @@ func TestMarshalDocument(t *testing.T) {
 			// Marshaling
 			payload, err := MarshalDocument(test.doc, url)
 			assert.NoError(err)
+
+			payload = append(payload, '\n')
 
 			// Golden file
 			filename := strings.ReplaceAll(test.name, " ", "_") + ".json"
@@ -415,7 +432,7 @@ func TestUnmarshalDocument(t *testing.T) {
 	r4 := &mocktype{
 		ID: "id4",
 	}
-	r4.SetMeta(map[string]interface{}{
+	r4.SetMeta(map[string]any{
 		"key1": "a string",
 		"key2": 42,
 		"key3": true,

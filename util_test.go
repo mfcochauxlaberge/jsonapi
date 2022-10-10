@@ -12,7 +12,7 @@ func makeOneLineNoSpaces(str string) string {
 	return strings.ReplaceAll(str, " ", "")
 }
 
-func ptr(v interface{}) interface{} {
+func ptr(v any) any {
 	switch c := v.(type) {
 	// String
 	case string:
@@ -52,7 +52,7 @@ func ptr(v interface{}) interface{} {
 	}
 }
 
-func nilptr(t string) interface{} {
+func nilptr(t string) any {
 	switch t {
 	// String
 	case "string":

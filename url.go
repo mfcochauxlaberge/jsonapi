@@ -2,9 +2,9 @@ package jsonapi
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/url"
 	"sort"
-	"strconv"
 )
 
 // NewURL builds a URL from a SimpleURL and a schema for validating and
@@ -174,17 +174,17 @@ func (u *URL) String() string {
 
 	// Pagination
 	if u.IsCol {
-		if u.Params.PageNumber != 0 {
+		if num, ok := u.Params.Page["number"]; ok {
 			urlParams = append(
 				urlParams,
-				"page%5Bnumber%5D="+strconv.Itoa(int(u.Params.PageNumber)),
+				"page%5Bnumber%5D="+fmt.Sprint(num),
 			)
 		}
 
-		if u.Params.PageSize != 0 {
+		if size, ok := u.Params.Page["size"]; ok {
 			urlParams = append(
 				urlParams,
-				"page%5Bsize%5D="+strconv.Itoa(int(u.Params.PageSize)),
+				"page%5Bsize%5D="+fmt.Sprint(size),
 			)
 		}
 	}

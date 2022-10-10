@@ -7,6 +7,10 @@ import (
 	. "github.com/mfcochauxlaberge/jsonapi"
 )
 
+// This is for backward compatibility with
+// Go versions under 1.18.
+type any = interface{}
+
 var update = flag.Bool("update-golden-files", false, "update the golden files")
 
 func getTime() time.Time {
