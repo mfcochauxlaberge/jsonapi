@@ -132,7 +132,7 @@ func TestSimpleURL(t *testing.T) {
 				},
 				Filter:       nil,
 				SortingRules: []string{"attr2", "-attr1"},
-				Page: map[string]interface{}{
+				Page: map[string]any{
 					"size":   20,
 					"number": 1,
 				},
@@ -170,7 +170,7 @@ func TestSimpleURL(t *testing.T) {
 				Fields:       map[string][]string{},
 				Filter:       nil,
 				SortingRules: []string{},
-				Page: map[string]interface{}{
+				Page: map[string]any{
 					"cursor": "abc",
 				},
 				Include: []string{},
