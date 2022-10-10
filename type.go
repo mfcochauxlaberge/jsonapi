@@ -64,6 +64,8 @@ type Type struct {
 	Attrs   map[string]Attr
 	Rels    map[string]Rel
 	NewFunc func() Resource
+
+	original interface{}
 }
 
 // AddAttr adds an attributes to the type.
