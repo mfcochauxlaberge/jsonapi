@@ -31,21 +31,21 @@ import (
 // Developers are encouraged to use the constants, the Type struct, and other
 // tools to handle attribute types instead of dealing with strings.
 const (
-	AttrTypeInvalid = iota
-	AttrTypeString
-	AttrTypeInt
-	AttrTypeInt8
-	AttrTypeInt16
-	AttrTypeInt32
-	AttrTypeInt64
-	AttrTypeUint
-	AttrTypeUint8
-	AttrTypeUint16
-	AttrTypeUint32
-	AttrTypeUint64
-	AttrTypeBool
-	AttrTypeTime
-	AttrTypeBytes
+	AttrTypeInvalid = ""
+	AttrTypeString  = "string"
+	AttrTypeInt     = "int"
+	AttrTypeInt8    = "int8"
+	AttrTypeInt16   = "int16"
+	AttrTypeInt32   = "int32"
+	AttrTypeInt64   = "int64"
+	AttrTypeUint    = "uint"
+	AttrTypeUint8   = "uint8"
+	AttrTypeUint16  = "uint16"
+	AttrTypeUint32  = "uint32"
+	AttrTypeUint64  = "uint64"
+	AttrTypeBool    = "bool"
+	AttrTypeTime    = "time"
+	AttrTypeBytes   = "bytes"
 )
 
 // A Type stores all the necessary information about a type as represented in
@@ -73,7 +73,7 @@ func (t *Type) AddAttr(attr Attr) error {
 		return fmt.Errorf("jsonapi: attribute name is empty")
 	}
 
-	if GetAttrTypeString(attr.Type, attr.Nullable) == "" {
+	if name, _ := GetAttrType(attr.Type); name == "" {
 		return fmt.Errorf("jsonapi: attribute type is invalid")
 	}
 
@@ -200,7 +200,7 @@ func (t Type) Copy() Type {
 // Attr represents a resource attribute.
 type Attr struct {
 	Name     string
-	Type     int
+	Type     string
 	Nullable bool
 }
 
@@ -358,7 +358,7 @@ func (a Attr) UnmarshalToType(data []byte) (any, error) {
 		return nil, NewErrInvalidFieldValueInBody(
 			a.Name,
 			string(data),
-			GetAttrTypeString(a.Type, a.Nullable),
+			a.Type,
 		)
 	}
 
@@ -418,7 +418,7 @@ func (r Rel) String() string {
 
 // GetAttrType returns the attribute type as an int (see constants) and a
 // boolean that indicates whether the attribute can be null or not.
-func GetAttrType(t string) (int, bool) {
+func GetAttrType(t string) (string, bool) {
 	nullable := strings.HasPrefix(t, "*")
 
 	if nullable {
@@ -459,56 +459,11 @@ func GetAttrType(t string) (int, bool) {
 	}
 }
 
-// GetAttrTypeString returns the name of the attribute type specified by t (see
-// constants) and nullable.
-func GetAttrTypeString(t int, nullable bool) string {
-	str := ""
-
-	switch t {
-	case AttrTypeString:
-		str = "string"
-	case AttrTypeInt:
-		str = "int"
-	case AttrTypeInt8:
-		str = "int8"
-	case AttrTypeInt16:
-		str = "int16"
-	case AttrTypeInt32:
-		str = "int32"
-	case AttrTypeInt64:
-		str = "int64"
-	case AttrTypeUint:
-		str = "uint"
-	case AttrTypeUint8:
-		str = "uint8"
-	case AttrTypeUint16:
-		str = "uint16"
-	case AttrTypeUint32:
-		str = "uint32"
-	case AttrTypeUint64:
-		str = "uint64"
-	case AttrTypeBool:
-		str = "bool"
-	case AttrTypeTime:
-		str = "time"
-	case AttrTypeBytes:
-		str = "bytes"
-	default:
-		str = ""
-	}
-
-	if nullable {
-		return "*" + str
-	}
-
-	return str
-}
-
 // GetZeroValue returns the zero value of the attribute type represented by the
 // specified int (see constants).
 //
 // If nullable is true, the returned value is a nil pointer.
-func GetZeroValue(t int, nullable bool) any {
+func GetZeroValue(t string, nullable bool) any {
 	switch t {
 	case AttrTypeString:
 		if nullable {

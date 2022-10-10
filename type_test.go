@@ -417,41 +417,6 @@ func TestGetAttrType(t *testing.T) {
 	assert.False(nullable)
 }
 
-func TestGetAttrTypeString(t *testing.T) {
-	assert := assert.New(t)
-
-	assert.Equal("string", GetAttrTypeString(AttrTypeString, false))
-	assert.Equal("int", GetAttrTypeString(AttrTypeInt, false))
-	assert.Equal("int8", GetAttrTypeString(AttrTypeInt8, false))
-	assert.Equal("int16", GetAttrTypeString(AttrTypeInt16, false))
-	assert.Equal("int32", GetAttrTypeString(AttrTypeInt32, false))
-	assert.Equal("int64", GetAttrTypeString(AttrTypeInt64, false))
-	assert.Equal("uint", GetAttrTypeString(AttrTypeUint, false))
-	assert.Equal("uint8", GetAttrTypeString(AttrTypeUint8, false))
-	assert.Equal("uint16", GetAttrTypeString(AttrTypeUint16, false))
-	assert.Equal("uint32", GetAttrTypeString(AttrTypeUint32, false))
-	assert.Equal("uint64", GetAttrTypeString(AttrTypeUint64, false))
-	assert.Equal("bool", GetAttrTypeString(AttrTypeBool, false))
-	assert.Equal("time", GetAttrTypeString(AttrTypeTime, false))
-	assert.Equal("bytes", GetAttrTypeString(AttrTypeBytes, false))
-	assert.Equal("*string", GetAttrTypeString(AttrTypeString, true))
-	assert.Equal("*int", GetAttrTypeString(AttrTypeInt, true))
-	assert.Equal("*int8", GetAttrTypeString(AttrTypeInt8, true))
-	assert.Equal("*int16", GetAttrTypeString(AttrTypeInt16, true))
-	assert.Equal("*int32", GetAttrTypeString(AttrTypeInt32, true))
-	assert.Equal("*int64", GetAttrTypeString(AttrTypeInt64, true))
-	assert.Equal("*uint", GetAttrTypeString(AttrTypeUint, true))
-	assert.Equal("*uint8", GetAttrTypeString(AttrTypeUint8, true))
-	assert.Equal("*uint16", GetAttrTypeString(AttrTypeUint16, true))
-	assert.Equal("*uint32", GetAttrTypeString(AttrTypeUint32, true))
-	assert.Equal("*uint64", GetAttrTypeString(AttrTypeUint64, true))
-	assert.Equal("*bool", GetAttrTypeString(AttrTypeBool, true))
-	assert.Equal("*time", GetAttrTypeString(AttrTypeTime, true))
-	assert.Equal("*bytes", GetAttrTypeString(AttrTypeBytes, true))
-	assert.Equal("", GetAttrTypeString(AttrTypeInvalid, false))
-	assert.Equal("", GetAttrTypeString(999, false))
-}
-
 func TestGetZeroValue(t *testing.T) {
 	assert := assert.New(t)
 
@@ -484,7 +449,7 @@ func TestGetZeroValue(t *testing.T) {
 	assert.Equal(nilptr("time.Time"), GetZeroValue(AttrTypeTime, true))
 	assert.Equal(nilptr("[]byte"), GetZeroValue(AttrTypeBytes, true))
 	assert.Equal(nil, GetZeroValue(AttrTypeInvalid, false))
-	assert.Equal(nil, GetZeroValue(999, false))
+	assert.Equal(nil, GetZeroValue("", false))
 }
 
 func TestCopyType(t *testing.T) {
