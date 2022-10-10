@@ -28,7 +28,7 @@ func TestMarshalLink(t *testing.T) {
 		}, {
 			link: jsonapi.Link{
 				HRef: "example.org",
-				Meta: map[string]interface{}{
+				Meta: map[string]any{
 					"s": "abc",
 					"n": 123,
 				},
@@ -37,7 +37,7 @@ func TestMarshalLink(t *testing.T) {
 		}, {
 			link: jsonapi.Link{
 				HRef: "example.org",
-				Meta: map[string]interface{}{
+				Meta: map[string]any{
 					"bad": badMarshaler{},
 				},
 			},

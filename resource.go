@@ -15,21 +15,21 @@ type Resource interface {
 
 	// Read
 	GetType() Type
-	Get(key string) interface{}
+	Get(key string) any
 
 	// Update
-	Set(key string, val interface{})
+	Set(key string, val any)
 }
 
 // MarshalResource marshals a Resource into a JSON-encoded payload.
 func MarshalResource(r Resource, prepath string, fields []string, relData map[string][]string) []byte {
-	mapPl := map[string]interface{}{}
+	mapPl := map[string]any{}
 
 	mapPl["id"] = r.Get("id").(string)
 	mapPl["type"] = r.GetType().Name
 
 	// Attributes
-	attrs := map[string]interface{}{}
+	attrs := map[string]any{}
 
 	for _, attr := range r.Attrs() {
 		for _, field := range fields {
@@ -84,7 +84,7 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 				raw, _ = json.Marshal(s)
 				rels[rel.FromName] = &raw
 			} else {
-				s := map[string]interface{}{
+				s := map[string]any{
 					"links": buildRelationshipLinks(r, prepath, rel.FromName),
 				}
 

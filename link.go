@@ -7,8 +7,8 @@ import (
 
 // Link represents a JSON:API links object.
 type Link struct {
-	HRef string                 `json:"href"`
-	Meta map[string]interface{} `json:"meta"`
+	HRef string         `json:"href"`
+	Meta map[string]any `json:"meta"`
 }
 
 // MarshalJSON builds the JSON representation of a Link object.

@@ -9,7 +9,7 @@ import (
 // A Document represents a JSON:API document.
 type Document struct {
 	// Data
-	Data interface{}
+	Data any
 
 	// Included
 	Included []Resource
@@ -143,7 +143,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 	}
 
 	// Marshaling
-	plMap := map[string]interface{}{}
+	plMap := map[string]any{}
 
 	if len(errors) > 0 {
 		plMap["errors"] = errors
@@ -189,7 +189,7 @@ func UnmarshalDocument(payload []byte, schema *Schema) (*Document, error) {
 		Resources: map[string]map[string]struct{}{},
 		Links:     map[string]Link{},
 		RelData:   map[string][]string{},
-		Meta:      map[string]interface{}{},
+		Meta:      map[string]any{},
 	}
 	ske := &payloadSkeleton{}
 

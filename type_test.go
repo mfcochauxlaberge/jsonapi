@@ -126,7 +126,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	)
 
 	tests := []struct {
-		val interface{}
+		val any
 	}{
 		{val: "str"},            // string
 		{val: 1},                // int

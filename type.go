@@ -206,13 +206,13 @@ type Attr struct {
 
 // UnmarshalToType unmarshals the data into a value of the type represented by
 // the attribute and returns it.
-func (a Attr) UnmarshalToType(data []byte) (interface{}, error) {
+func (a Attr) UnmarshalToType(data []byte) (any, error) {
 	if a.Nullable && string(data) == "null" {
 		return GetZeroValue(a.Type, a.Nullable), nil
 	}
 
 	var (
-		v   interface{}
+		v   any
 		err error
 	)
 
@@ -508,7 +508,7 @@ func GetAttrTypeString(t int, nullable bool) string {
 // specified int (see constants).
 //
 // If nullable is true, the returned value is a nil pointer.
-func GetZeroValue(t int, nullable bool) interface{} {
+func GetZeroValue(t int, nullable bool) any {
 	switch t {
 	case AttrTypeString:
 		if nullable {
