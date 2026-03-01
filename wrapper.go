@@ -199,6 +199,7 @@ func (w *Wrapper) Set(key string, val any) {
 	if key == "id" {
 		id, _ := val.(string)
 		w.SetID(id)
+		return
 	}
 
 	w.setField(key, val)
