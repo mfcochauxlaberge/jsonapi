@@ -29,3 +29,13 @@ func TestWrapCollection(t *testing.T) {
 	// Index out of bound
 	assert.Nil(col.At(999))
 }
+
+func TestWWrapCollectionAtNegativeIndex(t *testing.T) {
+	assert := assert.New(t)
+
+	res := Wrap(mocktype{})
+	col := WrapCollection(res)
+
+	// Negative index
+	assert.Nil(col.At(-1))
+}

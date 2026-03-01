@@ -36,6 +36,10 @@ func (wc *WrapperCollection) Len() int {
 // It returns nil if the index is greater than the number of resources in the
 // collection.
 func (wc *WrapperCollection) At(i int) Resource {
+	if i < 0 {
+		return nil
+	}
+
 	if len(wc.col) > i {
 		return wc.col[i]
 	}
