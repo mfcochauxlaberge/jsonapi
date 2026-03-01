@@ -342,7 +342,7 @@ func (a Attr) UnmarshalToType(data []byte) (any, error) {
 		err := json.Unmarshal(data, &s)
 
 		if err != nil {
-			panic(err)
+			return nil, err
 		}
 
 		if a.Nullable {

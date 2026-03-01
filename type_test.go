@@ -184,11 +184,9 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	// Invalid slide of bytes
 	attr.Type = AttrTypeBytes
 
-	assert.Panics(func() {
-		_, _ = attr.UnmarshalToType([]byte("invalid"))
-	})
-	// assert.Error(err)
-	// assert.Nil(val)
+	_, _ = attr.UnmarshalToType([]byte("invalid"))
+	assert.Error(err)
+	assert.Nil(val)
 
 	// Invalid attribute type
 	attr.Type = AttrTypeInvalid
