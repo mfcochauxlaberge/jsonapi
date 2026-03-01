@@ -81,6 +81,7 @@ func MarshalDocument(doc *Document, url *URL) ([]byte, error) {
 
 	// Data
 	var data json.RawMessage
+
 	switch d := doc.Data.(type) {
 	case Resource:
 		data = MarshalResource(

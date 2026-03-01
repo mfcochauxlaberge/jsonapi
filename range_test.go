@@ -145,6 +145,7 @@ func TestRange(t *testing.T) {
 	for i := 0; i < ranged.Len(); i++ {
 		ids = append(ids, ranged.At(i).Get("id").(string))
 	}
+
 	assert.Equal(expectedIDs, ids, "range of IDs (2)")
 
 	// Range test 3

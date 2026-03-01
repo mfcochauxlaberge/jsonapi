@@ -90,16 +90,20 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 
 				for _, n := range relData[r.GetType().Name] {
 					if n == rel.FromName {
-						data := []map[string]string{}
 						ids := r.Get(rel.FromName).([]string)
 						sort.Strings(ids)
+
+						data := make([]map[string]string, 0, len(ids))
+
 						for _, id := range ids {
 							data = append(data, map[string]string{
 								"id":   id,
 								"type": rel.ToType,
 							})
 						}
+
 						s["data"] = data
+
 						break
 					}
 				}
@@ -135,8 +139,8 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 // UnmarshalResource unmarshals a JSON-encoded payload into a Resource.
 func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	var rske resourceSkeleton
-	err := json.Unmarshal(data, &rske)
 
+	err := json.Unmarshal(data, &rske)
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -167,15 +171,20 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 			if len(v.Data) > 0 {
 				if rel.ToOne {
 					var iden Identifier
+
 					err = json.Unmarshal(v.Data, &iden)
 					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
+
 					err = json.Unmarshal(v.Data, &idens)
+
 					ids := make([]string, len(idens))
+
 					for i := range idens {
 						ids[i] = idens[i].ID
 					}
+
 					res.Set(rel.FromName, ids)
 				}
 			}
@@ -213,8 +222,8 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 // do that. Therefore, the user is able to tell which fields have been set.
 func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error) {
 	var rske resourceSkeleton
-	err := json.Unmarshal(data, &rske)
 
+	err := json.Unmarshal(data, &rske)
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -250,16 +259,21 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 			if len(v.Data) > 0 {
 				if rel.ToOne {
 					var iden Identifier
+
 					err = json.Unmarshal(v.Data, &iden)
 					_ = newType.AddRel(rel)
 					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
+
 					err = json.Unmarshal(v.Data, &idens)
+
 					ids := make([]string, len(idens))
+
 					for i := range idens {
 						ids[i] = idens[i].ID
 					}
+
 					_ = newType.AddRel(rel)
 					res.Set(rel.FromName, ids)
 				}
@@ -373,7 +387,9 @@ func Equal(r1, r2 Resource) bool {
 			}
 		} else {
 			v1 := r1.Get(rel1.FromName).([]string)
+
 			v2 := r2.Get(rel2.FromName).([]string)
+
 			if len(v1) != 0 || len(v2) != 0 {
 				if !reflect.DeepEqual(v1, v2) {
 					return false

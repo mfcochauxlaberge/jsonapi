@@ -13,7 +13,7 @@ func ExampleSoftCollection() {
 	sc.Type = &jsonapi.Type{
 		Name: "users",
 	}
-	sc.AddAttr(jsonapi.Attr{
+	_ = sc.AddAttr(jsonapi.Attr{
 		Name:     "username",
 		Type:     jsonapi.AttrTypeString,
 		Nullable: false,
@@ -29,7 +29,7 @@ func ExampleSoftCollection() {
 	sr.Set("username", "rob")
 
 	// An attribute is added to the type through the SoftCollection.
-	sc.AddAttr(jsonapi.Attr{
+	_ = sc.AddAttr(jsonapi.Attr{
 		Name:     "admin",
 		Type:     jsonapi.AttrTypeBool,
 		Nullable: false,

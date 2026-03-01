@@ -13,8 +13,8 @@ func ExampleMarshalDocument() {
 	// See the schema example for more details and the definitions
 	// of User and Article.
 	schema := &jsonapi.Schema{}
-	schema.AddType(jsonapi.MustBuildType(&User{}))
-	schema.AddType(jsonapi.MustBuildType(&Article{}))
+	_ = schema.AddType(jsonapi.MustBuildType(&User{}))
+	_ = schema.AddType(jsonapi.MustBuildType(&Article{}))
 	_ = schema.Check()
 
 	now, _ := time.Parse(time.RFC3339, "2019-11-19T23:17:01-05:00")
@@ -70,10 +70,10 @@ func ExampleMarshalDocument() {
 
 	// Beautify the output for clarity.
 	out := &bytes.Buffer{}
-	json.Indent(out, payload, "", "\t")
+	_ = json.Indent(out, payload, "", "\t")
 
 	// Print the result.
-	fmt.Println(string(out.Bytes()))
+	fmt.Println(out.String())
 	// Output:
 	// {
 	// 	"data": {

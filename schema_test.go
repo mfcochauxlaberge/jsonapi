@@ -204,7 +204,7 @@ func TestSchemaCheck(t *testing.T) {
 
 	// Check schema
 	errs := schema.Check()
-	errsStr := []string{}
+	errsStr := make([]string, 0, len(errs))
 
 	for _, err := range errs {
 		errsStr = append(errsStr, err.Error())

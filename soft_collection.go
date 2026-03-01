@@ -45,7 +45,7 @@ func (s *SoftCollection) At(i int) Resource {
 // Resource returns the element with an ID equal to id.
 //
 // It builds and returns a SoftResource with only the specified fields.
-func (s *SoftCollection) Resource(id string, fields []string) Resource {
+func (s *SoftCollection) Resource(id string, _ []string) Resource {
 	for i := range s.col {
 		if s.col[i].GetID() == id {
 			return s.col[i]

@@ -107,14 +107,15 @@ func (s *Schema) AddTwoWayRel(rel Rel) error {
 	found2 := false
 
 	for i := range s.Types {
-		if s.Types[i].Name == rel1.FromType {
+		switch s.Types[i].Name {
+		case rel1.FromType:
 			found1 = true
 
 			err := s.Types[i].AddRel(rel1)
 			if err != nil {
 				return err
 			}
-		} else if s.Types[i].Name == rel2.FromType {
+		case rel2.FromType:
 			found2 = true
 
 			err := s.Types[i].AddRel(rel2)
@@ -148,6 +149,7 @@ func (s *Schema) Rels() []Rel {
 	sort.Slice(rels, func(i, j int) bool {
 		name1 := rels[i].FromType + rels[i].FromName
 		name2 := rels[j].FromType + rels[j].FromName
+
 		return name1 < name2
 	})
 
@@ -222,11 +224,13 @@ func (s *Schema) Check() []error {
 				// Do both relationships (current and inverse) point
 				// to each other?
 				var found bool
+
 				for _, invRel := range targetType.Rels {
 					if rel.FromName == invRel.ToName && rel.ToName == invRel.FromName {
 						found = true
 					}
 				}
+
 				if !found {
 					errs = append(errs, fmt.Errorf(
 						"jsonapi: "+

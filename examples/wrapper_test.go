@@ -11,7 +11,6 @@ func ExampleWrapper() {
 	// makes manipulation of the resource much easier. But it requires
 	// some work and can be annoying when one wants to make a quick
 	// project where performance is not an issue.
-
 	// The Wrap function exists to solve this problem. It takes an
 	// object or a pointer to an object and return a Wrapper, which
 	// which is a struct that implements the Resource interface. When

@@ -52,12 +52,12 @@ func Range(c Collection, ids []string, filter *Filter, sort []string, size uint,
 	// Pagination
 	var page Resources
 
-	skip := int(num * size)
+	skip := int(num * size) //nolint:gosec
 
 	if skip >= len(col.col) {
 		col = sortedResources{}
 	} else {
-		for i := skip; i < len(col.col) && i < skip+int(size); i++ {
+		for i := skip; i < len(col.col) && i < skip+int(size); i++ { //nolint:gosec
 			page = append(page, col.col[i])
 		}
 	}

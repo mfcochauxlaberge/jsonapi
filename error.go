@@ -280,7 +280,7 @@ func NewErrUnknownOperatorInFilterParameter(op string) Error {
 }
 
 // NewErrInvalidValueInFilterParameter (400) returns the corresponding error.
-func NewErrInvalidValueInFilterParameter(val, kind string) Error {
+func NewErrInvalidValueInFilterParameter(val, _ string) Error {
 	e := NewError()
 
 	e.Status = strconv.Itoa(http.StatusBadRequest)

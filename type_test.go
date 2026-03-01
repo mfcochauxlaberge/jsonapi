@@ -101,6 +101,7 @@ func TestTypeNewFunc(t *testing.T) {
 		NewFunc: func() Resource {
 			res := &SoftResource{}
 			res.SetID("abc123")
+
 			return res
 		},
 	}
@@ -185,6 +186,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	attr.Type = AttrTypeBytes
 
 	_, _ = attr.UnmarshalToType([]byte("invalid"))
+
 	assert.Error(err)
 	assert.Nil(val)
 

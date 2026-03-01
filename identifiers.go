@@ -10,7 +10,7 @@ import (
 //
 // t is the type of the identifiers. ids is the set of IDs.
 func NewIdentifiers(t string, ids []string) Identifiers {
-	identifiers := []Identifier{}
+	identifiers := make([]Identifier, 0, len(ids))
 
 	for _, id := range ids {
 		identifiers = append(identifiers, Identifier{

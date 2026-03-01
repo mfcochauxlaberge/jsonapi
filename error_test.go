@@ -31,6 +31,7 @@ func TestError(t *testing.T) {
 			err: func() Error {
 				e := NewError()
 				e.Title = "An error"
+
 				return e
 			}(),
 			expectedString: "An error",
@@ -39,6 +40,7 @@ func TestError(t *testing.T) {
 			err: func() Error {
 				e := NewError()
 				e.Detail = "An error occurred."
+
 				return e
 			}(),
 			expectedString: "An error occurred.",
@@ -47,6 +49,7 @@ func TestError(t *testing.T) {
 			err: func() Error {
 				e := NewError()
 				e.Status = strconv.Itoa(http.StatusInternalServerError)
+
 				return e
 			}(),
 			expectedString: "500 Internal Server Error",
@@ -56,6 +59,7 @@ func TestError(t *testing.T) {
 				e := NewError()
 				e.Status = strconv.Itoa(http.StatusInternalServerError)
 				e.Title = "Internal server error"
+
 				return e
 			}(),
 			expectedString: "500 Internal Server Error: Internal server error",
@@ -65,6 +69,7 @@ func TestError(t *testing.T) {
 				e := NewError()
 				e.Status = strconv.Itoa(http.StatusInternalServerError)
 				e.Detail = "An internal server error occurred."
+
 				return e
 			}(),
 			expectedString: "500 Internal Server Error: An internal server error occurred.",

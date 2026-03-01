@@ -1,18 +1,18 @@
+version: "2"
+
 linters:
+  default: none
+
   enable:
     - bodyclose
     - depguard
     - dogsled
     - dupl
     - errcheck
-    - exportloopref
     - gochecknoglobals
     - gochecknoinits
     - gocritic
-    - gofmt
-    - goimports
     - gosec
-    - gosimple
     - govet
     - ineffassign
     - lll
@@ -21,29 +21,65 @@ linters:
     - prealloc
     - revive
     - staticcheck
-    - stylecheck
-    - typecheck
     - unconvert
     - unparam
     - unused
     - whitespace
-    - wsl
+    - wsl_v5
 
-linters-settings:
-  lll:
-    line-length: 100
-    tab-width: 4
+  settings:
+    depguard:
+      rules:
+        main:
+          allow:
+            - $gostd
+            - github.com/mfcochauxlaberge/jsonapi
+            - github.com/stretchr/testify
+            - github.com/davecgh/go-spew
 
-issues:
-  exclude-rules:
-    - path: doc.go
-      linters:
-        - lll
+    lll:
+      line-length: 100
+      tab-width: 4
 
-    - source: ^func
-      linters:
-        - lll
+  exclusions:
+    rules:
+      - path: doc.go
+        linters:
+          - lll
 
-    - source: ^var update =
-      linters:
-        - gochecknoglobals
+      - source: ^func
+        linters:
+          - lll
+
+      - source: ^var update =
+        linters:
+          - gochecknoglobals
+
+      - path: _test\.go
+        linters:
+          - revive
+        text: dot-imports
+
+      - path: jsonapi\.go
+        linters:
+          - revive
+        text: redefines-builtin-id
+
+      - path: jsonapi_test\.go
+        linters:
+          - revive
+        text: redefines-builtin-id
+
+      - path: examples/
+        linters:
+          - lll
+
+      - path: type\.go
+        linters:
+          - gosec
+        text: G115
+
+      - path: range\.go
+        linters:
+          - gosec
+        text: G115

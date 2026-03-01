@@ -11,8 +11,8 @@ func ExampleUnmarshalDocument() {
 	// See the schema example for more details and the definitions
 	// of User and Article.
 	schema := &jsonapi.Schema{}
-	schema.AddType(jsonapi.MustBuildType(User{}))
-	schema.AddType(jsonapi.MustBuildType(Article{}))
+	_ = schema.AddType(jsonapi.MustBuildType(User{}))
+	_ = schema.AddType(jsonapi.MustBuildType(Article{}))
 	_ = schema.Check()
 
 	// This is the payload to be unmarshaled.
