@@ -73,8 +73,8 @@ func NewURL(schema *Schema, su SimpleURL) (*URL, error) {
 
 	// Params
 	var err error
-	url.Params, err = NewParams(schema, su, url.ResType)
 
+	url.Params, err = NewParams(schema, su, url.ResType)
 	if err != nil {
 		return nil, err
 	}

@@ -242,6 +242,7 @@ func TestMarshalDocument(t *testing.T) {
 				Errors: func() []Error {
 					err := NewErrBadRequest("Bad Request", "This request is bad.")
 					err.ID = "00000000-0000-0000-0000-000000000000"
+
 					return []Error{err}
 				}(),
 			},
@@ -253,6 +254,7 @@ func TestMarshalDocument(t *testing.T) {
 					err1.ID = "00000000-0000-0000-0000-000000000000"
 					err2 := NewErrBadRequest("Bad Request", "This request is really bad.")
 					err2.ID = "00000000-0000-0000-0000-000000000000"
+
 					return []Error{err1, err2}
 				}(),
 			},
@@ -508,6 +510,7 @@ func TestUnmarshalDocument(t *testing.T) {
 			Errors: func() []Error {
 				err := NewErrBadRequest("Bad Request", "This request is bad.")
 				err.ID = "00000000-0000-0000-0000-000000000000"
+
 				return []Error{err}
 			}(),
 		}

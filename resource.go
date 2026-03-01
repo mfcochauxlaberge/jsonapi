@@ -139,8 +139,8 @@ func MarshalResource(r Resource, prepath string, fields []string, relData map[st
 // UnmarshalResource unmarshals a JSON-encoded payload into a Resource.
 func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 	var rske resourceSkeleton
-	err := json.Unmarshal(data, &rske)
 
+	err := json.Unmarshal(data, &rske)
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -171,10 +171,12 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 			if len(v.Data) > 0 {
 				if rel.ToOne {
 					var iden Identifier
+
 					err = json.Unmarshal(v.Data, &iden)
 					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
+
 					err = json.Unmarshal(v.Data, &idens)
 
 					ids := make([]string, len(idens))
@@ -220,8 +222,8 @@ func UnmarshalResource(data []byte, schema *Schema) (Resource, error) {
 // do that. Therefore, the user is able to tell which fields have been set.
 func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error) {
 	var rske resourceSkeleton
-	err := json.Unmarshal(data, &rske)
 
+	err := json.Unmarshal(data, &rske)
 	if err != nil {
 		return nil, NewErrBadRequest(
 			"Invalid JSON",
@@ -257,11 +259,13 @@ func UnmarshalPartialResource(data []byte, schema *Schema) (*SoftResource, error
 			if len(v.Data) > 0 {
 				if rel.ToOne {
 					var iden Identifier
+
 					err = json.Unmarshal(v.Data, &iden)
 					_ = newType.AddRel(rel)
 					res.Set(rel.FromName, iden.ID)
 				} else {
 					var idens Identifiers
+
 					err = json.Unmarshal(v.Data, &idens)
 
 					ids := make([]string, len(idens))

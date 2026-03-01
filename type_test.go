@@ -101,6 +101,7 @@ func TestTypeNewFunc(t *testing.T) {
 		NewFunc: func() Resource {
 			res := &SoftResource{}
 			res.SetID("abc123")
+
 			return res
 		},
 	}

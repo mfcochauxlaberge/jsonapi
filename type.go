@@ -219,6 +219,7 @@ func (a Attr) UnmarshalToType(data []byte) (any, error) {
 	switch a.Type {
 	case AttrTypeString:
 		var s string
+
 		err = json.Unmarshal(data, &s)
 
 		if a.Nullable {
@@ -331,6 +332,7 @@ func (a Attr) UnmarshalToType(data []byte) (any, error) {
 		}
 	case AttrTypeTime:
 		var t time.Time
+
 		err = json.Unmarshal(data, &t)
 		v = t
 
@@ -339,8 +341,8 @@ func (a Attr) UnmarshalToType(data []byte) (any, error) {
 		}
 	case AttrTypeBytes:
 		s := make([]byte, len(data))
-		err := json.Unmarshal(data, &s)
 
+		err := json.Unmarshal(data, &s)
 		if err != nil {
 			return nil, err
 		}
