@@ -42,7 +42,7 @@ func TestInclude(t *testing.T) {
 	doc.Include(newResource(typ2, "id1"))
 
 	// Check
-	ids := []string{}
+	ids := make([]string, 0, len(doc.Included))
 	for _, res := range doc.Included {
 		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
@@ -77,7 +77,7 @@ func TestInclude(t *testing.T) {
 	doc.Include(newResource(typ2, "id2"))
 
 	// Check
-	ids = []string{}
+	ids = make([]string, 0, len(doc.Included))
 	for _, res := range doc.Included {
 		ids = append(ids, res.GetType().Name+"-"+res.Get("id").(string))
 	}
@@ -299,10 +299,13 @@ func TestMarshalDocument(t *testing.T) {
 
 			// Golden file
 			filename := strings.ReplaceAll(test.name, " ", "_") + ".json"
+
 			path := filepath.Join("testdata", "goldenfiles", "marshaling", filename)
+
 			if !*update {
 				// Retrieve the expected result from file
-				expected, _ := ioutil.ReadFile(path)
+				expected, _ := ioutil.ReadFile(path) //nolint:gosec
+
 				assert.NoError(err, test.name)
 				assert.JSONEq(string(expected), string(payload))
 			} else {
@@ -463,7 +466,6 @@ func TestUnmarshalDocument(t *testing.T) {
 		doc2, err := UnmarshalDocument(payload, schema)
 		assert.NoError(err)
 		assert.True(Equal(doc.Data.(Resource), doc2.Data.(Resource)))
-		// TODO Make all the necessary assertions.
 	})
 
 	t.Run("collection with inclusions", func(t *testing.T) {
@@ -485,15 +487,16 @@ func TestUnmarshalDocument(t *testing.T) {
 		assert.NoError(err)
 		assert.IsType(&col, doc.Data)
 		assert.IsType(&col, doc2.Data)
+
 		if col, ok := doc.Data.(Collection); ok {
 			if col2, ok := doc2.Data.(Collection); ok {
 				assert.Equal(col.Len(), col2.Len())
+
 				for j := 0; j < col.Len(); j++ {
 					assert.True(Equal(col.At(j), col2.At(j)))
 				}
 			}
 		}
-		// TODO Make all the necessary assertions.
 	})
 
 	t.Run("errors (Unmarshal)", func(t *testing.T) {

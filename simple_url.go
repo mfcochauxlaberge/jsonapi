@@ -158,10 +158,10 @@ func deduceRoute(path []string) string {
 	}
 
 	if len(path) >= 3 {
-		switch {
-		case path[2] == rel:
+		switch path[2] {
+		case rel:
 			route += "/" + rel
-		case path[2] == meta:
+		case meta:
 			route += "/" + meta
 		default:
 			route += "/" + path[2]

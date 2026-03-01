@@ -218,6 +218,7 @@ func TestParseURL(t *testing.T) {
 			assert.Error(err)
 		} else {
 			assert.NoError(err)
+
 			url.Params = nil
 			assert.Equal(test.expectedURL, *url, test.name)
 		}

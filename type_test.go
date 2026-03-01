@@ -185,6 +185,7 @@ func TestAttrUnmarshalToType(t *testing.T) {
 	attr.Type = AttrTypeBytes
 
 	_, _ = attr.UnmarshalToType([]byte("invalid"))
+
 	assert.Error(err)
 	assert.Nil(val)
 

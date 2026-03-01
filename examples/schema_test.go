@@ -19,14 +19,14 @@ func ExampleSchema() {
 	}
 
 	// Attributes can be added.
-	comments.AddAttr(jsonapi.Attr{
+	_ = comments.AddAttr(jsonapi.Attr{
 		Name:     "content",
 		Type:     jsonapi.AttrTypeString,
 		Nullable: false,
 	})
 
 	// Relationships can be added.
-	comments.AddRel(jsonapi.Rel{
+	_ = comments.AddRel(jsonapi.Rel{
 		FromType: "comments",
 		FromName: "author",
 		ToOne:    true,
@@ -34,7 +34,7 @@ func ExampleSchema() {
 		ToName:   "comments",
 		FromOne:  false,
 	})
-	comments.AddRel(jsonapi.Rel{
+	_ = comments.AddRel(jsonapi.Rel{
 		FromType: "comments",
 		FromName: "article",
 		ToOne:    true,
@@ -45,16 +45,16 @@ func ExampleSchema() {
 
 	// Finally, the type is added to the schema. But it can
 	// still be modified after.
-	schema.AddType(comments)
+	_ = schema.AddType(comments)
 
 	// Here, types are built from structs and added.
-	schema.AddType(jsonapi.MustBuildType(User{}))
-	schema.AddType(jsonapi.MustBuildType(Article{}))
+	_ = schema.AddType(jsonapi.MustBuildType(User{}))
+	_ = schema.AddType(jsonapi.MustBuildType(Article{}))
 
 	// Since a comments type was added dynamically, the two types
 	// added above to not contain the necessary relationships, but
 	// they can be added.
-	schema.AddRel("users", jsonapi.Rel{
+	_ = schema.AddRel("users", jsonapi.Rel{
 		FromType: "users",
 		FromName: "comments",
 		ToOne:    false,
@@ -62,7 +62,7 @@ func ExampleSchema() {
 		ToName:   "author",
 		FromOne:  true,
 	})
-	schema.AddRel("articles", jsonapi.Rel{
+	_ = schema.AddRel("articles", jsonapi.Rel{
 		FromType: "articles",
 		FromName: "comments",
 		ToOne:    false,
@@ -81,13 +81,16 @@ func ExampleSchema() {
 	_ = schema.Check()
 
 	// This schema contains 0 errors and three types.
-	out := []string{
+	out := []string{ //nolint:prealloc
 		fmt.Sprint(len(schema.Check())), // 0
 	}
+
 	for _, typ := range schema.Types {
 		out = append(out, typ.Name)
 	}
+
 	sort.Strings(out)
+
 	for _, name := range out {
 		fmt.Println(name)
 	}
