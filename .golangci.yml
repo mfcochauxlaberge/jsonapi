@@ -25,7 +25,7 @@ linters:
     - unparam
     - unused
     - whitespace
-    - wsl
+    - wsl_v5
 
   settings:
     depguard:
